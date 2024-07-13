@@ -1,25 +1,31 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class FirstPersonController : MonoBehaviour
 {
     public CharacterController controller;
+    public Transform playerCamera;
     public float speed = 6.0f;
-    public float jumpHeight = 1.0f;
+    public float jumpHeight = 1.5f;
     public float gravity = -9.81f;
+    public float lookSpeed = 2.0f;
+    public float lookXLimit = 45.0f;
 
     private Vector3 velocity;
     private bool isGrounded;
     private Vector2 moveInput;
+    private Vector2 lookInput;
+    private float rotationX = 0;
 
     private void OnEnable()
     {
-        // Assurez-vous que l'Input Action Asset est activé
         var inputAction = new PIA();
         inputAction.Enable();
         inputAction.Game.Move.performed += OnMove;
         inputAction.Game.Move.canceled += OnMove;
         inputAction.Game.Jump.performed += OnJump;
+        inputAction.Game.Look.performed += OnLook;
+        inputAction.Game.Look.canceled += OnLook;
     }
 
     private void OnDisable()
@@ -29,6 +35,8 @@ public class PlayerController : MonoBehaviour
         inputAction.Game.Move.performed -= OnMove;
         inputAction.Game.Move.canceled -= OnMove;
         inputAction.Game.Jump.performed -= OnJump;
+        inputAction.Game.Look.performed -= OnLook;
+        inputAction.Game.Look.canceled -= OnLook;
     }
 
     private void Update()
@@ -39,17 +47,13 @@ public class PlayerController : MonoBehaviour
             velocity.y = -2f;
         }
 
-        Vector3 move = new Vector3(moveInput.x, 0, moveInput.y);
-        controller.Move(move * Time.deltaTime * speed);
-
-        if (move != Vector3.zero)
-        {
-            gameObject.transform.forward = move;
-        }
-
-        velocity.y += gravity * Time.deltaTime;
+        HandleMove();
         controller.Move(velocity * Time.deltaTime);
+        HandleGravity();
+        HandleLook();
     }
+
+    #region INPUTS DELEGATES
 
     private void OnMove(InputAction.CallbackContext context)
     {
@@ -63,4 +67,34 @@ public class PlayerController : MonoBehaviour
             velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
+
+    private void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+    }
+
+    #endregion
+
+    #region HANDLING FUNCTIONS
+
+    private void HandleGravity()
+    {
+        velocity.y += gravity * Time.deltaTime;
+    }
+
+    private void HandleMove()
+    {
+        controller.Move(transform.right * moveInput.x * Time.deltaTime * speed);
+        controller.Move(transform.forward * moveInput.y * Time.deltaTime * speed);
+    }
+
+    private void HandleLook()
+    {
+        rotationX += -lookInput.y * lookSpeed;
+        rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
+        playerCamera.localRotation = Quaternion.Euler(rotationX, 0, 0);
+        transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
+    }
+
+    #endregion
 }
