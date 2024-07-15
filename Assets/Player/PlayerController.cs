@@ -1,10 +1,12 @@
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class FirstPersonController : MonoBehaviour
 {
     public CharacterController controller;
-    public Transform playerCamera;
+    public Camera playerCamera;
+    public LayerMask itemMask;
     public float speed = 6.0f;
     public float jumpHeight = 1.5f;
     public float gravity = -9.81f;
@@ -17,26 +19,26 @@ public class FirstPersonController : MonoBehaviour
     private Vector2 lookInput;
     private float rotationX = 0;
 
+    private PIA playerInputs;
     private void OnEnable()
     {
-        var inputAction = new PIA();
-        inputAction.Enable();
-        inputAction.Game.Move.performed += OnMove;
-        inputAction.Game.Move.canceled += OnMove;
-        inputAction.Game.Jump.performed += OnJump;
-        inputAction.Game.Look.performed += OnLook;
-        inputAction.Game.Look.canceled += OnLook;
+        playerInputs = new PIA();
+        playerInputs.Enable();
+        playerInputs.Game.Move.performed += OnMove;
+        playerInputs.Game.Move.canceled += OnMove;
+        playerInputs.Game.Jump.performed += OnJump;
+        playerInputs.Game.Look.performed += OnLook;
+        playerInputs.Game.Look.canceled += OnLook;
     }
 
     private void OnDisable()
     {
-        var inputAction = new PIA();
-        inputAction.Disable();
-        inputAction.Game.Move.performed -= OnMove;
-        inputAction.Game.Move.canceled -= OnMove;
-        inputAction.Game.Jump.performed -= OnJump;
-        inputAction.Game.Look.performed -= OnLook;
-        inputAction.Game.Look.canceled -= OnLook;
+        playerInputs.Disable();
+        playerInputs.Game.Move.performed -= OnMove;
+        playerInputs.Game.Move.canceled -= OnMove;
+        playerInputs.Game.Jump.performed -= OnJump;
+        playerInputs.Game.Look.performed -= OnLook;
+        playerInputs.Game.Look.canceled -= OnLook;
     }
 
     private void Update()
@@ -51,6 +53,18 @@ public class FirstPersonController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
         HandleGravity();
         HandleLook();
+
+        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, 3f, itemMask))
+        {
+            Debug.DrawRay(playerCamera.transform.position, hit.point - playerCamera.transform.position);
+            /*hit.collider.gameObject.TryGetComponent(out IItem item);
+            if(item != null)
+            {
+                
+            }*/
+            //Debug.Log(item.ToString());
+        }
     }
 
     #region INPUTS DELEGATES
@@ -92,7 +106,7 @@ public class FirstPersonController : MonoBehaviour
     {
         rotationX += -lookInput.y * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-        playerCamera.localRotation = Quaternion.Euler(rotationX, 0, 0);
+        playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
         transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
     }
 
