@@ -5,13 +5,15 @@ using UnityEngine;
 public interface IItem
 {
     string Name { get; }
+    abstract GameObject go { get; }
     List<IOption> GetOptions();
 }
 
 public abstract class ItemBase : MonoBehaviour, IItem
 {
-    public virtual string Name { get; }
+    public virtual string Name { get; } = "Object ?";
     public virtual List<IOption> GetOptions() { return new List<IOption>(); }
+    public GameObject go => this.gameObject;
 }
 
 public interface IOption

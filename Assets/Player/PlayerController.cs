@@ -1,10 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using TMPro;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class FirstPersonController : MonoBehaviour
 {
     public CharacterController controller;
+    public ItemOptionController optionController;
+    public PlayerInventory playerInventory;
     public Camera playerCamera;
     public LayerMask itemMask;
     public float speed = 6.0f;
@@ -23,7 +28,7 @@ public class FirstPersonController : MonoBehaviour
 
     public float raycastDistance = 3f;
     private IItem currentHitItem;
-    private GameObject optionsPanel;
+
     private void OnEnable()
     {
         playerInputs = new PIA();
@@ -67,8 +72,8 @@ public class FirstPersonController : MonoBehaviour
             {
                 if (currentHitItem != item)
                 {
-                    OnRaycastEnter(item);
                     currentHitItem = item;
+                    OnRaycastEnter(item);
                 }
             }
             else
@@ -93,72 +98,55 @@ public class FirstPersonController : MonoBehaviour
 
     void OnRaycastEnter(IItem item)
     {
-        Debug.Log("Raycast entered: " + item.Name);
+        //Debug.Log("Raycast entered: " + item.Name);
         ShowOptions(item);
     }
 
     void OnRaycastExit(IItem item)
     {
-        Debug.Log("Raycast exited: " + item.Name);
+        //Debug.Log("Raycast exited: " + item.Name);
         HideOptions();
     }
 
     void ShowOptions(IItem item)
     {
-        // Create a UI panel to display the options
-        optionsPanel = new GameObject("Options Panel");
-        optionsPanel.transform.SetParent(GameObject.Find("Canvas").transform);
-
-        // Set the panel's anchor and pivot to the bottom left corner
-        RectTransform panelRect = optionsPanel.AddComponent<RectTransform>();
-        panelRect.anchorMin = new Vector2(0, 0);
-        panelRect.anchorMax = new Vector2(0, 0);
-        panelRect.pivot = new Vector2(0, 0);
-        panelRect.anchoredPosition = new Vector2(10, 10); // adjust the position as needed
-
-        // Create a UI button for each option
+        optionController.Show();
+        optionController.ItemName.text = item.Name;
+        List<GameObject> temp = new List<GameObject>();
         foreach (var option in item.GetOptions())
         {
-            // Create a UI button
-            GameObject buttonObject = new GameObject("Button");
-            buttonObject.transform.SetParent(optionsPanel.transform);
-
-            // Set the button's anchor and pivot to the top left corner
-            RectTransform buttonRect = buttonObject.AddComponent<RectTransform>();
-            buttonRect.anchorMin = new Vector2(0, 1);
-            buttonRect.anchorMax = new Vector2(0, 1);
-            buttonRect.pivot = new Vector2(0, 1);
-            buttonRect.sizeDelta = new Vector2(200, 30); // adjust the size as needed
-
-            // Add a Button component to the button object
-            Button button = buttonObject.AddComponent<Button>();
-            Image img = buttonObject.AddComponent<Image>();
-            button.targetGraphic = img;
-
-            // Set the button's text to the option's name
-            Text buttonText = new GameObject("Button Text").AddComponent<Text>();
-            buttonText.transform.SetParent(buttonObject.transform);
-            buttonText.text = option.Name;
-            buttonText.alignment = TextAnchor.MiddleCenter;
-            buttonText.fontSize = 18; // adjust the font size as needed
+            var buttonObject = optionController.AddButton();
+            buttonObject.GetComponentInChildren<TextMeshProUGUI>().text = option.Name;
 
             // Add a listener to the button's click event
-            if (option is UseOptionBase useOption)
+            if(option is GrabOptionBase grabOption)
             {
-                button.onClick.AddListener(() =>
+
+            }
+            else if (option is HoldOptionBase holdOption)
+            {
+                buttonObject.onClick.AddListener(() =>
+                {
+                    playerInventory.AddItemToInventory(item.go);
+                    Debug.Log("additem");
+                });
+            }
+            else if (option is UseOptionBase useOption)
+            {
+                buttonObject.onClick.AddListener(() =>
                 {
                     useOption.UseAction?.Invoke();
                 });
             }
+            temp.Add(buttonObject.gameObject);
         }
+        EventSystem.current.SetSelectedGameObject(temp[0]);
     }
 
     void HideOptions()
     {
-        if (optionsPanel != null)
-        {
-            Destroy(optionsPanel);
-        }
+        optionController.ClearButtons();
+        optionController.Hide();
     }
 
 
