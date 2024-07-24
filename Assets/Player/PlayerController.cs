@@ -1,6 +1,6 @@
-using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class FirstPersonController : MonoBehaviour
 {
@@ -20,6 +20,10 @@ public class FirstPersonController : MonoBehaviour
     private float rotationX = 0;
 
     private PIA playerInputs;
+
+    public float raycastDistance = 3f;
+    private IItem currentHitItem;
+    private GameObject optionsPanel;
     private void OnEnable()
     {
         playerInputs = new PIA();
@@ -55,17 +59,108 @@ public class FirstPersonController : MonoBehaviour
         HandleLook();
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, 3f, itemMask))
+        if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, itemMask))
         {
             Debug.DrawRay(playerCamera.transform.position, hit.point - playerCamera.transform.position);
-            /*hit.collider.gameObject.TryGetComponent(out IItem item);
-            if(item != null)
+            hit.collider.gameObject.TryGetComponent(out IItem item);
+            if (item != null)
             {
-                
-            }*/
-            //Debug.Log(item.ToString());
+                if (currentHitItem != item)
+                {
+                    OnRaycastEnter(item);
+                    currentHitItem = item;
+                }
+            }
+            else
+            {
+                if (currentHitItem != null)
+                {
+                    OnRaycastExit(currentHitItem);
+                    currentHitItem = null;
+                }
+            }
+        }
+        else
+        {
+            if (currentHitItem != null)
+            {
+                OnRaycastExit(currentHitItem);
+                currentHitItem = null;
+            }
+        }
+
+    }
+
+    void OnRaycastEnter(IItem item)
+    {
+        Debug.Log("Raycast entered: " + item.Name);
+        ShowOptions(item);
+    }
+
+    void OnRaycastExit(IItem item)
+    {
+        Debug.Log("Raycast exited: " + item.Name);
+        HideOptions();
+    }
+
+    void ShowOptions(IItem item)
+    {
+        // Create a UI panel to display the options
+        optionsPanel = new GameObject("Options Panel");
+        optionsPanel.transform.SetParent(GameObject.Find("Canvas").transform);
+
+        // Set the panel's anchor and pivot to the bottom left corner
+        RectTransform panelRect = optionsPanel.AddComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0, 0);
+        panelRect.anchorMax = new Vector2(0, 0);
+        panelRect.pivot = new Vector2(0, 0);
+        panelRect.anchoredPosition = new Vector2(10, 10); // adjust the position as needed
+
+        // Create a UI button for each option
+        foreach (var option in item.GetOptions())
+        {
+            // Create a UI button
+            GameObject buttonObject = new GameObject("Button");
+            buttonObject.transform.SetParent(optionsPanel.transform);
+
+            // Set the button's anchor and pivot to the top left corner
+            RectTransform buttonRect = buttonObject.AddComponent<RectTransform>();
+            buttonRect.anchorMin = new Vector2(0, 1);
+            buttonRect.anchorMax = new Vector2(0, 1);
+            buttonRect.pivot = new Vector2(0, 1);
+            buttonRect.sizeDelta = new Vector2(200, 30); // adjust the size as needed
+
+            // Add a Button component to the button object
+            Button button = buttonObject.AddComponent<Button>();
+            Image img = buttonObject.AddComponent<Image>();
+            button.targetGraphic = img;
+
+            // Set the button's text to the option's name
+            Text buttonText = new GameObject("Button Text").AddComponent<Text>();
+            buttonText.transform.SetParent(buttonObject.transform);
+            buttonText.text = option.Name;
+            buttonText.alignment = TextAnchor.MiddleCenter;
+            buttonText.fontSize = 18; // adjust the font size as needed
+
+            // Add a listener to the button's click event
+            if (option is UseOptionBase useOption)
+            {
+                button.onClick.AddListener(() =>
+                {
+                    useOption.UseAction?.Invoke();
+                });
+            }
         }
     }
+
+    void HideOptions()
+    {
+        if (optionsPanel != null)
+        {
+            Destroy(optionsPanel);
+        }
+    }
+
 
     #region INPUTS DELEGATES
 
