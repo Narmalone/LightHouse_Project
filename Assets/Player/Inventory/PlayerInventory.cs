@@ -1,14 +1,52 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerInventory : MonoBehaviour
 {
+    public ItemOptionController controller;
     [SerializeField] private byte slots = 4;
     [SerializeField] private byte currentUsedSlots = 0;
     public List<GameObject> objectsInInventory = new List<GameObject>();
     public List<Image> buttonsInInventory = new List<Image>();
+    private int selectedSlot;
+
+    void Update()
+    {
+        // Check for keyboard input to select a slot
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SelectSlot(0);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SelectSlot(1);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SelectSlot(2);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            SelectSlot(3);
+        }
+
+        // Check for mouse wheel input to select a slot
+        if (Input.GetAxis("Mouse ScrollWheel") != 0)
+        {
+            int scrollDirection = Input.GetAxis("Mouse ScrollWheel") > 0 ? -1 : 1;
+            SelectSlot(selectedSlot + scrollDirection);
+        }
+    }
+
+    void SelectSlot(int slotIndex)
+    {
+        slotIndex = Mathf.Clamp(slotIndex, 0, slots - 1);
+
+        buttonsInInventory[selectedSlot].color = Color.white;
+        selectedSlot = slotIndex;
+        buttonsInInventory[selectedSlot].color = Color.green;
+    }
 
     public void AddItemToInventory(GameObject obj)
     {
@@ -38,4 +76,11 @@ public class PlayerInventory : MonoBehaviour
         currentUsedSlots--;
         objectsInInventory.RemoveAt(index);
     }
+}
+
+[System.Serializable]
+public struct ItemSlotDatas
+{
+    public GameObject item;
+    public Sprite sprite;
 }

@@ -128,6 +128,7 @@ public class FirstPersonController : MonoBehaviour
                 buttonObject.onClick.AddListener(() =>
                 {
                     playerInventory.AddItemToInventory(item.go);
+                    item.go.SetActive(false);
                     Debug.Log("additem");
                 });
             }
