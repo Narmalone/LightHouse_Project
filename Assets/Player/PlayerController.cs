@@ -111,7 +111,7 @@ public class FirstPersonController : MonoBehaviour
     void ShowOptions(IItem item)
     {
         optionController.Show();
-        optionController.ItemName.text = item.Name;
+        optionController.ItemName.text = item.ItemDatas.itemName;
         List<GameObject> temp = new List<GameObject>();
         foreach (var option in item.GetOptions())
         {
@@ -127,7 +127,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 buttonObject.onClick.AddListener(() =>
                 {
-                    playerInventory.AddItemToInventory(item.go);
+                    playerInventory.AddItemToInventory(item.go, item.ItemDatas);
                     item.go.SetActive(false);
                     Debug.Log("additem");
                 });

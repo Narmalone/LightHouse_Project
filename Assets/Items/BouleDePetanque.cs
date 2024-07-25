@@ -9,8 +9,6 @@ public class BouleDePetanque : ItemBase
     public HoldOptionBase hold = new HoldOptionBase();
     public UseOptionBase use = new UseOptionBase();
 
-    public override string Name { get; } = "Key";
-
     public override List<IOption> GetOptions()
     {
         return new List<IOption>

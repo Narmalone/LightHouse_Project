@@ -8,7 +8,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private byte slots = 4;
     [SerializeField] private byte currentUsedSlots = 0;
     public List<GameObject> objectsInInventory = new List<GameObject>();
-    public List<Image> buttonsInInventory = new List<Image>();
+    public List<InventorySlot> buttonsInInventory = new List<InventorySlot>();
     private int selectedSlot;
 
     void Update()
@@ -37,25 +37,30 @@ public class PlayerInventory : MonoBehaviour
             int scrollDirection = Input.GetAxis("Mouse ScrollWheel") > 0 ? -1 : 1;
             SelectSlot(selectedSlot + scrollDirection);
         }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            //if(selectedSlot)
+        }
     }
 
     void SelectSlot(int slotIndex)
     {
         slotIndex = Mathf.Clamp(slotIndex, 0, slots - 1);
 
-        buttonsInInventory[selectedSlot].color = Color.white;
+        buttonsInInventory[selectedSlot].iconImage.color = Color.white;
         selectedSlot = slotIndex;
-        buttonsInInventory[selectedSlot].color = Color.green;
+        buttonsInInventory[selectedSlot].iconImage.color = Color.green;
     }
 
-    public void AddItemToInventory(GameObject obj)
+    public void AddItemToInventory(GameObject obj, InventoryItem item)
     {
         if(currentUsedSlots >= slots)
         {
             Debug.Log("Slots max utilisées");
             return;
         }
-        buttonsInInventory[currentUsedSlots].color = Color.gray;
+        buttonsInInventory[currentUsedSlots].iconImage.color = Color.gray;
         currentUsedSlots++;
         objectsInInventory.Add(obj);
     }
@@ -64,7 +69,7 @@ public class PlayerInventory : MonoBehaviour
     {
         if(objectsInInventory.Contains(obj))
         {
-            buttonsInInventory[currentUsedSlots].color = Color.white;
+            buttonsInInventory[currentUsedSlots].iconImage.color = Color.white;
             currentUsedSlots--;
             objectsInInventory.Remove(obj);
         }
@@ -72,15 +77,8 @@ public class PlayerInventory : MonoBehaviour
 
     public void RemoveItemFromInventoryAtIndex(int index)
     {
-        buttonsInInventory[index].color = Color.white;
+        buttonsInInventory[index].iconImage.color = Color.white;
         currentUsedSlots--;
         objectsInInventory.RemoveAt(index);
     }
-}
-
-[System.Serializable]
-public struct ItemSlotDatas
-{
-    public GameObject item;
-    public Sprite sprite;
 }

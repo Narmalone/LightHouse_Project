@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 397028116}
   - component: {fileID: 397028115}
   - component: {fileID: 397028119}
+  - component: {fileID: 397028120}
   m_Layer: 6
   m_Name: TestItem
   m_TagString: Untagged
@@ -240,6 +241,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed7005e40ff0f7c40a6dbd52e6b68957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemData: {fileID: 11400000, guid: dc5906648d5a92a42aa7dd254cec1ff7, type: 2}
+--- !u!54 &397028120
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 397028114}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1420794342
 GameObject:
   m_ObjectHideFlags: 0
@@ -670,6 +699,7 @@ GameObject:
   - component: {fileID: 1653478367}
   - component: {fileID: 1653478366}
   - component: {fileID: 1653478370}
+  - component: {fileID: 1653478371}
   m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
@@ -775,6 +805,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37bd0083d7d3d9f4b94642f9b87ceecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemData: {fileID: 11400000, guid: 8f873055bb4b2aa44a10a6336f33fa3c, type: 2}
+--- !u!54 &1653478371
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653478365}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1912186307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1027,6 +1085,26 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1986256693566393692, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986256693566393692, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986256693566393692, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1986256693566393692, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2324029448448511037, guid: d5e1d18905179894ea2e2dd49e3c9f87,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1143,6 +1221,46 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7336441936185352206, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7709420362844174870, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7709420362844174870, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7709420362844174870, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7709420362844174870, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8216805515507572257, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8216805515507572257, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8216805515507572257, guid: d5e1d18905179894ea2e2dd49e3c9f87,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8216805515507572257, guid: d5e1d18905179894ea2e2dd49e3c9f87,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
