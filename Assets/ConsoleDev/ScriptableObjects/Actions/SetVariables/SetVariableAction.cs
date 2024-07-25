@@ -34,7 +34,9 @@ public class SetVariableAction : SO_CommandAction
             foreach (FieldInfo field in fields)
             {
                 ConsoleVariableAttribute attribute = (ConsoleVariableAttribute)field.GetCustomAttribute(typeof(ConsoleVariableAttribute));
-                if (field.Name == variableName)
+                string consoleVariableName = !string.IsNullOrEmpty(attribute.Name) ? attribute.Name : field.Name;
+
+                if (consoleVariableName == variableName)
                 {
                     try
                     {

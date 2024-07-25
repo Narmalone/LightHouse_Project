@@ -3,7 +3,7 @@ using System;
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public class ConsoleVariableAttribute : Attribute
 {
-    public string Name { get; private set; }
+    public string Name { get; set; }
 
     public ConsoleVariableAttribute([System.Runtime.CompilerServices.CallerMemberName] string memberName = "")
     {

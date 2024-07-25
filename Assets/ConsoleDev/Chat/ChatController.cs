@@ -287,17 +287,20 @@ public class ChatController : Singleton<ChatController>
                 ConsoleVariableAttribute consoleVariableAttribute = (ConsoleVariableAttribute)field.GetCustomAttribute(typeof(ConsoleVariableAttribute));
                 ConsoleCategoryAttribute consoleVariableCategoryAttribute = (ConsoleCategoryAttribute)field.GetCustomAttribute(typeof(ConsoleCategoryAttribute));
 
-                if (!varWithAttributes.ContainsKey(consoleVariableCategoryAttribute.Category))
+                string variableName = !string.IsNullOrEmpty(consoleVariableAttribute.Name) ? consoleVariableAttribute.Name : field.Name;
+                string category = consoleVariableCategoryAttribute?.Category ?? $"Gameplay";
+
+                if (!varWithAttributes.ContainsKey(category))
                 {
-                    varWithAttributes.Add(consoleVariableCategoryAttribute.Category, new List<string>());
+                    varWithAttributes.Add(category, new List<string>());
                 }
 
-                varWithAttributes[consoleVariableCategoryAttribute.Category].Add(field.Name);
+                varWithAttributes[category].Add(variableName);
             }
         }
         return varWithAttributes;
     }
-
+    
     public List<TabController> GetTargetTabs(ChatTabs where)
     {
         List<TabController> targetTabs = new List<TabController>();
@@ -364,19 +367,18 @@ public class ChatController : Singleton<ChatController>
             {
                 case SO_Command.SuggestionSource.VariableNames:
                     variableSuggestions = variableNames
-                       .Where(var => var.Key == cmd.keyName && var.Value.Any(v => v.StartsWith(variableInput, StringComparison.OrdinalIgnoreCase)))
-                       .SelectMany(var => var.Value, (category, variable) => $"{cmd.command} {variable}");
+                        .Where(var => var.Key == cmd.keyName && var.Value.Any(v => v.StartsWith(variableInput, StringComparison.OrdinalIgnoreCase)))
+                        .SelectMany(var => var.Value, (category, variable) => $"{cmd.command} {variable}");
                     break;
                 case SO_Command.SuggestionSource.SceneNames:
                     variableSuggestions = GetAllSceneNames()
-                       .Where(sceneName => sceneName.StartsWith(variableInput, StringComparison.OrdinalIgnoreCase))
-                       .Select(sceneName => $"{cmd.command} {sceneName}");
+                        .Where(sceneName => sceneName.StartsWith(variableInput, StringComparison.OrdinalIgnoreCase))
+                        .Select(sceneName => $"{cmd.command} {sceneName}");
                     break;
                 case SO_Command.SuggestionSource.ObjectNames:
                     variableSuggestions = prefabLoader.DictionnaryObjects.Keys
-                       .Where(objName => objName.StartsWith(variableInput, StringComparison.OrdinalIgnoreCase))
-                       .Select(objName => $"{cmd.command} {objName}");
-
+                        .Where(objName => objName.StartsWith(variableInput, StringComparison.OrdinalIgnoreCase))
+                        .Select(objName => $"{cmd.command} {objName}");
                     break;
                 default:
                     throw new NotImplementedException($"Suggestion source '{cmd.suggestionSource}' is not implemented.");
