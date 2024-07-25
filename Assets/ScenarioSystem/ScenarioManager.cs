@@ -4,29 +4,52 @@ using UnityEngine;
 
 public class ScenarioManager : MonoBehaviour
 {
-    [SerializeField] private List<ActEvents> actScenarios = new List<ActEvents>();
-    
-    [SerializeField] private ActEvents currentFollowedAct;
-    [SerializeField]
-    private List<ScenarioEvent> scenariosFromAct = new List<ScenarioEvent>();
-    [SerializeField]
-    private ScenarioEvent nextEvent;
+    [Header("REFERENCES")]
+    [SerializeField] private List<ThemeScenario> themes = new List<ThemeScenario>();
+
+    [Header("AUTO LINKED REFS")]
+    [SerializeField] private ThemeScenario currentFollowedTheme;
+    [SerializeField] private List<ActEvents> actScenarios = new List<ActEvents>();    
+    [SerializeField] private List<ScenarioEvent> scenariosFromAct = new List<ScenarioEvent>();
+
+    [Header("ACT INFOS")]
+    [SerializeField] private int currentActIndex = 0;
+    [SerializeField] private ActEvents currentAct;
+
+    [Header("EVT INFOS")]
+    [SerializeField] private ScenarioEvent nextEvent;
 
     private void Awake()
     {
-        currentFollowedAct = RandomAct();
-        scenariosFromAct = new List<ScenarioEvent>(currentFollowedAct.possibleEvents);
-        SelectNextEvent();
+        currentFollowedTheme = RandomTheme();
+        actScenarios = GetActsByTheme(currentFollowedTheme);
+        SelectNextAct();
     }
 
+    private void SelectNextAct()
+    {
+        if(currentActIndex >= actScenarios.Count - 1)
+        {
+            Debug.Log("pas de prochain act");
+            return;
+        }
+        currentActIndex++;
+        currentAct = actScenarios[currentActIndex];
+        scenariosFromAct = new List<ScenarioEvent>(currentAct.possibleEvents);
+    }
+
+    /// <summary>
+    /// Doit êtres appelé limite juste avant d'être jouer pour vérifier les condition
+    /// par ex: ne pas faire spawn d'event sur la même zone que le joueur
+    /// </summary>
     public void SelectNextEvent()
     {
         if(scenariosFromAct.Count <= 0)
         {
-            Debug.Log($"il n'y a plus d'events restant dans {currentFollowedAct.name}");
+            Debug.Log($"il n'y a plus d'events restant dans {currentAct.name}");
             return;
         }
-        nextEvent = GetRandomEventByAct(currentFollowedAct);
+        nextEvent = GetRandomEventByEvents(scenariosFromAct);
         scenariosFromAct.Remove(nextEvent);
     }
 
@@ -40,20 +63,29 @@ public class ScenarioManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.V))
         {
-            PlayNextEvent();
+            SelectNextAct();
+        }
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            SelectNextEvent();
         }
     }
 
-    private ActEvents RandomAct()
+    private ThemeScenario RandomTheme()
     {
-        return actScenarios[Random.Range(0, actScenarios.Count)];
+        return themes[Random.Range(0, themes.Count)];
     }
 
-    private ScenarioEvent GetRandomEventByAct(ActEvents act)
+    private List<ActEvents> GetActsByTheme(ThemeScenario theme)
     {
-        if (act.possibleEvents.Count <= 0) return null;
-        var rdm = Random.Range(0, act.possibleEvents.Count);
-        var evt = act.possibleEvents[rdm];
+        return theme.actEvents;
+    }
+
+    private ScenarioEvent GetRandomEventByEvents(List<ScenarioEvent> mainEvents)
+    {
+        if (mainEvents.Count <= 0) return null;
+        var rdm = Random.Range(0, mainEvents.Count);
+        var evt = mainEvents[rdm];
         return evt;
     }
 }
