@@ -11,13 +11,13 @@ public class GameManager : Singleton<GameManager>
     public TextMeshProUGUI times;
 
     public static event Action OnDayCycleEnd;
-    public static event Action OnNightCycleEnd;
+    public static event Action<int> OnNightCycleEnd; //int = NewDayValue
 
     [SerializeField] private int currentDay = 0;
+    public int CurrentDay => currentDay;
     private float cycleTimeLeft;
     private bool isDayTime;
     [SerializeField, ConsoleVariable("TimeSpeed"), ConsoleCategory("Gameplay")] private float timeSpeedMultiplier = 1.0f; // Multiplicateur de vitesse initial à 1
-    [SerializeField, ConsoleVariable] private float salmamm = 1.0f; // Multiplicateur de vitesse initial à 1
 
     private void Start()
     {
@@ -49,7 +49,7 @@ public class GameManager : Singleton<GameManager>
             while (cycleTimeLeft > 0)
             {
                 cycleTimeLeft -= Time.deltaTime * timeSpeedMultiplier;
-                UpdateTimeDisplay();
+                //UpdateTimeDisplay();
                 yield return null;
             }
 
@@ -66,8 +66,8 @@ public class GameManager : Singleton<GameManager>
                 cycleTimeLeft = dayCycleDuration;
                 isDayTime = true;
                 currentDay++;
-                OnNightCycleEnd?.Invoke();
-                UpdateDayDisplay();
+                OnNightCycleEnd?.Invoke(currentDay);
+                //UpdateDayDisplay();
             }
         }
     }
@@ -76,6 +76,11 @@ public class GameManager : Singleton<GameManager>
     {
         TimeSpan timeSpan = TimeSpan.FromSeconds(cycleTimeLeft);
         times.text = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+    }
+
+    public TimeSpan GetCurrentInGameTime()
+    {
+        return TimeSpan.FromSeconds(cycleTimeLeft);
     }
 
     private void UpdateDayDisplay()

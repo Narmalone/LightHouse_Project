@@ -12,3 +12,12 @@ public class ScenarioEvent : ScriptableObject
         eventsAction?.Invoke();
     }
 }
+
+
+public enum ScenarioCondition
+{
+    None,
+    PlayerProximity,
+    HighTide,
+    LowTide
+}

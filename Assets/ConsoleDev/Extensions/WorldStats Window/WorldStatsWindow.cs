@@ -17,6 +17,8 @@ public class WorldStatsWindow : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_cardinalPoints;
     [SerializeField] private TextMeshProUGUI m_timePlayed;
     [SerializeField] private TextMeshProUGUI m_currentZoneTxt;
+    [SerializeField] private TextMeshProUGUI m_totalDays;
+    [SerializeField] private TextMeshProUGUI m_currentInGameTime;
 
     [SerializeField] private Button closeWindowButton;
     public bool IsShowed = false;
@@ -128,6 +130,20 @@ public class WorldStatsWindow : MonoBehaviour
         {
             Disable();
         });
+
+        GameManager.OnNightCycleEnd += (newDay) =>
+        {
+            m_totalDays.text = "Current Day: " + newDay;
+        };
+        m_player = FindObjectOfType<PlayerController>().transform;
+    }
+
+    private void Start()
+    {
+        if (GameManager.Instance)
+        {
+            m_totalDays.text = "Current Day: " + GameManager.Instance.CurrentDay;
+        }
     }
     public void ResetWindow()
     {
@@ -153,19 +169,30 @@ public class WorldStatsWindow : MonoBehaviour
     private void Update()
     {
         if (canvasGroup.alpha <= 0f) return;
-        m_playerCoords.text = string.Format("Pos (x: {0:F2}, y: {1:F2}, z: {2:F2})",
+        if(m_player != null)
+        {
+            m_playerCoords.text = string.Format("Pos (x: {0:F2}, y: {1:F2}, z: {2:F2})",
                                             m_player.position.x,
                                             m_player.position.y,
                                             m_player.position.z);
-        m_cardinalPoints.text = "Dir: " + GetFacingDirection(m_targetToCardinalPoint).ToString();
-        m_playerRotation.text = string.Format("Rot: {0:F2}, y: {1:F2}, z: {2:F2})",
+            m_playerRotation.text = string.Format("Rot: {0:F2}, y: {1:F2}, z: {2:F2})",
                                             m_player.rotation.eulerAngles.x,
                                             m_player.rotation.eulerAngles.y,
                                             m_player.rotation.eulerAngles.z);
+        }
+        
+        if(m_targetToCardinalPoint != null)
+            m_cardinalPoints.text = "Dir: " + GetFacingDirection(m_targetToCardinalPoint).ToString();
+        
         m_timePlayed.text = string.Format("PlayTime: {0:00}:{1:00}:{2:00}",
                                         (int)Time.time / 3600, (int)Time.time % 3600 / 60, (int)Time.time % 60);
-
         m_currentZoneTxt.text = "Zone: " + GetCurrentZone();
+
+        if(GameManager.Instance != null)
+        {
+            var timeSpan = GameManager.Instance.GetCurrentInGameTime();
+            m_currentInGameTime.text = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+        }
     }
 
     public string GetCurrentZone()

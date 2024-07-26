@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class FirstPersonController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public CharacterController controller;
     public ItemOptionController optionController;
