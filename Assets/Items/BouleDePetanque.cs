@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class BouleDePetanque : ItemBase
 {
-    public GrabOptionBase h = new GrabOptionBase();
-    public HoldOptionBase hold = new HoldOptionBase();
-    public UseOptionBase use = new UseOptionBase();
-
     public override List<IOption> GetOptions()
     {
         return new List<IOption>

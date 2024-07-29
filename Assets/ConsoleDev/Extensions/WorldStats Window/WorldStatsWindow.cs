@@ -136,6 +136,7 @@ public class WorldStatsWindow : MonoBehaviour
             m_totalDays.text = "Current Day: " + newDay;
         };
         m_player = FindObjectOfType<PlayerController>().transform;
+        m_targetToCardinalPoint = m_player;
     }
 
     private void Start()

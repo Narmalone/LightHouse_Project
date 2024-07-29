@@ -5,6 +5,7 @@ using UnityEngine;
 public class ScenarioEvent : ScriptableObject
 {
     public string eventName;
+    public ScenarioCondition condition;
     public Action eventsAction;
 
     public void Play()
@@ -13,11 +14,11 @@ public class ScenarioEvent : ScriptableObject
     }
 }
 
-
+[Flags]
 public enum ScenarioCondition
 {
-    None,
     PlayerProximity,
     HighTide,
-    LowTide
+    LowTide,
+    Caca
 }
