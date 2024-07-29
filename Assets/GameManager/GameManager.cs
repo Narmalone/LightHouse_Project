@@ -12,6 +12,7 @@ public class GameManager : Singleton<GameManager>
 
     public static event Action OnDayCycleEnd;
     public static event Action<int> OnNightCycleEnd; //int = NewDayValue
+    public static event Action<int> OnWeekStart; //int = NewDayValue
 
     [SerializeField] private int currentDay = 0;
     public int CurrentDay => currentDay;

@@ -8,6 +8,8 @@ public class GameSettings : ScriptableObject
     public int TotalDays = 14;
     public TimeDatas DayCycleDuration = new TimeDatas() { Hour = 0, Minutes = 4.5f, Seconds = 0f };
     public TimeDatas NightCycleDuration = new TimeDatas() { Hour = 0, Minutes = 4.5f, Seconds = 0f };
+
+    [SerializeField] public ScenarioSettings scenarioSettings;
     
 }
 

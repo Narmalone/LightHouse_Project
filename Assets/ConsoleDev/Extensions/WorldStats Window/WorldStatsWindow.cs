@@ -191,7 +191,7 @@ public class WorldStatsWindow : MonoBehaviour
         if(GameManager.Instance != null)
         {
             var timeSpan = GameManager.Instance.GetCurrentInGameTime();
-            m_currentInGameTime.text = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+            m_currentInGameTime.text = "Time Until: {}" + string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
         }
     }
 
