@@ -1,13 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GeneratorController : MonoBehaviour
 {
-    [SerializeField] private ScenarioEvent m_generatorEvent;
+    [SerializeField] private ScenarioEvent m_shutdownEvent;
+
+    [Header("LIFE 3D BAR")]
     [SerializeField] private Transform m_targetLife;
+    private Vector3 startPosition;
+    private Vector3 endPosition; 
+    private Vector3 startScale; 
+    public float endScaleY = 0f;
+
+    [Header("GENERATOR")]
     [SerializeField] private float m_fuelValue = 100f;
+
+    [ConsoleVariable("Fuel")]
     public float FuelValue
     {
         get { return m_fuelValue; }
@@ -27,15 +35,29 @@ public class GeneratorController : MonoBehaviour
             }
         }
     }
-    [SerializeField] private float m_maxFuelValue = 100f;
-    [SerializeField, Range(0, 8)] private float m_speedDecreasePerSecond = 0.1f;
-    [SerializeField, Range(0, 10)] private float m_speedDecreaseMultiplier = 1f;
+    [SerializeField, ConsoleVariable("MaxFuel")] private float m_maxFuelValue = 100f;
+    [SerializeField, Range(0, 8), ConsoleVariable("GenSpeedSec")] private float m_speedDecreasePerSecond = 0.1f;
+    [SerializeField, Range(0, 10), ConsoleVariable("GenSpeedMul")] private float m_speedDecreaseMultiplier = 1f;
 
-    private bool m_updateFuel = false;
+    [SerializeField, ConsoleVariable("CanUpdateFuel")] private bool m_updateFuel = false;
 
     private void Awake()
     {
         m_fuelValue = m_maxFuelValue;
+        startPosition = m_targetLife.position;
+        startScale = m_targetLife.localScale;
+        endPosition = startPosition + (Vector3.down * 2);
+        m_shutdownEvent.eventAction += OnEventCalled;
+    }
+
+    private void OnDestroy()
+    {
+        m_shutdownEvent.eventAction -= OnEventCalled;
+    }
+
+    private void OnEventCalled()
+    {
+        //SetFuelValue(0f);
     }
 
     private void Update()
@@ -46,7 +68,9 @@ public class GeneratorController : MonoBehaviour
 
     private void OnFuelValueChange(float value)
     {
-        Debug.Log(value);
+        float t = 1 - (m_fuelValue / m_maxFuelValue);
+        m_targetLife.position = Vector3.Lerp(startPosition, endPosition, t);
+        m_targetLife.localScale = new Vector3(startScale.x, Mathf.Lerp(startScale.y, endScaleY, t), startScale.z);
     }
 
     private void OnGeneratorsFuelEmpty()

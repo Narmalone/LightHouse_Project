@@ -6,11 +6,11 @@ public class ScenarioEvent : ScriptableObject
 {
     public string eventName;
     public ScenarioCondition condition;
-    public Action eventsAction;
+    public Action eventAction;
 
     public void Play()
     {
-        eventsAction?.Invoke();
+        eventAction?.Invoke();
     }
 }
 

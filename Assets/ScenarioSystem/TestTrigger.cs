@@ -8,7 +8,7 @@ public class TestTrigger : MonoBehaviour
 
     private void Awake()
     {
-        evt.eventsAction += () =>
+        evt.eventAction += () =>
         {
             //Debug.Log("cc");
         };
