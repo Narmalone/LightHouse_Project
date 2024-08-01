@@ -1,10 +1,15 @@
-using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
-public class FirstPersonController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public CharacterController controller;
+    public ItemOptionController optionController;
+    public PlayerInventory playerInventory;
     public Camera playerCamera;
     public LayerMask itemMask;
     public float speed = 6.0f;
@@ -20,6 +25,10 @@ public class FirstPersonController : MonoBehaviour
     private float rotationX = 0;
 
     private PIA playerInputs;
+
+    public float raycastDistance = 3f;
+    private IItem currentHitItem;
+
     private void OnEnable()
     {
         playerInputs = new PIA();
@@ -55,17 +64,92 @@ public class FirstPersonController : MonoBehaviour
         HandleLook();
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, 3f, itemMask))
+        if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, itemMask))
         {
             Debug.DrawRay(playerCamera.transform.position, hit.point - playerCamera.transform.position);
-            /*hit.collider.gameObject.TryGetComponent(out IItem item);
-            if(item != null)
+            hit.collider.gameObject.TryGetComponent(out IItem item);
+            if (item != null)
             {
-                
-            }*/
-            //Debug.Log(item.ToString());
+                if (currentHitItem != item)
+                {
+                    currentHitItem = item;
+                    OnRaycastEnter(item);
+                }
+            }
+            else
+            {
+                if (currentHitItem != null)
+                {
+                    OnRaycastExit(currentHitItem);
+                    currentHitItem = null;
+                }
+            }
         }
+        else
+        {
+            if (currentHitItem != null)
+            {
+                OnRaycastExit(currentHitItem);
+                currentHitItem = null;
+            }
+        }
+
     }
+
+    void OnRaycastEnter(IItem item)
+    {
+        //Debug.Log("Raycast entered: " + item.Name);
+        ShowOptions(item);
+    }
+
+    void OnRaycastExit(IItem item)
+    {
+        //Debug.Log("Raycast exited: " + item.Name);
+        HideOptions();
+    }
+
+    void ShowOptions(IItem item)
+    {
+        optionController.Show();
+        optionController.ItemName.text = item.ItemDatas.itemName;
+        List<GameObject> temp = new List<GameObject>();
+        foreach (var option in item.GetOptions())
+        {
+            var buttonObject = optionController.AddButton();
+            buttonObject.GetComponentInChildren<TextMeshProUGUI>().text = option.Name;
+
+            // Add a listener to the button's click event
+            if(option is GrabOptionBase grabOption)
+            {
+
+            }
+            else if (option is HoldOptionBase holdOption)
+            {
+                buttonObject.onClick.AddListener(() =>
+                {
+                    playerInventory.AddItemToInventory(item.go, item.ItemDatas);
+                    item.go.SetActive(false);
+                    Debug.Log("additem");
+                });
+            }
+            else if (option is UseOptionBase useOption)
+            {
+                buttonObject.onClick.AddListener(() =>
+                {
+                    useOption.UseAction?.Invoke();
+                });
+            }
+            temp.Add(buttonObject.gameObject);
+        }
+        EventSystem.current.SetSelectedGameObject(temp[0]);
+    }
+
+    void HideOptions()
+    {
+        optionController.ClearButtons();
+        optionController.Hide();
+    }
+
 
     #region INPUTS DELEGATES
 

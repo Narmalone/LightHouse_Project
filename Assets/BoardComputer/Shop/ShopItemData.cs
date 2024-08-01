@@ -1,11 +1,11 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemOption
+[CreateAssetMenu(menuName = "ShopItem")]
+public class ShopItemData : ScriptableObject
 {
     public string Name;
     public string Description;
-    public Action Event;
+    public int Cost;
 }
