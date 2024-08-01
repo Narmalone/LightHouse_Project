@@ -11,12 +11,14 @@ public class PlayerController : MonoBehaviour
     public ItemOptionController optionController;
     public PlayerInventory playerInventory;
     public Camera playerCamera;
+    public LayerMask _layerWall;
     public LayerMask itemMask;
     public float speed = 6.0f;
     public float jumpHeight = 1.5f;
     public float gravity = -9.81f;
     public float lookSpeed = 2.0f;
     public float lookXLimit = 45.0f;
+    public float _heightCheckWallAbove = 1f;
 
     private Vector3 velocity;
     private bool isGrounded;
@@ -29,7 +31,7 @@ public class PlayerController : MonoBehaviour
     public float raycastDistance = 3f;
     private IItem currentHitItem;
 
-    private void OnEnable()
+    private void Awake()
     {
         playerInputs = new PIA();
         playerInputs.Enable();
@@ -40,7 +42,7 @@ public class PlayerController : MonoBehaviour
         playerInputs.Game.Look.canceled += OnLook;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         playerInputs.Disable();
         playerInputs.Game.Move.performed -= OnMove;
@@ -52,12 +54,6 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        isGrounded = controller.isGrounded;
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
-
         HandleMove();
         controller.Move(velocity * Time.deltaTime);
         HandleGravity();
@@ -96,19 +92,19 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    void OnRaycastEnter(IItem item)
+    private void OnRaycastEnter(IItem item)
     {
         //Debug.Log("Raycast entered: " + item.Name);
         ShowOptions(item);
     }
 
-    void OnRaycastExit(IItem item)
+    private void OnRaycastExit(IItem item)
     {
         //Debug.Log("Raycast exited: " + item.Name);
         HideOptions();
     }
 
-    void ShowOptions(IItem item)
+    private void ShowOptions(IItem item)
     {
         optionController.Show();
         optionController.ItemName.text = item.ItemDatas.itemName;
@@ -144,12 +140,18 @@ public class PlayerController : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(temp[0]);
     }
 
-    void HideOptions()
+    private void HideOptions()
     {
         optionController.ClearButtons();
         optionController.Hide();
     }
 
+    private bool CheckWallAbove()
+    {
+        //Debug.DrawRay(transform.position + controller.height / 2 * Vector3.up, Vector3.up * _heightCheckWallAbove, Color.red);
+        var startPoint = transform.position + controller.height / 2 * Vector3.up;
+        return Physics.CheckCapsule(startPoint, startPoint + Vector3.up * _heightCheckWallAbove, controller.radius, _layerWall);
+    }
 
     #region INPUTS DELEGATES
 
@@ -177,6 +179,17 @@ public class PlayerController : MonoBehaviour
 
     private void HandleGravity()
     {
+        isGrounded = controller.isGrounded;
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
+        if (CheckWallAbove())
+        {
+            velocity.y = -1;
+        }
+
         velocity.y += gravity * Time.deltaTime;
     }
 
