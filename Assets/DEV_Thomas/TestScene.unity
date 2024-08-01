@@ -394,9 +394,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 142744538}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &142744541
 MonoBehaviour:
@@ -1377,7 +1377,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 16.2198, y: 0.000105063096}
+  m_AnchoredPosition: {x: 16.2198, y: 0.00040025057}
   m_SizeDelta: {x: -46.9199, y: 734.2549}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &760448076
@@ -2372,6 +2372,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1588270420}
   - component: {fileID: 1588270421}
+  - component: {fileID: 1588270422}
   m_Layer: 5
   m_Name: RadarContent
   m_TagString: Untagged
@@ -2406,10 +2407,23 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1588270419}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &1588270422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1588270419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f7d3a1ea95a5e54790dac9ae7d1f4a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _canvasGroup: {fileID: 1588270421}
 --- !u!1 &1603531682
 GameObject:
   m_ObjectHideFlags: 0
@@ -3193,7 +3207,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2084028251}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99998546
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3302,6 +3316,9 @@ MonoBehaviour:
   _allWindows:
   - {fileID: 142744541}
   - {fileID: 126339629}
+  - {fileID: 1918367075}
+  - {fileID: 1588270422}
+  - {fileID: 1939296607}
   mainOnglets:
   - {fileID: 1199510986}
   - {fileID: 460473590}
@@ -3310,6 +3327,9 @@ MonoBehaviour:
   - {fileID: 1562238260}
   shopWindow: {fileID: 142744541}
   meteoWindow: {fileID: 126339629}
+  questWindow: {fileID: 1918367075}
+  islandWindow: {fileID: 1939296607}
+  radarWindow: {fileID: 1588270422}
 --- !u!1 &1754763423
 GameObject:
   m_ObjectHideFlags: 0
@@ -3545,6 +3565,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1918367073}
   - component: {fileID: 1918367074}
+  - component: {fileID: 1918367075}
   m_Layer: 5
   m_Name: QuestContent
   m_TagString: Untagged
@@ -3579,10 +3600,23 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1918367072}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &1918367075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918367072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46948f8831d8e494d9ca0a3d8633a239, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _canvasGroup: {fileID: 1918367074}
 --- !u!1 &1939296604
 GameObject:
   m_ObjectHideFlags: 0
@@ -3593,6 +3627,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1939296605}
   - component: {fileID: 1939296606}
+  - component: {fileID: 1939296607}
   m_Layer: 5
   m_Name: IslandInfosContent
   m_TagString: Untagged
@@ -3627,10 +3662,23 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1939296604}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &1939296607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939296604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32f38b4f82afc24e9953e38c7348de4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _canvasGroup: {fileID: 1939296606}
 --- !u!1001 &1950296211
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -10,11 +10,15 @@ public class ComputerController : MonoBehaviour
 
     [SerializeField] private ShopContent shopWindow;
     [SerializeField] private MeteoContent meteoWindow;
+    [SerializeField] private QuestContent questWindow;
+    [SerializeField] private IslandContent islandWindow;
+    [SerializeField] private RadarContent radarWindow;
 
     private ContentWindow currentWindow = null;
     private void Awake()
     {
         InitTabBtns();
+        InitComputer();
     }
 
 
@@ -29,12 +33,21 @@ public class ComputerController : MonoBehaviour
         }
     }
 
+    private void InitComputer()
+    {
+        SwitchTab(ComputerTabs.Meteo);
+    }
+
+    public void OpenComputer()
+    {
+
+    }
+
     public void SwitchTab(ComputerTabs nextTab)
     {
         if(currentWindow != null)
         {
             currentWindow.Hide();
-            Debug.Log(currentWindow);
         }
         switch(nextTab)
         {
@@ -45,13 +58,16 @@ public class ComputerController : MonoBehaviour
                 currentWindow = shopWindow;
                 break;
             case ComputerTabs.Quest:
+                currentWindow = questWindow;
                 break;
             case ComputerTabs.IslandInfos:
+                currentWindow = islandWindow;
                 break;
             case ComputerTabs.Radar:
+                currentWindow = radarWindow;
                 break;
         }
-        currentWindow.Show();
+        currentWindow?.Show();
     }
 }
 
