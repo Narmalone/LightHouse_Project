@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using System;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,6 +17,10 @@ public class PlayerController : MonoBehaviour
     public LayerMask itemMask;
     public float speed = 6.0f;
     public float _sprintSpeed = 6.0f;
+    public float _crouchspeed = 3f;
+    public float _crouchHeight = 1.25f;
+    public float _crouchCameraHeight = 0;
+    public float _crouchCenter = .39f;
     public float jumpHeight = 1.5f;
     public float gravity = -9.81f;
     public float lookSpeed = 2.0f;
@@ -22,11 +28,14 @@ public class PlayerController : MonoBehaviour
     public float _heightCheckWallAbove = 1f;
 
     private Vector3 velocity;
+    private Vector3 _initialCameraPosition;
     private Vector2 moveInput;
     private Vector2 lookInput;
     private bool isGrounded;
     private bool _isSprinting;
     private bool _isCrouching;
+    private float _initialHeight;
+    private float _initialCenter;
     private float rotationX = 0;
     private float _initialSpeed = 0;
 
@@ -35,9 +44,14 @@ public class PlayerController : MonoBehaviour
     public float raycastDistance = 3f;
     private IItem currentHitItem;
 
+    private Coroutine _coroutineUncrouch;
+
     private void Awake()
     {
         _initialSpeed = speed;
+        _initialCameraPosition = playerCamera.transform.localPosition;
+        _initialHeight = controller.height;
+        _initialCenter = controller.center.y;
 
         playerInputs = new PIA();
         playerInputs.Enable();
@@ -167,22 +181,35 @@ public class PlayerController : MonoBehaviour
         return Physics.CheckCapsule(startPoint, startPoint + Vector3.up * _heightCheckWallAbove, controller.radius, _layerWall);
     }
 
+
     #region INPUTS DELEGATES
 
     private void OnSprint(InputAction.CallbackContext context)
     {
-        _isSprinting = context.performed;
+        if (_isCrouching)
+        {
+            _isSprinting = false;
+            return;
+        }
 
-        speed = _isSprinting ? _sprintSpeed: _initialSpeed;
+        _isSprinting = context.performed;
+        HandleSprintSpeed();
     }
 
     private void OnCrouch(InputAction.CallbackContext context)
     {
+        if(context.performed == false)
+        {
+            if (HandleUncrounch() == false)
+            {
+                HandleAutomaticUncrouch();
+                return;
+            }
+        }
+
         _isCrouching = context.performed;
 
-        // down the collider of the player
-        // down the camera of the player
-        // Slow the speed
+        HandleCrouching();
     }
 
     private void OnMove(InputAction.CallbackContext context)
@@ -206,6 +233,39 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region HANDLING FUNCTIONS
+
+    private void HandleSprintSpeed()
+    {
+        speed = _isSprinting ? _sprintSpeed : _initialSpeed;
+    }
+    private void HandleCrouching()
+    {
+        if (_isCrouching)
+        {
+            controller.height = _crouchHeight;
+            controller.center = _crouchCenter * Vector3.up;
+            playerCamera.transform.localPosition = _crouchCameraHeight * Vector3.up;
+            speed = _crouchspeed;
+            return;
+        }
+        controller.height = _initialHeight;
+        controller.center = _initialCenter * Vector3.up;
+        playerCamera.transform.localPosition = _initialCameraPosition;
+        speed = _initialSpeed;
+    }
+
+    private bool HandleUncrounch()
+    {
+        //Debug.DrawLine(transform.position + _initialHeight / 2 * Vector3.up, transform.position + _initialHeight / 2 * Vector3.up + _initialHeight / 2 * Vector3.up * _heightCheckWallAbove, Color.red, 10);
+        var startPoint = transform.position + _initialHeight / 2 * Vector3.up;
+        return !Physics.CheckCapsule(startPoint, startPoint + _initialHeight / 2 * Vector3.up * _heightCheckWallAbove, controller.radius, _layerWall);
+    }
+
+    private void HandleAutomaticUncrouch()
+    {
+        if (_coroutineUncrouch != null) StopCoroutine(_coroutineUncrouch);
+        _coroutineUncrouch = StartCoroutine(Uncrouch_Coroutine());
+    }
 
     private void HandleGravity()
     {
@@ -237,5 +297,22 @@ public class PlayerController : MonoBehaviour
         transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
     }
 
+    #endregion
+
+    #region Coroutine
+
+    IEnumerator Uncrouch_Coroutine()
+    {
+        bool canUncrouch = false;
+        while (canUncrouch == false)
+        {
+            var startPoint = transform.position + _initialHeight / 2 * Vector3.up;
+            canUncrouch = !Physics.CheckCapsule(startPoint, startPoint + _initialHeight / 2 * Vector3.up * _heightCheckWallAbove, controller.radius, _layerWall);
+            yield return null;
+        }
+
+        _isCrouching = false;
+        HandleCrouching();
+    }
     #endregion
 }

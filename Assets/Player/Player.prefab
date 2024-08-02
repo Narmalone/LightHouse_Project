@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1807451292868934677}
   - component: {fileID: 8475731392096191834}
   - component: {fileID: 5114161827526725256}
-  - component: {fileID: 451792015860251766}
   - component: {fileID: 6231699584837158408}
   - component: {fileID: 1717560041946660174}
   - component: {fileID: 5932778006218872572}
@@ -91,29 +90,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &451792015860251766
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 257368346383077803}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!143 &6231699584837158408
 CharacterController:
   m_ObjectHideFlags: 0
@@ -191,6 +167,10 @@ MonoBehaviour:
     m_Bits: 64
   speed: 6
   _sprintSpeed: 12
+  _crouchspeed: 3
+  _crouchHeight: 1.25
+  _crouchCameraHeight: 0
+  _crouchCenter: -0.39
   jumpHeight: 2.5
   gravity: -40
   lookSpeed: 0.5
