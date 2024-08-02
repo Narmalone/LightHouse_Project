@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask _layerWall;
     public LayerMask itemMask;
     public float speed = 6.0f;
+    public float _sprintSpeed = 6.0f;
     public float jumpHeight = 1.5f;
     public float gravity = -9.81f;
     public float lookSpeed = 2.0f;
@@ -21,10 +22,13 @@ public class PlayerController : MonoBehaviour
     public float _heightCheckWallAbove = 1f;
 
     private Vector3 velocity;
-    private bool isGrounded;
     private Vector2 moveInput;
     private Vector2 lookInput;
+    private bool isGrounded;
+    private bool _isSprinting;
+    private bool _isCrouching;
     private float rotationX = 0;
+    private float _initialSpeed = 0;
 
     private PIA playerInputs;
 
@@ -33,10 +37,16 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        _initialSpeed = speed;
+
         playerInputs = new PIA();
         playerInputs.Enable();
         playerInputs.Game.Move.performed += OnMove;
         playerInputs.Game.Move.canceled += OnMove;
+        playerInputs.Game.Crouch.performed += OnCrouch;
+        playerInputs.Game.Crouch.canceled += OnCrouch;
+        playerInputs.Game.Sprint.performed += OnSprint;
+        playerInputs.Game.Sprint.canceled += OnSprint;
         playerInputs.Game.Jump.performed += OnJump;
         playerInputs.Game.Look.performed += OnLook;
         playerInputs.Game.Look.canceled += OnLook;
@@ -47,6 +57,10 @@ public class PlayerController : MonoBehaviour
         playerInputs.Disable();
         playerInputs.Game.Move.performed -= OnMove;
         playerInputs.Game.Move.canceled -= OnMove;
+        playerInputs.Game.Crouch.performed -= OnCrouch;
+        playerInputs.Game.Crouch.canceled -= OnCrouch;
+        playerInputs.Game.Sprint.performed -= OnSprint;
+        playerInputs.Game.Sprint.canceled -= OnSprint;
         playerInputs.Game.Jump.performed -= OnJump;
         playerInputs.Game.Look.performed -= OnLook;
         playerInputs.Game.Look.canceled -= OnLook;
@@ -154,6 +168,22 @@ public class PlayerController : MonoBehaviour
     }
 
     #region INPUTS DELEGATES
+
+    private void OnSprint(InputAction.CallbackContext context)
+    {
+        _isSprinting = context.performed;
+
+        speed = _isSprinting ? _sprintSpeed: _initialSpeed;
+    }
+
+    private void OnCrouch(InputAction.CallbackContext context)
+    {
+        _isCrouching = context.performed;
+
+        // down the collider of the player
+        // down the camera of the player
+        // Slow the speed
+    }
 
     private void OnMove(InputAction.CallbackContext context)
     {

@@ -62,6 +62,15 @@ public partial class @PIA: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Sprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""41a80f8b-6947-47b5-88be-59e06d120f01"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -161,6 +170,17 @@ public partial class @PIA: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eb4f45e8-133d-429e-8544-18ae649bc104"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -691,6 +711,7 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         m_Game_Jump = m_Game.FindAction("Jump", throwIfNotFound: true);
         m_Game_Crouch = m_Game.FindAction("Crouch", throwIfNotFound: true);
         m_Game_Look = m_Game.FindAction("Look", throwIfNotFound: true);
+        m_Game_Sprint = m_Game.FindAction("Sprint", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -768,6 +789,7 @@ public partial class @PIA: IInputActionCollection2, IDisposable
     private readonly InputAction m_Game_Jump;
     private readonly InputAction m_Game_Crouch;
     private readonly InputAction m_Game_Look;
+    private readonly InputAction m_Game_Sprint;
     public struct GameActions
     {
         private @PIA m_Wrapper;
@@ -776,6 +798,7 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Game_Jump;
         public InputAction @Crouch => m_Wrapper.m_Game_Crouch;
         public InputAction @Look => m_Wrapper.m_Game_Look;
+        public InputAction @Sprint => m_Wrapper.m_Game_Sprint;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -797,6 +820,9 @@ public partial class @PIA: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @Sprint.started += instance.OnSprint;
+            @Sprint.performed += instance.OnSprint;
+            @Sprint.canceled += instance.OnSprint;
         }
 
         private void UnregisterCallbacks(IGameActions instance)
@@ -813,6 +839,9 @@ public partial class @PIA: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @Sprint.started -= instance.OnSprint;
+            @Sprint.performed -= instance.OnSprint;
+            @Sprint.canceled -= instance.OnSprint;
         }
 
         public void RemoveCallbacks(IGameActions instance)
@@ -954,6 +983,7 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnSprint(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
