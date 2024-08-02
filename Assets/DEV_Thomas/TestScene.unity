@@ -329,10 +329,10 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 126339626}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!114 &126339629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1377,7 +1377,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 16.2198, y: 0.00040025057}
+  m_AnchoredPosition: {x: 16.2198, y: 0.000943165}
   m_SizeDelta: {x: -46.9199, y: 734.2549}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &760448076
@@ -3320,11 +3320,11 @@ MonoBehaviour:
   - {fileID: 1588270422}
   - {fileID: 1939296607}
   mainOnglets:
-  - {fileID: 1199510986}
   - {fileID: 460473590}
-  - {fileID: 1172439859}
-  - {fileID: 1950296216}
   - {fileID: 1562238260}
+  - {fileID: 1172439859}
+  - {fileID: 1199510986}
+  - {fileID: 1950296216}
   shopWindow: {fileID: 142744541}
   meteoWindow: {fileID: 126339629}
   questWindow: {fileID: 1918367075}
@@ -3840,6 +3840,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb2a74be7756d4d4a872a7f369e0a317, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1974092315
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1974092316}
+  - component: {fileID: 1974092317}
+  m_Layer: 0
+  m_Name: TreasureController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1974092316
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974092315}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1974092317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974092315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 929ed66f36d0a2b42959e2396362b9d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _treasureEvent: {fileID: 11400000, guid: 5b8288e5f3cf8c4448c6c1903dc7526a, type: 2}
 --- !u!1 &2034752316
 GameObject:
   m_ObjectHideFlags: 0
@@ -5177,3 +5222,4 @@ SceneRoots:
   - {fileID: 5764148178933957471}
   - {fileID: 1374150329}
   - {fileID: 691266980}
+  - {fileID: 1974092316}

@@ -11,13 +11,26 @@ public class TabBtnDisplay : MonoBehaviour
 
     public ComputerTabs TabToDisplay;
 
-    public event Action<ComputerTabs> OnTabClicked;
+    public event Action<TabBtnDisplay> OnTabClicked;
+
+    public Color SelectedColor;
+    public Color UnSelectedColor;
 
     private void Awake()
     {
         btn.onClick.AddListener(() =>
         {
-            OnTabClicked?.Invoke(this.TabToDisplay);
+            OnTabClicked?.Invoke(this);
         });
+    }
+
+    public void Unselect()
+    {
+        btn.targetGraphic.color = UnSelectedColor;
+    }
+
+    public void Select()
+    {
+        btn.targetGraphic.color = SelectedColor;
     }
 }

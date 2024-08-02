@@ -15,6 +15,9 @@ public class ComputerController : MonoBehaviour
     [SerializeField] private RadarContent radarWindow;
 
     private ContentWindow currentWindow = null;
+
+    private TabBtnDisplay lastCliqued;
+
     private void Awake()
     {
         InitTabBtns();
@@ -28,7 +31,8 @@ public class ComputerController : MonoBehaviour
         {
             mainOnglets[i].OnTabClicked += (nexTab) =>
             {
-                SwitchTab(nexTab);
+                SwitchButtonTab(nexTab);
+                SwitchTab(nexTab.TabToDisplay);
             };
         }
     }
@@ -36,11 +40,22 @@ public class ComputerController : MonoBehaviour
     private void InitComputer()
     {
         SwitchTab(ComputerTabs.Meteo);
+        SwitchButtonTab(mainOnglets[0]);
     }
 
     public void OpenComputer()
     {
 
+    }
+
+    private void SwitchButtonTab(TabBtnDisplay nextTab)
+    {
+        if (lastCliqued != null)
+        {
+            lastCliqued.Unselect();
+        }
+        lastCliqued = nextTab;
+        lastCliqued.Select();
     }
 
     public void SwitchTab(ComputerTabs nextTab)
