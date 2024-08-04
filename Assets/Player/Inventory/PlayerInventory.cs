@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class PlayerInventory : MonoBehaviour
 {
+    private PlayerManager _manager;
     public ItemOptionController controller;
     [SerializeField] private byte slots = 4;
     [SerializeField] private byte currentUsedSlots = 0;
@@ -44,6 +45,11 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public void Initialize(PlayerManager manager)
+    {
+        _manager = manager;
+    }
+
     void SelectSlot(int slotIndex)
     {
         slotIndex = Mathf.Clamp(slotIndex, 0, slots - 1);
@@ -53,7 +59,7 @@ public class PlayerInventory : MonoBehaviour
         buttonsInInventory[selectedSlot].iconImage.color = Color.green;
     }
 
-    public void AddItemToInventory(GameObject obj, InventoryItem item)
+    public void AddItemToInventory(GameObject obj, InventoryItemData item)
     {
         if(currentUsedSlots >= slots)
         {

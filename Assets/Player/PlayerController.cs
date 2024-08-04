@@ -6,15 +6,16 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerController : MonoBehaviour
 {
-    public CharacterController controller;
-    public ItemOptionController optionController;
-    public PlayerInventory playerInventory;
-    public Camera playerCamera;
+
+    [Header("Layer")]
     public LayerMask _layerWall;
     public LayerMask itemMask;
+
+    [Header("Movements")]
     public float speed = 6.0f;
     public float _sprintSpeed = 6.0f;
     public float _crouchspeed = 3f;
@@ -27,6 +28,14 @@ public class PlayerController : MonoBehaviour
     public float lookXLimit = 45.0f;
     public float _heightCheckWallAbove = 1f;
 
+    [Header("Other")]
+    public float raycastDistance = 3f;
+
+    public PlayerManager _manager;
+    private CharacterController controller;
+    private ItemOptionController optionController;
+    private PlayerInventory playerInventory;
+    private Camera playerCamera;
     private Vector3 velocity;
     private Vector3 _initialCameraPosition;
     private Vector2 moveInput;
@@ -41,18 +50,12 @@ public class PlayerController : MonoBehaviour
 
     private PIA playerInputs;
 
-    public float raycastDistance = 3f;
     private IItem currentHitItem;
 
     private Coroutine _coroutineUncrouch;
 
     private void Awake()
     {
-        _initialSpeed = speed;
-        _initialCameraPosition = playerCamera.transform.localPosition;
-        _initialHeight = controller.height;
-        _initialCenter = controller.center.y;
-
         playerInputs = new PIA();
         playerInputs.Enable();
         playerInputs.Game.Move.performed += OnMove;
@@ -86,40 +89,25 @@ public class PlayerController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
         HandleGravity();
         HandleLook();
-
-        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, itemMask))
-        {
-            Debug.DrawRay(playerCamera.transform.position, hit.point - playerCamera.transform.position);
-            hit.collider.gameObject.TryGetComponent(out IItem item);
-            if (item != null)
-            {
-                if (currentHitItem != item)
-                {
-                    currentHitItem = item;
-                    OnRaycastEnter(item);
-                }
-            }
-            else
-            {
-                if (currentHitItem != null)
-                {
-                    OnRaycastExit(currentHitItem);
-                    currentHitItem = null;
-                }
-            }
-        }
-        else
-        {
-            if (currentHitItem != null)
-            {
-                OnRaycastExit(currentHitItem);
-                currentHitItem = null;
-            }
-        }
-
     }
 
+
+    public void Initialize(PlayerManager manager)
+    {
+        _manager = manager;
+
+        controller = manager._data.controller;
+        optionController = manager._data.optionController;
+        playerInventory = manager._data.playerInventory;
+        playerCamera = manager._data.playerCamera;
+
+        _initialSpeed = speed;
+        _initialCameraPosition = playerCamera.transform.localPosition;
+        _initialHeight = controller.height;
+        _initialCenter = controller.center.y;
+
+    }
+/*
     private void OnRaycastEnter(IItem item)
     {
         //Debug.Log("Raycast entered: " + item.Name);
@@ -131,48 +119,48 @@ public class PlayerController : MonoBehaviour
         //Debug.Log("Raycast exited: " + item.Name);
         HideOptions();
     }
+*/
+    /* private void ShowOptions(IItem item)
+     {
+         optionController.Show();
+         optionController.ItemName.text = item.ItemDatas.itemName;
+         List<GameObject> temp = new List<GameObject>();
+         foreach (var option in item.GetOptions())
+         {
+             var buttonObject = optionController.AddButton();
+             buttonObject.GetComponentInChildren<TextMeshProUGUI>().text = option.Name;
 
-    private void ShowOptions(IItem item)
-    {
-        optionController.Show();
-        optionController.ItemName.text = item.ItemDatas.itemName;
-        List<GameObject> temp = new List<GameObject>();
-        foreach (var option in item.GetOptions())
-        {
-            var buttonObject = optionController.AddButton();
-            buttonObject.GetComponentInChildren<TextMeshProUGUI>().text = option.Name;
+             // Add a listener to the button's click event
+             if(option is GrabOptionBase grabOption)
+             {
 
-            // Add a listener to the button's click event
-            if(option is GrabOptionBase grabOption)
-            {
-
-            }
-            else if (option is HoldOptionBase holdOption)
-            {
-                buttonObject.onClick.AddListener(() =>
-                {
-                    playerInventory.AddItemToInventory(item.go, item.ItemDatas);
-                    item.go.SetActive(false);
-                    Debug.Log("additem");
-                });
-            }
-            else if (option is UseOptionBase useOption)
-            {
-                buttonObject.onClick.AddListener(() =>
-                {
-                    useOption.UseAction?.Invoke();
-                });
-            }
-            temp.Add(buttonObject.gameObject);
-        }
-        EventSystem.current.SetSelectedGameObject(temp[0]);
-    }
+             }
+             else if (option is HoldOptionBase holdOption)
+             {
+                 buttonObject.onClick.AddListener(() =>
+                 {
+                     playerInventory.AddItemToInventory(item.go, item.ItemDatas);
+                     item.go.SetActive(false);
+                     Debug.Log("additem");
+                 });
+             }
+             else if (option is UseOptionBase useOption)
+             {
+                 buttonObject.onClick.AddListener(() =>
+                 {
+                     useOption.UseAction?.Invoke();
+                 });
+             }
+             temp.Add(buttonObject.gameObject);
+         }
+         EventSystem.current.SetSelectedGameObject(temp[0]);
+     }
 
     private void HideOptions()
     {
         optionController.ClearButtons();
         optionController.Hide();
-    }
+    }*/
 
     private bool CheckWallAbove()
     {

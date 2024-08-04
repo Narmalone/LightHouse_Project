@@ -4,11 +4,11 @@ using UnityEngine.UI;
 public class InventorySlot : MonoBehaviour
 {
     public Image iconImage; // Reference to the icon image component
-    private InventoryItem item; // The item currently in this slot
+    private InventoryItemData item; // The item currently in this slot
     public GameObject previewObject; // Reference to the 3D preview object
     public bool isSelected = false; // Is this slot currently selected?
 
-    public void SetItem(InventoryItem newItem)
+    public void SetItem(InventoryItemData newItem)
     {
         item = newItem;
         UpdateDisplay();

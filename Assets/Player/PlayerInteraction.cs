@@ -1,0 +1,76 @@
+using UnityEngine;
+
+public class PlayerInteraction : MonoBehaviour
+{
+    [SerializeField] private LayerMask _itemMask;
+    [SerializeField] private float _raycastDistance;
+    [SerializeField] private CustomEvent_IItem _DisplaySelection;
+    [SerializeField] private CustomEvent _HideSelection;
+
+    private PlayerManager _manager;
+    private Camera playerCamera;
+    private Transform playerCameraTransform;
+
+    private IItem currentHitItem;
+    void Update()
+    {
+        HandleInteraction();
+    }
+
+    public void Initialize(PlayerManager manager)
+    {
+        _manager = manager;
+        playerCamera = manager._data.playerCamera;
+        playerCameraTransform = playerCamera.transform;
+    }
+
+
+    #region HANDLES
+
+    private void HandleInteraction()
+    {
+        if (playerCameraTransform == null) return;
+
+        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * _raycastDistance, Color.red);
+        if (Physics.Raycast(ray, out RaycastHit hit, _raycastDistance, _itemMask))
+        {
+            Debug.DrawRay(playerCamera.transform.position, hit.point - playerCamera.transform.position);
+            hit.collider.gameObject.TryGetComponent(out IItem item);
+            if (item != null)
+            {
+                Select(item);
+            }
+            else
+            {
+                UnSelect();
+            }
+        }
+        else
+        {
+            UnSelect();
+        }
+    }
+
+    private void Select(IItem item)
+    {
+        if (currentHitItem != item)
+        {
+            currentHitItem = item;
+
+            _DisplaySelection.Raise(currentHitItem);
+        }
+    }
+
+    private void UnSelect()
+    {
+        if (currentHitItem != null)
+        {
+            currentHitItem = null;
+        }
+
+        _HideSelection.Raise();
+    }
+
+    #endregion
+}

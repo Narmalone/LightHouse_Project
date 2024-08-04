@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "", menuName = "InventoryItem/NewItemData")]
-public class InventoryItem : ScriptableObject
+[CreateAssetMenu(fileName = "", menuName = "InventoryItemData/NewItemData")]
+public class InventoryItemData : ScriptableObject
 {
     public Mesh mesh; // The 3D mesh of the item
     public Material material; // The material of the item

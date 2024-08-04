@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerData : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [HideInInspector] public PlayerManager _manager;
 
-    // Update is called once per frame
-    void Update()
+    public CharacterController controller;
+    public ItemOptionController optionController;
+    public PlayerInventory playerInventory;
+    public Camera playerCamera;
+
+
+    public void Initialize(PlayerManager manager)
     {
-        
+        _manager = manager;
     }
 }
