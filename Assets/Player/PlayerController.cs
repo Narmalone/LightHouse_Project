@@ -58,7 +58,6 @@ public class PlayerController : MonoBehaviour
     {
         playerInputs = new PIA();
         playerInputs.Enable();
-        playerInputs.Game.Use.performed += OnInventoryGrab;
         playerInputs.Game.Move.performed += OnMove;
         playerInputs.Game.Move.canceled += OnMove;
         playerInputs.Game.Crouch.performed += OnCrouch;
@@ -73,7 +72,6 @@ public class PlayerController : MonoBehaviour
     private void OnDestroy()
     {
         playerInputs.Disable();
-        playerInputs.Game.Use.performed -= OnInventoryGrab;
         playerInputs.Game.Move.performed -= OnMove;
         playerInputs.Game.Move.canceled -= OnMove;
         playerInputs.Game.Crouch.performed -= OnCrouch;
@@ -218,11 +216,6 @@ public class PlayerController : MonoBehaviour
     private void OnLook(InputAction.CallbackContext context)
     {
         lookInput = context.ReadValue<Vector2>();
-    }
-
-    private void OnInventoryGrab(InputAction.CallbackContext context)
-    {
-        PlayerInteraction.PutInInventory.Invoke();
     }
 
     #endregion

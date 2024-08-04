@@ -8,4 +8,6 @@ public class ItemDatas : ScriptableObject
     public Sprite icon; // The icon of the item
     public string itemName; // The name of the item
     public string itemDescription; // The description of the item
+    public bool IsInventoryItem = false;
+    public bool IsUsable = true;
 }

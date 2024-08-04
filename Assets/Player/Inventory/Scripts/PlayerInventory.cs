@@ -17,7 +17,7 @@ public class PlayerInventory : MonoBehaviour
     private int selectedSlot;
 
     public static bool IsInventoryFull = false;
-    public static Action<ItemBaseInventory> TakeItemAction;
+    public static Action<ItemBase> TakeItemAction;
     
     private GameObject previewObject;
 
@@ -80,7 +80,7 @@ public class PlayerInventory : MonoBehaviour
         _manager = manager;
     }
 
-    private void TakeItem(ItemBaseInventory item)
+    private void TakeItem(ItemBase item)
     {
         // Ajouter dans le slot (Choix slot, Nom, Icon)
         var slotIndex = GetEmptySlot();
@@ -117,6 +117,8 @@ public class PlayerInventory : MonoBehaviour
     {
         if (currentUsedSlots >= slots) return -1;
 
+        if (listInventorySlots[selectedSlot].isEmpty) return selectedSlot;
+
         for (int i = 0; i < listInventorySlots.Count; i++)
         {
             if (listInventorySlots[i].isEmpty == false) continue;
@@ -144,17 +146,10 @@ public class PlayerInventory : MonoBehaviour
 
     private void UpdatePreviewObject(int nextIndex)
     {
-        listPreviewObject[selectedSlot]?.SetActive(false);
-        listPreviewObject[nextIndex]?.SetActive(true);
+        if(listPreviewObject[selectedSlot] != null)
+            listPreviewObject[selectedSlot].SetActive(false);
+
+        if (listPreviewObject[nextIndex] != null)
+            listPreviewObject[nextIndex].SetActive(true);
     }
-    /*
-   public void RemoveItemFromInventory(GameObject obj)
-   {
-       if(objectsInInventory.Contains(obj))
-       {
-           listInventorySlots[currentUsedSlots].iconImage.color = Color.white;
-           currentUsedSlots--;
-           objectsInInventory.Remove(obj);
-       }
-   }*/
 }

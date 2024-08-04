@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -15,15 +16,21 @@ public class PlayerInteraction : MonoBehaviour
     private IItem currentHitItem;
 
     public static Action PutInInventory;
+    private PIA playerInputs;
 
     private void Awake()
     {
-        PutInInventory += HandlePutInInventory;
+        playerInputs = new PIA();
+        playerInputs.Enable();
+
+        playerInputs.Game.Pickup.performed += OnInventoryGrab;
+        playerInputs.Game.Interact.performed += OnInteract;
     }
     
     private void OnDestroy()
     {
-        PutInInventory -= HandlePutInInventory;
+        playerInputs.Game.Pickup.performed -= OnInventoryGrab;
+        playerInputs.Game.Interact.performed -= OnInteract;
     }
 
     void Update()
@@ -46,7 +53,7 @@ public class PlayerInteraction : MonoBehaviour
         if (playerCameraTransform == null) return;
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * _raycastDistance, Color.red);
+        // Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * _raycastDistance, Color.red);
         if (Physics.Raycast(ray, out RaycastHit hit, _raycastDistance, _itemMask))
         {
             Debug.DrawRay(playerCamera.transform.position, hit.point - playerCamera.transform.position);
@@ -66,15 +73,25 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    private void HandlePutInInventory()
+    private void OnInventoryGrab(InputAction.CallbackContext context)
     {
-        if (currentHitItem == null || currentHitItem.IsInventoryItem == false) return;
+        if (currentHitItem == null || currentHitItem.ItemDatas.IsInventoryItem == false) return;
 
-        currentHitItem.go.TryGetComponent(out ItemBaseInventory item);
+        currentHitItem.go.TryGetComponent(out ItemBase item);
 
         if (item == null) return;
 
         item.TakeObject();
+    }
+
+    private void OnInteract(InputAction.CallbackContext context)
+    {
+        if (currentHitItem == null || currentHitItem.ItemDatas.IsUsable == false) return;
+        currentHitItem.go.TryGetComponent(out ItemBase item);
+
+        if (item == null) return;
+
+        item.Use();
     }
 
     private void Select(IItem item)

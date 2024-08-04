@@ -73,9 +73,18 @@ public partial class @PIA: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Use"",
+                    ""name"": ""Interact"",
                     ""type"": ""Button"",
                     ""id"": ""3da6b5b3-4433-4210-a19b-2cee9fd7a0ca"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""eeb6496f-0c27-46ad-9077-8e0732196a62"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -200,7 +209,18 @@ public partial class @PIA: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Use"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2319997a-2319-4332-b2ec-05d2dffbf931"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -732,7 +752,8 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         m_Game_Crouch = m_Game.FindAction("Crouch", throwIfNotFound: true);
         m_Game_Look = m_Game.FindAction("Look", throwIfNotFound: true);
         m_Game_Sprint = m_Game.FindAction("Sprint", throwIfNotFound: true);
-        m_Game_Use = m_Game.FindAction("Use", throwIfNotFound: true);
+        m_Game_Interact = m_Game.FindAction("Interact", throwIfNotFound: true);
+        m_Game_Pickup = m_Game.FindAction("Pickup", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -811,7 +832,8 @@ public partial class @PIA: IInputActionCollection2, IDisposable
     private readonly InputAction m_Game_Crouch;
     private readonly InputAction m_Game_Look;
     private readonly InputAction m_Game_Sprint;
-    private readonly InputAction m_Game_Use;
+    private readonly InputAction m_Game_Interact;
+    private readonly InputAction m_Game_Pickup;
     public struct GameActions
     {
         private @PIA m_Wrapper;
@@ -821,7 +843,8 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         public InputAction @Crouch => m_Wrapper.m_Game_Crouch;
         public InputAction @Look => m_Wrapper.m_Game_Look;
         public InputAction @Sprint => m_Wrapper.m_Game_Sprint;
-        public InputAction @Use => m_Wrapper.m_Game_Use;
+        public InputAction @Interact => m_Wrapper.m_Game_Interact;
+        public InputAction @Pickup => m_Wrapper.m_Game_Pickup;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -846,9 +869,12 @@ public partial class @PIA: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
-            @Use.started += instance.OnUse;
-            @Use.performed += instance.OnUse;
-            @Use.canceled += instance.OnUse;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
+            @Pickup.started += instance.OnPickup;
+            @Pickup.performed += instance.OnPickup;
+            @Pickup.canceled += instance.OnPickup;
         }
 
         private void UnregisterCallbacks(IGameActions instance)
@@ -868,9 +894,12 @@ public partial class @PIA: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
-            @Use.started -= instance.OnUse;
-            @Use.performed -= instance.OnUse;
-            @Use.canceled -= instance.OnUse;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
+            @Pickup.started -= instance.OnPickup;
+            @Pickup.performed -= instance.OnPickup;
+            @Pickup.canceled -= instance.OnPickup;
         }
 
         public void RemoveCallbacks(IGameActions instance)
@@ -1013,7 +1042,8 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         void OnCrouch(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
-        void OnUse(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
+        void OnPickup(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
