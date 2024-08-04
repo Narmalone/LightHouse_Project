@@ -1,4 +1,4 @@
-public class CubeDeCon : ItemBase
+public class CubeDeCon : ItemBaseInventory
 {
     public override string Name => "CubeDeCon";
 

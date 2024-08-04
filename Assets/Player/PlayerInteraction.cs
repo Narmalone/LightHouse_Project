@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
@@ -12,6 +13,19 @@ public class PlayerInteraction : MonoBehaviour
     private Transform playerCameraTransform;
 
     private IItem currentHitItem;
+
+    public static Action PutInInventory;
+
+    private void Awake()
+    {
+        PutInInventory += HandlePutInInventory;
+    }
+    
+    private void OnDestroy()
+    {
+        PutInInventory -= HandlePutInInventory;
+    }
+
     void Update()
     {
         HandleInteraction();
@@ -50,6 +64,17 @@ public class PlayerInteraction : MonoBehaviour
         {
             UnSelect();
         }
+    }
+
+    private void HandlePutInInventory()
+    {
+        if (currentHitItem == null || currentHitItem.IsInventoryItem == false) return;
+
+        currentHitItem.go.TryGetComponent(out ItemBaseInventory item);
+
+        if (item == null) return;
+
+        item.TakeObject();
     }
 
     private void Select(IItem item)

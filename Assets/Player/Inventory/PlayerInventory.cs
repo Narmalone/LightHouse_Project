@@ -1,16 +1,41 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using static UnityEditor.Progress;
 
 public class PlayerInventory : MonoBehaviour
 {
     private PlayerManager _manager;
-    public ItemOptionController controller;
     [SerializeField] private byte slots = 4;
     [SerializeField] private byte currentUsedSlots = 0;
-    public List<GameObject> objectsInInventory = new List<GameObject>();
-    public List<InventorySlot> buttonsInInventory = new List<InventorySlot>();
+    public GameObject previewObjectParent; // Reference to the 3D preview object
+    public List<InventorySlot> listInventorySlots = new List<InventorySlot>();
+    private List<GameObject> listPreviewObject = new List<GameObject> { null, null, null, null};
     private int selectedSlot;
+
+    public static bool IsInventoryFull = false;
+    public static Action<ItemBaseInventory> TakeItemAction;
+    
+    private GameObject previewObject;
+
+    private void Awake()
+    {
+        TakeItemAction += TakeItem;
+        listPreviewObject = new List<GameObject> { null, null, null, null };
+    }
+
+    private void Start()
+    {
+        SelectSlot(0);
+    }
+
+    private void OnDestroy()
+    {
+        TakeItemAction -= TakeItem;
+    }
 
     void Update()
     {
@@ -43,6 +68,11 @@ public class PlayerInventory : MonoBehaviour
         {
             //if(selectedSlot)
         }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            DropItem();
+        }
     }
 
     public void Initialize(PlayerManager manager)
@@ -50,41 +80,81 @@ public class PlayerInventory : MonoBehaviour
         _manager = manager;
     }
 
+    private void TakeItem(ItemBaseInventory item)
+    {
+        // Ajouter dans le slot (Choix slot, Nom, Icon)
+        var slotIndex = GetEmptySlot();
+        
+        // If no empty slot
+        if(slotIndex == -1) return;
+
+        listInventorySlots[slotIndex].SetItem(item.ItemDatas);
+
+        AddPreviewObject(slotIndex, item.ItemDatas.mesh);
+
+        // Enlever l'item du jeux
+        item.gameObject.SetActive(false);
+
+        Destroy(item.gameObject);
+    }
+
+    private void DropItem()
+    {
+        if (listInventorySlots[selectedSlot].item == null) return;
+        // Drop prefab
+        Instantiate(listInventorySlots[selectedSlot].item.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
+
+        // Empty the item slot
+        listInventorySlots[selectedSlot].SetItem(null);
+
+        if(listPreviewObject[selectedSlot] != null)
+        {
+            Destroy(listPreviewObject[selectedSlot]);
+        }
+    }
+
+    private int GetEmptySlot()
+    {
+        if (currentUsedSlots >= slots) return -1;
+
+        for (int i = 0; i < listInventorySlots.Count; i++)
+        {
+            if (listInventorySlots[i].isEmpty == false) continue;
+            return i;
+        }
+        return -1;
+    }
+
     void SelectSlot(int slotIndex)
     {
         slotIndex = Mathf.Clamp(slotIndex, 0, slots - 1);
 
-        buttonsInInventory[selectedSlot].iconImage.color = Color.white;
+        UpdatePreviewObject(slotIndex);
+        listInventorySlots[selectedSlot].OnDeselect();
         selectedSlot = slotIndex;
-        buttonsInInventory[selectedSlot].iconImage.color = Color.green;
+        listInventorySlots[selectedSlot].OnSelect();
+
     }
 
-    public void AddItemToInventory(GameObject obj, InventoryItemData item)
+    private void AddPreviewObject(int index, GameObject mesh)
     {
-        if(currentUsedSlots >= slots)
-        {
-            Debug.Log("Slots max utilisées");
-            return;
-        }
-        buttonsInInventory[currentUsedSlots].iconImage.color = Color.gray;
-        currentUsedSlots++;
-        objectsInInventory.Add(obj);
+        if (listPreviewObject[index] != null) Destroy(listPreviewObject[index]);
+        listPreviewObject[index] = Instantiate(mesh, previewObjectParent.transform.position, previewObjectParent.transform.rotation, previewObjectParent.transform);
     }
 
-    public void RemoveItemFromInventory(GameObject obj)
+    private void UpdatePreviewObject(int nextIndex)
     {
-        if(objectsInInventory.Contains(obj))
-        {
-            buttonsInInventory[currentUsedSlots].iconImage.color = Color.white;
-            currentUsedSlots--;
-            objectsInInventory.Remove(obj);
-        }
+        listPreviewObject[selectedSlot]?.SetActive(false);
+        listPreviewObject[nextIndex]?.SetActive(true);
     }
-
-    public void RemoveItemFromInventoryAtIndex(int index)
-    {
-        buttonsInInventory[index].iconImage.color = Color.white;
-        currentUsedSlots--;
-        objectsInInventory.RemoveAt(index);
-    }
+    /*
+   public void RemoveItemFromInventory(GameObject obj)
+   {
+       if(objectsInInventory.Contains(obj))
+       {
+           listInventorySlots[currentUsedSlots].iconImage.color = Color.white;
+           currentUsedSlots--;
+           objectsInInventory.Remove(obj);
+       }
+   }*/
 }
