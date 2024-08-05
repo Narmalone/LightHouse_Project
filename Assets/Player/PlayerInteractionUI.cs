@@ -33,7 +33,7 @@ public class PlayerInteractionUI : MonoBehaviour
         _nameObject.text = item.ItemDatas.itemName;
         _crosshair.localScale = Vector3.one * 2;
 
-        HandleIndicators(item.ItemDatas.IsInventoryItem, item.ItemDatas.IsUsable);
+        HandleIndicators(item.IsInventoryItem, item.IsUsable);
     }
 
     private void HideSelection()

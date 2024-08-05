@@ -212,7 +212,7 @@ public class PlayerInventory : MonoBehaviour
     #region HANDLE
     private void HandleUseSelectedItem()
     {
-        if (listInventorySlots[selectedSlot].isEmpty || !listInventorySlots[selectedSlot].item.IsUsable) return;
+        if (listInventorySlots[selectedSlot].isEmpty || !listInventorySlots[selectedSlot].previewItem.IsUsable) return;
 
         listInventorySlots[selectedSlot].RaiseUseItem();
     }

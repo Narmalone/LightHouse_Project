@@ -4,6 +4,9 @@ public interface IItem
 {
     GameObject go { get; }
     ItemDatas ItemDatas { get; }
+
+    public bool IsInventoryItem { get;}
+    public bool IsUsable { get; }
 }
 
 public abstract class ItemBase : MonoBehaviour, IItem
@@ -14,6 +17,12 @@ public abstract class ItemBase : MonoBehaviour, IItem
     [SerializeField]
     private ItemDatas itemData;
     public ItemDatas ItemDatas => itemData;
+
+    public bool IsInventoryItem => isInventoryItem;
+    public bool IsUsable => isUsable;
+
+    public bool isInventoryItem = true;
+    public bool isUsable = true;
 
     /// <summary>
     /// Use the object

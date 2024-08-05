@@ -75,7 +75,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void OnInventoryGrab(InputAction.CallbackContext context)
     {
-        if (currentHitItem == null || currentHitItem.ItemDatas.IsInventoryItem == false) return;
+        if (currentHitItem == null || currentHitItem.IsInventoryItem == false) return;
 
         currentHitItem.go.TryGetComponent(out ItemBase item);
 
@@ -86,7 +86,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void OnInteract(InputAction.CallbackContext context)
     {
-        if (currentHitItem == null || currentHitItem.ItemDatas.IsUsable == false) return;
+        if (currentHitItem == null || currentHitItem.IsUsable == false) return;
         currentHitItem.go.TryGetComponent(out ItemBase item);
 
         if (item == null) return;
