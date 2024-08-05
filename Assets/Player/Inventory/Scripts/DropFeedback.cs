@@ -35,7 +35,7 @@ public class DropFeedback : MonoBehaviour
 
     private void OnEndFeedback()
     {
-        throw new NotImplementedException();
+        if (_coroutine != null) StopCoroutine(_coroutine);
     }
 
     IEnumerator AnimationDrop()
