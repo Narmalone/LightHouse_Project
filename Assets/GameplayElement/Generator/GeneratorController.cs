@@ -15,6 +15,8 @@ public class GeneratorController : MonoBehaviour
     [Header("GENERATOR")]
     [SerializeField] private float m_fuelValue = 100f;
 
+    [SerializeField] private TriggerEvent m_triggerFuel;
+
     [ConsoleVariable("Fuel")]
     public float FuelValue
     {
@@ -48,6 +50,13 @@ public class GeneratorController : MonoBehaviour
         startScale = m_targetLife.localScale;
         endPosition = startPosition + (Vector3.down * 2);
         m_shutdownEvent.eventAction += OnEventCalled;
+        m_triggerFuel.OnEntered += (s) =>
+        {
+            if(PlayerManager.Instance._inventory.CurrentItemSelected as JerricanEssence)
+            {
+                Debug.Log("jerrican");
+            }
+        };
     }
 
     private void OnDestroy()
