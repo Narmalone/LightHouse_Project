@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,11 +15,15 @@ public class DropFeedback : MonoBehaviour
 
     private void Awake()
     {
-        _timeToStrengthMax = PlayerManager.Instance._data._timeToAchieveMaxStrength;
-
         _eventStartDrop.handle += OnStartFeedback;
         _eventEndDrop.handle += OnEndFeedback;
     }
+
+    private void Start()
+    {
+        _timeToStrengthMax = PlayerManager.Instance._data._timeToAchieveMaxStrength;
+    }
+
     private void OnDestroy()
     {
         _eventStartDrop.handle -= OnStartFeedback;
@@ -29,6 +32,7 @@ public class DropFeedback : MonoBehaviour
 
     private void OnStartFeedback()
     {
+        _circle.gameObject.SetActive(true);
         _timeStart = Time.time;
         _coroutine = StartCoroutine(AnimationDrop());
     }
@@ -36,14 +40,16 @@ public class DropFeedback : MonoBehaviour
     private void OnEndFeedback()
     {
         if (_coroutine != null) StopCoroutine(_coroutine);
+        _circle.gameObject.SetActive(false);
     }
 
     IEnumerator AnimationDrop()
     {
         float time = 0;
-        while (time >= 1)
+        while (time < 1)
         {
             time += Time.deltaTime * _timeToStrengthMax;
+            _circle.fillAmount = time;
             yield return null;
         }
     }
