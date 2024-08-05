@@ -19,6 +19,7 @@ public class TestInteractPickup : ItemBase, IInteractInInventory
     public override void SetStateObject(ItemBase item)
     {
         base.SetStateObject(item);
+        Debug.Log(this, this);
         _mesh.material.color = ((TestInteractPickup)item)._mesh.material.color;
     }
 }

@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
         _manager = manager;
 
         controller = manager._data.controller;
-        optionController = manager._data.optionController;
+        //optionController = manager._data.optionController;
         playerInventory = manager._data.playerInventory;
         playerCamera = manager._data.playerCamera;
 

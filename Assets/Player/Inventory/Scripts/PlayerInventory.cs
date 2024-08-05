@@ -1,31 +1,43 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInventory : MonoBehaviour
 {
     private PlayerManager _manager;
+
     [SerializeField] private byte slots = 4;
     [SerializeField] private byte currentUsedSlots = 0;
-    public GameObject previewObjectParent; // Reference to the 3D preview object
-    public List<InventorySlot> listInventorySlots = new List<InventorySlot>();
-    private List<GameObject> listPreviewObject = new List<GameObject> { null, null, null, null};
+    [SerializeField] public CustomEvent _eventStartDropItem;
+    [SerializeField] public CustomEvent _eventEndDropItem;
+    [SerializeField] public GameObject previewObjectParent; // Reference to the 3D preview object
+    [SerializeField] public List<InventorySlot> listInventorySlots = new List<InventorySlot>();
+
+    private List<ItemBase> listPreviewObject = new List<ItemBase> { null, null, null, null};
+
+    public ItemBase CurrentItemSelected => listPreviewObject[selectedSlot];
+
     private int selectedSlot;
+    private PIA playerInputAction;
+    private float _startDropTime;
+    private float _maxStrengthThrowItem;
+    private float _timeToAchieveMaxStrength;
+    private AnimationCurve _curveStrengthGrow;
 
     public static bool IsInventoryFull = false;
     public static Action<ItemBase> TakeItemAction;
     
-    private GameObject previewObject;
-    private PIA playerInputAction;
     private void Awake()
     {
-        listPreviewObject = new List<GameObject> { null, null, null, null };
+        listPreviewObject = new List<ItemBase> { null, null, null, null };
 
         playerInputAction = new PIA();
         playerInputAction.Enable();
         playerInputAction.Game.UseInInventory.performed += OnUseSelectedItem;
         playerInputAction.Game.DropInventoryItem.performed += OnDropItem;
+        playerInputAction.Game.DropInventoryItem.canceled += OnDropItem;
 
         TakeItemAction += TakeItem;
     }
@@ -40,6 +52,7 @@ public class PlayerInventory : MonoBehaviour
         TakeItemAction -= TakeItem;
         playerInputAction.Game.UseInInventory.performed -= OnUseSelectedItem;
         playerInputAction.Game.DropInventoryItem.performed -= OnDropItem;
+        playerInputAction.Game.DropInventoryItem.canceled -= OnDropItem;
     }
 
     void Update()
@@ -75,6 +88,9 @@ public class PlayerInventory : MonoBehaviour
     public void Initialize(PlayerManager manager)
     {
         _manager = manager;
+        _maxStrengthThrowItem = _manager._data._maxStrengthThrowItem;
+        _timeToAchieveMaxStrength = _manager._data._timeToAchieveMaxStrength;
+        _curveStrengthGrow = _manager._data._curveStrengthGrow;
     }
     private void TakeItem(ItemBase item)
     {
@@ -103,13 +119,22 @@ public class PlayerInventory : MonoBehaviour
         var itemDroped = go.GetComponent<ItemBase>();
         itemDroped?.SetStateObject(listInventorySlots[selectedSlot].previewItem);
 
+        // Propulse Object
+        itemDroped.TryGetComponent(out Rigidbody rb);
+        if (rb != null) rb.AddForce(_manager._data.playerCamera.transform.forward * GetForceToDropItem(), ForceMode.Impulse);
+
         // Empty the item slot
         listInventorySlots[selectedSlot].SetItem(null);
 
         if (listPreviewObject[selectedSlot] != null)
         {
-            Destroy(listPreviewObject[selectedSlot]);
+            Destroy(listPreviewObject[selectedSlot].gameObject);
         }
+    }
+
+    private float GetForceToDropItem()
+    {
+        return Mathf.Min(_startDropTime, _timeToAchieveMaxStrength) / _timeToAchieveMaxStrength * _maxStrengthThrowItem;
     }
 
     private int GetEmptySlot()
@@ -140,19 +165,21 @@ public class PlayerInventory : MonoBehaviour
     private void AddPreviewObject(int index, ItemBase item, GameObject mesh)
     {
         if (listPreviewObject[index] != null) Destroy(listPreviewObject[index]);
-        listPreviewObject[index] = Instantiate(mesh, previewObjectParent.transform.position, previewObjectParent.transform.rotation, previewObjectParent.transform);
-        var itemPreview = listPreviewObject[index].GetComponent<ItemBase>();
+        var go = Instantiate(mesh, previewObjectParent.transform.position, previewObjectParent.transform.rotation, previewObjectParent.transform);
+        var itemPreview = go.GetComponent<ItemBase>();
+        listPreviewObject[index] = itemPreview;
+
         itemPreview?.SetStateObject(item);
-        listInventorySlots[selectedSlot].SetPreviewItem(itemPreview);
+        listInventorySlots[index].SetPreviewItem(itemPreview);
     }
 
     private void UpdatePreviewObject(int nextIndex)
     {
         if (listPreviewObject[selectedSlot] != null)
-            listPreviewObject[selectedSlot].SetActive(false);
+            listPreviewObject[selectedSlot].gameObject.SetActive(false);
 
         if (listPreviewObject[nextIndex] != null)
-            listPreviewObject[nextIndex].SetActive(true);
+            listPreviewObject[nextIndex].gameObject.SetActive(true);
     }
 
     #endregion
@@ -165,7 +192,19 @@ public class PlayerInventory : MonoBehaviour
 
     private void OnDropItem(InputAction.CallbackContext context)
     {
+        if (context.performed) HandleDropItem_Start();
+        if (context.canceled) HandleDropItem_End();
+    }
+    private void HandleDropItem_Start()
+    {
+        _startDropTime = Time.time;
+        _eventStartDropItem.Raise();
+    }
+
+    private void HandleDropItem_End()
+    {
         DropItem();
+        _eventEndDropItem.Raise();
     }
 
     #endregion
@@ -173,7 +212,7 @@ public class PlayerInventory : MonoBehaviour
     #region HANDLE
     private void HandleUseSelectedItem()
     {
-        if (listInventorySlots[selectedSlot].isEmpty) return;
+        if (listInventorySlots[selectedSlot].isEmpty || !listInventorySlots[selectedSlot].item.IsUsable) return;
 
         listInventorySlots[selectedSlot].RaiseUseItem();
     }

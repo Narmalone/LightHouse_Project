@@ -148,9 +148,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
   controller: {fileID: 6231699584837158408}
-  optionController: {fileID: 0}
   playerInventory: {fileID: 4880216406653816421}
   playerCamera: {fileID: 1321064108799479954}
+  _maxStrengthThrowItem: 20
+  _timeToAchieveMaxStrength: 2
+  _curveStrengthGrow:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &5436797213916635606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,6 +410,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slots: 4
   currentUsedSlots: 0
+  _eventStartDropItem: {fileID: 11400000, guid: 6830ae18dc715ed4eba6cf421944702b,
+    type: 2}
+  _eventEndDropItem: {fileID: 11400000, guid: 7debe958e34c0094e8766b19b91f4cd6, type: 2}
   previewObjectParent: {fileID: 8309518582664010489}
   listInventorySlots:
   - {fileID: 5803274392176247218}

@@ -91,18 +91,18 @@ public partial class @PIA: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""UseInInventory"",
+                    ""name"": ""DropInventoryItem"",
                     ""type"": ""Button"",
-                    ""id"": ""00e0696c-a902-465a-b4f1-6aff91e0d862"",
+                    ""id"": ""043b5b58-f6f8-4f0d-8395-b8c550a50ba8"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""DropInventoryItem"",
+                    ""name"": ""UseInInventory"",
                     ""type"": ""Button"",
-                    ""id"": ""043b5b58-f6f8-4f0d-8395-b8c550a50ba8"",
+                    ""id"": ""00e0696c-a902-465a-b4f1-6aff91e0d862"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -794,8 +794,8 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         m_Game_Sprint = m_Game.FindAction("Sprint", throwIfNotFound: true);
         m_Game_Interact = m_Game.FindAction("Interact", throwIfNotFound: true);
         m_Game_Pickup = m_Game.FindAction("Pickup", throwIfNotFound: true);
-        m_Game_UseInInventory = m_Game.FindAction("UseInInventory", throwIfNotFound: true);
         m_Game_DropInventoryItem = m_Game.FindAction("DropInventoryItem", throwIfNotFound: true);
+        m_Game_UseInInventory = m_Game.FindAction("UseInInventory", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -876,8 +876,8 @@ public partial class @PIA: IInputActionCollection2, IDisposable
     private readonly InputAction m_Game_Sprint;
     private readonly InputAction m_Game_Interact;
     private readonly InputAction m_Game_Pickup;
-    private readonly InputAction m_Game_UseInInventory;
     private readonly InputAction m_Game_DropInventoryItem;
+    private readonly InputAction m_Game_UseInInventory;
     public struct GameActions
     {
         private @PIA m_Wrapper;
@@ -889,8 +889,8 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         public InputAction @Sprint => m_Wrapper.m_Game_Sprint;
         public InputAction @Interact => m_Wrapper.m_Game_Interact;
         public InputAction @Pickup => m_Wrapper.m_Game_Pickup;
-        public InputAction @UseInInventory => m_Wrapper.m_Game_UseInInventory;
         public InputAction @DropInventoryItem => m_Wrapper.m_Game_DropInventoryItem;
+        public InputAction @UseInInventory => m_Wrapper.m_Game_UseInInventory;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -921,12 +921,12 @@ public partial class @PIA: IInputActionCollection2, IDisposable
             @Pickup.started += instance.OnPickup;
             @Pickup.performed += instance.OnPickup;
             @Pickup.canceled += instance.OnPickup;
-            @UseInInventory.started += instance.OnUseInInventory;
-            @UseInInventory.performed += instance.OnUseInInventory;
-            @UseInInventory.canceled += instance.OnUseInInventory;
             @DropInventoryItem.started += instance.OnDropInventoryItem;
             @DropInventoryItem.performed += instance.OnDropInventoryItem;
             @DropInventoryItem.canceled += instance.OnDropInventoryItem;
+            @UseInInventory.started += instance.OnUseInInventory;
+            @UseInInventory.performed += instance.OnUseInInventory;
+            @UseInInventory.canceled += instance.OnUseInInventory;
         }
 
         private void UnregisterCallbacks(IGameActions instance)
@@ -952,12 +952,12 @@ public partial class @PIA: IInputActionCollection2, IDisposable
             @Pickup.started -= instance.OnPickup;
             @Pickup.performed -= instance.OnPickup;
             @Pickup.canceled -= instance.OnPickup;
-            @UseInInventory.started -= instance.OnUseInInventory;
-            @UseInInventory.performed -= instance.OnUseInInventory;
-            @UseInInventory.canceled -= instance.OnUseInInventory;
             @DropInventoryItem.started -= instance.OnDropInventoryItem;
             @DropInventoryItem.performed -= instance.OnDropInventoryItem;
             @DropInventoryItem.canceled -= instance.OnDropInventoryItem;
+            @UseInInventory.started -= instance.OnUseInInventory;
+            @UseInInventory.performed -= instance.OnUseInInventory;
+            @UseInInventory.canceled -= instance.OnUseInInventory;
         }
 
         public void RemoveCallbacks(IGameActions instance)
@@ -1102,8 +1102,8 @@ public partial class @PIA: IInputActionCollection2, IDisposable
         void OnSprint(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnPickup(InputAction.CallbackContext context);
-        void OnUseInInventory(InputAction.CallbackContext context);
         void OnDropInventoryItem(InputAction.CallbackContext context);
+        void OnUseInInventory(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
