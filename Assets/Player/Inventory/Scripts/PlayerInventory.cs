@@ -134,7 +134,7 @@ public class PlayerInventory : MonoBehaviour
 
     private float GetForceToDropItem()
     {
-        return Mathf.Min(_startDropTime, _timeToAchieveMaxStrength) / _timeToAchieveMaxStrength * _maxStrengthThrowItem;
+        return Mathf.Min(Time.time - _startDropTime, _timeToAchieveMaxStrength) / _timeToAchieveMaxStrength * _maxStrengthThrowItem;
     }
 
     private int GetEmptySlot()

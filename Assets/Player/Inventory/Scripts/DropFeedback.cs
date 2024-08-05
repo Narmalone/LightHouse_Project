@@ -48,7 +48,7 @@ public class DropFeedback : MonoBehaviour
         float time = 0;
         while (time < 1)
         {
-            time += Time.deltaTime * _timeToStrengthMax;
+            time += Time.deltaTime / _timeToStrengthMax;
             _circle.fillAmount = time;
             yield return null;
         }
