@@ -1,19 +1,14 @@
-using UnityEditor.Experimental.RestService;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : Singleton<PlayerManager>
 {
-    public static PlayerManager Instance;
-
     [SerializeField] public PlayerController _controller;
     [SerializeField] public PlayerInventory _inventory;
     [SerializeField] public PlayerInteraction _interaction;
     [SerializeField] public PlayerData _data;
 
-    protected void Awake()
+    protected override void Awake()
     {
-        Instance = this;
-
         _inventory?.Initialize(this);
         _controller?.Initialize(this);
         _interaction?.Initialize(this);
