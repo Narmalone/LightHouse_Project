@@ -81,7 +81,7 @@ public class PlayerInteraction : MonoBehaviour
 
         if (item == null) return;
 
-        item.TakeObject();
+        PlayerInventory.TakeItemAction.Invoke(item);
     }
 
     private void OnInteract(InputAction.CallbackContext context)

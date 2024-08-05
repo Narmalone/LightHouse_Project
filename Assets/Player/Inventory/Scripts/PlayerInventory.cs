@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using static UnityEditor.Progress;
+using UnityEngine.InputSystem;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -20,11 +17,17 @@ public class PlayerInventory : MonoBehaviour
     public static Action<ItemBase> TakeItemAction;
     
     private GameObject previewObject;
-
+    private PIA playerInputAction;
     private void Awake()
     {
-        TakeItemAction += TakeItem;
         listPreviewObject = new List<GameObject> { null, null, null, null };
+
+        playerInputAction = new PIA();
+        playerInputAction.Enable();
+        playerInputAction.Game.UseInInventory.performed += OnUseSelectedItem;
+        playerInputAction.Game.DropInventoryItem.performed += OnDropItem;
+
+        TakeItemAction += TakeItem;
     }
 
     private void Start()
@@ -35,6 +38,8 @@ public class PlayerInventory : MonoBehaviour
     private void OnDestroy()
     {
         TakeItemAction -= TakeItem;
+        playerInputAction.Game.UseInInventory.performed -= OnUseSelectedItem;
+        playerInputAction.Game.DropInventoryItem.performed -= OnDropItem;
     }
 
     void Update()
@@ -63,34 +68,25 @@ public class PlayerInventory : MonoBehaviour
             int scrollDirection = Input.GetAxis("Mouse ScrollWheel") > 0 ? -1 : 1;
             SelectSlot(selectedSlot + scrollDirection);
         }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            //if(selectedSlot)
-        }
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            DropItem();
-        }
     }
+
+    #region OTHER FUNCTIONS
 
     public void Initialize(PlayerManager manager)
     {
         _manager = manager;
     }
-
     private void TakeItem(ItemBase item)
     {
         // Ajouter dans le slot (Choix slot, Nom, Icon)
         var slotIndex = GetEmptySlot();
-        
+
         // If no empty slot
-        if(slotIndex == -1) return;
+        if (slotIndex == -1) return;
 
         listInventorySlots[slotIndex].SetItem(item.ItemDatas);
 
-        AddPreviewObject(slotIndex, item.ItemDatas.mesh);
+        AddPreviewObject(slotIndex, item, item.ItemDatas.prefab);
 
         // Enlever l'item du jeux
         item.gameObject.SetActive(false);
@@ -101,13 +97,16 @@ public class PlayerInventory : MonoBehaviour
     private void DropItem()
     {
         if (listInventorySlots[selectedSlot].item == null) return;
+
         // Drop prefab
-        Instantiate(listInventorySlots[selectedSlot].item.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
+        var go = Instantiate(listInventorySlots[selectedSlot].item.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
+        var itemDroped = go.GetComponent<ItemBase>();
+        itemDroped?.SetStateObject(listInventorySlots[selectedSlot].previewItem);
 
         // Empty the item slot
         listInventorySlots[selectedSlot].SetItem(null);
 
-        if(listPreviewObject[selectedSlot] != null)
+        if (listPreviewObject[selectedSlot] != null)
         {
             Destroy(listPreviewObject[selectedSlot]);
         }
@@ -138,18 +137,47 @@ public class PlayerInventory : MonoBehaviour
 
     }
 
-    private void AddPreviewObject(int index, GameObject mesh)
+    private void AddPreviewObject(int index, ItemBase item, GameObject mesh)
     {
         if (listPreviewObject[index] != null) Destroy(listPreviewObject[index]);
         listPreviewObject[index] = Instantiate(mesh, previewObjectParent.transform.position, previewObjectParent.transform.rotation, previewObjectParent.transform);
+        var itemPreview = listPreviewObject[index].GetComponent<ItemBase>();
+        itemPreview?.SetStateObject(item);
+        listInventorySlots[selectedSlot].SetPreviewItem(itemPreview);
     }
 
     private void UpdatePreviewObject(int nextIndex)
     {
-        if(listPreviewObject[selectedSlot] != null)
+        if (listPreviewObject[selectedSlot] != null)
             listPreviewObject[selectedSlot].SetActive(false);
 
         if (listPreviewObject[nextIndex] != null)
             listPreviewObject[nextIndex].SetActive(true);
     }
+
+    #endregion
+
+    #region INPUT CALBACK
+    private void OnUseSelectedItem(InputAction.CallbackContext context)
+    {
+        HandleUseSelectedItem();
+    }
+
+    private void OnDropItem(InputAction.CallbackContext context)
+    {
+        DropItem();
+    }
+
+    #endregion
+
+    #region HANDLE
+    private void HandleUseSelectedItem()
+    {
+        if (listInventorySlots[selectedSlot].isEmpty) return;
+
+        listInventorySlots[selectedSlot].RaiseUseItem();
+    }
+
+    #endregion
+
 }

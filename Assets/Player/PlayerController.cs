@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
     {
         playerInputs = new PIA();
         playerInputs.Enable();
+
         playerInputs.Game.Move.performed += OnMove;
         playerInputs.Game.Move.canceled += OnMove;
         playerInputs.Game.Crouch.performed += OnCrouch;
@@ -72,6 +73,7 @@ public class PlayerController : MonoBehaviour
     private void OnDestroy()
     {
         playerInputs.Disable();
+
         playerInputs.Game.Move.performed -= OnMove;
         playerInputs.Game.Move.canceled -= OnMove;
         playerInputs.Game.Crouch.performed -= OnCrouch;

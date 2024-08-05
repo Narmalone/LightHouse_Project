@@ -23,11 +23,8 @@ public abstract class ItemBase : MonoBehaviour, IItem
 
     }
 
-    /// <summary>
-    /// Put the object in the inventory
-    /// </summary>
-    public virtual void TakeObject()
+    public virtual void SetStateObject(ItemBase item)
     {
-        PlayerInventory.TakeItemAction.Invoke(this);
+
     }
 }
