@@ -65,6 +65,7 @@ public class GeneratorController : MonoBehaviour
             if(currentJerricanSelected != null)
             {
                 currentJerricanSelected.isUsable = false;
+                currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
             }
             currentJerricanSelected = arg2 as JerricanEssence;
             currentJerricanSelected.isUsable = true;
