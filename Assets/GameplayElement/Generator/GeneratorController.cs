@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class GeneratorController : MonoBehaviour
 {
@@ -43,6 +44,8 @@ public class GeneratorController : MonoBehaviour
 
     [SerializeField, ConsoleVariable("CanUpdateFuel")] private bool m_updateFuel = false;
 
+    [SerializeField] private JerricanEssence currentJerricanSelected = null;
+
     private void Awake()
     {
         m_fuelValue = m_maxFuelValue;
@@ -50,13 +53,53 @@ public class GeneratorController : MonoBehaviour
         startScale = m_targetLife.localScale;
         endPosition = startPosition + (Vector3.down * 2);
         m_shutdownEvent.eventAction += OnEventCalled;
-        m_triggerFuel.OnEntered += (s) =>
+
+        m_triggerFuel.OnEntered += M_triggerFuel_OnEntered;
+        m_triggerFuel.OnExited += M_triggerFuel_OnExited;
+    }
+
+    private void PlayerInventory_OnCurrentItemSelectedChanged(ItemBase arg1, ItemBase arg2)
+    {
+        if (arg2 as JerricanEssence)
         {
-            if(PlayerManager.Instance._inventory.CurrentItemSelected as JerricanEssence)
+            if(currentJerricanSelected != null)
             {
-                Debug.Log("jerrican");
+                currentJerricanSelected.isUsable = false;
             }
-        };
+            currentJerricanSelected = arg2 as JerricanEssence;
+            currentJerricanSelected.isUsable = true;
+            currentJerricanSelected.OnJericanUse += Jerrican_OnJericanUse;
+        }
+    }
+
+    private void M_triggerFuel_OnExited(GameObject obj)
+    {
+        if(currentJerricanSelected != null)
+        {
+            PlayerInventory.OnCurrentItemSelectedChanged -= PlayerInventory_OnCurrentItemSelectedChanged;
+            currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
+            currentJerricanSelected = null;
+        }
+    }
+
+    private void M_triggerFuel_OnEntered(GameObject obj)
+    {
+        var item = PlayerManager.Instance._inventory.CurrentItemSelected;
+        if (item as JerricanEssence)
+        {
+            item.isUsable = true;
+            currentJerricanSelected = item as JerricanEssence;
+            PlayerInventory.OnCurrentItemSelectedChanged += PlayerInventory_OnCurrentItemSelectedChanged;
+            currentJerricanSelected.OnJericanUse += Jerrican_OnJericanUse;
+        }
+    }
+
+    private void Jerrican_OnJericanUse(float obj)
+    {
+        AddFuelValue(obj);
+        currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
+        PlayerManager.Instance._inventory.RemoveItemFrominventory(currentJerricanSelected);
+        currentJerricanSelected = null;
     }
 
     private void OnDestroy()

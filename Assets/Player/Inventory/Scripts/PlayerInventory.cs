@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,7 +16,15 @@ public class PlayerInventory : MonoBehaviour
 
     private List<ItemBase> listPreviewObject = new List<ItemBase> { null, null, null, null};
 
-    public ItemBase CurrentItemSelected => listPreviewObject[selectedSlot];
+    public ItemBase CurrentItemSelected
+    {
+        get => listPreviewObject[selectedSlot];
+        private set
+        {
+            OnCurrentItemSelectedChanged?.Invoke(listPreviewObject[selectedSlot], value);
+            listPreviewObject[selectedSlot] = value;
+        }
+    }
 
     private int selectedSlot;
     private PIA playerInputAction;
@@ -27,7 +34,10 @@ public class PlayerInventory : MonoBehaviour
     private AnimationCurve _curveStrengthGrow;
 
     public static bool IsInventoryFull = false;
+
+    //EVENTS
     public static Action<ItemBase> TakeItemAction;
+    public static event Action<ItemBase, ItemBase> OnCurrentItemSelectedChanged; //old, new value
     
     private void Awake()
     {
@@ -132,6 +142,16 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public void RemoveItemFrominventory(ItemBase target)
+    {
+        if (listPreviewObject.Contains(target))
+        {
+            Debug.Log("true");
+            listInventorySlots[listPreviewObject.FindIndex(x => x == target)].SetItem(null);
+            Destroy(listPreviewObject.Find(x => x == target).gameObject);
+        }
+    }
+
     private float GetForceToDropItem()
     {
         return Mathf.Min(Time.time - _startDropTime, _timeToAchieveMaxStrength) / _timeToAchieveMaxStrength * _maxStrengthThrowItem;
@@ -159,7 +179,7 @@ public class PlayerInventory : MonoBehaviour
         listInventorySlots[selectedSlot].OnDeselect();
         selectedSlot = slotIndex;
         listInventorySlots[selectedSlot].OnSelect();
-
+        CurrentItemSelected = listPreviewObject[selectedSlot]; 
     }
 
     private void AddPreviewObject(int index, ItemBase item, GameObject mesh)

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public interface IItem
@@ -24,12 +25,14 @@ public abstract class ItemBase : MonoBehaviour, IItem
     public bool isInventoryItem = true;
     public bool isUsable = true;
 
+    public event Action OnUse;
+
     /// <summary>
     /// Use the object
     /// </summary>
     public virtual void Use()
     {
-
+        OnUse?.Invoke();
     }
 
     public virtual void SetStateObject(ItemBase item)
