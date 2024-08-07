@@ -30,7 +30,6 @@ public class InventorySlot : MonoBehaviour
 
     public void RaiseUseItem()
     {
-        Debug.Log(this, this);
         if (previewItem.isUsable == false) return;
         previewItem.Use();
     }
