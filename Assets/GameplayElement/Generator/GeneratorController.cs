@@ -60,13 +60,14 @@ public class GeneratorController : MonoBehaviour
 
     private void PlayerInventory_OnCurrentItemSelectedChanged(ItemBase arg1, ItemBase arg2)
     {
+        if (currentJerricanSelected != null)
+        {
+            currentJerricanSelected.isUsable = false;
+            currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
+        }
+
         if (arg2 as JerricanEssence)
         {
-            if(currentJerricanSelected != null)
-            {
-                currentJerricanSelected.isUsable = false;
-                currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
-            }
             currentJerricanSelected = arg2 as JerricanEssence;
             currentJerricanSelected.isUsable = true;
             currentJerricanSelected.OnJericanUse += Jerrican_OnJericanUse;
@@ -78,6 +79,7 @@ public class GeneratorController : MonoBehaviour
         if(currentJerricanSelected != null)
         {
             currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
+            currentJerricanSelected.isUsable = false;
             currentJerricanSelected = null;
         }
         PlayerInventory.OnCurrentItemSelectedChanged -= PlayerInventory_OnCurrentItemSelectedChanged;
