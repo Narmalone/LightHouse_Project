@@ -99,7 +99,7 @@ public class GeneratorController : MonoBehaviour
 
     private void Jerrican_OnJericanUse(float obj)
     {
-        AddFuelValue(obj);
+        AddPercentFuelValue(obj);
         currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
         PlayerManager.Instance._inventory.RemoveItemFromInventory(currentJerricanSelected);
         currentJerricanSelected = null;
@@ -148,9 +148,14 @@ public class GeneratorController : MonoBehaviour
 
     private void AddFuelValue(float _fuelValue)
     {
-        FuelValue += _fuelValue;
+        FuelValue = Mathf.Clamp(FuelValue + (m_maxFuelValue * (_fuelValue / 100f)), 0f, m_maxFuelValue);
     }
-    
+
+    private void AddPercentFuelValue(float _percentFuel)
+    {
+        FuelValue = Mathf.Clamp(FuelValue + (m_maxFuelValue * (_percentFuel / 100f)), 0f, m_maxFuelValue);
+    }
+
     private void RemoveFuelValue(float _fuelValue)
     {
         FuelValue -= _fuelValue;
