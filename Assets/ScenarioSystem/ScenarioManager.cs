@@ -61,14 +61,14 @@ public class ScenarioManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.V))
+        /*if (Input.GetKeyDown(KeyCode.V))
         {
             SelectNextAct();
         }
         if (Input.GetKeyDown(KeyCode.G))
         {
             SelectNextEvent();
-        }
+        }*/
     }
 
     private ThemeScenario RandomTheme()
