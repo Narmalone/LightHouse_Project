@@ -76,20 +76,20 @@ public class GeneratorController : MonoBehaviour
     {
         if(currentJerricanSelected != null)
         {
-            PlayerInventory.OnCurrentItemSelectedChanged -= PlayerInventory_OnCurrentItemSelectedChanged;
             currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
             currentJerricanSelected = null;
         }
+        PlayerInventory.OnCurrentItemSelectedChanged -= PlayerInventory_OnCurrentItemSelectedChanged;
     }
 
     private void M_triggerFuel_OnEntered(GameObject obj)
     {
         var item = PlayerManager.Instance._inventory.CurrentItemSelected;
+        PlayerInventory.OnCurrentItemSelectedChanged += PlayerInventory_OnCurrentItemSelectedChanged;
         if (item as JerricanEssence)
         {
             item.isUsable = true;
             currentJerricanSelected = item as JerricanEssence;
-            PlayerInventory.OnCurrentItemSelectedChanged += PlayerInventory_OnCurrentItemSelectedChanged;
             currentJerricanSelected.OnJericanUse += Jerrican_OnJericanUse;
         }
     }
@@ -98,13 +98,16 @@ public class GeneratorController : MonoBehaviour
     {
         AddFuelValue(obj);
         currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
-        PlayerManager.Instance._inventory.RemoveItemFrominventory(currentJerricanSelected);
+        PlayerManager.Instance._inventory.RemoveItemFromInventory(currentJerricanSelected);
         currentJerricanSelected = null;
     }
 
     private void OnDestroy()
     {
         m_shutdownEvent.eventAction -= OnEventCalled;
+
+        m_triggerFuel.OnEntered -= M_triggerFuel_OnEntered;
+        m_triggerFuel.OnExited -= M_triggerFuel_OnExited;
     }
 
     private void OnEventCalled()
