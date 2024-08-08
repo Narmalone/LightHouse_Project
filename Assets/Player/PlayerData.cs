@@ -14,6 +14,8 @@ public class PlayerData : MonoBehaviour
     public float _timeToAchieveMaxStrength;
     public AnimationCurve _curveStrengthGrow;
 
+    [Header("Drop Item")]
+    public float _currencyShop = 0;
 
     public void Initialize(PlayerManager manager)
     {
