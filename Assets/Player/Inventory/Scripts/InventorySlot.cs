@@ -14,6 +14,11 @@ public class InventorySlot : MonoBehaviour
     public bool isSelected = false; // Is this slot currently selected?
     public bool isEmpty => item == null;
 
+    private void Start()
+    {
+        itemName.alpha = 0;
+    }
+
     public void SetItem(IItem newItem)
     {
         item = newItem;
