@@ -25,6 +25,7 @@ public class PlayerInteractionUI : MonoBehaviour
 
     private void OnDestroy()
     {
+        _updateNameObject.handle -= UpdateNameObject;
         _DisplaySelection.handle -= DisplaySelection;
         _HideSelection.handle -= HideSelection;
     }
