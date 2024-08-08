@@ -1,10 +1,14 @@
 using System;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class GeneratorController : MonoBehaviour
 {
+    [Header("EVENT")]
     [SerializeField] private ScenarioEvent m_shutdownEvent;
+
+    [Header("CONTROLLERS")]
+    [SerializeField] private HandleGenerator handleController;
+    [SerializeField] private BoutonGenerator secondaryBtnController;
 
     [Header("LIFE 3D BAR")]
     [SerializeField] private Transform m_targetLife;
@@ -17,6 +21,8 @@ public class GeneratorController : MonoBehaviour
     [SerializeField] private float m_fuelValue = 100f;
 
     [SerializeField] private TriggerEvent m_triggerFuel;
+
+    private bool canEnableGenerator = false;
 
     [ConsoleVariable("Fuel")]
     public float FuelValue
@@ -51,11 +57,45 @@ public class GeneratorController : MonoBehaviour
         m_fuelValue = m_maxFuelValue;
         startPosition = m_targetLife.position;
         startScale = m_targetLife.localScale;
-        endPosition = startPosition + (Vector3.down * 2);
+        endPosition = startPosition - (new Vector3(0f, startPosition.y / 2, 0f));
         m_shutdownEvent.eventAction += OnEventCalled;
 
         m_triggerFuel.OnEntered += M_triggerFuel_OnEntered;
         m_triggerFuel.OnExited += M_triggerFuel_OnExited;
+
+
+        secondaryBtnController.OnChanged += SecondaryBtnController_OnChanged;
+        handleController.OnChanged += HandleController_OnChanged;
+    }
+
+    private void SetGeneratorState(bool value)
+    {
+        if (value)
+        {
+            secondaryBtnController.IsEnabled = true;
+            handleController.IsEnabled = true;
+        }
+        else
+        {
+            secondaryBtnController.IsEnabled = false;
+            handleController.IsEnabled = false;
+        }
+    }
+
+    private void HandleController_OnChanged(bool obj)
+    {
+        m_updateFuel = CheckCondition();
+    }
+
+    private void SecondaryBtnController_OnChanged(bool obj)
+    {
+        m_updateFuel = CheckCondition();
+    }
+
+    private bool CheckCondition()
+    {
+        Debug.Log($"btn: {secondaryBtnController.IsEnabled}, handle: {handleController.IsEnabled}");
+        return secondaryBtnController.IsEnabled && handleController.IsEnabled;
     }
 
     private void PlayerInventory_OnCurrentItemSelectedChanged(ItemBase arg1, ItemBase arg2)
@@ -111,6 +151,9 @@ public class GeneratorController : MonoBehaviour
 
         m_triggerFuel.OnEntered -= M_triggerFuel_OnEntered;
         m_triggerFuel.OnExited -= M_triggerFuel_OnExited;
+
+        secondaryBtnController.OnChanged -= SecondaryBtnController_OnChanged;
+        handleController.OnChanged -= HandleController_OnChanged;
     }
 
     private void OnEventCalled()
