@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5932778006218872572}
   - component: {fileID: 5436797213916635606}
   - component: {fileID: 8278778199919373806}
+  - component: {fileID: 8188401736335481780}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -148,6 +149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
   controller: {fileID: 6231699584837158408}
+  _rb: {fileID: 8188401736335481780}
   playerInventory: {fileID: 4880216406653816421}
   playerCamera: {fileID: 1321064108799479954}
   _maxStrengthThrowItem: 20
@@ -176,6 +178,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _currencyShop: 0
 --- !u!114 &5436797213916635606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,6 +228,33 @@ MonoBehaviour:
   _raycastDistance: 4
   _DisplaySelection: {fileID: 11400000, guid: dc0c2235445c61c44b00dee81950c9af, type: 2}
   _HideSelection: {fileID: 11400000, guid: f37aa75985f743f42a296098c88069b6, type: 2}
+--- !u!54 &8188401736335481780
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257368346383077803}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 2
 --- !u!1 &918127563723137880
 GameObject:
   m_ObjectHideFlags: 0
@@ -1333,6 +1363,7 @@ MonoBehaviour:
   _pickupIndicator: {fileID: 5436265047304968412}
   _nameObject: {fileID: 841660204485984828}
   _DisplaySelection: {fileID: 11400000, guid: dc0c2235445c61c44b00dee81950c9af, type: 2}
+  _updateNameObject: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
   _HideSelection: {fileID: 11400000, guid: f37aa75985f743f42a296098c88069b6, type: 2}
 --- !u!1 &6233480276853010939
 GameObject:

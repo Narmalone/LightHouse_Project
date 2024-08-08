@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 
@@ -9,10 +8,12 @@ public class PlayerInteractionUI : MonoBehaviour
     [SerializeField] private GameObject _pickupIndicator;
     [SerializeField] private TextMeshProUGUI _nameObject;
     [SerializeField] private CustomEvent_IItem _DisplaySelection;
+    [SerializeField] private CustomEvent_String _updateNameObject;
     [SerializeField] private CustomEvent _HideSelection;
 
     private void Awake()
     {
+        _updateNameObject.handle += UpdateNameObject;
         _DisplaySelection.handle += DisplaySelection;
         _HideSelection.handle += HideSelection;
     }
@@ -30,7 +31,7 @@ public class PlayerInteractionUI : MonoBehaviour
 
     private void DisplaySelection(IItem item)
     {
-        _nameObject.text = item.ItemDatas.itemName;
+        _nameObject.text = item.Name;
         _crosshair.localScale = Vector3.one * 2;
 
         HandleIndicators(item.IsInventoryItem, item.IsUsable);
@@ -49,4 +50,10 @@ public class PlayerInteractionUI : MonoBehaviour
         _useIndicator.SetActive(isUsable);
         _pickupIndicator.SetActive(isInventoryItem);
     }
+
+    private void UpdateNameObject(string name)
+    {
+        _nameObject.text = name;
+    }
+
 }

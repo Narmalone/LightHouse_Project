@@ -6,6 +6,7 @@ public class PlayerData : MonoBehaviour
 
     [Header("Components")]
     public CharacterController controller;
+    public Rigidbody _rb;
     public PlayerInventory playerInventory;
     public Camera playerCamera;
 
