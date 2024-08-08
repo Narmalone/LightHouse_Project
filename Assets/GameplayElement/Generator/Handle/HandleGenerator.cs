@@ -5,6 +5,9 @@ public class HandleGenerator : ItemBase
 {
     [SerializeField] private Animator animator;
 
+    private string forPlayer;
+    public override string Name { get => forPlayer; set => forPlayer = value; }
+
     private bool isEnabled = false;
     public bool IsEnabled
     {
@@ -21,6 +24,7 @@ public class HandleGenerator : ItemBase
     }
 
     public event Action<bool> OnChanged; //param new Value
+    [SerializeField] private CustomEvent_String eventName;
 
     public override void Use()
     {
@@ -36,5 +40,14 @@ public class HandleGenerator : ItemBase
     private void UpdateHandle()
     {
         animator.SetBool("IsEnabled", IsEnabled);
+        if (isEnabled)
+        {
+            forPlayer = "Switch to Off";
+        }
+        else
+        {
+            forPlayer = "Switch to On";
+        }
+        eventName?.Raise(forPlayer);
     }
 }

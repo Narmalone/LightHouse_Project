@@ -8,7 +8,7 @@ public class GeneratorController : MonoBehaviour
 
     [Header("CONTROLLERS")]
     [SerializeField] private HandleGenerator handleController;
-    [SerializeField] private BoutonGenerator secondaryBtnController;
+    [SerializeField] private BoutonGenerator btnController;
 
     [Header("LIFE 3D BAR")]
     [SerializeField] private Transform m_targetLife;
@@ -64,7 +64,7 @@ public class GeneratorController : MonoBehaviour
         m_triggerFuel.OnExited += M_triggerFuel_OnExited;
 
 
-        secondaryBtnController.OnChanged += SecondaryBtnController_OnChanged;
+        btnController.OnChanged += SecondaryBtnController_OnChanged;
         handleController.OnChanged += HandleController_OnChanged;
     }
 
@@ -72,12 +72,12 @@ public class GeneratorController : MonoBehaviour
     {
         if (value)
         {
-            secondaryBtnController.IsEnabled = true;
+            btnController.IsEnabled = true;
             handleController.IsEnabled = true;
         }
         else
         {
-            secondaryBtnController.IsEnabled = false;
+            btnController.IsEnabled = false;
             handleController.IsEnabled = false;
         }
     }
@@ -94,8 +94,7 @@ public class GeneratorController : MonoBehaviour
 
     private bool CheckCondition()
     {
-        Debug.Log($"btn: {secondaryBtnController.IsEnabled}, handle: {handleController.IsEnabled}");
-        return secondaryBtnController.IsEnabled && handleController.IsEnabled;
+        return btnController.IsEnabled && handleController.IsEnabled;
     }
 
     private void PlayerInventory_OnCurrentItemSelectedChanged(ItemBase arg1, ItemBase arg2)
@@ -152,7 +151,7 @@ public class GeneratorController : MonoBehaviour
         m_triggerFuel.OnEntered -= M_triggerFuel_OnEntered;
         m_triggerFuel.OnExited -= M_triggerFuel_OnExited;
 
-        secondaryBtnController.OnChanged -= SecondaryBtnController_OnChanged;
+        btnController.OnChanged -= SecondaryBtnController_OnChanged;
         handleController.OnChanged -= HandleController_OnChanged;
     }
 
@@ -165,13 +164,15 @@ public class GeneratorController : MonoBehaviour
     {
         if(m_updateFuel)
             UpdateFuel();
+
+        float t = 1 - (m_fuelValue / m_maxFuelValue);
+        m_targetLife.position = Vector3.Lerp(startPosition, endPosition, t);
+        m_targetLife.localScale = new Vector3(startScale.x, Mathf.Lerp(startScale.y, endScaleY, t), startScale.z);
     }
 
     private void OnFuelValueChange(float value)
     {
-        float t = 1 - (m_fuelValue / m_maxFuelValue);
-        m_targetLife.position = Vector3.Lerp(startPosition, endPosition, t);
-        m_targetLife.localScale = new Vector3(startScale.x, Mathf.Lerp(startScale.y, endScaleY, t), startScale.z);
+        
     }
 
     private void OnGeneratorsFuelEmpty()

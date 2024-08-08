@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class BoutonGenerator : ItemBase
 {
-    public override string Name => $"Switch ";
+    private string forPlayer = "Switch to ";
+    public override string Name { get => forPlayer; set => forPlayer = value; }
     private bool isEnabled = false;
     public bool IsEnabled { get => isEnabled; 
         set 
@@ -12,7 +13,7 @@ public class BoutonGenerator : ItemBase
             {
                 isEnabled = value;
                 OnChanged?.Invoke(isEnabled);
-                UpdateColor();
+                UpdateButton();
             }
         } 
     }
@@ -24,9 +25,11 @@ public class BoutonGenerator : ItemBase
 
     public event Action<bool> OnChanged; //param new Value
 
+    [SerializeField] private CustomEvent_String eventName;
+
     private void Awake()
     {
-        UpdateColor();
+        UpdateButton();
     }
 
     public override void Use()
@@ -36,11 +39,21 @@ public class BoutonGenerator : ItemBase
         IsEnabled = !IsEnabled;
     }
 
-    private void UpdateColor()
+    private void UpdateButton()
     {
         var propertyBlock = new MaterialPropertyBlock();
         propertyBlock.SetColor("_BaseColor", isEnabled ? EnabledColor : DisabledColor);
         m_rend.SetPropertyBlock(propertyBlock);
+
+        if (isEnabled)
+        {
+            forPlayer = "Switch to Off";
+        }
+        else
+        {
+            forPlayer = "Switch to On";
+        }
+        eventName?.Raise(forPlayer);
     }
 
 }
