@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TestInteractPickup : ItemBase, IInteractInInventory
 {
-    public override string Name { get; } = "Cube Interaction et Pickup";
+    public override string Name { get; set; } = "Cube Interaction et Pickup";
 
     public MeshRenderer _mesh;
 

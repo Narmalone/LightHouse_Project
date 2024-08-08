@@ -3,6 +3,7 @@ using UnityEngine;
 
 public interface IItem
 {
+    public abstract string Name { get; set; }
     GameObject go { get; }
     ItemDatas ItemDatas { get; }
 
@@ -12,7 +13,7 @@ public interface IItem
 
 public abstract class ItemBase : MonoBehaviour, IItem
 {
-    public virtual string Name { get; } = "Object ?";
+    public virtual string Name { get; set; } = "Object ?";
     public GameObject go => this.gameObject;
 
     [SerializeField]

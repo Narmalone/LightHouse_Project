@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class InteractCubeTest : ItemBase
 {
-    public override string Name { get; } = "Cube Interaction";
+    public override string Name { get; set; } = "Cube Interaction";
 
     public MeshRenderer _mesh;
 

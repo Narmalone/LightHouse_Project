@@ -8,13 +8,13 @@ public class InventorySlot : MonoBehaviour
 {
     public Image iconImage; // Reference to the icon image component
     public TextMeshProUGUI itemName; // Reference to the icon image component
-    public ItemDatas item; // The item currently in this slot
+    public IItem item; // The item currently in this slot
     public GameObject border; // Reference to the 3D preview object
     public ItemBase previewItem;
     public bool isSelected = false; // Is this slot currently selected?
     public bool isEmpty => item == null;
 
-    public void SetItem(ItemDatas newItem)
+    public void SetItem(IItem newItem)
     {
         item = newItem;
         UpdateDisplay();
@@ -40,8 +40,8 @@ public class InventorySlot : MonoBehaviour
         {
 
             // Display the icon
-            iconImage.sprite = item.icon;
-            itemName.text = item.itemName;
+            iconImage.sprite = item.ItemDatas.icon;
+            itemName.text = item.Name;
         }
         else
         {

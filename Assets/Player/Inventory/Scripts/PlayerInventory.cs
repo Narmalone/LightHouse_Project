@@ -110,7 +110,7 @@ public class PlayerInventory : MonoBehaviour
         // If no empty slot
         if (slotIndex == -1) return;
 
-        listInventorySlots[slotIndex].SetItem(item.ItemDatas);
+        listInventorySlots[slotIndex].SetItem(item);
 
         AddPreviewObject(slotIndex, item, item.ItemDatas.prefab);
 
@@ -125,7 +125,7 @@ public class PlayerInventory : MonoBehaviour
         if (listInventorySlots[selectedSlot].item == null) return;
 
         // Drop prefab
-        var go = Instantiate(listInventorySlots[selectedSlot].item.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
+        var go = Instantiate(listInventorySlots[selectedSlot].item.ItemDatas.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
         var itemDroped = go.GetComponent<ItemBase>();
         itemDroped?.SetStateObject(listInventorySlots[selectedSlot].previewItem);
 
