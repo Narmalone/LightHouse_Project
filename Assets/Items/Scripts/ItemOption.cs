@@ -26,7 +26,7 @@ public abstract class ItemBase : MonoBehaviour, IItem
     public bool isInventoryItem = true;
     public bool isUsable = true;
 
-    public event Action OnUse;
+    public Action OnUse;
 
     /// <summary>
     /// Use the object

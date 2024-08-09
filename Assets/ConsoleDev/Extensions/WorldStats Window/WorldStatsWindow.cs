@@ -40,11 +40,12 @@ public class WorldStatsWindow : MonoBehaviour
     public enum Zone
     {
         None,
+        OutsideLocal,
         Kitchen,
         Bedroom,
-        Control,
-        Service,
-        Lantern
+        SDB,
+        Restroom,
+        Salon
     }
 
     public CardinalPoint GetFacingDirection(Transform target)
