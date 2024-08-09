@@ -15,7 +15,7 @@ public abstract class ItemBase : MonoBehaviour, IItem
 {
     public virtual string Name { get; set; } = "Object ?";
     public GameObject go => this.gameObject;
-
+    [Header("ITEM BASE")]
     [SerializeField]
     private ItemDatas itemData;
     public ItemDatas ItemDatas => itemData;
