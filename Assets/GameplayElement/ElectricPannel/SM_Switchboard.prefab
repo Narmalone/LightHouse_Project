@@ -417,6 +417,75 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &6575717961992424761
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6219029551747723765}
+  - component: {fileID: 720221874073044266}
+  - component: {fileID: 7367107987197278657}
+  m_Layer: 6
+  m_Name: NoFuelCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &6219029551747723765
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6575717961992424761}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4646375135876126983}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &720221874073044266
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6575717961992424761}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.49596882, y: 0.7136102, z: 0.30743074}
+  m_Center: {x: 0.00082081556, y: 0.32790685, z: -0.0096925795}
+--- !u!114 &7367107987197278657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6575717961992424761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47c036932cdd3bf4da1fa2166a8a1933, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData: {fileID: 0}
+  isInventoryItem: 0
+  isUsable: 0
 --- !u!1 &8245384386658159529
 GameObject:
   m_ObjectHideFlags: 0
@@ -629,6 +698,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1246618871249732205}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1920e5c0db16d4a49aa5def36c27afef,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6219029551747723765}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1920e5c0db16d4a49aa5def36c27afef,
         type: 3}
@@ -787,6 +860,7 @@ MonoBehaviour:
   eventName: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
   CostPower: 30
   elecZone: 3
+  Col: {fileID: 7077930845182853192}
 --- !u!1 &3791096924997669041 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -906021230347800995, guid: 1920e5c0db16d4a49aa5def36c27afef,
@@ -855,6 +929,7 @@ MonoBehaviour:
   eventName: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
   CostPower: 30
   elecZone: 1
+  Col: {fileID: 3669081625325410066}
 --- !u!1 &4163320232488938284 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -128755708533090880, guid: 1920e5c0db16d4a49aa5def36c27afef,
@@ -953,6 +1028,7 @@ MonoBehaviour:
   - {fileID: 2671764239062288788}
   - {fileID: 1046277447257473595}
   - {fileID: 8773743810701346247}
+  noFuelOnGenerator: {fileID: 7367107987197278657}
   m_powerBar: {fileID: 2254485823421912739}
   m_fusibleEvent: {fileID: 11400000, guid: 5afd933c33cb45349afaaf8b4d4ff583, type: 2}
   currentEnergyPower: 0
@@ -1025,6 +1101,7 @@ MonoBehaviour:
   eventName: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
   CostPower: 30
   elecZone: 2
+  Col: {fileID: 2305594736643925681}
 --- !u!1 &8388931965948518606 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -5504808585799918046, guid: 1920e5c0db16d4a49aa5def36c27afef,
@@ -1093,6 +1170,7 @@ MonoBehaviour:
   eventName: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
   CostPower: 30
   elecZone: 5
+  Col: {fileID: 3732978937780816763}
 --- !u!1 &9088606067731569414 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -5057344485026011670, guid: 1920e5c0db16d4a49aa5def36c27afef,
@@ -1161,6 +1239,7 @@ MonoBehaviour:
   eventName: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
   CostPower: 30
   elecZone: 0
+  Col: {fileID: 472925064339936553}
 --- !u!1 &9171232269225234940 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4086814096725569296, guid: 1920e5c0db16d4a49aa5def36c27afef,
@@ -1229,3 +1308,4 @@ MonoBehaviour:
   eventName: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
   CostPower: 30
   elecZone: 4
+  Col: {fileID: 868646657410395350}

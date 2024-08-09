@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class GeneratorController : MonoBehaviour
 {
@@ -22,8 +23,6 @@ public class GeneratorController : MonoBehaviour
     [SerializeField] private float m_fuelValue = 100f;
 
     [SerializeField] private TriggerEvent m_triggerFuel;
-
-    private bool canEnableGenerator = false;
 
     [ConsoleVariable("Fuel")]
     public float FuelValue
@@ -52,6 +51,9 @@ public class GeneratorController : MonoBehaviour
     [SerializeField, ConsoleVariable("CanUpdateFuel")] private bool m_updateFuel = false;
 
     [SerializeField] private JerricanEssence currentJerricanSelected = null;
+
+    public event Action OnGeneratorFuelEmpty;
+    public event Action OnGeneratorFuelFilledFromEmpty;
 
     private void Awake()
     {
@@ -169,6 +171,11 @@ public class GeneratorController : MonoBehaviour
     private void Jerrican_OnJericanUse(float obj)
     {
         AddPercentFuelValue(obj);
+        if (obj > 0f && m_updateFuel == false)
+        {
+            m_updateFuel = true;
+            OnGeneratorFuelFilledFromEmpty?.Invoke();
+        }
         currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
         PlayerManager.Instance._inventory.RemoveItemFromInventory(currentJerricanSelected);
         currentJerricanSelected = null;
@@ -208,6 +215,7 @@ public class GeneratorController : MonoBehaviour
     private void OnGeneratorsFuelEmpty()
     {
         //jouer anims, sons...
+        OnGeneratorFuelEmpty?.Invoke();
     }
 
     private void UpdateFuel()

@@ -7,6 +7,7 @@ public class ElectricPannelController : MonoBehaviour
     [Header("Childs References")]
     [SerializeField] private MainDoorElectricalController _mainDoor;
     [SerializeField] private SwitchController[] switchs;
+    [SerializeField] private NoFuelOnGenerator noFuelOnGenerator;
 
     [SerializeField] private Slider m_powerBar;
 
@@ -72,6 +73,27 @@ public class ElectricPannelController : MonoBehaviour
         }
         else if (currentEnergyPower >= maxEnergyPower) currentEnergyPower = maxEnergyPower;
         UpdatePowerUI();
+    }
+
+    public void OnFuelEmpty()
+    {
+        ShutdownAllSwitches();
+        noFuelOnGenerator.gameObject.SetActive(true);
+        SetEnableSwitches(false);
+    }
+
+    public void OnFuelFilledFromEmpty()
+    {
+        noFuelOnGenerator.gameObject.SetActive(false);
+        SetEnableSwitches(true);
+    }
+
+    private void SetEnableSwitches(bool v)
+    {
+        foreach(var s in switchs)
+        {
+            s.Col.enabled = v;
+        }
     }
 
     private void ShutdownAllSwitches()
