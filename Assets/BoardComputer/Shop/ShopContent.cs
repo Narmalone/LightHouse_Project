@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class ShopContent : ContentWindow
 {
+    [SerializeField] private TextMeshProUGUI playerCurrencyTxt;
     [SerializeField] private TextMeshProUGUI deliveryTimeTxt;
     [SerializeField] private ShopCardController shopCardPrefab;
     [SerializeField] private Transform shopCardsTransform;
     [SerializeField] private ShopItemConfig shopItemConfig;
-
 
     private List<ShopCardController> controllers = new List<ShopCardController>();
 
@@ -22,6 +22,7 @@ public class ShopContent : ContentWindow
     private void Start()
     {
         SetDeliveryTime(shopItemConfig.AverageDeliveryTime);
+        GetPlayerCurrency();
     }
 
     private void InitShopCards()
@@ -56,5 +57,10 @@ public class ShopContent : ContentWindow
     public void SetDeliveryTime(TimeDatas whenDeliv)
     {
         deliveryTimeTxt.text = $"Delivery Time: {whenDeliv.Hour} Hours.";
+    }
+
+    public void GetPlayerCurrency()
+    {
+        playerCurrencyTxt.text = "Currency: " + PlayerManager.Instance._data._currencyShop;
     }
 }
