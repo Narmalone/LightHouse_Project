@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class ElectricPannelController : MonoBehaviour
 {
     [Header("Childs References")]
-    [SerializeField] private ItemBaseAnim _mainDoor;
+    [SerializeField] private MainDoorElectricalController _mainDoor;
     [SerializeField] private SwitchController[] switchs;
 
     [SerializeField] private Slider m_powerBar;

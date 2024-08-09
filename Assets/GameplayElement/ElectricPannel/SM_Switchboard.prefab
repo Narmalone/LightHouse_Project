@@ -641,11 +641,11 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -128755708533090880, guid: 1920e5c0db16d4a49aa5def36c27afef,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7223251079628725086}
+      addedObject: {fileID: 4227903544252169604}
     - targetCorrespondingSourceObject: {fileID: -128755708533090880, guid: 1920e5c0db16d4a49aa5def36c27afef,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4227903544252169604}
+      addedObject: {fileID: 8143660963536279333}
     - targetCorrespondingSourceObject: {fileID: -906021230347800995, guid: 1920e5c0db16d4a49aa5def36c27afef,
         type: 3}
       insertIndex: -1
@@ -882,24 +882,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.44635722, y: 0.015199463, z: 0.6444364}
   m_Center: {x: 0.2231787, y: -0.007600391, z: -0.000000014901165}
---- !u!114 &7223251079628725086
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4163320232488938284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29e08171731d2374b88bb4aee5702205, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemData: {fileID: 0}
-  isInventoryItem: 0
-  isUsable: 1
-  animator: {fileID: 4227903544252169604}
-  paramBoolName: Open
-  eventName: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
 --- !u!95 &4227903544252169604
 Animator:
   serializedVersion: 5
@@ -921,6 +903,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8143660963536279333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4163320232488938284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599b7c3579912dc40a02b8044ed2df8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData: {fileID: 0}
+  isInventoryItem: 0
+  isUsable: 1
+  animator: {fileID: 4227903544252169604}
+  paramBoolName: Open
+  eventName: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
 --- !u!4 &4646375135876126983 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1920e5c0db16d4a49aa5def36c27afef,
@@ -945,7 +945,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 793169bdfd40f344b9eafcef1bf31acb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mainDoor: {fileID: 7223251079628725086}
+  _mainDoor: {fileID: 8143660963536279333}
   switchs:
   - {fileID: 8784809415607042616}
   - {fileID: 61799469680820668}
