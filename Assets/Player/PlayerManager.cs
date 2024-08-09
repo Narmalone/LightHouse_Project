@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerManager : Singleton<PlayerManager>
@@ -13,5 +14,10 @@ public class PlayerManager : Singleton<PlayerManager>
         _controller?.Initialize(this);
         _interaction?.Initialize(this);
         _data?.Initialize(this);    
+    }
+
+    internal void SetSpeedWhenIsGrabbing(float ratio)
+    {
+        _controller._rationSpeedWhenGrabbing = ratio;
     }
 }

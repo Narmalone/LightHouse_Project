@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     public float lookSpeed = 2.0f;
     public float lookXLimit = 45.0f;
     public float _heightCheckWallAbove = 1f;
+    public float _rationSpeedWhenGrabbing = 1;
 
     [Header("Other")]
     public float raycastDistance = 3f;
@@ -109,60 +110,6 @@ public class PlayerController : MonoBehaviour
         _initialCenter = controller.center.y;
 
     }
-/*
-    private void OnRaycastEnter(IItem item)
-    {
-        //Debug.Log("Raycast entered: " + item.Name);
-        ShowOptions(item);
-    }
-
-    private void OnRaycastExit(IItem item)
-    {
-        //Debug.Log("Raycast exited: " + item.Name);
-        HideOptions();
-    }
-*/
-    /* private void ShowOptions(IItem item)
-     {
-         optionController.Show();
-         optionController.ItemName.text = item.ItemDatas.itemName;
-         List<GameObject> temp = new List<GameObject>();
-         foreach (var option in item.GetOptions())
-         {
-             var buttonObject = optionController.AddButton();
-             buttonObject.GetComponentInChildren<TextMeshProUGUI>().text = option.Name;
-
-             // Add a listener to the button's click event
-             if(option is GrabOptionBase grabOption)
-             {
-
-             }
-             else if (option is HoldOptionBase holdOption)
-             {
-                 buttonObject.onClick.AddListener(() =>
-                 {
-                     playerInventory.AddItemToInventory(item.go, item.ItemDatas);
-                     item.go.SetActive(false);
-                     Debug.Log("additem");
-                 });
-             }
-             else if (option is UseOptionBase useOption)
-             {
-                 buttonObject.onClick.AddListener(() =>
-                 {
-                     useOption.UseAction?.Invoke();
-                 });
-             }
-             temp.Add(buttonObject.gameObject);
-         }
-         EventSystem.current.SetSelectedGameObject(temp[0]);
-     }
-
-    private void HideOptions()
-    {
-        optionController.ClearButtons();
-        optionController.Hide();
-    }*/
 
     private bool CheckWallAbove()
     {
@@ -275,8 +222,12 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMove()
     {
-        controller.Move(transform.right * moveInput.x * Time.deltaTime * speed);
-        controller.Move(transform.forward * moveInput.y * Time.deltaTime * speed);
+
+        var speedX = moveInput.x * Time.deltaTime * speed * _rationSpeedWhenGrabbing;
+        var speedY = moveInput.y * Time.deltaTime * speed * _rationSpeedWhenGrabbing;
+
+        controller.Move(transform.right * speedX);
+        controller.Move(transform.forward * speedY);
     }
 
     private void HandleLook()
