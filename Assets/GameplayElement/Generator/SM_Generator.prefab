@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 8611036020440881128}
   - component: {fileID: 7542468926578990311}
   - component: {fileID: 1803638405870689485}
+  - component: {fileID: 7064119448571718032}
   m_Layer: 6
-  m_Name: Cube
+  m_Name: UseJerricanHereItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +50,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 284773576037074908}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -105,6 +106,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7064119448571718032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 284773576037074908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83dac31b4ba19da43beaf0fbcd5bd066, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData: {fileID: 0}
+  isInventoryItem: 0
+  isUsable: 0
 --- !u!1 &4242095954079130948
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,8 +278,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.42779857, y: 0.48254865, z: 0.5188379}
-  m_Center: {x: 0.017558217, y: 0.12329081, z: -0.023123264}
+  m_Size: {x: 0.5504543, y: 0.62193483, z: 0.92087364}
+  m_Center: {x: -0.043769658, y: 0.1929839, z: -0.22414112}
 --- !u!114 &5237267335641484334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -680,6 +696,7 @@ MonoBehaviour:
   m_shutdownEvent: {fileID: 11400000, guid: 8e809afbafa5e74408ad472f54ff3a8b, type: 2}
   handleController: {fileID: 4038642221921212961}
   btnController: {fileID: 1236328747053697109}
+  fuelLid: {fileID: 5740618922256857505}
   m_targetLife: {fileID: 6089736358332776119}
   endScaleY: 0
   m_fuelValue: 100

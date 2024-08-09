@@ -9,6 +9,7 @@ public class GeneratorController : MonoBehaviour
     [Header("CONTROLLERS")]
     [SerializeField] private HandleGenerator handleController;
     [SerializeField] private BoutonGenerator btnController;
+    [SerializeField] private FuelLid fuelLid;
 
     [Header("LIFE 3D BAR")]
     [SerializeField] private Transform m_targetLife;
@@ -66,6 +67,35 @@ public class GeneratorController : MonoBehaviour
 
         btnController.OnChanged += SecondaryBtnController_OnChanged;
         handleController.OnChanged += HandleController_OnChanged;
+        fuelLid.OnChanged += FuelLid_OnChanged;
+
+        StartInit();
+    }
+
+    private void StartInit()
+    {
+        m_triggerFuel.gameObject.SetActive(fuelLid.IsOpen);
+
+    }
+
+    private void FuelLid_OnChanged(bool obj)
+    {
+        if (obj)
+        {
+            m_triggerFuel.gameObject.SetActive(true);
+        }
+        else
+        {
+            m_triggerFuel.gameObject.SetActive(false);
+
+            if(currentJerricanSelected != null)
+            {
+                currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
+                currentJerricanSelected.isUsable = false;
+                currentJerricanSelected = null;
+            }
+            PlayerInventory.OnCurrentItemSelectedChanged -= PlayerInventory_OnCurrentItemSelectedChanged;
+        }
     }
 
     private void SetGeneratorState(bool value)
