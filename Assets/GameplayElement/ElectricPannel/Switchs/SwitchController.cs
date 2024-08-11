@@ -32,13 +32,3 @@ public class SwitchController : ItemBaseAnim
         eventName?.Raise(forPlayer);
     }
 }
-
-public enum ElectricityZones
-{
-    OutsideLocal,
-    Bathroom,
-    BedRoom,
-    KitchenAndOther,
-    Office,
-    Lens
-}

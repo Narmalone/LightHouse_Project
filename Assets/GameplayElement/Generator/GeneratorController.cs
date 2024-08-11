@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class GeneratorController : MonoBehaviour
 {
@@ -39,7 +38,7 @@ public class GeneratorController : MonoBehaviour
             else if (m_fuelValue < 0f)
             {
                 m_fuelValue = 0f;
-                m_updateFuel = false;
+                IsOn = false;
                 OnGeneratorsFuelEmpty();
             }
         }
@@ -48,7 +47,7 @@ public class GeneratorController : MonoBehaviour
     [SerializeField, Range(0, 8), ConsoleVariable("GenSpeedSec")] private float m_speedDecreasePerSecond = 0.1f;
     [SerializeField, Range(0, 10), ConsoleVariable("GenSpeedMul")] private float m_speedDecreaseMultiplier = 1f;
 
-    [SerializeField, ConsoleVariable("CanUpdateFuel")] private bool m_updateFuel = false;
+    [SerializeField, ConsoleVariable("CanUpdateFuel")] public bool IsOn = false;
 
     [SerializeField] private JerricanEssence currentJerricanSelected = null;
 
@@ -114,14 +113,35 @@ public class GeneratorController : MonoBehaviour
         }
     }
 
+    public event Action OnGeneratorEnabled;
+    public event Action OnGeneratorDisabled;
+
     private void HandleController_OnChanged(bool obj)
     {
-        m_updateFuel = CheckCondition();
+        bool condition = CheckCondition();
+        if (condition)
+        {
+            OnGeneratorEnabled?.Invoke();
+        }
+        else if (condition != IsOn && obj == false)
+        {
+            OnGeneratorDisabled?.Invoke();
+        }
+        IsOn = condition;
     }
 
     private void SecondaryBtnController_OnChanged(bool obj)
     {
-        m_updateFuel = CheckCondition();
+        bool condition = CheckCondition();
+        if (condition)
+        {
+            OnGeneratorEnabled?.Invoke();
+        }
+        else if (condition != IsOn && obj == false)
+        {
+            OnGeneratorDisabled?.Invoke();
+        }
+        IsOn = condition;
     }
 
     private bool CheckCondition()
@@ -171,9 +191,9 @@ public class GeneratorController : MonoBehaviour
     private void Jerrican_OnJericanUse(float obj)
     {
         AddPercentFuelValue(obj);
-        if (obj > 0f && m_updateFuel == false)
+        if (obj > 0f && IsOn == false)
         {
-            m_updateFuel = true;
+            IsOn = true;
             OnGeneratorFuelFilledFromEmpty?.Invoke();
         }
         currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
@@ -194,12 +214,12 @@ public class GeneratorController : MonoBehaviour
 
     private void OnEventCalled()
     {
-        //SetFuelValue(0f);
+        
     }
 
     private void Update()
     {
-        if(m_updateFuel)
+        if(IsOn)
             UpdateFuel();
 
         float t = 1 - (m_fuelValue / m_maxFuelValue);
@@ -223,23 +243,8 @@ public class GeneratorController : MonoBehaviour
         FuelValue -= m_speedDecreasePerSecond * m_speedDecreaseMultiplier * Time.deltaTime;
     }
 
-    private void SetFuelValue(float _fuelValue)
-    {
-        FuelValue = _fuelValue;
-    }
-
-    private void AddFuelValue(float _fuelValue)
-    {
-        FuelValue = Mathf.Clamp(FuelValue + (m_maxFuelValue * (_fuelValue / 100f)), 0f, m_maxFuelValue);
-    }
-
     private void AddPercentFuelValue(float _percentFuel)
     {
         FuelValue = Mathf.Clamp(FuelValue + (m_maxFuelValue * (_percentFuel / 100f)), 0f, m_maxFuelValue);
-    }
-
-    private void RemoveFuelValue(float _fuelValue)
-    {
-        FuelValue -= _fuelValue;
     }
 }

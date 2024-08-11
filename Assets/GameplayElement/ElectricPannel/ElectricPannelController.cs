@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,8 +17,10 @@ public class ElectricPannelController : MonoBehaviour
     [SerializeField] private float currentEnergyPower;
     [SerializeField, Tooltip("Not a percentage")] private float maxEnergyPower = 100f;
 
-    public static event Action<ElectricityZones> OnElectricityEnabled;
-    public static event Action<ElectricityZones> OnElectricityDisabled;
+    public event Action<ElectricityZones> OnElectricityEnabled;
+    public event Action<ElectricityZones> OnElectricityDisabled;
+
+    public int numberOfEnabledSwitch =>  GetEnabledSwitchesNumber();
 
     private void Awake()
     {
@@ -25,6 +28,18 @@ public class ElectricPannelController : MonoBehaviour
         m_fusibleEvent.eventAction += OnfusibleEventCalled;
     }
 
+    public int GetEnabledSwitchesNumber()
+    {
+        int count = 0;
+        foreach (var s in switchs)
+        {
+            if (s.IsEnabled)
+            {
+                count++;
+            }
+        }
+            return count;
+    }
     private void InitSwitches()
     {
         foreach (var s in switchs)
@@ -35,13 +50,11 @@ public class ElectricPannelController : MonoBehaviour
                 {
                     AddOrRemovePower(-s.CostPower);
                     OnElectricityEnabled?.Invoke(s.elecZone);
-                    Debug.Log("Enable all items in " + s.elecZone);
                 }
                 else
                 {
                     AddOrRemovePower(s.CostPower);
                     OnElectricityDisabled?.Invoke(s.elecZone);
-                    Debug.Log("Disable all items in " + s.elecZone);
                 }
             };
         }
@@ -108,7 +121,6 @@ public class ElectricPannelController : MonoBehaviour
         }
     }
 
-    //Remove un fusible au hasard et désactiver l'électricitée, le joueur devras en racheter un et le remplacer
     private void OnfusibleEventCalled()
     {
         ShutdownAllSwitches();
