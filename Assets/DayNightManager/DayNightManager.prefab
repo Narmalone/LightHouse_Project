@@ -47,8 +47,8 @@ MonoBehaviour:
   _state: 0
   _sunLight: {fileID: 0}
   _skyBox: {fileID: 0}
-  dayTxt: {fileID: 0}
-  times: {fileID: 0}
+  _dayCount: {fileID: 0}
+  _timeDisplay: {fileID: 0}
   _eventStartTimeCycle: {fileID: 11400000, guid: 3c2f06004519ce749a81878c17d61afa,
     type: 2}
   _eventMorning: {fileID: 11400000, guid: e57984c0f4db40b49a7647b6f00069bc, type: 2}
@@ -273,30 +273,30 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.2
-      inSlope: 1.6076475
-      outSlope: 1.6076475
-      tangentMode: 34
+      value: 4000
+      inSlope: 3015.8123
+      outSlope: 3015.8123
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.33333334
+      outWeight: 0.29787236
     - serializedVersion: 3
       time: 0.5064655
-      value: 1.014218
-      inSlope: -0.021060765
-      outSlope: -0.021060765
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      value: 100000
+      inSlope: -0
+      outSlope: -0
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.6425532
+      outWeight: 0.68122274
     - serializedVersion: 3
       time: 1
-      value: 0.2
-      inSlope: -1.6497691
-      outSlope: -1.6497691
-      tangentMode: 34
+      value: 4000
+      inSlope: -1789.0219
+      outSlope: -1789.0219
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.25764194
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -336,9 +336,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   _homeTime: 0
   currentDay: 0
-  _startOrientation: {x: 0, y: 0, z: 0}
-  _sunOrientation: {x: 0, y: 0, z: 0}
+  _startOrientation: {x: -90, y: 90, z: 0}
+  _sunOrientation: {x: 1, y: -1, z: 0}
   _currentTime: 0
   _initialSpeedMultiplier: 1
-  _isDayUpdating: 1
+  _isDayUpdating: 0
   _debug: 0

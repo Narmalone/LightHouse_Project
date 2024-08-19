@@ -138,7 +138,7 @@ public class DayNightManager : MonoBehaviour
         UpdateDayDisplay();
         _readyMorning = true;
         _lightTransform = _sunLight.transform;
-        SetTime(_homeTime, false);
+        SetTime(_homeTime);
     }
 
     private void Update()
@@ -157,13 +157,15 @@ public class DayNightManager : MonoBehaviour
     private void UpdateStats()
     {
         UpdateTimeDisplay();
-        return; 
+
         var percent = CurrentTime / 24;
 
         _lightTransform.eulerAngles = _startOrientation + _sunOrientation * 360 * percent;
 
         _sunLight.color = _colorSunOverTime.Evaluate(percent);
         _sunLight.intensity = _sunIntensity.Evaluate(percent);
+
+        return; 
 
         _skyBox.SetColor("_SkyTint", _colorSkyBoxOverTime.Evaluate(percent));
         _skyBox.SetFloat("_Exposure", _skyBoxExposure.Evaluate(percent));
@@ -182,9 +184,8 @@ public class DayNightManager : MonoBehaviour
         _speedMultiplier = duration;
     }
 
-    public void SetTime(float time, bool isDayUpdating = true)
+    public void SetTime(float time)
     {
-        _isDayUpdating = isDayUpdating;
         CurrentTime = time;
         UpdateStats();
     }
