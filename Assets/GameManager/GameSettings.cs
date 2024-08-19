@@ -5,9 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "GameSettings")]
 public class GameSettings : ScriptableObject
 {
-    public int TotalDays = 14;
+    public int TotalDays = 0;
     public TimeDatas DayCycleDuration = new TimeDatas() { Hour = 0, Minutes = 4.5f, Seconds = 0f };
-    public TimeDatas NightCycleDuration = new TimeDatas() { Hour = 0, Minutes = 4.5f, Seconds = 0f };
 
     [SerializeField] public ScenarioSettings scenarioSettings;
     
@@ -20,8 +19,9 @@ public struct TimeDatas
     public float Minutes;
     public float Seconds;
 
-    public TimeDatas(float hour, float minutes, float seconds)
-    {
+    public float Duration => 86400 / (Hour * 3600 + Minutes * 60 + Seconds);
+
+    public TimeDatas(float hour, float minutes, float seconds)    {
         Hour = hour;
         Minutes = minutes;
         Seconds = seconds;

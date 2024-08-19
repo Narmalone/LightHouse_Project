@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class DayNightManager : MonoBehaviour
@@ -12,11 +13,17 @@ public class DayNightManager : MonoBehaviour
     }
 
 
+    [Header("State")]
+    [SerializeField] private DayState _state;
+
     [Header("Components")]
     [SerializeField] private Light _sunLight;
     [SerializeField] private Material _skyBox;
+    [SerializeField] private TextMeshProUGUI _dayCount;
+    [SerializeField] private TextMeshProUGUI _timeDisplay;
 
     [Header("Event")]
+    [SerializeField] private CustomEvent _eventStartTimeCycle;
     [SerializeField] private CustomEvent _eventMorning;
     [SerializeField] private CustomEvent _eventMidDay;
     [SerializeField] private CustomEvent _eventEvening;
@@ -30,7 +37,7 @@ public class DayNightManager : MonoBehaviour
     [Header("Color Environment")]
     [SerializeField] private Gradient _skyColorOverTime;
     [SerializeField] private Gradient _equatorOverTime;
-    [SerializeField] private Gradient _groundFogOverTime;
+    [SerializeField] private Gradient _groundFogOverTime; 
 
     [Header("Fog")]
     [SerializeField] private AnimationCurve _skyBoxExposure;
@@ -39,14 +46,17 @@ public class DayNightManager : MonoBehaviour
 
     [Header("Time")]
     [SerializeField, Range(0, 24)] private float _homeTime;
+    [SerializeField] private int currentDay = 0;
 
     [Header("Stats")]
     [SerializeField] private Vector3 _startOrientation;
     [SerializeField] private Vector3 _sunOrientation;
     [SerializeField, Tooltip("In Hour"), Range(0, 24)] private float _currentTime;
-    [SerializeField, Range(0, 100)] private float _speedMultiplier;
+    [SerializeField, Range(0, 100), ConsoleVariable("TimeSpeed"), ConsoleCategory("Gameplay")] private float _initialSpeedMultiplier;
+    [SerializeField] public bool _isDayUpdating;
     [SerializeField] private bool _debug;
-    private bool _isDayUpdating;
+
+    private float _speedMultiplier;
 
     private bool _readyMorning;
     private bool _readyMidday;
@@ -54,8 +64,8 @@ public class DayNightManager : MonoBehaviour
     private bool _readyMidnight;
 
     private Transform _lightTransform;
+    private GameSettings gameSettings;
 
-    private DayState _state;
 
     public DayState State
     {
@@ -72,7 +82,7 @@ public class DayNightManager : MonoBehaviour
 
             switch (value)
             {
-                case > 8 when _readyMorning:
+                case > 6 when _readyMorning:
                     _readyMorning = false;
                     _readyMidday = true;
                     _eventMorning.Raise();
@@ -95,6 +105,8 @@ public class DayNightManager : MonoBehaviour
                     _readyMorning = true;
                     _eventMidNight.Raise();
                     State = DayState.MID_NIGHT;
+                    currentDay++;
+                    UpdateDayDisplay();
                     break;
             }
         }
@@ -110,10 +122,21 @@ public class DayNightManager : MonoBehaviour
     }
 
     private void Awake()
-    {    }
+    {
+        _eventStartTimeCycle.handle += OnStartTimeCycle;
+    }
+
+    private void OnDestroy()
+    {
+        _eventStartTimeCycle.handle -= OnStartTimeCycle;
+    }
 
     private void Start()
     {
+        gameSettings = GameManager.Instance.gameSettings;
+        SetSpeedWithStateDuration(gameSettings.DayCycleDuration.Duration);
+        UpdateDayDisplay();
+        _readyMorning = true;
         _lightTransform = _sunLight.transform;
         SetTime(_homeTime, false);
     }
@@ -122,7 +145,7 @@ public class DayNightManager : MonoBehaviour
     {
         if (_isDayUpdating == false) return;
 
-        var value = CurrentTime + Time.deltaTime * _speedMultiplier;
+        var value = CurrentTime + Time.deltaTime / 3600 * _speedMultiplier * _initialSpeedMultiplier;
 
         if (value < CurrentTime) return;
 
@@ -133,7 +156,8 @@ public class DayNightManager : MonoBehaviour
 
     private void UpdateStats()
     {
-        return;
+        UpdateTimeDisplay();
+        return; 
         var percent = CurrentTime / 24;
 
         _lightTransform.eulerAngles = _startOrientation + _sunOrientation * 360 * percent;
@@ -153,15 +177,37 @@ public class DayNightManager : MonoBehaviour
         RenderSettings.fogDensity = _fogAmount.Evaluate(percent);
     }
 
+    private void SetSpeedWithStateDuration(float duration)
+    {
+        _speedMultiplier = duration;
+    }
+
     public void SetTime(float time, bool isDayUpdating = true)
     {
         _isDayUpdating = isDayUpdating;
         CurrentTime = time;
         UpdateStats();
     }
-/*
-    private float Remap(float value, float oldRangeMin, float oldRangeMax, float newRangeMin, float newRangeMax)
+
+    private void UpdateTimeDisplay()
     {
-        return newRangeMin + (value - oldRangeMin) * (newRangeMax - newRangeMin) / (oldRangeMax - oldRangeMin);
-    }*/
+        TimeSpan timeSpan = TimeSpan.FromSeconds(CurrentTime*3600);
+        _timeDisplay.text = string.Format("{0:D2}:{1:D2}:{2:D2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
+    }
+
+    private void UpdateDayDisplay()
+    {
+        _dayCount.text = $"Day: {currentDay}";
+    }
+
+    private void OnStartTimeCycle()
+    {
+        _isDayUpdating = true;
+    }
+
+    /*
+        private float Remap(float value, float oldRangeMin, float oldRangeMax, float newRangeMin, float newRangeMax)
+        {
+            return newRangeMin + (value - oldRangeMin) * (newRangeMax - newRangeMin) / (oldRangeMax - oldRangeMin);
+        }*/
 }
