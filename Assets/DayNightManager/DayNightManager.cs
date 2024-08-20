@@ -28,6 +28,7 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] private CustomEvent _eventMidDay;
     [SerializeField] private CustomEvent _eventEvening;
     [SerializeField] private CustomEvent _eventMidNight;
+    [SerializeField] private CustomEvent_Float _eventSetTime;
 
     [Header("Color")]
     [SerializeField] private Gradient _colorSunOverTime;
@@ -124,11 +125,13 @@ public class DayNightManager : MonoBehaviour
     private void Awake()
     {
         _eventStartTimeCycle.handle += OnStartTimeCycle;
+        _eventSetTime.handle += OnSetTime;
     }
 
     private void OnDestroy()
     {
         _eventStartTimeCycle.handle -= OnStartTimeCycle;
+        _eventSetTime.handle -= OnSetTime;
     }
 
     private void Start()
@@ -180,7 +183,6 @@ public class DayNightManager : MonoBehaviour
     {
         _speedMultiplier = duration;
     }
-
     public void SetTime(float time)
     {
         CurrentTime = time;
@@ -196,6 +198,11 @@ public class DayNightManager : MonoBehaviour
     private void UpdateDayDisplay()
     {
         _dayCount.text = $"Day: {currentDay}";
+    }
+
+    private void OnSetTime(float value)
+    {
+        SetTime(value);
     }
 
     private void OnStartTimeCycle()

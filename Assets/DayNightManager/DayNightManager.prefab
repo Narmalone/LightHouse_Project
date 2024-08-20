@@ -55,6 +55,7 @@ MonoBehaviour:
   _eventMidDay: {fileID: 11400000, guid: b280f9676d2fa1549bf32b7433f2a0c3, type: 2}
   _eventEvening: {fileID: 11400000, guid: 607da7d1137229b4c94e9a373cde5594, type: 2}
   _eventMidNight: {fileID: 11400000, guid: 4fb450ef5be257e4a91916ea60ada29d, type: 2}
+  _eventSetTime: {fileID: 11400000, guid: e5643463280c24a4e9d5cc46f29ccee4, type: 2}
   _colorSunOverTime:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 1}
@@ -235,32 +236,50 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  _skyBoxExposure:
+  _sunRotationSpeed:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: 0.028072935
-      outSlope: 0.028072935
+      inSlope: -0.97680146
+      outSlope: -0.97680146
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.5064655
-      value: 1.014218
-      inSlope: -0.00036776625
-      outSlope: -0.00036776625
+      time: 0.101543695
+      value: 0.900812
+      inSlope: -0.71471596
+      outSlope: -0.624019
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.70286274
+      outWeight: 0.24416022
+    - serializedVersion: 3
+      time: 0.4987049
+      value: 0.80445266
+      inSlope: -0.002428174
+      outSlope: -0.002428174
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
+      time: 0.8998238
+      value: 0.8998242
+      inSlope: 0.5832948
+      outSlope: 0.7098888
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.23962805
+      outWeight: 0.8733592
+    - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: -0.028808467
-      outSlope: -0.028808467
+      inSlope: 0.9999958
+      outSlope: 0.9999958
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -274,29 +293,29 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 4000
-      inSlope: 3015.8123
-      outSlope: 3015.8123
+      inSlope: 598142
+      outSlope: 598142
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.29787236
+      outWeight: 0.038297873
     - serializedVersion: 3
       time: 0.5064655
       value: 100000
-      inSlope: -0
-      outSlope: -0
+      inSlope: 1884.9031
+      outSlope: 1884.9031
       tangentMode: 0
       weightedMode: 3
-      inWeight: 0.6425532
-      outWeight: 0.68122274
+      inWeight: 0.47659573
+      outWeight: 0.48471612
     - serializedVersion: 3
       time: 1
       value: 4000
-      inSlope: -1789.0219
-      outSlope: -1789.0219
+      inSlope: -580549.44
+      outSlope: -580549.44
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.25764194
+      inWeight: 0.04366813
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -334,10 +353,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _homeTime: 0
+  _homeTime: 12
   currentDay: 0
   _startOrientation: {x: -90, y: 90, z: 0}
-  _sunOrientation: {x: 1, y: -1, z: 0}
+  _sunOrientation: {x: 1, y: 0, z: 0}
   _currentTime: 0
   _initialSpeedMultiplier: 1
   _isDayUpdating: 0

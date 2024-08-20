@@ -76,5 +76,6 @@ public class NightLamp : MonoBehaviour
             yield return null;
         }
         _light.intensity = intensity;
+        _coroutineFade = null;
     }
 }
