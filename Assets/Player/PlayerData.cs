@@ -14,7 +14,7 @@ public class PlayerData : MonoBehaviour
     public CharacterController controller;
     public Rigidbody _rb;
     public PlayerInventory playerInventory;
-    public Camera playerCamera;
+    public Transform playerCamera;
 
     [Header("Drop Item")]
     public float _maxStrengthThrowItem;

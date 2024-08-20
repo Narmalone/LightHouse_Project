@@ -185,6 +185,7 @@ public class DayNightManager : MonoBehaviour
     }
     public void SetTime(float time)
     {
+        //if(CurrentTime <)
         CurrentTime = time;
         UpdateStats();
     }

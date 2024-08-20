@@ -1,3 +1,4 @@
+using Cinemachine;
 using System;
 using UnityEngine;
 
@@ -15,6 +16,9 @@ public class Bed : ItemBase
     [SerializeField] private CustomEvent_Float _eventSetTime;
     [SerializeField] private CustomEvent_Float _eventFade;
     [SerializeField] private CustomEvent_String _eventCrossaireNameUpdate;
+
+    [Header("Components")]
+    [SerializeField] private CinemachineVirtualCamera _VCam;
 
     [Header("Stats")]
     [SerializeField] private bool _forEnableSleep;
@@ -52,6 +56,7 @@ public class Bed : ItemBase
         _eventLockMovementPlayer.Raise();
 
         // MouvemntCamera
+        _VCam.Priority = 100;
 
         // Sleep
         _eventFade.Raise(_sleepingTime);
@@ -64,6 +69,8 @@ public class Bed : ItemBase
     {
         _eventSetTime.Raise(6.5f);
         isUsable = _forEnableSleep;
+
+        _VCam.Priority = 0;
 
         _eventFadeIsMasking.handle -= SetTimeMorning;
     }

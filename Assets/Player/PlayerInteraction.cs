@@ -10,8 +10,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private CustomEvent _HideSelection;
 
     private PlayerManager _manager;
-    private Camera playerCamera;
-    private Transform playerCameraTransform;
+    private Transform playerCamera;
 
     private IItem currentHitItem;
 
@@ -42,7 +41,6 @@ public class PlayerInteraction : MonoBehaviour
     {
         _manager = manager;
         playerCamera = manager._data.playerCamera;
-        playerCameraTransform = playerCamera.transform;
     }
 
 
@@ -50,13 +48,13 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteraction()
     {
-        if (playerCameraTransform == null) return;
+        if (playerCamera == null) return;
 
-        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        Ray ray = new Ray(playerCamera.position, playerCamera.forward);
         // Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * _raycastDistance, Color.red);
         if (Physics.Raycast(ray, out RaycastHit hit, _raycastDistance, _itemMask))
         {
-            Debug.DrawRay(playerCamera.transform.position, hit.point - playerCamera.transform.position);
+            Debug.DrawRay(playerCamera.position, hit.point - playerCamera.position);
             hit.collider.gameObject.TryGetComponent(out IItem item);
             if (item != null)
             {

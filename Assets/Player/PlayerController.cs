@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private ItemOptionController optionController;
     private PlayerInventory playerInventory;
-    private Camera playerCamera;
+    private Transform playerCamera;
     private Vector3 velocity;
     private Vector3 _initialCameraPosition;
     private Vector2 moveInput;
@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
         playerCamera = manager._data.playerCamera;
 
         _initialSpeed = speed;
-        _initialCameraPosition = playerCamera.transform.localPosition;
+        _initialCameraPosition = playerCamera.localPosition;
         _initialHeight = controller.height;
         _initialCenter = controller.center.y;
 
@@ -224,13 +224,13 @@ public class PlayerController : MonoBehaviour
         {
             controller.height = _crouchHeight;
             controller.center = _crouchCenter * Vector3.up;
-            playerCamera.transform.localPosition = _crouchCameraHeight * Vector3.up;
+            playerCamera.localPosition = _crouchCameraHeight * Vector3.up;
             speed = _crouchspeed;
             return;
         }
         controller.height = _initialHeight;
         controller.center = _initialCenter * Vector3.up;
-        playerCamera.transform.localPosition = _initialCameraPosition;
+        playerCamera.localPosition = _initialCameraPosition;
         speed = _initialSpeed;
     }
 
@@ -277,7 +277,7 @@ public class PlayerController : MonoBehaviour
     {
         rotationX += -lookInput.y * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
-        playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
+        playerCamera.localRotation = Quaternion.Euler(rotationX, 0, 0);
         transform.rotation *= Quaternion.Euler(0, lookInput.x * lookSpeed, 0);
     }
 
