@@ -3,8 +3,12 @@ using UnityEngine;
 
 public class GeneratorController : MonoBehaviour
 {
-    [Header("EVENT")]
+    [Header("EVENTS")]
     [SerializeField] private ScenarioEvent m_shutdownEvent;
+    [SerializeField] private CustomEvent OnGeneratorEnabled;
+    [SerializeField] private CustomEvent OnGeneratorDisabled;
+    [SerializeField] private CustomEvent OnGeneratorFuelEmpty;
+    [SerializeField] private CustomEvent OnGeneratorFuelFilledFromEmpty;
 
     [Header("CONTROLLERS")]
     [SerializeField] private HandleGenerator handleController;
@@ -20,7 +24,6 @@ public class GeneratorController : MonoBehaviour
 
     [Header("GENERATOR")]
     [SerializeField] private float m_fuelValue = 100f;
-
     [SerializeField] private TriggerEvent m_triggerFuel;
 
     [ConsoleVariable("Fuel")]
@@ -48,11 +51,7 @@ public class GeneratorController : MonoBehaviour
     [SerializeField, Range(0, 10), ConsoleVariable("GenSpeedMul")] private float m_speedDecreaseMultiplier = 1f;
 
     [SerializeField, ConsoleVariable("CanUpdateFuel")] public bool IsOn = false;
-
-    [SerializeField] private JerricanEssence currentJerricanSelected = null;
-
-    public event Action OnGeneratorFuelEmpty;
-    public event Action OnGeneratorFuelFilledFromEmpty;
+    private JerricanEssence currentJerricanSelected = null;
 
     private void Awake()
     {
@@ -113,19 +112,16 @@ public class GeneratorController : MonoBehaviour
         }
     }
 
-    public event Action OnGeneratorEnabled;
-    public event Action OnGeneratorDisabled;
-
     private void HandleController_OnChanged(bool obj)
     {
         bool condition = CheckCondition();
         if (condition)
         {
-            OnGeneratorEnabled?.Invoke();
+            OnGeneratorEnabled?.Raise();
         }
         else if (condition != IsOn && obj == false)
         {
-            OnGeneratorDisabled?.Invoke();
+            OnGeneratorDisabled?.Raise();
         }
         IsOn = condition;
     }
@@ -135,11 +131,11 @@ public class GeneratorController : MonoBehaviour
         bool condition = CheckCondition();
         if (condition)
         {
-            OnGeneratorEnabled?.Invoke();
+            OnGeneratorEnabled?.Raise();
         }
         else if (condition != IsOn && obj == false)
         {
-            OnGeneratorDisabled?.Invoke();
+            OnGeneratorDisabled?.Raise();
         }
         IsOn = condition;
     }
@@ -194,7 +190,7 @@ public class GeneratorController : MonoBehaviour
         if (obj > 0f && IsOn == false)
         {
             IsOn = true;
-            OnGeneratorFuelFilledFromEmpty?.Invoke();
+            OnGeneratorFuelFilledFromEmpty?.Raise();
         }
         currentJerricanSelected.OnJericanUse -= Jerrican_OnJericanUse;
         PlayerManager.Instance._inventory.RemoveItemFromInventory(currentJerricanSelected);
@@ -235,7 +231,7 @@ public class GeneratorController : MonoBehaviour
     private void OnGeneratorsFuelEmpty()
     {
         //jouer anims, sons...
-        OnGeneratorFuelEmpty?.Invoke();
+        OnGeneratorFuelEmpty?.Raise();
     }
 
     private void UpdateFuel()

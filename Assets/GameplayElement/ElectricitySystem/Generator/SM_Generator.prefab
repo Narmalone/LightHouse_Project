@@ -711,6 +711,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_shutdownEvent: {fileID: 11400000, guid: 8e809afbafa5e74408ad472f54ff3a8b, type: 2}
+  OnGeneratorEnabled: {fileID: 11400000, guid: 39a1a4c36ca6b0244aa5bd25101bcdfe, type: 2}
+  OnGeneratorDisabled: {fileID: 11400000, guid: c7e2e062bdd7d7847abbace814cf52de,
+    type: 2}
+  OnGeneratorFuelEmpty: {fileID: 11400000, guid: 07eabe4a7b4b9b04b8ae06c31460c98a,
+    type: 2}
+  OnGeneratorFuelFilledFromEmpty: {fileID: 11400000, guid: 0138d70fe2735da448ae43993d245baf,
+    type: 2}
   handleController: {fileID: 4038642221921212961}
   btnController: {fileID: 1236328747053697109}
   fuelLid: {fileID: 5740618922256857505}
@@ -721,8 +728,7 @@ MonoBehaviour:
   m_maxFuelValue: 100
   m_speedDecreasePerSecond: 1.5
   m_speedDecreaseMultiplier: 1
-  m_updateFuel: 0
-  currentJerricanSelected: {fileID: 0}
+  IsOn: 0
 --- !u!65 &8101016974184822121
 BoxCollider:
   m_ObjectHideFlags: 0
