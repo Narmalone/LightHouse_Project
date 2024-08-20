@@ -2,87 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ComputerController : MonoBehaviour
+public class ComputerController : ItemBase
 {
     [SerializeField] private CanvasGroup _mainCanvasGroup;
-    [SerializeField] private ContentWindow[] _allWindows;
-    [SerializeField] private TabBtnDisplay[] mainOnglets;
+    [SerializeField] private BoxCollider _itemCollider;
+    [SerializeField] private UiComputerController _uiComputerController;
 
-    [SerializeField] private ShopContent shopWindow;
-    [SerializeField] private MeteoContent meteoWindow;
-    [SerializeField] private QuestContent questWindow;
-    [SerializeField] private IslandContent islandWindow;
-    [SerializeField] private RadarContent radarWindow;
+    [SerializeField] private string _interactName = "Enter";
+    public override string Name { get => _interactName; set => _interactName = value; }
 
-    private ContentWindow currentWindow = null;
-
-    private TabBtnDisplay lastCliqued;
-
-    private void Awake()
+    public override void Use()
     {
-        InitTabBtns();
-        InitComputer();
-    }
-
-
-    private void InitTabBtns()
-    {
-        for (int i = 0; i < mainOnglets.Length; i++)
-        {
-            mainOnglets[i].OnTabClicked += (nexTab) =>
-            {
-                SwitchButtonTab(nexTab);
-                SwitchTab(nexTab.TabToDisplay);
-            };
-        }
-    }
-
-    private void InitComputer()
-    {
-        SwitchTab(ComputerTabs.Meteo);
-        SwitchButtonTab(mainOnglets[0]);
+        base.Use();
+        OpenComputer();
     }
 
     public void OpenComputer()
     {
-
-    }
-
-    private void SwitchButtonTab(TabBtnDisplay nextTab)
-    {
-        if (lastCliqued != null)
-        {
-            lastCliqued.Unselect();
-        }
-        lastCliqued = nextTab;
-        lastCliqued.Select();
-    }
-
-    public void SwitchTab(ComputerTabs nextTab)
-    {
-        if(currentWindow != null)
-        {
-            currentWindow.Hide();
-        }
-        switch(nextTab)
-        {
-            case ComputerTabs.Meteo:
-                currentWindow = meteoWindow;
-                break;
-            case ComputerTabs.Shop:
-                currentWindow = shopWindow;
-                break;
-            case ComputerTabs.Quest:
-                currentWindow = questWindow;
-                break;
-            case ComputerTabs.IslandInfos:
-                currentWindow = islandWindow;
-                break;
-            case ComputerTabs.Radar:
-                currentWindow = radarWindow;
-                break;
-        }
-        currentWindow?.Show();
+        _mainCanvasGroup.alpha = 1f;
+        _itemCollider.enabled = false;
     }
 }
 
