@@ -167,9 +167,6 @@ public class DayNightManager : MonoBehaviour
 
         return; 
 
-        _skyBox.SetColor("_SkyTint", _colorSkyBoxOverTime.Evaluate(percent));
-        _skyBox.SetFloat("_Exposure", _skyBoxExposure.Evaluate(percent));
-
         //Fog
         RenderSettings.ambientSkyColor = _skyColorOverTime.Evaluate(percent);
         RenderSettings.ambientEquatorColor = _equatorOverTime.Evaluate(percent);
