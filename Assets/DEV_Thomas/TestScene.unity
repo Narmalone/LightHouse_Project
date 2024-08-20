@@ -221,6 +221,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 368109844}
+  - {fileID: 964132308}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &359832589
@@ -279,9 +280,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03b6662285d428a4a90fe25880f30c50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _onElectricityCameBack: {fileID: 11400000, guid: e7c59518af7aef640acc060a0c499ec6,
-    type: 2}
-  _onElectricityShutDown: {fileID: 11400000, guid: 064a5db6357f80a42b87f43b5d5220c6,
+  _electricityRoom: 2
+  _onElecZoneEnabled: {fileID: 11400000, guid: 9b2b573c9f6dde3468b04689ad3f2a11, type: 2}
+  _onElecZoneDisabled: {fileID: 11400000, guid: b2e7c85ea33eb5349bd464fb85f15f6d,
     type: 2}
   IsElecItemEnabled: 0
 --- !u!224 &505197878 stripped
@@ -296,6 +297,55 @@ Camera:
     type: 3}
   m_PrefabInstance: {fileID: 3269974651339932001}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &964132307
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 964132308}
+  - component: {fileID: 964132309}
+  m_Layer: 0
+  m_Name: RoomsTest_OusideLocal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &964132308
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964132307}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 359832588}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &964132309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964132307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b6662285d428a4a90fe25880f30c50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _electricityRoom: 0
+  _onElecZoneEnabled: {fileID: 11400000, guid: 9b2b573c9f6dde3468b04689ad3f2a11, type: 2}
+  _onElecZoneDisabled: {fileID: 11400000, guid: b2e7c85ea33eb5349bd464fb85f15f6d,
+    type: 2}
+  IsElecItemEnabled: 0
 --- !u!1001 &1303316810
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1416,7 +1466,7 @@ PrefabInstance:
     - target: {fileID: 1378742170136977645, guid: 188f33ff6d7cdf440a98a193b73ace3f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000016801154
+      value: 0.0031964506
       objectReference: {fileID: 0}
     - target: {fileID: 1421192279383971182, guid: 188f33ff6d7cdf440a98a193b73ace3f,
         type: 3}

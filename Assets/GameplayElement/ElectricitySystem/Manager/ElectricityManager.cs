@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+#region ENUMS
 public enum ElectricityZones
 {
     OutsideLocal,
@@ -11,6 +11,7 @@ public enum ElectricityZones
     Office,
     Lens
 }
+#endregion
 
 public class ElectricityManager : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class ElectricityManager : MonoBehaviour
 
     [Header("--- EVENTS ---")]
     [Header("RAISE")]
+    [SerializeField] private CustomEvent_ElectricZone _onElectricityZoneEnabled;
+    [SerializeField] private CustomEvent_ElectricZone _onElectricityZoneDisabled;
     [SerializeField] private CustomEvent _onElectricityShutdown;
     [SerializeField] private CustomEvent _onElectricityCameBack;
 
@@ -82,13 +85,25 @@ public class ElectricityManager : MonoBehaviour
     private void ElectricPannelController_OnElectricityDisabled(ElectricityZones obj)
     {
         if (!_currentEnabledZones.Contains(obj)) return;
-        _currentEnabledZones.Remove(obj);   
+        _currentEnabledZones.Remove(obj);
+
+        //si le gene est on et qu'on désactive
+        if (_generatorController.IsOn)
+        {
+            _onElectricityZoneDisabled?.Raise(obj);
+        }
     }
 
     private void ElectricPannelController_OnElectricityEnabled(ElectricityZones obj)
     {
         if (_currentEnabledZones.Contains(obj)) return;
         _currentEnabledZones.Add(obj);
+
+        //Quand on active un switch et que le générateur est allumé
+        if (_generatorController.IsOn)
+        {
+            _onElectricityZoneEnabled?.Raise(obj);
+        }
     }
 
     #endregion
@@ -101,6 +116,11 @@ public class ElectricityManager : MonoBehaviour
         if (_generatorController.FuelValue > 0f && _switchBoardController.numberOfEnabledSwitch > 0)
         {
             _onElectricityCameBack?.Raise();
+
+            foreach(ElectricityZones zone in _currentEnabledZones)
+            {
+                _onElectricityZoneEnabled?.Raise(zone);
+            }
         }
     }
 
@@ -111,12 +131,21 @@ public class ElectricityManager : MonoBehaviour
         if (_generatorController.FuelValue > 0f && _switchBoardController.numberOfEnabledSwitch > 0 && _generatorController.IsOn)
         {
             _onElectricityShutdown?.Raise();
+
+            foreach (ElectricityZones zone in _currentEnabledZones)
+            {
+                _onElectricityZoneDisabled?.Raise(zone);
+            }
         }
     }
 
     private void GeneratorController_OnGeneratorFuelEmpty()
     {
         _switchBoardController.OnFuelEmpty();
+        foreach(ElectricityZones zone in _currentEnabledZones)
+        {
+            _onElectricityZoneDisabled?.Raise(zone);
+        }
         _currentEnabledZones = new List<ElectricityZones>();
     }
 
