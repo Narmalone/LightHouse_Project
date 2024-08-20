@@ -7,6 +7,11 @@ public class Bed : ItemBase
     [SerializeField] private CustomEvent _eventEvening;
     [SerializeField] private CustomEvent _eventMorning;
     [SerializeField] private CustomEvent _eventFadeIsMasking;
+    [SerializeField] private CustomEvent _eventFadeEnd;
+    [SerializeField] private CustomEvent _eventLockCameraPlayer;
+    [SerializeField] private CustomEvent _eventUnlockCameraPlayer;
+    [SerializeField] private CustomEvent _eventLockMovementPlayer;
+    [SerializeField] private CustomEvent _eventUnlockMovementPlayer;
     [SerializeField] private CustomEvent_Float _eventSetTime;
     [SerializeField] private CustomEvent_Float _eventFade;
     [SerializeField] private CustomEvent_String _eventCrossaireNameUpdate;
@@ -40,24 +45,42 @@ public class Bed : ItemBase
     public override void Use()
     {
         base.Use();
+        ForceUnusable();
 
         // Lock Mouse input
+        _eventLockCameraPlayer.Raise();
+        _eventLockMovementPlayer.Raise();
 
         // MouvemntCamera
 
         // Sleep
         _eventFade.Raise(_sleepingTime);
         _eventFadeIsMasking.handle += SetTimeMorning;
-
-        // Unlock Mouse input
+        _eventFadeEnd.handle += UnlockPlayer;
 
     }
 
     private void SetTimeMorning()
     {
         _eventSetTime.Raise(6.5f);
+        isUsable = _forEnableSleep;
 
         _eventFadeIsMasking.handle -= SetTimeMorning;
+    }
+
+    private void UnlockPlayer()
+    {
+        // Unlock Mouse input
+        _eventUnlockCameraPlayer.Raise();
+        _eventUnlockMovementPlayer.Raise();
+
+        _eventFadeEnd.handle -= UnlockPlayer;
+    }
+
+    private void ForceUnusable()
+    {
+        isUsable = false;
+        gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
     private void OnMorning()

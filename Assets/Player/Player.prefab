@@ -148,6 +148,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
+  _eventLockMovement: {fileID: 11400000, guid: 11d28443de581f845a69a3684f9aaaf3, type: 2}
+  _eventLockCameraMovement: {fileID: 11400000, guid: 7f7a1c6e29108034191ed159aec9191f,
+    type: 2}
+  _eventUnlockMovement: {fileID: 11400000, guid: 63b323fe39a15ba40b2f731c2a45fdf5,
+    type: 2}
+  _eventUnlockCameraMovement: {fileID: 11400000, guid: 8b95763651cdf1e439b588130d82a939,
+    type: 2}
   controller: {fileID: 6231699584837158408}
   _rb: {fileID: 8188401736335481780}
   playerInventory: {fileID: 4880216406653816421}
@@ -197,6 +204,8 @@ MonoBehaviour:
   itemMask:
     serializedVersion: 2
     m_Bits: 64
+  lockMovements: 0
+  lockCameraMovements: 0
   speed: 6
   _sprintSpeed: 9
   _crouchspeed: 3

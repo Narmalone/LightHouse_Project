@@ -10,6 +10,7 @@ public class FadeUI : MonoBehaviour
     [SerializeField] private CustomEvent_Float _eventStartFade;
     [SerializeField] private CustomEvent _eventOnFade;
     [SerializeField] private CustomEvent _eventOnFadeIsMasking;
+    [SerializeField] private CustomEvent _eventOnFadeEnd;
 
     [Header("Components")]
     [SerializeField] private Image _fadeImage;
@@ -66,12 +67,17 @@ public class FadeUI : MonoBehaviour
             yield return null;
         }
 
-        if (fadeOut == false) yield break;
+        if (fadeOut == false) 
+        {
+            _eventOnFadeEnd.Raise();
+            _coroutineFade = null;
+            yield break; 
+        }
 
         _eventOnFadeIsMasking.Raise();
         yield return new WaitForSeconds(duration);
 
-        _coroutineFade = StartCoroutine(Fade_Coroutine(_fadeInDuration, 0, true));
+        _coroutineFade = StartCoroutine(Fade_Coroutine(_fadeInDuration, 0, false));
     }
 
     private void Fade(float time, float fadeAmountStart, float fadeAmountTarget)

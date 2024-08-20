@@ -1,12 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using TMPro;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
-using System;
 using System.Collections;
-using UnityEngine.InputSystem.XR;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,6 +9,11 @@ public class PlayerController : MonoBehaviour
     [Header("Layer")]
     public LayerMask _layerWall;
     public LayerMask itemMask;
+
+    [Header("Lock")]
+    public bool lockMovements = false;
+    public bool lockCameraMovements = false;
+
 
     [Header("Movements")]
     public float speed = 6.0f;
@@ -71,6 +71,14 @@ public class PlayerController : MonoBehaviour
         playerInputs.Game.Look.canceled += OnLook;
     }
 
+    private void Start()
+    {
+        _manager._data._eventLockCameraMovement.handle += OnLockCamera;
+        _manager._data._eventUnlockCameraMovement.handle += OnUnlockCamera;
+        _manager._data._eventLockMovement.handle += OnLockMovement;
+        _manager._data._eventUnlockMovement.handle += OnUnlockMovement;
+    }
+
     private void OnDestroy()
     {
         playerInputs.Disable();
@@ -84,6 +92,11 @@ public class PlayerController : MonoBehaviour
         playerInputs.Game.Jump.performed -= OnJump;
         playerInputs.Game.Look.performed -= OnLook;
         playerInputs.Game.Look.canceled -= OnLook;
+
+        _manager._data._eventLockCameraMovement.handle -= OnLockCamera;
+        _manager._data._eventUnlockCameraMovement.handle -= OnUnlockCamera;
+        _manager._data._eventLockMovement.handle -= OnLockMovement;
+        _manager._data._eventUnlockMovement.handle -= OnUnlockMovement;
     }
 
     private void Update()
@@ -135,7 +148,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCrouch(InputAction.CallbackContext context)
     {
-        if(context.performed == false)
+        if (context.performed == false)
         {
             if (HandleUncrounch() == false)
             {
@@ -144,6 +157,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (lockMovements) return;
+
         _isCrouching = context.performed;
 
         HandleCrouching();
@@ -151,11 +166,14 @@ public class PlayerController : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext context)
     {
+        if (lockMovements) return;
         moveInput = context.ReadValue<Vector2>();
     }
 
     private void OnJump(InputAction.CallbackContext context)
     {
+        if (lockMovements) return;
+
         if (isGrounded)
         {
             velocity.y += Mathf.Sqrt(jumpHeight * -2f * gravity);
@@ -164,7 +182,32 @@ public class PlayerController : MonoBehaviour
 
     private void OnLook(InputAction.CallbackContext context)
     {
+        if (lockCameraMovements) 
+        {
+            lookInput = Vector2.zero;
+            return; 
+        }
         lookInput = context.ReadValue<Vector2>();
+    }
+
+    private void OnLockMovement()
+    {
+        lockMovements = true;
+    }
+
+    private void OnUnlockMovement()
+    {
+        lockMovements = false;
+    }
+
+    private void OnUnlockCamera()
+    {
+        lockCameraMovements = false;
+    }
+
+    private void OnLockCamera()
+    {
+        lockCameraMovements = true;
     }
 
     #endregion
