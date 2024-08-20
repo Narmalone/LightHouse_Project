@@ -40,7 +40,7 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] private Gradient _groundFogOverTime; 
 
     [Header("Fog")]
-    [SerializeField] private AnimationCurve _skyBoxExposure;
+    [SerializeField] private AnimationCurve _sunRotationSpeed;
     [SerializeField] private AnimationCurve _sunIntensity;
     [SerializeField] private AnimationCurve _fogAmount;
 
@@ -160,12 +160,12 @@ public class DayNightManager : MonoBehaviour
 
         var percent = CurrentTime / 24;
 
-        _lightTransform.eulerAngles = _startOrientation + _sunOrientation * 360 * percent;
+        _lightTransform.eulerAngles = _startOrientation + _sunOrientation * 360 * percent * _sunRotationSpeed.Evaluate(percent);
 
         _sunLight.color = _colorSunOverTime.Evaluate(percent);
         _sunLight.intensity = _sunIntensity.Evaluate(percent);
 
-        return; 
+        return;
 
         //Fog
         RenderSettings.ambientSkyColor = _skyColorOverTime.Evaluate(percent);
