@@ -106,8 +106,7 @@ public class DayNightManager : MonoBehaviour
                     _readyMorning = true;
                     _eventMidNight.Raise();
                     State = DayState.MID_NIGHT;
-                    currentDay++;
-                    UpdateDayDisplay();
+                    AddDay();
                     break;
             }
         }
@@ -185,7 +184,7 @@ public class DayNightManager : MonoBehaviour
     }
     public void SetTime(float time)
     {
-        //if(CurrentTime <)
+        if (CurrentTime > time) AddDay();
         CurrentTime = time;
         UpdateStats();
     }
@@ -209,6 +208,11 @@ public class DayNightManager : MonoBehaviour
     private void OnStartTimeCycle()
     {
         _isDayUpdating = true;
+    }
+    private void AddDay()
+    {
+        currentDay++;
+        UpdateDayDisplay();
     }
 
     /*
