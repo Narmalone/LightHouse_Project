@@ -6,6 +6,9 @@ public class Room : MonoBehaviour
 {
     [SerializeField] private Transform _electricityItemParent;
     [SerializeField] protected ElectricityZones ElectricityRoom;
+
+    [Header("--- EVENTS ---")]
+    [Header("LISTENERS")]
     [SerializeField] private CustomEvent_ElectricZone _onElecZoneEnabled;
     [SerializeField] private CustomEvent_ElectricZone _onElecZoneDisabled;
     protected List<IElectricityItem> StaticItems = new List<IElectricityItem>();
