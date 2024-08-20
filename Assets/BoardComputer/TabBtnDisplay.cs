@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class TabBtnDisplay : MonoBehaviour, IPointerClickHandler
+public class TabBtnDisplay : MonoBehaviour
 {
     [SerializeField] private Button btn;
     public Button Button => btn;
@@ -21,6 +19,7 @@ public class TabBtnDisplay : MonoBehaviour, IPointerClickHandler
     {
         btn.onClick.AddListener(() =>
         {
+            Debug.Log("test");
             OnTabClicked?.Invoke(this);
         });
     }
@@ -33,10 +32,5 @@ public class TabBtnDisplay : MonoBehaviour, IPointerClickHandler
     public void Select()
     {
         btn.targetGraphic.color = SelectedColor;
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        Debug.Log("test");
     }
 }

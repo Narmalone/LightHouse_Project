@@ -409,7 +409,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 16.2198, y: 0.00036040565}
+  m_AnchoredPosition: {x: 16.2198, y: 0.00094929093}
   m_SizeDelta: {x: -46.9199, y: 734.2549}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8094181839622198301
@@ -1561,7 +1561,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &522702831316555775
 Transform:
   m_ObjectHideFlags: 0
@@ -1836,7 +1836,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8365628229766005181}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999845
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2098,7 +2098,7 @@ GameObject:
   - component: {fileID: 4525434491569098136}
   - component: {fileID: 2633239755374179983}
   m_Layer: 0
-  m_Name: Virtual Camera
+  m_Name: ComputerCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3065,9 +3065,16 @@ MonoBehaviour:
   itemData: {fileID: 0}
   isInventoryItem: 0
   isUsable: 1
-  _mainCanvasGroup: {fileID: 798558352117189933}
-  _itemCollider: {fileID: 572729795949848013}
   _uiComputerController: {fileID: 4182323740070029812}
+  _lockPlayerMovement: {fileID: 11400000, guid: 11d28443de581f845a69a3684f9aaaf3,
+    type: 2}
+  _unlockPlayerMovement: {fileID: 11400000, guid: 63b323fe39a15ba40b2f731c2a45fdf5,
+    type: 2}
+  _lockCamera: {fileID: 11400000, guid: 7f7a1c6e29108034191ed159aec9191f, type: 2}
+  _unlockCamera: {fileID: 11400000, guid: 8b95763651cdf1e439b588130d82a939, type: 2}
+  _itemCollider: {fileID: 572729795949848013}
+  _computerCam: {fileID: 2633239755374179983}
+  _mainCanvasGroup: {fileID: 798558352117189933}
   _interactName: Enter
 --- !u!65 &572729795949848013
 BoxCollider:
