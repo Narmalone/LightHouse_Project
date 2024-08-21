@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class UiComputerController : MonoBehaviour
 {
+    public CanvasGroup MainCanvasGroup;
+
     [SerializeField] private ContentWindow[] _allWindows;
     [SerializeField] private TabBtnDisplay[] mainOnglets;
 

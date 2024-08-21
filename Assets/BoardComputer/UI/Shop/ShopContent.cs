@@ -13,6 +13,8 @@ public class ShopContent : ContentWindow
 
     private List<ShopCardController> controllers = new List<ShopCardController>();
 
+    private PlayerManager playerManagerInstance;
+
     private void Awake()
     {
         SortItems();
@@ -22,6 +24,7 @@ public class ShopContent : ContentWindow
     private void Start()
     {
         SetDeliveryTime(shopItemConfig.AverageDeliveryTime);
+        playerManagerInstance = PlayerManager.Instance;
         GetPlayerCurrency();
     }
 
@@ -61,6 +64,6 @@ public class ShopContent : ContentWindow
 
     public void GetPlayerCurrency()
     {
-        playerCurrencyTxt.text = "Currency: " + PlayerManager.Instance._data._currencyShop;
+        playerCurrencyTxt.text = "Currency: " + playerManagerInstance._data._currencyShop;
     }
 }

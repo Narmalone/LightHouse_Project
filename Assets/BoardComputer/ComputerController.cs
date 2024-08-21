@@ -20,12 +20,11 @@ public class ComputerController : ElectricItem
     //système pour empecher le joueur d'aller au pc quand pas d'électricité
     //revoir l'ui SHOP et commencer à faire tout le reste OH GOD
     private const string EMISSIVE_EXPOSUREWEIGHT_KEY = "_EmissiveExposureWeight";
-    private const string EMISSIVE_INTENSITY_KEY = "_EmissiveIntensity";
-    private const string EMISSIVE_COLOR_KEY = "_EmissiveColorLDR";
 
     #region SERIALIZED FIELDS
     [Header("CONTROLLER")]
     [SerializeField] private UiComputerController _uiComputerController;
+    [SerializeField] private BoxCollider _boxCollider;
 
     [Header("COMPUTER BUTTON")]
     [SerializeField] private Renderer _screenButton;
@@ -57,11 +56,11 @@ public class ComputerController : ElectricItem
     [Header("COLLIDERS REFS")]
     [SerializeField] private BoxCollider _itemCollider;
     [SerializeField] private CinemachineVirtualCamera _computerCam;
-    [SerializeField] private CanvasGroup _mainCanvasGroup;
 
     [SerializeField] private string _interactName = "Enter";
 
     private Material _instanceMat;
+    private bool _isInComputer = false;
 
     #endregion
 
@@ -89,11 +88,6 @@ public class ComputerController : ElectricItem
     private void OnDestroy()
     {
         _onLeftButtonCliqued.handle -= _onLeftButtonCliqued_handle;
-    }
-
-    private void Start()
-    {
-        
     }
 
     #endregion
@@ -151,6 +145,8 @@ public class ComputerController : ElectricItem
 
     public override void OnElecEnabled()
     {
+        _boxCollider.enabled = false;
+        _isInComputer = true;
         if (_instanceMat == null)
         {
             _screenButton.material = _onMaterial;
@@ -169,7 +165,14 @@ public class ComputerController : ElectricItem
     {
         _isScreenButtonPlaying = false;
         StopCoroutine(_changeEmissiveRoutine);
+        _boxCollider.enabled = true;
         DisableButton();
+
+        if (_isInComputer)
+        {
+            LeaveComputer();
+        }
+        _isInComputer = false;
     }
 
     public void DisableButton()
@@ -184,7 +187,7 @@ public class ComputerController : ElectricItem
     public void OpenComputer()
     {
         _itemCollider.enabled = false;
-        _mainCanvasGroup.alpha = 1f;
+        _uiComputerController.MainCanvasGroup.alpha = 1f;
         _lockPlayerMovement?.Raise();
         _lockCamera?.Raise();
         _computerCam.SetPriority(10);
@@ -194,7 +197,7 @@ public class ComputerController : ElectricItem
     public void LeaveComputer()
     {
         _itemCollider.enabled = true;
-        _mainCanvasGroup.alpha = 0f;
+        _uiComputerController.MainCanvasGroup.alpha = 0f;
         _unlockPlayerMovement?.Raise();
         _unlockCamera?.Raise();
         _computerCam.SetPriority(-20);
