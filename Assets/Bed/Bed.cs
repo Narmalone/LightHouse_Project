@@ -68,6 +68,7 @@ public class Bed : ItemBase
 
     private void SetTimeMorning()
     {
+        _eventResetSleepAmount.Raise();
         _eventSetTime.Raise(6.5f);
         isUsable = _forEnableSleep;
 
