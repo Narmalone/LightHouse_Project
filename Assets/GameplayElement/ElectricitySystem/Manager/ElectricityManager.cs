@@ -3,9 +3,6 @@ using UnityEngine;
 
 public class ElectricityManager : Singleton<ElectricityManager>
 {
-    //ENlever le syst ou quand y'a plus de fuel ça shutdown et plus tot ça ne fais juste plus passer le courant
-    //Faire en sorte que lorsque la mise à jour des zones actives soit bonne
-    //trouver un moyen afin d'appeler de manière optimale l'event désactiver / activer objet niv électrique
     #region SERIALIZED VARIABLES
 
     [Header("CONTROLLERS REFERENCES")]
@@ -142,14 +139,4 @@ public class ElectricityManager : Singleton<ElectricityManager>
     #endregion
 
     #endregion
-}
-
-public class ElectricItem : ItemBase
-{
-    [Header("ELECTRIC ITEM")]
-    public bool HasElectricity = false;
-
-    public virtual void OnElecEnabled() { }
-
-    public virtual void OnElecDisabled() { }
 }

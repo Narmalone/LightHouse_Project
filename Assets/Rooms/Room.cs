@@ -3,9 +3,14 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    [SerializeField] public Transform _electricityItemParent;
-    [SerializeField] protected GameZone ElectricityRoom;
+    #region PUBLIC VARIABLES
+    [Header("ROOMS INFOS")]
+    public GameZone ElectricityRoom;
     public List<ElectricItem> ElectricityItems;
+    public Transform ElectricityItemParent;
+    #endregion
+
+    #region SERIALIZED VARIABLES
 
     [Header("--- EVENTS ---")]
     [Header("LISTENERS")]
@@ -15,12 +20,23 @@ public class Room : MonoBehaviour
     [Header("READ ONLY / DEBUG PURPOSE")]
     [SerializeField] protected bool IsElecItemsEnabled = false;
 
+    #endregion
+
+    #region MONO CALLBACKS
     protected virtual void Awake()
     {
         _onElecZoneEnabled.handle += _onElecZoneEnabled_handle;
         _onElecZoneDisabled.handle += _onElecZoneDisabled_handle;
     }
 
+    protected virtual void OnDestroy()
+    {
+        _onElecZoneEnabled.handle -= _onElecZoneEnabled_handle;
+        _onElecZoneDisabled.handle -= _onElecZoneDisabled_handle; ;
+    }
+    #endregion
+
+    #region DELEGATES LISTENERS
     private void _onElecZoneEnabled_handle(GameZone obj)
     {
         if (obj != ElectricityRoom) return;
@@ -44,10 +60,5 @@ public class Room : MonoBehaviour
             item.OnElecDisabled();
         }
     }
-
-    protected virtual void OnDestroy()
-    {
-        _onElecZoneEnabled.handle -= _onElecZoneEnabled_handle;
-        _onElecZoneDisabled.handle -= _onElecZoneDisabled_handle; ;
-    }
+    #endregion
 }

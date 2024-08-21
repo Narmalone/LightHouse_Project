@@ -18,9 +18,9 @@ public class RoomEditor : Editor
     public void GetAllElecItemInRoom(Room room)
     {
         room.ElectricityItems = new List<ElectricItem>();
-        for (int i = 0; i < room._electricityItemParent.childCount; i++)
+        for (int i = 0; i < room.ElectricityItemParent.childCount; i++)
         {
-            if(room._electricityItemParent.GetChild(i).TryGetComponent(out ElectricItem item))
+            if(room.ElectricityItemParent.GetChild(i).TryGetComponent(out ElectricItem item))
             {
                 room.ElectricityItems.Add(item);
             }
