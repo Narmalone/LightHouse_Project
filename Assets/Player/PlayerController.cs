@@ -34,7 +34,6 @@ public class PlayerController : MonoBehaviour
 
     public PlayerManager _manager;
     private CharacterController controller;
-    private ItemOptionController optionController;
     private PlayerInventory playerInventory;
     private Transform playerCamera;
     private Vector3 velocity;

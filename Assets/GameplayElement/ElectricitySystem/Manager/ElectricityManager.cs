@@ -1,25 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#region ENUMS
-public enum ElectricityZones
-{
-    OutsideLocal,
-    Bathroom,
-    BedRoom,
-    KitchenAndOther,
-    Office,
-    Lens
-}
-#endregion
-
-public class ElectricityManager : MonoBehaviour
+public class ElectricityManager : Singleton<ElectricityManager>
 {
     //ENlever le syst ou quand y'a plus de fuel ça shutdown et plus tot ça ne fais juste plus passer le courant
     //Faire en sorte que lorsque la mise à jour des zones actives soit bonne
     //trouver un moyen afin d'appeler de manière optimale l'event désactiver / activer objet niv électrique
-    private static ElectricityManager Instance;
-
     #region SERIALIZED VARIABLES
 
     [Header("CONTROLLERS REFERENCES")]
@@ -44,16 +30,15 @@ public class ElectricityManager : MonoBehaviour
     [SerializeField] private CustomEvent_ElectricZone _onSwitchBoardDisabled;
 
     [Header("OTHER // INFOS")]
-    [SerializeField] private List<ElectricityZones> _currentEnabledZones;
+    [SerializeField] private List<GameZone> _currentEnabledZones;
 
     #endregion
 
     #region MONO CALLBACKS
 
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = this;
-
+        base.Awake();
         //generateurs evt
         _onGeneratorFuelEmpty.handle += GeneratorController_OnGeneratorFuelEmpty;
         _onGeneratorFuelFilledFromEmpty.handle += GeneratorController_OnGeneratorFuelFilledFromEmpty;
@@ -82,7 +67,7 @@ public class ElectricityManager : MonoBehaviour
 
     #region Switchboard Events
 
-    private void ElectricPannelController_OnElectricityDisabled(ElectricityZones obj)
+    private void ElectricPannelController_OnElectricityDisabled(GameZone obj)
     {
         if (!_currentEnabledZones.Contains(obj)) return;
         _currentEnabledZones.Remove(obj);
@@ -94,7 +79,7 @@ public class ElectricityManager : MonoBehaviour
         }
     }
 
-    private void ElectricPannelController_OnElectricityEnabled(ElectricityZones obj)
+    private void ElectricPannelController_OnElectricityEnabled(GameZone obj)
     {
         if (_currentEnabledZones.Contains(obj)) return;
         _currentEnabledZones.Add(obj);
@@ -117,7 +102,7 @@ public class ElectricityManager : MonoBehaviour
         {
             _onElectricityCameBack?.Raise();
 
-            foreach(ElectricityZones zone in _currentEnabledZones)
+            foreach(GameZone zone in _currentEnabledZones)
             {
                 _onElectricityZoneEnabled?.Raise(zone);
             }
@@ -132,7 +117,7 @@ public class ElectricityManager : MonoBehaviour
         {
             _onElectricityShutdown?.Raise();
 
-            foreach (ElectricityZones zone in _currentEnabledZones)
+            foreach (GameZone zone in _currentEnabledZones)
             {
                 _onElectricityZoneDisabled?.Raise(zone);
             }
@@ -142,11 +127,11 @@ public class ElectricityManager : MonoBehaviour
     private void GeneratorController_OnGeneratorFuelEmpty()
     {
         _switchBoardController.OnFuelEmpty();
-        foreach(ElectricityZones zone in _currentEnabledZones)
+        foreach(GameZone zone in _currentEnabledZones)
         {
             _onElectricityZoneDisabled?.Raise(zone);
         }
-        _currentEnabledZones = new List<ElectricityZones>();
+        _currentEnabledZones = new List<GameZone>();
     }
 
     private void GeneratorController_OnGeneratorFuelFilledFromEmpty()
@@ -159,8 +144,12 @@ public class ElectricityManager : MonoBehaviour
     #endregion
 }
 
-public interface IElectricityItem
+public class ElectricItem : ItemBase
 {
-    void OnElecEnable();
-    void OnElecDisable();
+    [Header("ELECTRIC ITEM")]
+    public bool HasElectricity = false;
+
+    public virtual void OnElecEnabled() { }
+
+    public virtual void OnElecDisabled() { }
 }

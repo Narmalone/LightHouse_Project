@@ -1,8 +1,18 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+
+#region ENUMS
+public enum GameZone
+{
+    OutsideLocal,
+    Bathroom,
+    BedRoom,
+    KitchenAndOther,
+    Office,
+    Lens
+}
+#endregion
+
 
 public class GameManager : Singleton<GameManager>
 {

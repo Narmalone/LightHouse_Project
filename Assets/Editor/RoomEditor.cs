@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,11 +11,19 @@ public class RoomEditor : Editor
         Room room = (Room)target;
         if (GUILayout.Button("Get All Elecs Items In Room"))
         {
-            room.GetAllElecItemInRoom();
+            GetAllElecItemInRoom(room);
         }
-        if (GUILayout.Button("Debug"))
+    }
+
+    public void GetAllElecItemInRoom(Room room)
+    {
+        room.ElectricityItems = new List<ElectricItem>();
+        for (int i = 0; i < room._electricityItemParent.childCount; i++)
         {
-            room.DebugForTest();
+            if(room._electricityItemParent.GetChild(i).TryGetComponent(out ElectricItem item))
+            {
+                room.ElectricityItems.Add(item);
+            }
         }
     }
 }

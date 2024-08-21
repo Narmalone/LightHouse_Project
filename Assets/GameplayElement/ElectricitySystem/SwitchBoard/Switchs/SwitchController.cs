@@ -5,7 +5,7 @@ public class SwitchController : ItemBaseAnim
     private string forPlayer = "Switch to ";
     public override string Name { get => forPlayer; set => forPlayer = value; }
     public float CostPower = 30f;
-    public ElectricityZones elecZone;
+    public GameZone elecZone;
     public Collider Col;
 
     private void Awake()

@@ -236,6 +236,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9329d94396690184480aa06178f0d537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsPersistent: 0
+  _rooms:
+  - {fileID: 368109845}
+  - {fileID: 964132309}
 --- !u!1 &368109843
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +286,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _electricityItemParent: {fileID: 1589595715}
-  ElectricityRoom: 0
+  ElectricityRoom: 2
+  ElectricityItems:
+  - {fileID: 1466212133}
+  - {fileID: 938903644}
   _onElecZoneEnabled: {fileID: 11400000, guid: 9b2b573c9f6dde3468b04689ad3f2a11, type: 2}
   _onElecZoneDisabled: {fileID: 11400000, guid: b2e7c85ea33eb5349bd464fb85f15f6d,
     type: 2}
@@ -299,6 +306,102 @@ Camera:
     type: 3}
   m_PrefabInstance: {fileID: 3269974651339932001}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &938903642
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1589595715}
+    m_Modifications:
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9.38
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.67
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6406048435945792045, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_Name
+      value: SM_Lamp (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6406048435945792045, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7684856936561173898, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: ElectricityZones
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 15762aaed8543d742ac468a69f761333, type: 3}
+--- !u!4 &938903643 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6029488326741768343, guid: 15762aaed8543d742ac468a69f761333,
+    type: 3}
+  m_PrefabInstance: {fileID: 938903642}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &938903644 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7684856936561173898, guid: 15762aaed8543d742ac468a69f761333,
+    type: 3}
+  m_PrefabInstance: {fileID: 938903642}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9395e50dcbc7974bb98c7c3a16cf997, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &964132307
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,6 +448,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _electricityItemParent: {fileID: 0}
   ElectricityRoom: 0
+  ElectricityItems: []
   _onElecZoneEnabled: {fileID: 11400000, guid: 9b2b573c9f6dde3468b04689ad3f2a11, type: 2}
   _onElecZoneDisabled: {fileID: 11400000, guid: b2e7c85ea33eb5349bd464fb85f15f6d,
     type: 2}
@@ -530,6 +634,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7561585526944190519}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1466212133 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7684856936561173898, guid: 15762aaed8543d742ac468a69f761333,
+    type: 3}
+  m_PrefabInstance: {fileID: 7561585526944190519}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9395e50dcbc7974bb98c7c3a16cf997, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1529205261
 GameObject:
   m_ObjectHideFlags: 0
@@ -666,6 +782,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1466212132}
+  - {fileID: 938903643}
   m_Father: {fileID: 368109844}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1638888258
@@ -1507,7 +1624,7 @@ PrefabInstance:
     - target: {fileID: 1378742170136977645, guid: 188f33ff6d7cdf440a98a193b73ace3f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000038397447
+      value: 0.47506645
       objectReference: {fileID: 0}
     - target: {fileID: 1421192279383971182, guid: 188f33ff6d7cdf440a98a193b73ace3f,
         type: 3}
@@ -1999,6 +2116,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ElectricityManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6319389460226116404, guid: 96864c7a89e9de84fbb8156bbec27125,
+        type: 3}
+      propertyPath: DontDestroyOnLoad
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2134,6 +2256,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SM_Lamp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6406048435945792045, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7684856936561173898, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: ElectricityZones
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7684856936561173898, guid: 15762aaed8543d742ac468a69f761333,
+        type: 3}
+      propertyPath: ForceItemOnElectricityListeners
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
