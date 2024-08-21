@@ -13,6 +13,7 @@ public class Bed : ItemBase
     [SerializeField] private CustomEvent _eventUnlockCameraPlayer;
     [SerializeField] private CustomEvent _eventLockMovementPlayer;
     [SerializeField] private CustomEvent _eventUnlockMovementPlayer;
+    [SerializeField] private CustomEvent _eventResetSleepAmount;
     [SerializeField] private CustomEvent_Float _eventSetTime;
     [SerializeField] private CustomEvent_Float _eventFade;
     [SerializeField] private CustomEvent_String _eventCrossaireNameUpdate;

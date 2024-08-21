@@ -269,6 +269,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMove()
     {
+        if(lockMovements) return;
 
         var speedX = moveInput.x * Time.deltaTime * speed * _rationSpeedWhenGrabbing;
         var speedY = moveInput.y * Time.deltaTime * speed * _rationSpeedWhenGrabbing;
@@ -279,6 +280,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleLook()
     {
+        if (lockCameraMovements) return;
+
         rotationX += -lookInput.y * lookSpeed;
         rotationX = Mathf.Clamp(rotationX, -lookXLimit, lookXLimit);
         playerCamera.localRotation = Quaternion.Euler(rotationX, 0, 0);
