@@ -61,4 +61,16 @@ public class Room : MonoBehaviour
         }
     }
     #endregion
+
+    private void OnValidate()
+    {
+        ElectricityItems = new List<ElectricItem>();
+        for (int i = 0; i < ElectricityItemParent.childCount; i++)
+        {
+            if (ElectricityItemParent.GetChild(i).TryGetComponent(out ElectricItem item))
+            {
+                ElectricityItems.Add(item);
+            }
+        }
+    }
 }

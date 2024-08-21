@@ -17,12 +17,25 @@ public enum ComputerTabs
 
 public class ComputerController : ElectricItem
 {
+    //système pour empecher le joueur d'aller au pc quand pas d'électricité
+    //revoir l'ui SHOP et commencer à faire tout le reste OH GOD
+    private const string EMISSIVE_EXPOSUREWEIGHT_KEY = "_EmissiveExposureWeight";
+    private const string EMISSIVE_INTENSITY_KEY = "_EmissiveIntensity";
+    private const string EMISSIVE_COLOR_KEY = "_EmissiveColorLDR";
 
     #region SERIALIZED FIELDS
     [Header("CONTROLLER")]
     [SerializeField] private UiComputerController _uiComputerController;
 
+    [Header("COMPUTER BUTTON")]
     [SerializeField] private Renderer _screenButton;
+    //obligé d'utiliser un systeme de mat pour l'instant car l'uptade des materials marche pas très bien
+    [SerializeField] private Material _offMaterial;
+    [SerializeField] private Material _onMaterial;
+    [SerializeField] private float _animDuration = .5f;
+    [SerializeField, Range(0, 1f)] private float _minIntensity = 0.2f;
+    [SerializeField, Range(0, 1f)] private float _maxIntensity = 1f;
+    [SerializeField] private float _screenMotionSpeed = 1f;
 
     [Header("--- EVENTS ---")]
     [Header("RAISE")]
@@ -47,103 +60,121 @@ public class ComputerController : ElectricItem
     [SerializeField] private CanvasGroup _mainCanvasGroup;
 
     [SerializeField] private string _interactName = "Enter";
+
+    private Material _instanceMat;
+
     #endregion
+
+    #region PROPERTIES
     public override string Name { get => _interactName; set => _interactName = value; }
 
+    #endregion
+
+    #region PRIVATE VAR
+
+    //Pulse routine / anim button
     private float _intensityPower = 0f;
-    private float _minIntensity = 0.2f;
-    private float _maxIntensity = 1f;
-    private float _speed = 1f; // adjust the speed of the pulsing effect
+    private bool _isScreenButtonPlaying = false;
+    private IEnumerator _changeEmissiveRoutine;
 
-    void Start()
-    {
-        StartCoroutine(PulseRoutine());
-
-        //_screenButton.material.SetFloat("_EmissiveIntensity", _maxIntensity);
-        //_screenButton.material.SetFloat("_EmissiveExposureWeight", 1f);
-
-    }
-
-    private float AnimDuration = .5f;
-
-    IEnumerator PulseRoutine()
-    {
-        while (true)
-        {
-            yield return DecreaseIntensity();
-            yield return IncreaseIntensity();
-        }
-    }
-
-
-    IEnumerator DecreaseIntensity()
-    {
-        float time = 0.0f;
-
-        while (time < AnimDuration)
-        {
-            time += Time.deltaTime * _speed;
-
-            _intensityPower = Mathf.Lerp(_maxIntensity, _minIntensity, time / AnimDuration);
-            _screenButton.material.SetFloat("_EmissiveExposureWeight", _intensityPower);
-
-            yield return null;
-        }
-    }
-
-    IEnumerator IncreaseIntensity()
-    {
-        float time = 0.0f;
-
-        while (time < AnimDuration)
-        {
-            time += Time.deltaTime * _speed;
-
-            _intensityPower = Mathf.Lerp(_minIntensity, _maxIntensity, time / AnimDuration);
-            _screenButton.material.SetFloat("_EmissiveExposureWeight", _intensityPower);
-
-            yield return null;
-        }
-    }
+    #endregion
 
     #region MONO CALLBACKS
     private void Awake()
     {
         _onLeftButtonCliqued.handle += _onLeftButtonCliqued_handle;
+        _changeEmissiveRoutine = PulseRoutine();
     }
 
     private void OnDestroy()
     {
         _onLeftButtonCliqued.handle -= _onLeftButtonCliqued_handle;
     }
+
+    private void Start()
+    {
+        
+    }
+
     #endregion
+
+    #region UI DELEGATES
 
     private void _onLeftButtonCliqued_handle()
     {
         LeaveComputer();
     }
 
+    #endregion
+
+    #region OVERRIDES ITEM BASE
     public override void Use()
     {
         base.Use();
         OpenComputer();
     }
+    #endregion
 
-    private void Update()
+    #region COROUTINES
+    IEnumerator PulseRoutine()
     {
-        
+        float time = 0.0f;
+        bool isIncreasing = true;
+
+        while (_isScreenButtonPlaying)
+        {
+            while (time < _animDuration)
+            {
+                time += Time.deltaTime * _screenMotionSpeed;
+
+                if (isIncreasing)
+                {
+                    _intensityPower = Mathf.Lerp(_minIntensity, _maxIntensity, time / _animDuration);
+                }
+                else
+                {
+                    _intensityPower = Mathf.Lerp(_maxIntensity, _minIntensity, time / _animDuration);
+                }
+
+                _instanceMat?.SetFloat(EMISSIVE_EXPOSUREWEIGHT_KEY, _intensityPower);
+
+                yield return null;
+            }
+
+            time = 0.0f;
+            isIncreasing = !isIncreasing;
+        }
     }
+    #endregion
 
     #region ELEC DELEGATES
 
     public override void OnElecEnabled()
     {
-        
+        if (_instanceMat == null)
+        {
+            _screenButton.material = _onMaterial;
+            _instanceMat = _screenButton.material;
+        }
+        else
+        {
+            _screenButton.material = _instanceMat;
+        }
+
+        _isScreenButtonPlaying = true;
+        StartCoroutine(_changeEmissiveRoutine);
     }
 
     public override void OnElecDisabled()
     {
-        
+        _isScreenButtonPlaying = false;
+        StopCoroutine(_changeEmissiveRoutine);
+        DisableButton();
+    }
+
+    public void DisableButton()
+    {
+        _screenButton.material = _offMaterial;
     }
 
     #endregion

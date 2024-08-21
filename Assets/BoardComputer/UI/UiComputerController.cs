@@ -11,7 +11,7 @@ public class UiComputerController : MonoBehaviour
     [SerializeField] private QuestContent questWindow;
     [SerializeField] private IslandContent islandWindow;
     [SerializeField] private RadarContent radarWindow;
-    [SerializeField] private TabBtnDisplay _leaveButton;//
+    [SerializeField] private TabBtnDisplay _leaveButton;
 
     [Header("--- EVENTS ---")]
     [Header("RAISE")]
