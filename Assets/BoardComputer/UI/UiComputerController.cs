@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UiComputerController : MonoBehaviour
 {
@@ -12,6 +11,11 @@ public class UiComputerController : MonoBehaviour
     [SerializeField] private QuestContent questWindow;
     [SerializeField] private IslandContent islandWindow;
     [SerializeField] private RadarContent radarWindow;
+    [SerializeField] private TabBtnDisplay _leaveButton;//
+
+    [Header("--- EVENTS ---")]
+    [Header("RAISE")]
+    [SerializeField] private CustomEvent _onLeftButtonCliqued;
 
     private ContentWindow currentWindow = null;
 
@@ -34,6 +38,10 @@ public class UiComputerController : MonoBehaviour
                 SwitchTab(nexTab.TabToDisplay);
             };
         }
+        _leaveButton.OnTabClicked += ((x) =>
+        {
+            _onLeftButtonCliqued?.Raise();
+        });
     }
 
     private void InitComputer()
