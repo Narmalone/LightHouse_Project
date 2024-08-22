@@ -1,10 +1,9 @@
-using System;
 using TMPro;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlot : MonoBehaviour
+public class InventorySlot : MonoBehaviour, IPointerClickHandler
 {
     public Image iconImage; // Reference to the icon image component
     public TextMeshProUGUI itemName; // Reference to the icon image component
@@ -14,9 +13,30 @@ public class InventorySlot : MonoBehaviour
     public bool isSelected = false; // Is this slot currently selected?
     public bool isEmpty => item == null;
 
+    public bool IsClickable = false;
+
+    [SerializeField] private CustomEvent _onStorageItemOpen;
+    [SerializeField] private CustomEvent_IItem _fromInventoryToStorage;
+    [SerializeField] private CustomEvent_IItem _fromStorageToInventory;
+
+    private void Awake()
+    {
+        _onStorageItemOpen.handle += _onStorageItemOpen_handle;
+    }
+
+    private void _onStorageItemOpen_handle()
+    {
+        IsClickable = true;
+    }
+
     private void Start()
     {
         itemName.alpha = 0;
+    }
+
+    private void OnDestroy()
+    {
+        _onStorageItemOpen.handle -= _onStorageItemOpen_handle;
     }
 
     public void SetItem(IItem newItem)
@@ -71,5 +91,13 @@ public class InventorySlot : MonoBehaviour
         // Update the UI to reflect the deselection
     }
 
-
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (!IsClickable || previewItem == null) return;
+        if(eventData.clickCount >= 2)
+        {
+            //Set preview item & remove celui là
+            _fromInventoryToStorage?.Raise(item);
+        }
+    }
 }

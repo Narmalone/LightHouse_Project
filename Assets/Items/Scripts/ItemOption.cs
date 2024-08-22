@@ -6,7 +6,7 @@ public interface IItem
     public abstract string Name { get; set; }
     GameObject go { get; }
     ItemDatas ItemDatas { get; }
-
+    ItemBase Item { get; }
     public bool IsInventoryItem { get;}
     public bool IsUsable { get; }
 }
@@ -15,9 +15,12 @@ public abstract class ItemBase : MonoBehaviour, IItem
 {
     public virtual string Name { get; set; } = "Object ?";
     public GameObject go => this.gameObject;
+    public ItemBase Item => this;
+
     [Header("ITEM BASE")]
     [SerializeField]
     private ItemDatas itemData;
+
     public ItemDatas ItemDatas => itemData;
 
     public bool IsInventoryItem => isInventoryItem;
