@@ -16,8 +16,8 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     public bool IsClickable = false;
 
     [SerializeField] private CustomEvent _onStorageItemOpen;
-    [SerializeField] private CustomEvent_IItem _fromInventoryToStorage;
-    [SerializeField] private CustomEvent_IItem _fromStorageToInventory;
+    [SerializeField] private CustomEvent_ItemBase _fromInventoryToStorage;
+    [SerializeField] private CustomEvent_ItemBase _fromStorageToInventory;
 
     private void Awake()
     {
@@ -48,6 +48,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     public void SetPreviewItem(ItemBase item)
     {
         previewItem = item;
+        if (previewItem == null) return;
         previewItem.TryGetComponent(out Rigidbody rb);
         if(rb == null) return;
         rb.isKinematic = true;
@@ -97,7 +98,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
         if(eventData.clickCount >= 2)
         {
             //Set preview item & remove celui là
-            _fromInventoryToStorage?.Raise(item);
+            _fromInventoryToStorage?.Raise(previewItem);
         }
     }
 }

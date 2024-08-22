@@ -13,16 +13,22 @@ public class StorageItem : ItemBase
     [SerializeField] private CustomEvent _lockPlayerCam;
     [SerializeField] private CustomEvent _unlockPlayerCam;
 
-    [SerializeField] private CustomEvent_IItem _fromInventoryToStorage;
+    [SerializeField] private CustomEvent_ItemBase _fromInventoryToStorage;
 
     private void Awake()
     {
         _fromInventoryToStorage.handle += _fromInventoryToStorage_handle;
     }
 
-    private void _fromInventoryToStorage_handle(IItem obj)
+    private void OnDestroy()
     {
-        _slotManager.AddItem(obj.Name, 0);
+        _fromInventoryToStorage.handle -= _fromInventoryToStorage_handle;
+    }
+    private void _fromInventoryToStorage_handle(ItemBase obj)
+    {
+        var newItem = _slotManager.AddItem(obj);
+        obj.transform.SetParent(newItem.transform);
+        PlayerManager.Instance._inventory.RemoveItemFromInventory(obj, false);
     }
 
     public override bool Use()

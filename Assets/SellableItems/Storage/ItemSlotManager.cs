@@ -13,17 +13,17 @@ public class ItemSlotManager : MonoBehaviour
     [SerializeField] private ScrollRect _scrollRect;
     [SerializeField] private TextMeshProUGUI _noOneItemText;
 
-    public void AddItem(string objName, int objPrice)
+    public ItemSlotController AddItem(ItemBase item)
     {
         if(_controllers.Count <= 0)
         {
             _noOneItemText.gameObject.SetActive(false);
         }
-        Debug.Log(_grid);
         ItemSlotController newItem = Instantiate(_slotPrefab, _grid.transform);
         _controllers.Add(newItem);
-        //newItem.SetItem(objName, objPrice);
+        newItem.SetItem(item);
         UpdateContentSize();
+        return newItem;
     }
 
     public void RemoveItem()

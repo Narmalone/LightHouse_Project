@@ -142,6 +142,11 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public void AddItemToInventory(ItemBase item)
+    {
+        TakeItem(item);
+    }
+
     public void RemoveItemFromInventory(ItemBase target)
     {
         if (listPreviewObject.Contains(target))
@@ -150,6 +155,17 @@ public class PlayerInventory : MonoBehaviour
             Destroy(listPreviewObject.Find(x => x == target).gameObject);
         }
     }
+    public void RemoveItemFromInventory(ItemBase target, bool destroy)
+    {
+        if (listPreviewObject.Contains(target))
+        {
+            int index = listPreviewObject.FindIndex(x => x == target);
+            listInventorySlots[index].SetItem(null);
+            listInventorySlots[index].SetPreviewItem(null);
+            listPreviewObject.Remove(target);
+        }
+    }
+
     public void RemoveItemFromInventory(int index)
     {
         if (listPreviewObject[index] != null)
