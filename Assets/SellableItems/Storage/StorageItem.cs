@@ -53,16 +53,15 @@ public class StorageItem : ItemBase
     private void _sendItemInventoryFromStorage_handle(ItemBase obj)
     {
         //Lors que le joueur reprend l'objet, trouver le moyen de récupérer le point qui perds l'objet ? 
-        //(car le syst de preview en recré un autre)
-        //Sinon faire un customevent de point ???
-        //OU FAIRE UNE NOUVELLE FONCTION TAKE ITEM QUI NE DETRUIT PAS L'OBJ ET QUI LE RECUP JUSTE
+        //Meilleure idée, custom event sur le ItemSlotController et on raise plutot un event qui renvoie (le item slot controller)
+        //et chaque itemslotcontroller à l'info sur quel point est son objet !
         throw new NotImplementedException();
     }
 
     private void _sendItemToStorageFromSlot_handle(InventorySlot slot)
     {
         ItemBase itm = PlayerManager.Instance._inventory.DropItem(slot, true);
-        _slotManager.AddItem(itm);
+        ItemSlotController slotController = _slotManager.AddItem(itm);
         
         if(_availableStoragePoints.Count > 0)
         {
@@ -77,6 +76,7 @@ public class StorageItem : ItemBase
             rdmPoint.Item = itm;
             itm.transform.SetParent(rdmPoint.transform);
             itm.transform.SetPositionAndRotation(rdmPoint.transform.position, rdmPoint.transform.rotation);
+            slotController.SetStorePointController(rdmPoint);
             _availableStoragePoints.Remove(rdmPoint);
             _currentUsedPoints.Add(rdmPoint);
         }

@@ -13,6 +13,15 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Button _takeButton;
     [SerializeField] private CustomEvent_ItemBase _fromStorageToInventory;
 
+    private StorePointController _storePointController;
+
+    public void SetStorePointController(StorePointController spc)
+    {
+        _storePointController = spc;
+    }
+
+    public StorePointController GetStorePointController() => _storePointController;
+
     private void Awake()
     {
         _takeButton.onClick.AddListener(() =>
