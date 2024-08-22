@@ -12,6 +12,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] public CustomEvent _eventStartDropItem;
     [SerializeField] public CustomEvent _eventDropItem;
     [SerializeField] public CustomEvent _eventEndDropItem;
+    [SerializeField] private CustomEvent_ItemBase _fromStorageToInventory;
     [SerializeField] public GameObject previewObjectParent; // Reference to the 3D preview object
     [SerializeField] public List<InventorySlot> listInventorySlots = new List<InventorySlot>();
 
@@ -34,7 +35,7 @@ public class PlayerInventory : MonoBehaviour
     private float _timeToAchieveMaxStrength;
     private AnimationCurve _curveStrengthGrow;
 
-    public bool IsInventoryFull => GetEmptySlot() <= 0 ? true : false;
+    public bool IsInventoryFull => HasEmptySlot();
 
     //EVENTS
     public static Action<ItemBase> TakeItemAction;
@@ -52,6 +53,14 @@ public class PlayerInventory : MonoBehaviour
 
         TakeItemAction += TakeItem;
         _eventDropItem.handle += OnDropItem;
+
+        _fromStorageToInventory.handle += _fromStorageToInventory_handle;
+    }
+
+    private void _fromStorageToInventory_handle(ItemBase obj)
+    {
+        //ajouter l'obj à l'inventaire
+        AddItemToInventory(obj);
     }
 
     private void Start()
@@ -67,6 +76,8 @@ public class PlayerInventory : MonoBehaviour
         playerInputAction.Game.DropInventoryItem.canceled -= OnDropItem;
 
         _eventDropItem.handle -= OnDropItem;
+
+        _fromStorageToInventory.handle -= _fromStorageToInventory_handle;
     }
 
     void Update()
@@ -190,6 +201,17 @@ public class PlayerInventory : MonoBehaviour
     private float GetForceToDropItem()
     {
         return Mathf.Min(Time.time - _startDropTime, _timeToAchieveMaxStrength) / _timeToAchieveMaxStrength * _maxStrengthThrowItem;
+    }
+
+    private bool HasEmptySlot()
+    {
+        int count = 0;
+        for(int i = 0; i < listInventorySlots.Count; i++)
+        {
+            if (listInventorySlots[i].previewItem != null)
+                count++;
+        }
+        return count >= listInventorySlots.Count;
     }
 
     private int GetEmptySlot()

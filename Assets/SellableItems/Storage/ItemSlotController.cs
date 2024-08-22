@@ -38,7 +38,6 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
     {
         if(Item != null && eventData.clickCount >= 2)
         {
-            Debug.Log("Item pas nul & double clique");
             //Voir aussi s'il y'a de la place dans l'inventaire
             if (PlayerManager.Instance._inventory.IsInventoryFull)
             {
@@ -47,9 +46,10 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
             }
             else
             {
-                Debug.Log("Inventaire pas full");
                 _fromStorageToInventory?.Raise(Item);
+                //Remove l'item de la slot
                 Item = null;
+                Destroy(this.gameObject);
             }
         }
     }

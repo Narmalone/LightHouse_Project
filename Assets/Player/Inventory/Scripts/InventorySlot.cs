@@ -17,7 +17,6 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
 
     [SerializeField] private CustomEvent _onStorageItemOpen;
     [SerializeField] private CustomEvent_ItemBase _fromInventoryToStorage;
-    [SerializeField] private CustomEvent_ItemBase _fromStorageToInventory;
     [SerializeField] private CustomEvent _eventDropItem;
 
     private void Awake()
