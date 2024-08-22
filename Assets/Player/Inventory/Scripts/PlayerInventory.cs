@@ -33,7 +33,7 @@ public class PlayerInventory : MonoBehaviour
     private float _timeToAchieveMaxStrength;
     private AnimationCurve _curveStrengthGrow;
 
-    public static bool IsInventoryFull = false;
+    public bool IsInventoryFull => GetEmptySlot() <= 0 ? true : false;
 
     //EVENTS
     public static Action<ItemBase> TakeItemAction;
