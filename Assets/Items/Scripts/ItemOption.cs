@@ -31,6 +31,12 @@ public abstract class ItemBase : MonoBehaviour, IItem
 
     public Action OnUse;
 
+    [HideInInspector] public Collider _collider;
+    private void Awake()
+    {
+        _collider = GetComponent<Collider>();
+    }
+
     /// <summary>
     /// Use the object
     /// </summary>

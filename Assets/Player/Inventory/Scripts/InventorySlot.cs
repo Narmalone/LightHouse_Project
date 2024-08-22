@@ -49,8 +49,10 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     {
         previewItem = item;
         if (previewItem == null) return;
-        previewItem.TryGetComponent(out Rigidbody rb);
-        if(rb == null) return;
+        previewItem.TryGetComponent(out Rigidbody rb); 
+        previewItem._collider.enabled = false;
+        previewItem.isInventoryItem = false;
+        if (rb == null) return;
         rb.isKinematic = true;
     }
 
@@ -65,7 +67,6 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     {
         if (item != null)
         {
-
             // Display the icon
             iconImage.sprite = item.ItemDatas.icon;
             itemName.text = item.Name;
