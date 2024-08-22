@@ -18,7 +18,18 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
         _takeButton.onClick.AddListener(() =>
         {
             //Retirer l'item de ce truc
-            _fromStorageToInventory?.Raise(Item);
+            if (PlayerManager.Instance._inventory.IsInventoryFull)
+            {
+                Debug.Log("INVENTAIRE FULL");
+                //petite animation, ou effet visuel pour montrer que c'est pas possible
+            }
+            else
+            {
+                _fromStorageToInventory?.Raise(Item);
+                //Remove l'item de la slot
+                Item = null;
+                Destroy(this.gameObject);
+            }
         });
     }
 

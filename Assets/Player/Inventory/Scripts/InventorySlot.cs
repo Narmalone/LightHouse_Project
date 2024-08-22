@@ -17,6 +17,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
 
     [SerializeField] private CustomEvent _onStorageItemOpen;
     [SerializeField] private CustomEvent_ItemBase _fromInventoryToStorage;
+    [SerializeField] private CustomEvent_InventorySlot _sendItemToStorageFromSlot;
     [SerializeField] private CustomEvent _eventDropItem;
 
     private void Awake()
@@ -101,6 +102,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
         {
             //Set preview item & remove celui là
             _fromInventoryToStorage?.Raise(previewItem);
+            _sendItemToStorageFromSlot?.Raise(this, previewItem);
         }
     }
 }

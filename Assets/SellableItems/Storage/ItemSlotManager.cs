@@ -6,12 +6,26 @@ using UnityEngine.UI;
 
 public class ItemSlotManager : MonoBehaviour
 {
-    public CanvasGroup MainGroup;
+    [SerializeField] private CanvasGroup _mainGroup;
     [SerializeField] private ItemSlotController _slotPrefab;
     [SerializeField] private List<ItemSlotController> _controllers = new List<ItemSlotController>();
     [SerializeField] private GridLayoutGroup _grid;
     [SerializeField] private ScrollRect _scrollRect;
     [SerializeField] private TextMeshProUGUI _noOneItemText;
+
+    public void DisableUI()
+    {
+        _mainGroup.alpha = 0f;
+        _mainGroup.interactable = false;
+        _mainGroup.blocksRaycasts = false;
+    }
+
+    public void EnableUI()
+    {
+        _mainGroup.alpha = 1f;
+        _mainGroup.interactable = true;
+        _mainGroup.blocksRaycasts = true;
+    }
 
     public ItemSlotController AddItem(ItemBase item)
     {
