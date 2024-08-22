@@ -32,11 +32,12 @@ public class BoutonGenerator : ItemBase
         UpdateButton();
     }
 
-    public override void Use()
+    public override bool Use()
     {
         base.Use();
         //Start Motion, sound...
         IsEnabled = !IsEnabled;
+        return false;
     }
 
     private void UpdateButton()

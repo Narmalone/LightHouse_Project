@@ -26,10 +26,11 @@ public class FuelLid : ItemBase
     {
         UpdateOpen();
     }
-    public override void Use()
+    public override bool Use()
     {
         base.Use();
         IsOpen = !IsOpen;
+        return false;
     }
 
     private void UpdateOpen()

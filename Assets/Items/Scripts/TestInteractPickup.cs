@@ -6,9 +6,10 @@ public class TestInteractPickup : ItemBase, IInteractInInventory
 
     public MeshRenderer _mesh;
 
-    public override void Use()
+    public override bool Use()
     {
         _mesh.material.color = Random.ColorHSV();
+        return false;
     }
 
     public void UseInInventory()

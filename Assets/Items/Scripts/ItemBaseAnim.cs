@@ -23,10 +23,11 @@ public class ItemBaseAnim : ItemBase
         } 
     }
 
-    public override void Use()
+    public override bool Use()
     {
         IsEnabled = !IsEnabled;
         OnUse?.Invoke();
+        return false;
     }
 
     public virtual void ChangeAnim()

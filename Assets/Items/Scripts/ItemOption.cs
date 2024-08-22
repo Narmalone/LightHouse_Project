@@ -34,9 +34,11 @@ public abstract class ItemBase : MonoBehaviour, IItem
     /// <summary>
     /// Use the object
     /// </summary>
-    public virtual void Use()
+    /// <returns> true if is destroy when used</returns>
+    public virtual bool Use()
     {
         OnUse?.Invoke();
+        return false;
     }
 
     public virtual void SetStateObject(ItemBase item)

@@ -102,10 +102,12 @@ public class ComputerController : ElectricItem
     #endregion
 
     #region OVERRIDES ITEM BASE
-    public override void Use()
+    public override bool Use()
     {
         base.Use();
         OpenComputer();
+
+        return false;
     }
     #endregion
 

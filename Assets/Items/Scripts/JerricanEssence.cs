@@ -9,9 +9,10 @@ public class JerricanEssence : ItemBase
     [SerializeField, Tooltip("Percentage of giving")] public float essenceValue = 100f;
     public event Action<float> OnJericanUse;
 
-    public override void Use()
+    public override bool Use()
     {
         base.Use();
         OnJericanUse?.Invoke(essenceValue);
+        return false;
     }
 }

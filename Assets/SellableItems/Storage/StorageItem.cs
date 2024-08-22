@@ -25,10 +25,11 @@ public class StorageItem : ItemBase
         _slotManager.AddItem(obj.Name, 0);
     }
 
-    public override void Use()
+    public override bool Use()
     {
         base.Use();
         OpenStorage();
+        return false;
     }
 
     public virtual void OpenStorage()

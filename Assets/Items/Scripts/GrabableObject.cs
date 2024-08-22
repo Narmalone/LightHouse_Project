@@ -13,7 +13,7 @@ public class GrabableObject : ItemBase
         _joint.enablePreprocessing = false;
     }
 
-    public override void Use()
+    public override bool Use()
     {
         base.Use();
 
@@ -27,7 +27,7 @@ public class GrabableObject : ItemBase
             _joint.connectedAnchor = Vector3.zero;
             _updateName.Raise(Name);
             EditPlayerMoveSpeed(_rb.mass);
-            return;
+            return false;
         }
         Name = "Active Grab";
         _joint.connectedBody = null;
@@ -35,6 +35,7 @@ public class GrabableObject : ItemBase
         _joint.spring = 0;
         _updateName.Raise(Name);
         EditPlayerMoveSpeed(0);
+        return false;
 
     }
 

@@ -26,10 +26,11 @@ public class HandleGenerator : ItemBase
     public event Action<bool> OnChanged; //param new Value
     [SerializeField] private CustomEvent_String eventName;
 
-    public override void Use()
+    public override bool Use()
     {
         base.Use();
         IsEnabled = !IsEnabled;
+        return false;
     }
 
     private void Awake()

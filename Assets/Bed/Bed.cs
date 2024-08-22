@@ -47,7 +47,7 @@ public class Bed : ItemBase
         _eventMorning.handle -= OnMorning;
     }
 
-    public override void Use()
+    public override bool Use()
     {
         base.Use();
         ForceUnusable();
@@ -63,7 +63,7 @@ public class Bed : ItemBase
         _eventFade.Raise(_sleepingTime);
         _eventFadeIsMasking.handle += SetTimeMorning;
         _eventFadeEnd.handle += UnlockPlayer;
-
+        return false;
     }
 
     private void SetTimeMorning()
