@@ -33,11 +33,6 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
         });
     }
 
-    private void OnDestroy()
-    {
-        Item = null;
-    }
-
     public void SetItem(ItemBase item)
     {
         Item = item;

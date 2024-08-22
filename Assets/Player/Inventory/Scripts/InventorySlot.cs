@@ -16,7 +16,6 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     public bool IsClickable = false;
 
     [SerializeField] private CustomEvent _onStorageItemOpen;
-    [SerializeField] private CustomEvent_ItemBase _fromInventoryToStorage;
     [SerializeField] private CustomEvent_InventorySlot _sendItemToStorageFromSlot;
     [SerializeField] private CustomEvent _eventDropItem;
 
@@ -100,9 +99,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
         if (!IsClickable || previewItem == null) return;
         if(eventData.clickCount >= 2)
         {
-            //Set preview item & remove celui là
-            _fromInventoryToStorage?.Raise(previewItem);
-            _sendItemToStorageFromSlot?.Raise(this, previewItem);
+            _sendItemToStorageFromSlot?.Raise(this);
         }
     }
 }

@@ -203,19 +203,6 @@ public class PlayerInventory : MonoBehaviour
         //ajouter l'obj à l'inventaire
         TakeItem(obj);
     }
-
-    public void RemovePreviewItemFromInventoryToStore(ItemBase target, InventorySlot slot)
-    {
-        if (listPreviewObject.Contains(target))
-        {
-            //target?.SetStateObject(slot.previewItem);
-            //DropItem(slot, true);
-            /*slot.SetItem(null);
-            slot.SetPreviewItem(null);
-            listPreviewObject[listPreviewObject.FindIndex(x => x == target)] = null;*/
-        }
-    }
-
     #endregion
 
     public void RemoveItemFromInventory(int index)
