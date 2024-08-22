@@ -18,6 +18,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     [SerializeField] private CustomEvent _onStorageItemOpen;
     [SerializeField] private CustomEvent_IItem _fromInventoryToStorage;
     [SerializeField] private CustomEvent_IItem _fromStorageToInventory;
+    [SerializeField] private CustomEvent _eventDropItem;
 
     private void Awake()
     {
@@ -56,7 +57,8 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     public void RaiseUseItem()
     {
         if (previewItem.isUsable == false) return;
-        previewItem.Use();
+        bool isDestroy = previewItem.Use();
+        if (isDestroy) _eventDropItem.Raise();
     }
 
     public void UpdateDisplay()

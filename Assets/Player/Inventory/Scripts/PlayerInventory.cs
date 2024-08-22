@@ -10,6 +10,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private byte slots = 4;
     [SerializeField] private byte currentUsedSlots = 0;
     [SerializeField] public CustomEvent _eventStartDropItem;
+    [SerializeField] public CustomEvent _eventDropItem;
     [SerializeField] public CustomEvent _eventEndDropItem;
     [SerializeField] public GameObject previewObjectParent; // Reference to the 3D preview object
     [SerializeField] public List<InventorySlot> listInventorySlots = new List<InventorySlot>();
@@ -50,6 +51,7 @@ public class PlayerInventory : MonoBehaviour
         playerInputAction.Game.DropInventoryItem.canceled += OnDropItem;
 
         TakeItemAction += TakeItem;
+        _eventDropItem.handle += OnDropItem;
     }
 
     private void Start()
@@ -63,6 +65,8 @@ public class PlayerInventory : MonoBehaviour
         playerInputAction.Game.UseInInventory.performed -= OnUseSelectedItem;
         playerInputAction.Game.DropInventoryItem.performed -= OnDropItem;
         playerInputAction.Game.DropInventoryItem.canceled -= OnDropItem;
+
+        _eventDropItem.handle -= OnDropItem;
     }
 
     void Update()
@@ -120,18 +124,26 @@ public class PlayerInventory : MonoBehaviour
         Destroy(item.gameObject);
     }
 
-    private void DropItem()
+    private void OnDropItem()
+    {
+        DropItem(false);
+    }
+
+    private void DropItem(bool respawnObject = true)
     {
         if (listInventorySlots[selectedSlot].item == null) return;
 
-        // Drop prefab
-        var go = Instantiate(listInventorySlots[selectedSlot].item.ItemDatas.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
-        var itemDroped = go.GetComponent<ItemBase>();
-        itemDroped?.SetStateObject(listInventorySlots[selectedSlot].previewItem);
+        if (respawnObject)
+        {
+            // Drop prefab
+            var go = Instantiate(listInventorySlots[selectedSlot].item.ItemDatas.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
+            var itemDroped = go.GetComponent<ItemBase>();
+            itemDroped?.SetStateObject(listInventorySlots[selectedSlot].previewItem);
 
-        // Propulse Object
-        itemDroped.TryGetComponent(out Rigidbody rb);
-        if (rb != null) rb.AddForce(_manager._data.playerCamera.transform.forward * GetForceToDropItem(), ForceMode.Impulse);
+            // Propulse Object
+            itemDroped.TryGetComponent(out Rigidbody rb);
+            if (rb != null) rb.AddForce(_manager._data.playerCamera.transform.forward * GetForceToDropItem(), ForceMode.Impulse);
+        }
 
         // Empty the item slot
         listInventorySlots[selectedSlot].SetItem(null);
