@@ -35,13 +35,11 @@ public class StorageItem : ItemBase
 
     [Header("LISTENERS")]
     [SerializeField] private CustomEvent_InventorySlot _sendItemToStorageFromSlot;
-    [SerializeField] private CustomEvent_ItemBase _sendItemInventoryFromStorage;
 
     private void Awake()
     {
         //recup del quand inverse
         _sendItemToStorageFromSlot.handle += _sendItemToStorageFromSlot_handle;
-        _sendItemInventoryFromStorage.handle += _sendItemInventoryFromStorage_handle;
         _availableStoragePoints = _storagePoints.ToList();
         _storageCloseCliqued.onClick.AddListener(() =>
         {
@@ -49,13 +47,9 @@ public class StorageItem : ItemBase
         });
     }
 
-    //A FIXER
-    private void _sendItemInventoryFromStorage_handle(ItemBase obj)
+    private void OnDestroy()
     {
-        //Lors que le joueur reprend l'objet, trouver le moyen de récupérer le point qui perds l'objet ? 
-        //Meilleure idée, custom event sur le ItemSlotController et on raise plutot un event qui renvoie (le item slot controller)
-        //et chaque itemslotcontroller à l'info sur quel point est son objet !
-        throw new NotImplementedException();
+        _sendItemToStorageFromSlot.handle -= _sendItemToStorageFromSlot_handle;
     }
 
     private void _sendItemToStorageFromSlot_handle(InventorySlot slot)
@@ -77,6 +71,7 @@ public class StorageItem : ItemBase
             itm.transform.SetParent(rdmPoint.transform);
             itm.transform.SetPositionAndRotation(rdmPoint.transform.position, rdmPoint.transform.rotation);
             slotController.SetStorePointController(rdmPoint);
+            slotController.FromStorageToInventorySlot += SlotController_FromStorageToInventorySlot;
             _availableStoragePoints.Remove(rdmPoint);
             _currentUsedPoints.Add(rdmPoint);
         }
@@ -88,9 +83,12 @@ public class StorageItem : ItemBase
         
     }
 
-    private void OnDestroy()
+    private void SlotController_FromStorageToInventorySlot(ItemSlotController obj)
     {
-        _sendItemToStorageFromSlot.handle -= _sendItemToStorageFromSlot_handle;
+        StorePointController storePoint = obj.GetStorePointController();
+        storePoint.Item = null;
+        _availableStoragePoints.Add(storePoint);
+        _currentUsedPoints.Remove(storePoint);
     }
 
     public override bool Use()

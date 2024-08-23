@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,6 +13,8 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TextMeshProUGUI _itemPriceText;
     [SerializeField] private Button _takeButton;
     [SerializeField] private CustomEvent_ItemBase _fromStorageToInventory;
+
+    public event Action<ItemSlotController> FromStorageToInventorySlot;
 
     private StorePointController _storePointController;
 
@@ -35,7 +38,7 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
             else
             {
                 _fromStorageToInventory?.Raise(Item);
-                //Remove l'item de la slot
+                FromStorageToInventorySlot?.Invoke(this);
                 Item = null;
                 Destroy(this.gameObject);
             }
@@ -62,6 +65,8 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
             else
             {
                 _fromStorageToInventory?.Raise(Item);
+                FromStorageToInventorySlot?.Invoke(this);
+
                 //Remove l'item de la slot
                 Item = null;
                 Destroy(this.gameObject);
