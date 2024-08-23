@@ -51,4 +51,6 @@ public abstract class ItemBase : MonoBehaviour, IItem
     {
 
     }
+
+    public virtual int GetItemPrice() { return -1; }
 }

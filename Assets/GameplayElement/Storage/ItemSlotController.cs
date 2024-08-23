@@ -49,7 +49,17 @@ public class ItemSlotController : MonoBehaviour, IPointerClickHandler
     {
         Item = item;
         _itemNameText.text = item.Name;
-        //ITEM PRICE
+
+        var itmPrice = item.GetItemPrice();
+        //L'item n'a aucun prix donc afficher autre chose
+        if(itmPrice < 0)
+        {
+            _itemPriceText.text = "NO PRICE NEEDED";
+        }
+        else
+        {
+            _itemPriceText.text = item.GetItemPrice().ToString();
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
