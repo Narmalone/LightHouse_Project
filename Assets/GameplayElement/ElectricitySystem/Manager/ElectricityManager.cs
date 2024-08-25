@@ -25,6 +25,7 @@ public class ElectricityManager : Singleton<ElectricityManager>
     [Header("ELECTRIC TAB LISTENERS")]
     [SerializeField] private CustomEvent_ElectricZone _onSwitchBoardEnabled;
     [SerializeField] private CustomEvent_ElectricZone _onSwitchBoardDisabled;
+    [SerializeField] private CustomEvent _onAllSwitchesShutdown;
 
     [Header("OTHER // INFOS")]
     [SerializeField] private List<GameZone> _currentEnabledZones;
@@ -45,6 +46,7 @@ public class ElectricityManager : Singleton<ElectricityManager>
         //tableau electrique evts
         _onSwitchBoardEnabled.handle += ElectricPannelController_OnElectricityEnabled;
         _onSwitchBoardDisabled.handle += ElectricPannelController_OnElectricityDisabled;
+        _onAllSwitchesShutdown.handle += _onAllSwitchesShutdown_handle;
     }
 
     private void OnDestroy()
@@ -56,6 +58,7 @@ public class ElectricityManager : Singleton<ElectricityManager>
 
         _onSwitchBoardEnabled.handle -= ElectricPannelController_OnElectricityEnabled;
         _onSwitchBoardDisabled.handle -= ElectricPannelController_OnElectricityDisabled;
+        _onAllSwitchesShutdown.handle -= _onAllSwitchesShutdown_handle;
     }
 
     #endregion
@@ -86,6 +89,15 @@ public class ElectricityManager : Singleton<ElectricityManager>
         {
             _onElectricityZoneEnabled?.Raise(obj);
         }
+    }
+
+    private void _onAllSwitchesShutdown_handle()
+    {
+        foreach(GameZone zone in _currentEnabledZones)
+        {
+            _onElectricityZoneDisabled.Raise(zone);
+        }
+        _currentEnabledZones = new List<GameZone>();
     }
 
     #endregion

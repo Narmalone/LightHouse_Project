@@ -20,6 +20,7 @@ public class SwitchBoardController : MonoBehaviour
     [Header("RAISE")]
     [SerializeField] private CustomEvent_ElectricZone _onSwitchBoardEnabled;
     [SerializeField] private CustomEvent_ElectricZone _onSwitchBoardDisabled;
+    [SerializeField] private CustomEvent _onAllSwitchesShutdown;
 
     [Header("LISTENERS")]
     [Header("Scenario")]
@@ -150,6 +151,7 @@ public class SwitchBoardController : MonoBehaviour
                 AddOrRemovePower(s.CostPower);
             }
         }
+        _onAllSwitchesShutdown?.Raise();
     }
 
     #endregion

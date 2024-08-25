@@ -56,8 +56,9 @@ public class StorageItem : ItemBase
     {
         ItemBase itm = PlayerManager.Instance._inventory.DropItem(slot, true);
         ItemSlotController slotController = _slotManager.AddItem(itm);
-        
-        if(_availableStoragePoints.Count > 0)
+        LayoutRebuilder.ForceRebuildLayoutImmediate(slotController.RectTransform);
+
+        if (_availableStoragePoints.Count > 0)
         {
             if (itm.TryGetComponent(out Rigidbody body))
             {
@@ -80,7 +81,7 @@ public class StorageItem : ItemBase
             itm.transform.SetParent(_storageItemParent);
             itm.gameObject.SetActive(false);
         }
-        
+        _slotManager.UpdateContentSize();
     }
 
     private void SlotController_FromStorageToInventorySlot(ItemSlotController obj)

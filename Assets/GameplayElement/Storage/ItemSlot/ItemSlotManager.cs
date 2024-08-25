@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,7 +37,6 @@ public class ItemSlotManager : MonoBehaviour
         ItemSlotController newItem = Instantiate(_slotPrefab, _grid.transform);
         _controllers.Add(newItem);
         newItem.SetItem(item);
-        UpdateContentSize();
         return newItem;
     }
 
@@ -50,15 +50,14 @@ public class ItemSlotManager : MonoBehaviour
         }
     }
 
-    private void UpdateContentSize()
+    public void UpdateContentSize()
     {
-        RectTransform rectTransformContent = _scrollRect.content;
-        rectTransformContent.sizeDelta = new Vector2(0f, Mathf.Abs(GetMostDownControllerValue()) + _grid.spacing.y);
+        _scrollRect.content.sizeDelta = new Vector2(0f, Mathf.Abs(GetMostDownControllerValue()) + _grid.spacing.y);
     }
 
     public float GetMostDownControllerValue()
     {
         if (_controllers.Count <= 0) return 0f;
-        return _controllers[_controllers.Count - 1].RectTransform.anchoredPosition.y;
+        return _controllers[^1].RectTransform.anchoredPosition.y;
     }
 }
