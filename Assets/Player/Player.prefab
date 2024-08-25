@@ -215,6 +215,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _currencyShop: 0
+  _onCurrencyShopChanged: {fileID: 11400000, guid: 38173c2e13e781e42bd9cc41d04e65d4,
+    type: 2}
 --- !u!114 &5436797213916635606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,9 +367,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -501,6 +503,11 @@ MonoBehaviour:
   - {fileID: 7735313719573283027}
   - {fileID: 202158667453682606}
   - {fileID: 1888309864223356825}
+  listPreviewObject:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &2026926276879429696
 GameObject:
   m_ObjectHideFlags: 0
@@ -1609,6 +1616,9 @@ MonoBehaviour:
   _DisplaySelection: {fileID: 11400000, guid: dc0c2235445c61c44b00dee81950c9af, type: 2}
   _updateNameObject: {fileID: 11400000, guid: 668e7d594f1687b448cb8795a139e9d5, type: 2}
   _HideSelection: {fileID: 11400000, guid: f37aa75985f743f42a296098c88069b6, type: 2}
+  _crosshairDisplay: {fileID: 4431704717604672021}
+  _crosshairShow: {fileID: 11400000, guid: bc0d5152cad8be748b23ce7fa12621f6, type: 2}
+  _crosshairHide: {fileID: 11400000, guid: d172f845970737749903267db92a114d, type: 2}
 --- !u!1 &6233480276853010939
 GameObject:
   m_ObjectHideFlags: 0
@@ -1668,9 +1678,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1743,9 +1753,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2019,9 +2029,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2252,6 +2262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7367527406180424061}
   - component: {fileID: 2837317505452520398}
+  - component: {fileID: 4431704717604672021}
   m_Layer: 0
   m_Name: Crosshair
   m_TagString: Untagged
@@ -2296,6 +2307,18 @@ MonoBehaviour:
   _circle: {fileID: 1203685976581424388}
   _eventStartDrop: {fileID: 11400000, guid: 6830ae18dc715ed4eba6cf421944702b, type: 2}
   _eventEndDrop: {fileID: 11400000, guid: 7debe958e34c0094e8766b19b91f4cd6, type: 2}
+--- !u!225 &4431704717604672021
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7943767608174074338}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &8309518582664010489
 GameObject:
   m_ObjectHideFlags: 0

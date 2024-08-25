@@ -40,6 +40,8 @@ public class ComputerController : ElectricItem
     [Header("RAISE")]
     [SerializeField] private CustomEvent _onComputerOpen;
     [SerializeField] private CustomEvent _onComputerLeft;
+    [SerializeField] private CustomEvent _crosshairShow;
+    [SerializeField] private CustomEvent _crosshairHide;
 
     [Header("LISTENERS")]
     [Header("Player Movements")]
@@ -190,6 +192,8 @@ public class ComputerController : ElectricItem
     {
         _itemCollider.enabled = false;
         _uiComputerController.MainCanvasGroup.alpha = 1f;
+
+        _crosshairHide?.Raise();
         _lockPlayerMovement?.Raise();
         _lockCamera?.Raise();
         _computerCam.SetPriority(10);
@@ -200,6 +204,8 @@ public class ComputerController : ElectricItem
     {
         _itemCollider.enabled = true;
         _uiComputerController.MainCanvasGroup.alpha = 0f;
+
+        _crosshairShow?.Raise();
         _unlockPlayerMovement?.Raise();
         _unlockCamera?.Raise();
         _computerCam.SetPriority(-20);

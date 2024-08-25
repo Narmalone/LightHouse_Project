@@ -11,11 +11,19 @@ public class PlayerInteractionUI : MonoBehaviour
     [SerializeField] private CustomEvent_String _updateNameObject;
     [SerializeField] private CustomEvent _HideSelection;
 
+    //Crosshair
+    [Header("CROSSHAIR")]
+    [SerializeField] private CanvasGroup _crosshairDisplay;
+    [SerializeField] private CustomEvent _crosshairShow;
+    [SerializeField] private CustomEvent _crosshairHide;
+
     private void Awake()
     {
         _updateNameObject.handle += UpdateNameObject;
         _DisplaySelection.handle += DisplaySelection;
         _HideSelection.handle += HideSelection;
+        _crosshairShow.handle += ShowCrosshair;
+        _crosshairHide.handle += HideCrosshair;
     }
 
     private void Start()
@@ -28,6 +36,18 @@ public class PlayerInteractionUI : MonoBehaviour
         _updateNameObject.handle -= UpdateNameObject;
         _DisplaySelection.handle -= DisplaySelection;
         _HideSelection.handle -= HideSelection;
+        _crosshairShow.handle -= ShowCrosshair;
+        _crosshairHide.handle -= HideCrosshair;
+    }
+
+    private void HideCrosshair()
+    {
+        _crosshairDisplay.alpha = 0f;
+    }
+
+    private void ShowCrosshair()
+    {
+        _crosshairDisplay.alpha = 1f;
     }
 
     private void DisplaySelection(IItem item)

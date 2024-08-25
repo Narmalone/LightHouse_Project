@@ -12,6 +12,7 @@ public class ContentWindow : MonoBehaviour
         _canvasGroup.blocksRaycasts = true;
         _canvasGroup.ignoreParentGroups = true;
         _canvasGroup.interactable = true;
+        OnShow();
     }
 
     public void Hide()
@@ -20,5 +21,10 @@ public class ContentWindow : MonoBehaviour
         _canvasGroup.blocksRaycasts = false;
         _canvasGroup.ignoreParentGroups = false;
         _canvasGroup.interactable = false;
+        OnHide();
     }
+
+    public virtual void OnShow(){ }
+
+    public virtual void OnHide() { }
 }

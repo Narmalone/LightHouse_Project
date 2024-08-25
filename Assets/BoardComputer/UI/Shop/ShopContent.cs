@@ -10,8 +10,8 @@ public class ShopContent : ContentWindow
     [SerializeField] private ShopCardController shopCardPrefab;
     [SerializeField] private Transform shopCardsTransform;
     [SerializeField] private ShopItemConfig shopItemConfig;
-
-    private List<ShopCardController> controllers = new List<ShopCardController>();
+    [SerializeField] private CustomEvent_Float _onPlayerCurrencyChanged;
+    [SerializeField] private List<ShopCardController> controllers = new List<ShopCardController>();
 
     private PlayerManager playerManagerInstance;
 
@@ -19,13 +19,30 @@ public class ShopContent : ContentWindow
     {
         SortItems();
         InitShopCards();
+
+        _onPlayerCurrencyChanged.handle += _onPlayerCurrencyChanged_handle;
     }
 
     private void Start()
     {
-        SetDeliveryTime(shopItemConfig.AverageDeliveryTime);
         playerManagerInstance = PlayerManager.Instance;
-        GetPlayerCurrency();
+        SetDeliveryTime(shopItemConfig.AverageDeliveryTime);
+
+        CheckCostForPlayersMoney();
+        UpdatePlayerCurrencyText();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            playerManagerInstance._data.CurrencyShop += 50f;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        _onPlayerCurrencyChanged.handle -= _onPlayerCurrencyChanged_handle;
     }
 
     private void InitShopCards()
@@ -34,7 +51,20 @@ public class ShopContent : ContentWindow
         {
             ShopCardController newItem = Instantiate(shopCardPrefab, shopCardsTransform);
             newItem.SetCardsInfos(shopItemConfig.Items[i].Name, shopItemConfig.Items[i].Cost);
+            newItem.ShopItemData = shopItemConfig.Items[i];
             controllers.Add(newItem);
+        }
+        InitCardButtons();
+    }
+
+    private void InitCardButtons()
+    {
+        foreach(ShopCardController ctrl in controllers)
+        {
+            ctrl.BuyBtn.onClick.AddListener(() =>
+            {
+                playerManagerInstance._data.CurrencyShop -= ctrl.ShopItemData.Cost;
+            });
         }
     }
 
@@ -62,8 +92,28 @@ public class ShopContent : ContentWindow
         deliveryTimeTxt.text = $"Delivery Time: {whenDeliv.Hour} Hours.";
     }
 
-    public void GetPlayerCurrency()
+    public void UpdatePlayerCurrencyText()
     {
-        playerCurrencyTxt.text = "Currency: " + playerManagerInstance._data._currencyShop;
+        playerCurrencyTxt.text = "Currency: " + playerManagerInstance._data.CurrencyShop;
+    }
+
+    public override void OnShow()
+    {
+        
+    }
+
+    private void CheckCostForPlayersMoney()
+    {
+        var currency = playerManagerInstance._data.CurrencyShop;
+        foreach (ShopCardController ctrl in controllers)
+        {
+            ctrl.BuyBtn.interactable = ctrl.ShopItemData.Cost <= currency; 
+        }
+    }
+
+    private void _onPlayerCurrencyChanged_handle(float obj)
+    {
+        CheckCostForPlayersMoney();
+        UpdatePlayerCurrencyText();
     }
 }
