@@ -29,6 +29,15 @@ public class Room : MonoBehaviour
         _onElecZoneDisabled.handle += _onElecZoneDisabled_handle;
     }
 
+    private void Start()
+    {
+        foreach (ElectricItem item in ElectricityItems)
+        {
+            item.HasElectricity = false;
+            item.OnElecDisabled();
+        }
+    }
+
     protected virtual void OnDestroy()
     {
         _onElecZoneEnabled.handle -= _onElecZoneEnabled_handle;

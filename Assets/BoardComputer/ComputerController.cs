@@ -191,7 +191,7 @@ public class ComputerController : ElectricItem
     public void OpenComputer()
     {
         _itemCollider.enabled = false;
-        _uiComputerController.MainCanvasGroup.alpha = 1f;
+        _uiComputerController.Show();
 
         _crosshairHide?.Raise();
         _lockPlayerMovement?.Raise();
@@ -203,7 +203,7 @@ public class ComputerController : ElectricItem
     public void LeaveComputer()
     {
         _itemCollider.enabled = true;
-        _uiComputerController.MainCanvasGroup.alpha = 0f;
+        _uiComputerController.Hide();
 
         _crosshairShow?.Raise();
         _unlockPlayerMovement?.Raise();

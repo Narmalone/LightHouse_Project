@@ -3,9 +3,16 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using System;
 
+public enum KeyMapCustom
+{
+    Move,
+    Look, 
+    Jump,
+    Sprint,
+    UseItem
+}
 public class PlayerController : MonoBehaviour
 {
-
     [Header("Layer")]
     public LayerMask _layerWall;
     public LayerMask itemMask;
@@ -306,3 +313,4 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 }
+

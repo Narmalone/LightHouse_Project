@@ -231,6 +231,8 @@ public class GeneratorController : MonoBehaviour
     private void OnGeneratorsFuelEmpty()
     {
         //jouer anims, sons...
+        handleController.IsEnabled = false;
+        btnController.IsEnabled = false;
         OnGeneratorFuelEmpty?.Raise();
     }
 

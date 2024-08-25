@@ -58,6 +58,16 @@ public class PlayerInventory : MonoBehaviour
         _fromStorageToInventory.handle += _fromStorageToInventory_handle;
     }
 
+    public void EnableUseInInventory()
+    {
+        playerInputAction.Game.UseInInventory.performed += OnUseSelectedItem;
+    }
+
+    public void DisableUseInInventory()
+    {
+        playerInputAction.Game.UseInInventory.performed -= OnUseSelectedItem;
+    }
+
     private void Start()
     {
         SelectSlot(0);

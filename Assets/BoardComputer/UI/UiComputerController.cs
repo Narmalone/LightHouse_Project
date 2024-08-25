@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class UiComputerController : MonoBehaviour
 {
-    public CanvasGroup MainCanvasGroup;
+    [SerializeField] private CanvasGroup _mainCanvasGroup;
 
     [SerializeField] private ContentWindow[] _allWindows;
     [SerializeField] private TabBtnDisplay[] mainOnglets;
@@ -60,6 +60,16 @@ public class UiComputerController : MonoBehaviour
         }
         lastCliqued = nextTab;
         lastCliqued.Select();
+    }
+
+    public void Show()
+    {
+        _mainCanvasGroup.alpha = 1;
+    }
+
+    public void Hide()
+    {
+        _mainCanvasGroup.alpha = 0;
     }
 
     public void SwitchTab(ComputerTabs nextTab)

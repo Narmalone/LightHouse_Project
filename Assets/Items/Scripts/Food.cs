@@ -11,7 +11,6 @@ public class Food : ItemBase
         isInventoryItem = false;
 
         _eventPlayerEat.Raise(_foodAmount);
-
         Destroy(gameObject);
         return true;
     }

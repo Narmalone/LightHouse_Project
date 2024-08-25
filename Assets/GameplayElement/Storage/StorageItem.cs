@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class StorageItem : ItemBase
 {
+    public bool IsLinkedToShop = false;
     public override string Name { get => "Open"; set => base.Name = value; }
 
     [SerializeField] private ItemSlotManager _slotManager;
@@ -16,9 +17,6 @@ public class StorageItem : ItemBase
     [SerializeField] private StorePointController[] _storagePoints;
     [SerializeField] private List<StorePointController> _currentUsedPoints = new List<StorePointController>();
     [SerializeField] private List<StorePointController> _availableStoragePoints = new List<StorePointController>();
-    //plus tard, faire une liste d'objet et de "points" de spawn pour qu'on voit les objets
-    //si la liste est pleine on met juste les items dans l'inventaire 
-    //limite maximale ?
 
     [Header("--- EVENTS ---")]
     [Header("RAISE")]
@@ -104,6 +102,7 @@ public class StorageItem : ItemBase
     {
         _slotManager.EnableUI();
         _itemCollider.enabled = false;
+        PlayerManager.Instance._inventory.DisableUseInInventory();
         _onCrosshairHide?.Raise();
         _onStorageItemOpen?.Raise();
         _lockPlayerMovement?.Raise();
@@ -113,6 +112,7 @@ public class StorageItem : ItemBase
     public virtual void CloseStorage()
     {
         _itemCollider.enabled = true;
+        PlayerManager.Instance._inventory.EnableUseInInventory();
         _slotManager.DisableUI();
         _onCrosshairShow?.Raise();
         _onStorageItemClosed?.Raise();
