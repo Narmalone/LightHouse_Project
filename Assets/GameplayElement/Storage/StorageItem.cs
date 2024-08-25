@@ -24,6 +24,8 @@ public class StorageItem : ItemBase
     [Header("RAISE")]
     [SerializeField] private CustomEvent _onStorageItemOpen;
     [SerializeField] private CustomEvent _onStorageItemClosed;
+    [SerializeField] private CustomEvent _onCrosshairShow;
+    [SerializeField] private CustomEvent _onCrosshairHide;
 
     [Header("Player Movements")]
     [SerializeField] private CustomEvent _lockPlayerMovement;
@@ -102,6 +104,7 @@ public class StorageItem : ItemBase
     {
         _slotManager.EnableUI();
         _itemCollider.enabled = false;
+        _onCrosshairHide?.Raise();
         _onStorageItemOpen?.Raise();
         _lockPlayerMovement?.Raise();
         _lockPlayerCam?.Raise();
@@ -111,6 +114,7 @@ public class StorageItem : ItemBase
     {
         _itemCollider.enabled = true;
         _slotManager.DisableUI();
+        _onCrosshairShow?.Raise();
         _onStorageItemClosed?.Raise();
         _unlockPlayerMovement?.Raise();
         _unlockPlayerCam?.Raise();
