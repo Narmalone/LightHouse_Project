@@ -23,4 +23,9 @@ public class JerricanEssence : ItemBase
     {
         return itemPrice;
     }
+
+    public override void SetStateObject(ItemBase item)
+    {
+        itemPrice = ((JerricanEssence)item).itemPrice;
+    }
 }
