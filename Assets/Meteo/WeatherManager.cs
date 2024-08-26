@@ -22,7 +22,7 @@ public struct DayWeather
     public WeatherType weatherType; // Type de météo
 }
 
-public class WeatherManager : MonoBehaviour
+public class WeatherManager : Singleton<WeatherManager>
 {
     [SerializeField] private RainController _rainController;
     [SerializeField] private CustomEvent_WeatherType _onWeatherChanged;
@@ -43,7 +43,7 @@ public class WeatherManager : MonoBehaviour
 
     // Paramètres d'environnement
     private float minWindSpeed = 5f;
-    private float maxWindSpeed = 100f;
+    [SerializeField] private float maxWindSpeed = 100f;
 
     // Variables pour les conditions actuelles interpolées
     public float humidity;

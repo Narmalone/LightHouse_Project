@@ -4,6 +4,9 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.VFX;
 
+//Idées plus tard -> réalisme de la pluie, pluie qui touche le sol ou on voit les ploc + éventuellement
+//elles glissent sur les matériaux cf https://www.youtube.com/watch?v=4C2PzDhkc0k
+//pluie qui se déplace ? -> passer volume en local
 public class RainController : MonoBehaviour
 {
     #region CONST VARIABLES

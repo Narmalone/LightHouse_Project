@@ -31,6 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3815590563038312402}
+  - {fileID: 8003283806486866465}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1156333629930386925
@@ -45,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 094012de0082e2745b8e0bca14e1f489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsPersistent: 0
   _rainController: {fileID: 578890741923689259}
   _onWeatherChanged: {fileID: 11400000, guid: 5c9110a41468ab343ae94cbeb856be98, type: 2}
   weatherForecast: []
@@ -65,6 +67,7 @@ MonoBehaviour:
     atmosphericPressure: 0
     weatherType: 0
   difficulty: 1
+  maxWindSpeed: 150
   humidity: 0
   windSpeed: 0
   airTemperature: 0
@@ -158,3 +161,114 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 33264256854774347}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &881967228033497471
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4278920488189100000}
+    m_Modifications:
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8962498496771605663, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: m_Name
+      value: CloudsController
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8962498496771605663, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 8076470204050097022}
+  m_SourcePrefab: {fileID: 100100000, guid: fbff52f6dcd024b489b0a8fea363c22c, type: 3}
+--- !u!114 &1846265981923445069 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1558845415977627698, guid: fbff52f6dcd024b489b0a8fea363c22c,
+    type: 3}
+  m_PrefabInstance: {fileID: 881967228033497471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8096434606077885920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &8003283806486866465 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7146087522092831582, guid: fbff52f6dcd024b489b0a8fea363c22c,
+    type: 3}
+  m_PrefabInstance: {fileID: 881967228033497471}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8096434606077885920 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8962498496771605663, guid: fbff52f6dcd024b489b0a8fea363c22c,
+    type: 3}
+  m_PrefabInstance: {fileID: 881967228033497471}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8076470204050097022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8096434606077885920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59521e09f74bff943b3be4e2f8086c3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cloudsVolume: {fileID: 1846265981923445069}
+  _cloudSpeedMultiplier: 3
+  _onWeatherChanged: {fileID: 0}
