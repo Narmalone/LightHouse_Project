@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7146087522092831582}
+  - component: {fileID: 8946403242877008385}
   - component: {fileID: 1558845415977627698}
   m_Layer: 0
   m_Name: CloudsController
@@ -32,6 +33,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8946403242877008385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8962498496771605663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59521e09f74bff943b3be4e2f8086c3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cloudsVolume: {fileID: 1558845415977627698}
+  _cloudSpeedMultiplier: 5
+  _onWeatherChanged: {fileID: 11400000, guid: 5c9110a41468ab343ae94cbeb856be98, type: 2}
+  _lerpCloudsTime: 10
+  _calmSettings: {fileID: 11400000, guid: 8c6692b46add6144fb62e7549752825d, type: 2}
+  _windySettings: {fileID: 11400000, guid: 910be9afe2f61bc40bf6b9008c4ce7ed, type: 2}
+  _sunnySettings: {fileID: 11400000, guid: 5e161b79a9a7a014e8e2729908638da4, type: 2}
+  _stormySettings: {fileID: 11400000, guid: 3c90d1e91fa5eee43a428cbc12783148, type: 2}
+  _rainySettings: {fileID: 11400000, guid: c9190eaaaec252842afee261588a25b3, type: 2}
 --- !u!114 &1558845415977627698
 MonoBehaviour:
   m_ObjectHideFlags: 0

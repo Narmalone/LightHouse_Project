@@ -19,6 +19,15 @@ public class CloudsController : MonoBehaviour
     private WindSpeedParameter _currentWindSpeed;
     private WindParameter.WindParamaterValue _currentWindParameter;
 
+    [SerializeField] private float _lerpCloudsTime = 2.5f;
+
+    private CloudSettings _oldCloudSettings;
+    [SerializeField] private CloudSettings _calmSettings;
+    [SerializeField] private CloudSettings _windySettings;
+    [SerializeField] private CloudSettings _sunnySettings;
+    [SerializeField] private CloudSettings _stormySettings;
+    [SerializeField] private CloudSettings _rainySettings;
+
     private void Awake()
     {
         _cloudsVolume.sharedProfile.TryGet(out _cachedClouds);
@@ -37,27 +46,111 @@ public class CloudsController : MonoBehaviour
 
     private void _onWeatherChanged_handle(WeatherType obj)
     {
+        CloudSettings newCloudSettings = null;
         switch (obj)
         {
             case WeatherType.Calm:
-                _cachedClouds.cloudPreset = VolumetricClouds.CloudPresets.Sparse;
+                newCloudSettings = _calmSettings;
                 break;
             case WeatherType.Storm:
-                _cachedClouds.cloudPreset = VolumetricClouds.CloudPresets.Overcast;
+                newCloudSettings = _stormySettings;
                 break;
             case WeatherType.Windy:
-                _cachedClouds.cloudPreset = VolumetricClouds.CloudPresets.Cloudy;
+                newCloudSettings = _windySettings;
                 break;
             case WeatherType.Rainy:
-                _cachedClouds.cloudPreset = VolumetricClouds.CloudPresets.Stormy;
+                newCloudSettings = _rainySettings;
                 break;
             case WeatherType.Sunny:
-                _cachedClouds.enable.value = false;
+                newCloudSettings = _sunnySettings;
                 break;
         }
         if (_cachedClouds.enable.value == false && obj != WeatherType.Sunny)
         {
             _cachedClouds.enable.value = true;
+        }
+
+        if(_oldCloudSettings == null)
+        {
+            _oldCloudSettings = _calmSettings;
+        }
+
+        LerpCloudSettings(_oldCloudSettings, newCloudSettings, _lerpCloudsTime);
+        _oldCloudSettings = newCloudSettings;
+    }
+
+    private void LerpCloudSettings(CloudSettings startSettings, CloudSettings endSettings, float duration)
+    {
+        _lerpTime = 0f;
+
+        StartCoroutine(LerpCloudSettingsCoroutine(startSettings, endSettings, duration));
+    }
+
+    public static AnimationCurve LerpAnimationCurve(AnimationCurve startCurve, AnimationCurve endCurve, float t)
+    {
+        AnimationCurve resultCurve = new AnimationCurve();
+
+        int numKeys = Mathf.Max(startCurve.keys.Length, endCurve.keys.Length);
+        Keyframe[] keys = new Keyframe[numKeys];
+
+        for (int i = 0; i < numKeys; i++)
+        {
+            float time = Mathf.Lerp(startCurve.keys[i % startCurve.keys.Length].time, endCurve.keys[i % endCurve.keys.Length].time, t);
+            float value = Mathf.Lerp(startCurve.keys[i % startCurve.keys.Length].value, endCurve.keys[i % endCurve.keys.Length].value, t);
+            float inTangent = Mathf.Lerp(startCurve.keys[i % startCurve.keys.Length].inTangent, endCurve.keys[i % endCurve.keys.Length].inTangent, t);
+            float outTangent = Mathf.Lerp(startCurve.keys[i % startCurve.keys.Length].outTangent, endCurve.keys[i % endCurve.keys.Length].outTangent, t);
+
+            keys[i] = new Keyframe(time, value, inTangent, outTangent);
+        }
+
+        resultCurve.keys = keys;
+        return resultCurve;
+    }
+
+    private IEnumerator LerpCloudSettingsCoroutine(CloudSettings startSettings, CloudSettings endSettings, float duration)
+    {
+        while (_lerpTime < duration)
+        {
+            float t = _lerpTime / duration;
+            t = t * t * (3f - 2f * t); // Smoothstep function
+
+            // Interpoler les valeurs des paramètres de nuages
+            float densityMultiplier = Mathf.Lerp(startSettings.DensityMultiplier, endSettings.DensityMultiplier, t);
+            AnimationCurve densityCurve = LerpAnimationCurve(startSettings.DensityCurve, endSettings.DensityCurve, t);
+
+            float shapeFactor = Mathf.Lerp(startSettings.ShapeFactor, endSettings.ShapeFactor, t);
+            float shapeScale = Mathf.Lerp(startSettings.ShapeScale, endSettings.ShapeScale, t);
+            float erosionFactor = Mathf.Lerp(startSettings.ErosionFactor, endSettings.ErosionFactor, t);
+            float erosionScale = Mathf.Lerp(startSettings.ErosionScale, endSettings.ErosionScale, t);
+            AnimationCurve erosionCurve = LerpAnimationCurve(startSettings.ErosionCurve, endSettings.ErosionCurve, t);
+            AnimationCurve ambientOcclusionCurve = LerpAnimationCurve(startSettings.AmbientOcclusionCurve, endSettings.AmbientOcclusionCurve, t);
+
+            float bottomAltitude = Mathf.Lerp(startSettings.BottomAltitude, endSettings.BottomAltitude, t);
+            float altitudeRange = Mathf.Lerp(startSettings.AltitudeRange, endSettings.AltitudeRange, t);
+
+            Vector3 shapeOffset = Vector3.Lerp(startSettings.ShapeOffset, endSettings.ShapeOffset, t);
+            float earthCurvature = Mathf.Lerp(startSettings.EarthCurvature, endSettings.EarthCurvature, t);
+
+            // Appliquer les valeurs interpolées aux paramètres de nuages
+            _cachedClouds.densityMultiplier.Override(densityMultiplier);
+            _cachedClouds.densityCurve.Override(densityCurve);
+
+            _cachedClouds.shapeFactor.Override(shapeFactor);
+            _cachedClouds.shapeScale.Override(shapeScale);
+
+            _cachedClouds.erosionFactor.Override(erosionFactor);
+            _cachedClouds.erosionScale.Override(erosionScale);
+            _cachedClouds.erosionCurve.Override(erosionCurve);
+            _cachedClouds.ambientOcclusionCurve.Override(ambientOcclusionCurve);
+
+            _cachedClouds.bottomAltitude.Override(bottomAltitude);
+            _cachedClouds.altitudeRange.Override(altitudeRange);
+
+            _cachedClouds.shapeOffset.Override(shapeOffset);
+            _cachedClouds.earthCurvature.Override(earthCurvature);
+
+            _lerpTime += Time.deltaTime;
+            yield return null;
         }
     }
 
@@ -73,41 +166,9 @@ public class CloudsController : MonoBehaviour
         _cachedClouds.globalWindSpeed.SetValue(_currentWindSpeed);
     }
 
-    private void LerpCloudPreset(VolumetricClouds.CloudPresets startPreset, VolumetricClouds.CloudPresets endPreset, float duration)
-    {
-        _lerpTime = 0f;
-        _startPreset = startPreset;
-        _endPreset = endPreset;
-
-        StartCoroutine(LerpCloudPresetCoroutine(duration));
-    }
-
     private float _lerpTime = 0f;
     private VolumetricClouds.CloudPresets _startPreset;
     private VolumetricClouds.CloudPresets _endPreset;
 
-    private IEnumerator LerpCloudPresetCoroutine(float duration)
-    {
-        while (_lerpTime < duration)
-        {
-            float t = _lerpTime / duration;
-            t = t * t * (3f - 2f * t); // Smoothstep function
-
-            VolumetricClouds.CloudPresets currentPreset = _startPreset;
-            if (t > 0.5f)
-            {
-                currentPreset = _endPreset;
-            }
-            else
-            {
-                currentPreset = (VolumetricClouds.CloudPresets)Mathf.Lerp((int)_startPreset, (int)_endPreset, t * 2f);
-            }
-
-            _cachedClouds.cloudPreset = currentPreset;
-
-            _lerpTime += Time.deltaTime;
-            yield return null;
-        }
-    }
-
+    
 }
