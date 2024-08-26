@@ -171,6 +171,7 @@ public class ComputerController : ElectricItem
         StopCoroutine(_changeEmissiveRoutine);
         _boxCollider.enabled = true;
         DisableButton();
+        _uiComputerController.Hide();
 
         if (_isInComputer)
         {
