@@ -54,7 +54,7 @@ public class StorageItem : ItemBase
 
     private void _sendItemToStorageFromSlot_handle(InventorySlot slot)
     {
-        ItemBase itm = PlayerManager.Instance._inventory.DropItem(slot, true);
+        ItemBase itm = PlayerManager.Instance._inventory.DropItem(true, slot);
         ItemSlotController slotController = _slotManager.AddItem(itm);
         LayoutRebuilder.ForceRebuildLayoutImmediate(slotController.RectTransform);
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Progress;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -122,6 +123,7 @@ public class PlayerInventory : MonoBehaviour
         _timeToAchieveMaxStrength = _manager._data._timeToAchieveMaxStrength;
         _curveStrengthGrow = _manager._data._curveStrengthGrow;
     }
+
     private void TakeItem(ItemBase item)
     {
         // Ajouter dans le slot (Choix slot, Nom, Icon)
@@ -130,13 +132,12 @@ public class PlayerInventory : MonoBehaviour
         // If no empty slot
         if (slotIndex == -1) return;
 
-        listInventorySlots[slotIndex].SetItem(item);
+        var previewItem = AddPreviewObject(slotIndex, item, item.ItemDatas.prefab);
 
-        AddPreviewObject(slotIndex, item, item.ItemDatas.prefab);
+        listInventorySlots[slotIndex].SetItem(previewItem);
 
         // Enlever l'item du jeux
         item.gameObject.SetActive(false);
-
         Destroy(item.gameObject);
     }
 
@@ -145,34 +146,10 @@ public class PlayerInventory : MonoBehaviour
         DropItem(false);
     }
 
-    public ItemBase DropItem(bool respawnObject = true)
+    public ItemBase DropItem(bool respawnObject = true, InventorySlot slot = null)
     {
-        if (listInventorySlots[selectedSlot].item == null) return null;
+        if (slot == null) slot = listInventorySlots[selectedSlot];
 
-        ItemBase itm = null;
-        if (respawnObject)
-        {
-            // Drop prefab
-            var go = Instantiate(listInventorySlots[selectedSlot].item.ItemDatas.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
-            itm = go.GetComponent<ItemBase>();
-            itm?.SetStateObject(listInventorySlots[selectedSlot].previewItem);
-            // Propulse Object
-            itm.TryGetComponent(out Rigidbody rb);
-            if (rb != null) rb.AddForce(_manager._data.playerCamera.transform.forward * GetForceToDropItem(), ForceMode.Impulse);
-        }
-
-        // Empty the item slot
-        listInventorySlots[selectedSlot].SetItem(null);
-
-        if (listPreviewObject[selectedSlot] != null)
-        {
-            Destroy(listPreviewObject[selectedSlot].gameObject);
-        }
-        return itm;
-    }
-
-    public ItemBase DropItem(InventorySlot slot, bool respawnObject = true)
-    {
         if (slot.item == null) return null;
 
         ItemBase itm = null;
@@ -184,7 +161,7 @@ public class PlayerInventory : MonoBehaviour
             itm?.SetStateObject(slot.previewItem);
             // Propulse Object
             itm.TryGetComponent(out Rigidbody rb);
-            if (rb != null) rb.AddForce(_manager._data.playerCamera.transform.forward * GetForceToDropItem(), ForceMode.Impulse);
+            if (rb != null) rb.AddForce(_manager._data.playerCamera.transform.forward * GetForceToDropItem() * rb.mass, ForceMode.Impulse);
         }
 
         // Empty the item slot
@@ -197,15 +174,6 @@ public class PlayerInventory : MonoBehaviour
         return itm;
     }
 
-    public void RemoveItemFromInventory(ItemBase target)
-    {
-        if (listPreviewObject.Contains(target))
-        {
-            listInventorySlots[listPreviewObject.FindIndex(x => x == target)].SetItem(null);
-            Destroy(listPreviewObject.Find(x => x == target).gameObject);
-        }
-    }
-
     #region STORAGE FUNCS
 
     private void _fromStorageToInventory_handle(ItemBase obj)
@@ -215,12 +183,12 @@ public class PlayerInventory : MonoBehaviour
     }
     #endregion
 
-    public void RemoveItemFromInventory(int index)
+    public void RemoveItemFromInventory(ItemBase target)
     {
-        if (listPreviewObject[index] != null)
+        if (listPreviewObject.Contains(target))
         {
-            listInventorySlots[index].SetItem(null);
-            Destroy(listPreviewObject[index].gameObject);
+            listInventorySlots[listPreviewObject.FindIndex(x => x == target)].SetItem(null);
+            Destroy(listPreviewObject.Find(x => x == target).gameObject);
         }
     }
 
@@ -265,16 +233,17 @@ public class PlayerInventory : MonoBehaviour
         CurrentItemSelected = listPreviewObject[selectedSlot]; 
     }
 
-    private void AddPreviewObject(int index, ItemBase item, GameObject mesh)
+    private ItemBase AddPreviewObject(int index, ItemBase item, GameObject mesh)
     {
         if (listPreviewObject[index] != null) Destroy(listPreviewObject[index]);
         var go = Instantiate(mesh, previewObjectParent.transform.position, previewObjectParent.transform.rotation, previewObjectParent.transform);
         var itemPreview = go.GetComponent<ItemBase>();
         listPreviewObject[index] = itemPreview;
 
-        itemPreview?.SetStateObject(item);
+        itemPreview.SetStateObject(item);
         listInventorySlots[index].SetPreviewItem(itemPreview);
         if (itemPreview != CurrentItemSelected) itemPreview.gameObject.SetActive(false);
+        return itemPreview;
     }
 
     private void UpdatePreviewObject(int nextIndex)
