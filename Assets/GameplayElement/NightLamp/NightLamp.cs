@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 public class NightLamp : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class NightLamp : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private float _intensity;
     [SerializeField] private float _delaySwitchOn;
+    [SerializeField] private float _delaySwitchOff;
     [SerializeField] private float _timeToFadeOn;
     [SerializeField] private AnimationCurve _curveFade;
 
@@ -32,8 +34,14 @@ public class NightLamp : MonoBehaviour
 
     private void Start()
     {
+        var ratio = GameManager.Instance.gameSettings.DayCycleDuration.Duration;
+        _delaySwitchOn = 1.5f / 3600f * ratio;
+        _delaySwitchOff = .8f / 3600f * ratio;
+        Debug.Log(_delaySwitchOff);
+        Debug.Log(_delaySwitchOn);
+
         if (!_turnOffOnStart) return;
-        SwitchLight(0);
+        SwitchLight(0, 0);
     }
 
     private void OnDestroy()
@@ -44,28 +52,28 @@ public class NightLamp : MonoBehaviour
 
     private void OnLightOff()
     {
-        SwitchLight(0, _hasFase);
+        SwitchLight(0, _delaySwitchOff, _hasFase);
     }
 
     private void OnLightOn()
     {
-        SwitchLight(_intensity, _hasFase);
+        SwitchLight(_intensity, _delaySwitchOn, _hasFase);
     }
 
-    private void SwitchLight(float intensity, bool fade = false)
+    private void SwitchLight(float intensity, float delay, bool fade = false)
     {
         if (fade)
         {
             if (_coroutineFade != null) StopCoroutine(_coroutineFade);
-            _coroutineFade = StartCoroutine(FadeLight(intensity));
+            _coroutineFade = StartCoroutine(FadeLight(intensity, delay));
             return;
         }
         _light.intensity = intensity;
     }
 
-    IEnumerator FadeLight(float intensity)
+    IEnumerator FadeLight(float intensity, float delay)
     {
-        if(intensity > 0 && _delaySwitchOn != 0) yield return new WaitForSeconds(_delaySwitchOn);
+        if(delay != 0) yield return new WaitForSeconds(delay);
 
         float time = 0;
         float initialIntensity = _light.intensity;

@@ -18,6 +18,7 @@ public class DayNightManager : MonoBehaviour
 
     [Header("Components")]
     [SerializeField] private Light _sunLight;
+    [SerializeField] private Light _moonLight;
     [SerializeField] private Material _skyBox;
     [SerializeField] private TextMeshProUGUI _dayCount;
     [SerializeField] private TextMeshProUGUI _timeDisplay;
@@ -173,7 +174,6 @@ public class DayNightManager : MonoBehaviour
         RenderSettings.ambientSkyColor = _skyColorOverTime.Evaluate(percent);
         RenderSettings.ambientEquatorColor = _equatorOverTime.Evaluate(percent);
         RenderSettings.ambientGroundColor = _groundFogOverTime.Evaluate(percent);
-
         RenderSettings.fogColor = _colorFogOverTime.Evaluate(percent);
         RenderSettings.fogDensity = _fogAmount.Evaluate(percent);
     }
