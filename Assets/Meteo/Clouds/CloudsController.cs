@@ -6,7 +6,8 @@ using UnityEngine.Rendering.HighDefinition;
 
 public class CloudsController : MonoBehaviour
 {
-    //faire spawn une tempête trop stylé
+    //Si le prochain jour il y'a une tempete on met des éclairs au loin
+    //puis quand y'a la tempete y'a les éclairs en mode VENER
     [SerializeField] private Volume _cloudsVolume;
     [SerializeField, Tooltip("Pour que les nuages bougent plus vite")] private float _cloudSpeedMultiplier = 3f;
     private VolumetricClouds _cachedClouds;
@@ -65,11 +66,6 @@ public class CloudsController : MonoBehaviour
                 newCloudSettings = _sunnySettings;
                 break;
         }
-        if (_cachedClouds.enable.value == false && obj != WeatherType.Sunny)
-        {
-            _cachedClouds.enable.value = true;
-        }
-
         if(_oldCloudSettings == null)
         {
             _oldCloudSettings = _calmSettings;
@@ -167,8 +163,4 @@ public class CloudsController : MonoBehaviour
     }
 
     private float _lerpTime = 0f;
-    private VolumetricClouds.CloudPresets _startPreset;
-    private VolumetricClouds.CloudPresets _endPreset;
-
-    
 }

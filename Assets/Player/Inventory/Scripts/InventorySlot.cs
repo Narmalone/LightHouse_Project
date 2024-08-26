@@ -16,12 +16,19 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     public bool IsClickable = false;
 
     [SerializeField] private CustomEvent _onStorageItemOpen;
+    [SerializeField] private CustomEvent _onStorageItemClosed;
     [SerializeField] private CustomEvent_InventorySlot _sendItemToStorageFromSlot;
     [SerializeField] private CustomEvent _eventDropItem;
 
     private void Awake()
     {
         _onStorageItemOpen.handle += _onStorageItemOpen_handle;
+        _onStorageItemClosed.handle += _onStorageItemClosed_handle;
+    }
+
+    private void _onStorageItemClosed_handle()
+    {
+        IsClickable = false;
     }
 
     private void _onStorageItemOpen_handle()
@@ -37,6 +44,7 @@ public class InventorySlot : MonoBehaviour, IPointerClickHandler
     private void OnDestroy()
     {
         _onStorageItemOpen.handle -= _onStorageItemOpen_handle;
+        _onStorageItemClosed.handle -= _onStorageItemClosed_handle;
     }
 
     public void SetItem(IItem newItem)
