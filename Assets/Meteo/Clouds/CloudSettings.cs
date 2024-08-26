@@ -1,44 +1,29 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 
 [CreateAssetMenu(fileName = "CloudSettings_", menuName = "Meteo/Clouds")]
 public class CloudSettings : ScriptableObject
 {
+    [Header("Density")]
     public float DensityMultiplier;
     public AnimationCurve DensityCurve;
 
+    [Header("Shape")]
     public float ShapeFactor;
     public float ShapeScale;
+
+    [Header("Erosion")]
     public float ErosionFactor;
     public float ErosionScale;
     public AnimationCurve ErosionCurve;
+
+    [Header("Ambiant Occlusion")]
     public AnimationCurve AmbientOcclusionCurve;
 
+    [Header("Altitude")]
     public float BottomAltitude;
     public float AltitudeRange;
 
+    [Header("Other")]
     public Vector3 ShapeOffset;
     public float EarthCurvature;
-
-    /*public void LoadSettings(VolumetricClouds target)
-    {
-        target.densityMultiplier.Override(DensityMultiplier);
-        target.densityCurve.Override(DensityCurve);
-
-        target.shapeFactor.Override(ShapeFactor);
-        target.shapeScale.Override(ShapeScale);
-
-        target.erosionFactor.Override(ErosionFactor);
-        target.erosionScale.Override(ErosionScale);
-        target.erosionCurve.Override(ErosionCurve);
-        target.ambientOcclusionCurve.Override(AmbientOcclusionCurve);
-
-        target.bottomAltitude.Override(BottomAltitude); 
-        target.altitudeRange.Override(AltitudeRange);
-
-        target.shapeOffset.Override(ShapeOffset);
-        target.earthCurvature.Override(EarthCurvature);
-    }*/
 }
