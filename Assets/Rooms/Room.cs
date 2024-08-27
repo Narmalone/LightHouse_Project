@@ -74,6 +74,7 @@ public class Room : MonoBehaviour
     private void OnValidate()
     {
         ElectricityItems = new List<ElectricItem>();
+        if (ElectricityItemParent.childCount <= 0) return;
         for (int i = 0; i < ElectricityItemParent.childCount; i++)
         {
             if (ElectricityItemParent.GetChild(i).TryGetComponent(out ElectricItem item))

@@ -87,7 +87,7 @@ public class OceanController : MonoBehaviour
         _water.timeMultiplier = Mathf.Lerp(1f, 3.5f, windSpeed / maxWindSpeed);
         _water.largeBand0Multiplier = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * (1 - humidity / 100f));
         _water.largeBand1Multiplier = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * (1 - humidity / 100f));
-        _water.largeWindOrientationValue = Mathf.Lerp(0f, 360f, windSpeed / maxWindSpeed * airTemperature / 30f);
+        _water.largeOrientationValue = Mathf.Lerp(0f, 360f, windSpeed / maxWindSpeed * airTemperature / 30f);
         _water.largeChaos = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * waterTemperature / 20f);
         _water.largeWindSpeed = windSpeed;
 
@@ -113,7 +113,7 @@ public class OceanController : MonoBehaviour
             float t = _lerpTime / duration;
             t = t * t * (3f - 2f * t); // Smoothstep function
 
-            _water.largeWindOrientationValue = Mathf.Lerp(startSettings.DistantWindOrientation, endSettings.DistantWindOrientation, t);
+            _water.largeOrientationValue = Mathf.Lerp(startSettings.DistantWindOrientation, endSettings.DistantWindOrientation, t);
             _water.largeChaos = Mathf.Lerp(startSettings.SwellChaos, endSettings.SwellChaos, t);
             _water.timeMultiplier = Mathf.Lerp(startSettings.TimeMultiplier, endSettings.TimeMultiplier, t);
             //BAND 1 et BAND 2
@@ -127,7 +127,7 @@ public class OceanController : MonoBehaviour
             if (endSettings.EnableRipples)
             {
                 _water.ripplesWindSpeed = Mathf.Lerp(startSettings.LocalWindSpeed, endSettings.LocalWindSpeed, t);
-                _water.ripplesWindOrientationValue = Mathf.Lerp(startSettings.LocalWindOrientation, endSettings.LocalWindOrientation, t);
+                _water.ripplesOrientationValue = Mathf.Lerp(startSettings.LocalWindOrientation, endSettings.LocalWindOrientation, t);
                 _water.ripplesChaos = Mathf.Lerp(startSettings.RippleChaos, endSettings.RippleChaos, t);
             }
 
@@ -159,8 +159,7 @@ public class OceanController : MonoBehaviour
             if (endSettings.EnableUnderWater)
             {
                 _water.volumeDepth = Mathf.Lerp(startSettings.VolumeDepth, endSettings.VolumeDepth, t);
-                _water.transitionSize = Mathf.Lerp(startSettings.TransitionSize, endSettings.TransitionSize, t);
-                _water.absorbtionDistanceMultiplier = Mathf.Lerp(startSettings.AbsorbtionDistanceMultiplier, endSettings.AbsorbtionDistanceMultiplier, t);
+                _water.absorptionDistanceMultiplier = Mathf.Lerp(startSettings.AbsorbtionDistanceMultiplier, endSettings.AbsorbtionDistanceMultiplier, t);
             }
 
             _lerpTime += Time.deltaTime;

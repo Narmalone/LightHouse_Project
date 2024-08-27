@@ -57,7 +57,6 @@ public class OceanSettings : ScriptableObject
     public bool EnableUnderWater = false;
     public float VolumeDepth = 50f;
     public int VolumePriority = 0;
-    public float TransitionSize = 0.1f;
     public float AbsorbtionDistanceMultiplier = 1f;
 
 }
