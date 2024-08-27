@@ -52,33 +52,33 @@ MonoBehaviour:
   cpuEvaluateRipples: 0
   timeMultiplier: 1
   repetitionSize: 500
-  largeWindSpeed: 0
+  largeWindSpeed: 20
   largeWindOrientationValue: 0
   largeCurrentSpeedValue: 0
   largeCurrentOrientationValue: 0
-  largeChaos: 0
-  largeBand0Multiplier: 1
+  largeChaos: 1
+  largeBand0Multiplier: 0.286
   largeBand0FadeToggle: 1
   largeBand0FadeStart: 1500
   largeBand0FadeDistance: 3000
-  largeBand1Multiplier: 1
+  largeBand1Multiplier: 0.345
   largeBand1FadeToggle: 1
   largeBand1FadeStart: 300
   largeBand1FadeDistance: 800
   ripples: 1
-  ripplesWindSpeed: 8
-  ripplesWindOrientationMode: 0
+  ripplesWindSpeed: 0
+  ripplesWindOrientationMode: 1
   ripplesWindOrientationValue: 0
   ripplesCurrentMode: 0
   ripplesCurrentSpeedValue: 0
   ripplesCurrentOrientationValue: 0
-  ripplesChaos: 0.8
+  ripplesChaos: 1
   ripplesFadeToggle: 1
   ripplesFadeStart: 50
   ripplesFadeDistance: 200
   customMaterial: {fileID: 0}
-  startSmoothness: 0.95
-  endSmoothness: 0.85
+  startSmoothness: 0.99
+  endSmoothness: 0.99
   smoothnessFadeStart: 100
   smoothnessFadeDistance: 500
   refractionColor: {r: 0.1, g: 0.5, b: 0.5, a: 1}
@@ -90,16 +90,16 @@ MonoBehaviour:
   displacementScattering: 0.1
   directLightTipScattering: 0.6
   directLightBodyScattering: 0.5
-  caustics: 0
+  caustics: 1
   causticsIntensity: 0.5
   causticsPlaneBlendDistance: 1
   causticsResolution: 256
   causticsBand: 2
-  virtualPlaneDistance: 4
+  virtualPlaneDistance: 97.7
   foam: 0
-  simulationFoamAmount: 0.2
+  simulationFoamAmount: 0.477
   simulationFoamDrag: 0
-  simulationFoamSmoothness: 1
+  simulationFoamSmoothness: 0.394
   foamMask: {fileID: 0}
   foamMaskExtent: {x: 100, y: 100}
   foamMaskOffset: {x: 0, y: 0}
@@ -152,7 +152,7 @@ MonoBehaviour:
   waterMaskOffset: {x: 0, y: 0}
   decalLayerMask: 1
   lightLayerMask: 1
-  underWater: 0
+  underWater: 1
   volumeBounds: {fileID: 0}
   volumeDepth: 50
   volumePrority: 0

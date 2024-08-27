@@ -77,11 +77,11 @@ public class OceanController : MonoBehaviour
     private void Update()
     {
         if (!RealisticMode) return;
-        float maxWindSpeed = _weatherManager.maxWindSpeed;
-        float windSpeed = _weatherManager.windSpeed;
-        float humidity = _weatherManager.humidity;
-        float airTemperature = _weatherManager.airTemperature;
-        float waterTemperature = _weatherManager.waterTemperature;
+        float maxWindSpeed = _weatherManager.MaxWindSpeed;
+        float windSpeed = _weatherManager.WindSpeed;
+        float humidity = _weatherManager.Humidity;
+        float airTemperature = _weatherManager.AirTemperature;
+        float waterTemperature = _weatherManager.WaterTemperature;
 
         // Ajuster les paramètres de l'eau en fonction de la vitesse du vent et d'autres paramètres météorologiques
         _water.timeMultiplier = Mathf.Lerp(1f, 3.5f, windSpeed / maxWindSpeed);

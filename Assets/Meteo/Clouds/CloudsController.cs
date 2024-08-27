@@ -20,7 +20,7 @@ public class CloudsController : MonoBehaviour
     private WindSpeedParameter _currentWindSpeed;
     private WindParameter.WindParamaterValue _currentWindParameter;
 
-    [SerializeField] private float _lerpCloudsTime = 2.5f;
+    [SerializeField] private float _transitionCloudsDuration = 2.5f;
 
     private CloudSettings _oldCloudSettings;
     [SerializeField] private CloudSettings _calmSettings;
@@ -71,7 +71,7 @@ public class CloudsController : MonoBehaviour
             _oldCloudSettings = _calmSettings;
         }
 
-        LerpCloudSettings(_oldCloudSettings, newCloudSettings, _lerpCloudsTime);
+        LerpCloudSettings(_oldCloudSettings, newCloudSettings, _transitionCloudsDuration);
         _oldCloudSettings = newCloudSettings;
     }
 
@@ -157,7 +157,7 @@ public class CloudsController : MonoBehaviour
 
     private void Update()
     {
-        _currentWindParameter.customValue = _weatherManager.windSpeed * _cloudSpeedMultiplier;
+        _currentWindParameter.customValue = _weatherManager.WindSpeed * _cloudSpeedMultiplier;
         _currentWindSpeed.Override(_currentWindParameter);
         _cachedClouds.globalWindSpeed.SetValue(_currentWindSpeed);
     }

@@ -212,6 +212,10 @@ public class DayNightManager : MonoBehaviour
     private void AddDay()
     {
         currentDay++;
+        if(currentDay >= gameSettings.TotalDays)
+        {
+            Debug.Log("LE NB DE JOUR MAX A ETE COMPTE");
+        }
         UpdateDayDisplay();
     }
 

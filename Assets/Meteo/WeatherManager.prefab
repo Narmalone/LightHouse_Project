@@ -49,7 +49,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsPersistent: 0
   _rainController: {fileID: 578890741923689259}
+  _cloudsController: {fileID: 8076470204050097022}
+  _oceanController: {fileID: 7329581837308180954}
   _onWeatherChanged: {fileID: 11400000, guid: 5c9110a41468ab343ae94cbeb856be98, type: 2}
+  _weatherPattern: {fileID: 11400000, guid: 581524d9b21e3be4692993462bbb5336, type: 2}
+  difficulty: 1
+  FullRandomWeather: 0
+  MinWeatherDuration: 25
+  MaxWeatherDuration: 150
+  MinWindSpeed: 5
+  MaxWindSpeed: 100
   weatherForecast: []
   _currentWeatherType: 0
   indexWeather: 0
@@ -67,15 +76,11 @@ MonoBehaviour:
     waterTemperature: 0
     atmosphericPressure: 0
     weatherType: 0
-  difficulty: 1
-  maxWindSpeed: 150
-  humidity: 0
-  windSpeed: 0
-  airTemperature: 0
-  waterTemperature: 0
-  atmosphericPressure: 0
-  minDayDuration: 60
-  maxDayDuration: 120
+  Humidity: 0
+  WindSpeed: 0
+  AirTemperature: 0
+  WaterTemperature: 0
+  AtmosphericPressure: 0
 --- !u!1001 &33264256854774347
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -267,6 +272,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 881967228033497471}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8076470204050097022 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8946403242877008385, guid: fbff52f6dcd024b489b0a8fea363c22c,
+    type: 3}
+  m_PrefabInstance: {fileID: 881967228033497471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59521e09f74bff943b3be4e2f8086c3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3335098817031869500
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -279,6 +296,66 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: OceanController
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: ripplesChaos
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: endSmoothness
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeWindSpeed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: repetitionSize
+      value: 1957
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: ripplesWindSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: absorptionDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeBand0Multiplier
+      value: 0.432
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeBand1Multiplier
+      value: 0.359
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: maxRefractionDistance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeCurrentSpeedValue
+      value: 1.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeWindOrientationValue
+      value: 7.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeCurrentOrientationValue
+      value: 0.99
       objectReference: {fileID: 0}
     - target: {fileID: 2563296220613194499, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
         type: 3}
@@ -330,6 +407,46 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: RealisticMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: _calmSettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 8e821c97a7f83f44e95edbfcf76f50ae,
+        type: 2}
+    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: _rainySettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 03428d2c5a45b9a4fa0ce064d4f5f70b,
+        type: 2}
+    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: _sunnySettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 8fe01acb3d13ae746a2abb319c7d1778,
+        type: 2}
+    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: _windySettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 79d5fbd6369a0334bb7ace4470b0f2e3,
+        type: 2}
+    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: _stormySettings
+      value: 
+      objectReference: {fileID: 11400000, guid: 09329d30ca79b314a999e066b1c1482d,
+        type: 2}
+    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: _transitionDuration
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -341,3 +458,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3335098817031869500}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7329581837308180954 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+    type: 3}
+  m_PrefabInstance: {fileID: 3335098817031869500}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb89664499288d84696fa9f1b0309681, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
