@@ -68,6 +68,7 @@ MonoBehaviour:
     airTemperature: 0
     waterTemperature: 0
     atmosphericPressure: 0
+    weatherDuration: 0
     weatherType: 0
   tomorrowWeather:
     humidity: 0
@@ -75,12 +76,16 @@ MonoBehaviour:
     airTemperature: 0
     waterTemperature: 0
     atmosphericPressure: 0
+    weatherDuration: 0
     weatherType: 0
   Humidity: 0
   WindSpeed: 0
   AirTemperature: 0
   WaterTemperature: 0
   AtmosphericPressure: 0
+  _weatherLoaded: 0
+  _targetWeatherDuration: 0
+  WeatherDurations: []
 --- !u!1001 &33264256854774347
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -297,66 +302,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: OceanController
       objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: ripplesChaos
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: endSmoothness
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: largeWindSpeed
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: repetitionSize
-      value: 1957
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: ripplesWindSpeed
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: absorptionDistance
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: largeBand0Multiplier
-      value: 0.432
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: largeBand1Multiplier
-      value: 0.359
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: maxRefractionDistance
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: largeCurrentSpeedValue
-      value: 1.22
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: largeWindOrientationValue
-      value: 7.16
-      objectReference: {fileID: 0}
-    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: largeCurrentOrientationValue
-      value: 0.99
-      objectReference: {fileID: 0}
     - target: {fileID: 2563296220613194499, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -406,46 +351,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: RealisticMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: _calmSettings
-      value: 
-      objectReference: {fileID: 11400000, guid: 8e821c97a7f83f44e95edbfcf76f50ae,
-        type: 2}
-    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: _rainySettings
-      value: 
-      objectReference: {fileID: 11400000, guid: 03428d2c5a45b9a4fa0ce064d4f5f70b,
-        type: 2}
-    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: _sunnySettings
-      value: 
-      objectReference: {fileID: 11400000, guid: 8fe01acb3d13ae746a2abb319c7d1778,
-        type: 2}
-    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: _windySettings
-      value: 
-      objectReference: {fileID: 11400000, guid: 79d5fbd6369a0334bb7ace4470b0f2e3,
-        type: 2}
-    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: _stormySettings
-      value: 
-      objectReference: {fileID: 11400000, guid: 09329d30ca79b314a999e066b1c1482d,
-        type: 2}
-    - target: {fileID: 5476167607724420582, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
-        type: 3}
-      propertyPath: _transitionDuration
-      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

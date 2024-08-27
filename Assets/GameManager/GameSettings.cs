@@ -9,7 +9,12 @@ public class GameSettings : ScriptableObject
     public TimeDatas DayCycleDuration = new TimeDatas() { Hour = 0, Minutes = 4.5f, Seconds = 0f };
 
     [SerializeField] public ScenarioSettings scenarioSettings;
-    
+
+    private void OnValidate()
+    {
+        if (TotalDays < 31) TotalDays = 31;
+    }
+
 }
 
 [System.Serializable]

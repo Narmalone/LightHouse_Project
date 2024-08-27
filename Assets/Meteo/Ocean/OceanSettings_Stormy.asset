@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 624aaeeaedb839642a51ca421ece62a6, type: 3}
   m_Name: OceanSettings_Stormy
   m_EditorClassIdentifier: 
-  TimeMultiplier: 3.5
+  TimeMultiplier: 2.5
   RepetitionSize: 500
-  DistantWindSpeed: 200
+  DistantWindSpeed: 150
   DistantWindOrientation: 150
   SwellChaos: 1
   ChaosSpeed: 1
   ChaosOrientation: 0
-  AmplitudeAttenuationFirst: 1
-  AmplitudeAttenuationSecond: 1
+  AmplitudeAttenuationFirst: 0.8
+  AmplitudeAttenuationSecond: 0.8
   EnableRipples: 1
   LocalWindSpeed: 15
   LocalWindOrientation: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
   FadeRangeDistance: 500
   RefractionColor: {r: 0.036222856, g: 0.20754719, b: 0.20754719, a: 0}
   MaximumDistance: 1
-  AbsorbtionDistance: 20
+  AbsorbtionDistance: 5
   ScatteringColor: {r: 0.00080099865, g: 0.16981131, b: 0.16981131, a: 0}
   AmbientTerm: 0.2
   HeightTerm: 0.2
@@ -44,5 +44,4 @@ MonoBehaviour:
   EnableUnderWater: 1
   VolumeDepth: 50
   VolumePriority: 0
-  TransitionSize: 0.1
   AbsorbtionDistanceMultiplier: 1

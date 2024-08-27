@@ -41,7 +41,7 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        eventStartTimeCycle?.Raise();
+        
     }
 
     public TimeSpan GetCurrentInGameTime()
@@ -52,6 +52,5 @@ public class GameManager : Singleton<GameManager>
     private void OnDayEnd()
     {
         currentDay++;
-        gameSettings.TotalDays = currentDay;
     }
 }

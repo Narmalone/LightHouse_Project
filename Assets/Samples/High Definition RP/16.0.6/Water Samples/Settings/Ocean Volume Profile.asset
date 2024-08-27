@@ -46,6 +46,13 @@ MonoBehaviour:
   type:
     m_OverrideState: 1
     m_Value: 1
+  renderingMode:
+    m_OverrideState: 0
+    m_Value: 0
+  material:
+    m_OverrideState: 0
+    m_Value: {fileID: -876546973899608171, guid: 02532cbb810fb404db49da84f1efe41e,
+      type: 3}
   sphericalMode:
     m_OverrideState: 0
     m_Value: 1
@@ -85,9 +92,6 @@ MonoBehaviour:
   aerosolAnisotropy:
     m_OverrideState: 0
     m_Value: 0
-  numberOfBounces:
-    m_OverrideState: 0
-    m_Value: 3
   groundTint:
     m_OverrideState: 1
     m_Value: {r: 0.07553097, g: 0.32960576, b: 0.6320754, a: 1}
@@ -130,6 +134,9 @@ MonoBehaviour:
   horizonZenithShift:
     m_OverrideState: 0
     m_Value: 0
+  numberOfBounces:
+    m_OverrideState: 0
+    m_Value: 3
   m_SkyVersion: 1
   m_ObsoleteEarthPreset:
     m_OverrideState: 0
@@ -158,7 +165,7 @@ MonoBehaviour:
     m_Value: 1
   fixedExposure:
     m_OverrideState: 1
-    m_Value: 13
+    m_Value: 13.3010025
   compensation:
     m_OverrideState: 0
     m_Value: 0
@@ -301,27 +308,9 @@ MonoBehaviour:
   enable:
     m_OverrideState: 1
     m_Value: 1
-  minGridSize:
+  triangleSize:
     m_OverrideState: 0
-    m_Value: 75
-  maxGridSize:
-    m_OverrideState: 0
-    m_Value: 2500
-  elevationTransition:
-    m_OverrideState: 0
-    m_Value: 1000
-  numLevelOfDetails:
-    m_OverrideState: 1
-    m_Value: 4
-  maxTessellationFactor:
-    m_OverrideState: 1
-    m_Value: 5
-  tessellationFactorFadeStart:
-    m_OverrideState: 0
-    m_Value: 150
-  tessellationFactorFadeRange:
-    m_OverrideState: 0
-    m_Value: 1850
+    m_Value: 30
   ambientProbeDimmer:
     m_OverrideState: 1
     m_Value: 1
@@ -338,6 +327,7 @@ MonoBehaviour:
   m_Name: HDShadowSettings
   m_EditorClassIdentifier: 
   active: 1
+  interCascadeBorders: 1
   maxShadowDistance:
     m_OverrideState: 1
     m_Value: 250
@@ -382,7 +372,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   opacity:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   upperHemisphereOnly:
     m_OverrideState: 0
@@ -407,7 +397,7 @@ MonoBehaviour:
     m_Value: 500
   layerA:
     cloudMap:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: {fileID: 2800000, guid: 57a33fc2476a01644865bfde5f06e2f4, type: 3}
     opacityR:
       m_OverrideState: 1
@@ -425,17 +415,17 @@ MonoBehaviour:
       m_OverrideState: 0
       m_Value: 2000
     rotation:
-      m_OverrideState: 0
-      m_Value: 0
+      m_OverrideState: 1
+      m_Value: 198
     tint:
       m_OverrideState: 0
       m_Value: {r: 1, g: 1, b: 1, a: 1}
     exposure:
-      m_OverrideState: 0
-      m_Value: 0
+      m_OverrideState: 1
+      m_Value: 9.6
     distortionMode:
-      m_OverrideState: 0
-      m_Value: 0
+      m_OverrideState: 1
+      m_Value: 1
     scrollOrientation:
       m_OverrideState: 0
       m_Value:
@@ -710,7 +700,7 @@ MonoBehaviour:
     m_Value: 0
   depthBufferThickness:
     m_OverrideState: 1
-    m_Value: 0.05
+    m_Value: 0.001
   screenFadeDistance:
     m_OverrideState: 0
     m_Value: 0.1
@@ -770,9 +760,9 @@ MonoBehaviour:
   m_DenoiserRadius:
     m_OverrideState: 0
     m_Value: 8
-  m_AffectSmoothSurfaces:
+  m_DenoiserAntiFlickeringStrength:
     m_OverrideState: 0
-    m_Value: 0
+    m_Value: 1
   mode:
     m_OverrideState: 0
     m_Value: 2
