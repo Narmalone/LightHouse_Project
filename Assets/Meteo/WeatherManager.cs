@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using Random = UnityEngine.Random;
 
 public enum WeatherType
@@ -68,31 +70,38 @@ public class WeatherManager : Singleton<WeatherManager>
     private float elapsedTime = 0f;
     private float weatherChangeDuration;
 
+    [SerializeField] private bool _weatherLoaded = false;
+    private float _totalWeatherDuration = 0f;
+    [SerializeField] private float _targetWeatherDuration = 0f;
+
     private GameManager _gm;
 
     private void Start()
     {
         _gm = GameManager.Instance;
+
+        _totalWeatherDuration = GetTotalDuration(_gm.gameSettings.DayCycleDuration, _gm.gameSettings.TotalDays);
+
         if (FullRandomWeather)
         {
             GenerateRandomWeatherForecast();
+            UpdateTodayAndTomorrowWeather();
+            weatherChangeDuration = todayWeather.weatherDuration;
+            _weatherLoaded = true;
         }
         else
         {
-            GenerateWeatherForecast();
+            StartCoroutine(RoutineGenerate());
         }
 
         // Charger la météo du premier jour et du lendemain
-        UpdateTodayAndTomorrowWeather();
-
-        weatherChangeDuration = todayWeather.weatherDuration;
-
-        CalculateHowManyMeteoForDays(_gm.gameSettings.DayCycleDuration, _gm.gameSettings.TotalDays);
-
     }
+
+    public List<float> WeatherDurations = new List<float>();
 
     private void Update()
     {
+        if (!_weatherLoaded) return;
         // Mettre à jour le temps écoulé
         elapsedTime += Time.deltaTime;
 
@@ -114,15 +123,20 @@ public class WeatherManager : Singleton<WeatherManager>
         //ApplyWeatherEffects();
     }
 
-    private int CalculateHowManyMeteoForDays(TimeDatas datas, int totalDay)
+    private int GetTotalDuration(TimeDatas datas, int totalDay)
     {
-        Debug.Log(datas.Duration);
+        TimeSpan duration = new TimeSpan(
+        (int)datas.Hour, // hours
+        (int)datas.Minutes, // minutes
+        (int)datas.Seconds // seconds
+        );
+
+        int calculation = 0;
         for (int i = 0; i < totalDay; i++)
         {
-
+            calculation += (int)duration.TotalSeconds;
         }
-        //TimeSpan tmp = TimeSpan.FromSeconds();
-        return 0;
+        return calculation;
     }
 
     // Fonction utilitaire pour ajouter un certain nombre de jours d'un type de météo donné
@@ -134,38 +148,63 @@ public class WeatherManager : Singleton<WeatherManager>
         }
     }
 
+    IEnumerator RoutineGenerate()
+    {
+        while (_targetWeatherDuration < _totalWeatherDuration)
+        {
+            float remainingDuration = _totalWeatherDuration - _targetWeatherDuration;
+            float weatherDuration = Mathf.Min(remainingDuration, Random.Range(MinWeatherDuration, MaxWeatherDuration));
+            _targetWeatherDuration += weatherDuration;
+            WeatherDurations.Add(weatherDuration);
+            yield return null;
+        }
+        
+        GenerateWeatherForecast();
+        weatherChangeDuration = WeatherDurations[0];
+        UpdateTodayAndTomorrowWeather();
+        _weatherLoaded = true;
+    }
+
     private void GenerateWeatherForecast()
     {
         weatherForecast = new List<DayWeather>();
 
-        // Calculer combien de jours de chaque type de météo il doit y avoir
-        int totalDays = _gm.gameSettings.TotalDays;
+        // Calculate the total weight of all weather types
+        float totalWeight = _weatherPattern.StormyWeight + _weatherPattern.SunnyWeight + _weatherPattern.RainyWeight + _weatherPattern.WindyWeight + _weatherPattern.CalmyWeight;
 
-        int stormDays = Random.Range(_weatherPattern.minStormDays, _weatherPattern.maxStormDays + 1);
-        int sunnyDays = Random.Range(_weatherPattern.minSunnyDays, _weatherPattern.maxSunnyDays + 1);
-        int rainyDays = Random.Range(_weatherPattern.minRainyDays, _weatherPattern.maxRainyDays + 1);
-        int windyDays = Random.Range(_weatherPattern.minWindyDays, _weatherPattern.maxWindyDays + 1);
-        int calmDays = totalDays - stormDays - sunnyDays - rainyDays - windyDays;
+        // Calculate the number of days for each weather type based on their weights
+        int stormsCount = (int)((_weatherPattern.StormyWeight / totalWeight) * WeatherDurations.Count);
+        int sunnysCount = (int)((_weatherPattern.SunnyWeight / totalWeight) * WeatherDurations.Count);
+        int rainysCount = (int)((_weatherPattern.RainyWeight / totalWeight) * WeatherDurations.Count);
+        int windysCount = (int)((_weatherPattern.WindyWeight / totalWeight) * WeatherDurations.Count);
+        int calmysCount = WeatherDurations.Count - stormsCount - sunnysCount - rainysCount - windysCount;
 
-        calmDays = Mathf.Clamp(calmDays, _weatherPattern.minCalmDays, _weatherPattern.maxCalmDays);
+        // Ensure the number of days for each weather type is within the min/max range
+        stormsCount = Mathf.Clamp(stormsCount, _weatherPattern.MinStormWeathers, _weatherPattern.MaxStormWeathers);
+        sunnysCount = Mathf.Clamp(sunnysCount, _weatherPattern.MinSunnyWeathers, _weatherPattern.MaxSunnyWeathers);
+        rainysCount = Mathf.Clamp(rainysCount, _weatherPattern.MinRainyWeathers, _weatherPattern.MaxRainyWeathers);
+        windysCount = Mathf.Clamp(windysCount, _weatherPattern.MinWindyWeathers, _weatherPattern.MaxWindyWeathers);
+        calmysCount = Mathf.Clamp(calmysCount, _weatherPattern.MinCalmWeathers, _weatherPattern.MaxCalmyWeathers);
+
+        int totalWeathers = stormsCount + sunnysCount + rainysCount + windysCount + (calmysCount - 1);
 
         // Liste pour les types de météo en fonction des jours calculés
         List<WeatherType> weatherTypes = new List<WeatherType>();
 
-        AddWeatherType(weatherTypes, WeatherType.Storm, stormDays);
-        AddWeatherType(weatherTypes, WeatherType.Sunny, sunnyDays);
-        AddWeatherType(weatherTypes, WeatherType.Rainy, rainyDays);
-        AddWeatherType(weatherTypes, WeatherType.Windy, windyDays);
-        AddWeatherType(weatherTypes, WeatherType.Calm, calmDays);
+        AddWeatherType(weatherTypes, WeatherType.Storm, stormsCount);
+        AddWeatherType(weatherTypes, WeatherType.Sunny, sunnysCount);
+        AddWeatherType(weatherTypes, WeatherType.Rainy, rainysCount);
+        AddWeatherType(weatherTypes, WeatherType.Windy, windysCount);
+        AddWeatherType(weatherTypes, WeatherType.Calm, calmysCount);
 
         weatherTypes.Shuffle();
 
         // Générer les paramètres météo pour chaque jour en fonction du type de météo choisi
-        for (int i = 0; i < totalDays; i++)
+        for (int i = 0; i < totalWeathers; i++)
         {
             DayWeather dayWeather = new DayWeather();
             dayWeather.weatherType = weatherTypes[i];
-            dayWeather.weatherDuration = Random.Range(MinWeatherDuration, MaxWeatherDuration);
+            dayWeather.weatherDuration = WeatherDurations[i];
 
             // Générer des valeurs basées sur le type de météo
             switch (dayWeather.weatherType)
@@ -206,44 +245,19 @@ public class WeatherManager : Singleton<WeatherManager>
         }
     }
 
-
     private void GenerateRandomWeatherForecast()
     {
         weatherForecast = new List<DayWeather>();
 
-        // Initialisation pour des facteurs saisonniers (variation progressive)
-        float baseAirTemp = Random.Range(10f, 25f); // Température moyenne de départ (peut changer selon la saison)
-        float baseWaterTemp = Random.Range(10f, 20f); // Température de l'eau moyenne initiale
-        float baseHumidity = Random.Range(50f, 70f); // Humidité moyenne de départ
-        float basePressure = 1013f; // Pression atmosphérique normale au niveau de la mer
-
-        for (int i = 0; i < 31; i++)
+        for (int i = 0; i < 100; i++)
         {
             DayWeather dayWeather = new DayWeather();
-
-            // Variations légères sur la base des jours précédents pour continuité
-            dayWeather.airTemperature = Mathf.Clamp(baseAirTemp + Random.Range(-5f, 5f), -15f, 40f);
-            dayWeather.waterTemperature = Mathf.Clamp(baseWaterTemp + Random.Range(-2f, 2f), 0f, 30f);
-            dayWeather.humidity = Mathf.Clamp(baseHumidity + Random.Range(-10f, 10f), 20f, 100f);
-
-            // Facteur réaliste de pression atmosphérique
-            dayWeather.atmosphericPressure = Mathf.Clamp(basePressure + Random.Range(-15f, 15f), 950f, 1050f);
-
-            // Influence des conditions atmosphériques sur la vitesse du vent
-            if (dayWeather.atmosphericPressure < 1000f) // Baisse de pression, vents plus forts
-            {
-                dayWeather.windSpeed = Mathf.Clamp(Random.Range(MinWindSpeed * 1.5f, MaxWindSpeed * 0.9f) * difficulty, MinWindSpeed, MaxWindSpeed);
-            }
-            else // Pression plus élevée, vents plus calmes
-            {
-                dayWeather.windSpeed = Mathf.Clamp(Random.Range(MinWindSpeed, MaxWindSpeed * 0.5f) * difficulty, MinWindSpeed, MaxWindSpeed);
-            }
-
-            // Influence des températures sur la pression pour donner de la continuité
-            baseAirTemp = dayWeather.airTemperature + Random.Range(-2f, 2f); // Changement progressif
-            baseWaterTemp = dayWeather.waterTemperature + Random.Range(-1f, 1f);
-            baseHumidity = dayWeather.humidity + Random.Range(-5f, 5f);
-            basePressure = dayWeather.atmosphericPressure + Random.Range(-5f, 5f); // Pression change un peu chaque jour
+            dayWeather.weatherDuration = Random.Range(MinWeatherDuration, MaxWeatherDuration);
+            dayWeather.airTemperature = Random.Range(-15f, 40f);
+            dayWeather.waterTemperature = Random.Range(0f, 30f);
+            dayWeather.humidity = Random.Range(20f, 100f);
+            dayWeather.atmosphericPressure = Random.Range(950f, 1050f);
+            dayWeather.windSpeed = Random.Range(MinWindSpeed, MaxWindSpeed);
 
             // Déterminer le type de météo basé sur des conditions corrélées
             dayWeather.weatherType = DetermineWeatherType(dayWeather);
