@@ -5,7 +5,9 @@ using UnityEngine.Rendering.HighDefinition;
 public class OceanController : MonoBehaviour
 {
     [SerializeField] private WaterSurface _water;
+    public bool RealisticMode = true;
 
+    [SerializeField] private float _transitionDuration = 40f;
     private OceanSettings _oldOceanSettings;
     [SerializeField] private OceanSettings _calmSettings;
     [SerializeField] private OceanSettings _sunnySettings;
@@ -31,6 +33,7 @@ public class OceanController : MonoBehaviour
 
     private void _onWeatherChanged_handle(WeatherType obj)
     {
+        if (RealisticMode) return;
         OceanSettings newOceanSettings = null;
         switch (obj)
         {
@@ -56,14 +59,12 @@ public class OceanController : MonoBehaviour
         }
 
         //Lancer coroutine
-
+        LerpOceanSettings(_oldOceanSettings, newOceanSettings, _transitionDuration);
         _oldOceanSettings = newOceanSettings;
     }
     private void Start()
     {
         _weatherManager = WeatherManager.Instance;
-
-        
     }
 
     private void LerpOceanSettings(OceanSettings startSettings, OceanSettings endSettings, float duration)
@@ -73,6 +74,25 @@ public class OceanController : MonoBehaviour
         StartCoroutine(LerpOceanSettingsCoroutine(startSettings, endSettings, duration));
     }
 
+    private void Update()
+    {
+        if (!RealisticMode) return;
+        float maxWindSpeed = _weatherManager.maxWindSpeed;
+        float windSpeed = _weatherManager.windSpeed;
+        float humidity = _weatherManager.humidity;
+        float airTemperature = _weatherManager.airTemperature;
+        float waterTemperature = _weatherManager.waterTemperature;
+
+        // Ajuster les paramètres de l'eau en fonction de la vitesse du vent et d'autres paramètres météorologiques
+        _water.timeMultiplier = Mathf.Lerp(1f, 3.5f, windSpeed / maxWindSpeed);
+        _water.largeBand0Multiplier = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * (1 - humidity / 100f));
+        _water.largeBand1Multiplier = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * (1 - humidity / 100f));
+        _water.largeWindOrientationValue = Mathf.Lerp(0f, 360f, windSpeed / maxWindSpeed * airTemperature / 30f);
+        _water.largeChaos = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * waterTemperature / 20f);
+        _water.largeWindSpeed = windSpeed;
+
+        //Ripples & other
+    }
     IEnumerator LerpOceanSettingsCoroutine(OceanSettings startSettings, OceanSettings endSettings, float duration)
     {
         //bools
@@ -85,24 +105,23 @@ public class OceanController : MonoBehaviour
         _water.underWater = endSettings.EnableUnderWater;
         _water.volumePrority = endSettings.VolumePriority;
 
+        _water.repetitionSize = endSettings.RepetitionSize;
+
         while (_lerpTime < duration)
         {
             //EGALEMENT TESTER CERTAINES VARIABLES QUON PEUT VIA CODE ET PAS VIA EDITEUR ?
             float t = _lerpTime / duration;
             t = t * t * (3f - 2f * t); // Smoothstep function
 
-            _water.timeMultiplier = Mathf.Lerp(startSettings.TimeMultiplier, endSettings.TimeMultiplier, t);
-            _water.repetitionSize = Mathf.Lerp(startSettings.RepetitionSize, endSettings.RepetitionSize, t);
-            _water.largeWindSpeed = Mathf.Lerp(startSettings.DistantWindSpeed, endSettings.DistantWindSpeed, t);
             _water.largeWindOrientationValue = Mathf.Lerp(startSettings.DistantWindOrientation, endSettings.DistantWindOrientation, t);
-
             _water.largeChaos = Mathf.Lerp(startSettings.SwellChaos, endSettings.SwellChaos, t);
-            
-            //CURRENT NON TROUVE DONC CHAOSSPEED & CHOS ORIENTATION
-
+            _water.timeMultiplier = Mathf.Lerp(startSettings.TimeMultiplier, endSettings.TimeMultiplier, t);
             //BAND 1 et BAND 2
             _water.largeBand0Multiplier = Mathf.Lerp(startSettings.AmplitudeAttenuationFirst, endSettings.AmplitudeAttenuationFirst, t);
             _water.largeBand1Multiplier = Mathf.Lerp(startSettings.AmplitudeAttenuationSecond, endSettings.AmplitudeAttenuationSecond, t);
+
+            _water.largeWindSpeed = Mathf.Lerp(startSettings.DistantWindSpeed, endSettings.DistantWindSpeed, t);
+            //CURRENT NON TROUVE DONC CHAOSSPEED & CHOS ORIENTATION
 
             //ripples
             if (endSettings.EnableRipples)
@@ -130,8 +149,9 @@ public class OceanController : MonoBehaviour
             _water.directLightBodyScattering = Mathf.Lerp(startSettings.DirectLightBodyTerm, endSettings.DirectLightBodyTerm, t);
 
             //CAUSTIC
-            if (endSettings.EnableRipples)
+            if (endSettings.EnableCaustic)
             {
+                _water.causticsIntensity = Mathf.Lerp(startSettings.CausticIntensity, endSettings.CausticIntensity, t);
                 _water.causticsPlaneBlendDistance = Mathf.Lerp(startSettings.VirtualPlaneDistance, endSettings.VirtualPlaneDistance, t);
             }
 

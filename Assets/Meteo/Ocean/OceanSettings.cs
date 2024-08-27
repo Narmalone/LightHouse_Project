@@ -49,6 +49,7 @@ public class OceanSettings : ScriptableObject
     [Header("CAUSTIC")]
     public bool EnableCaustic = true;
     public WaterSurface.WaterCausticsResolution CausticsResolution = WaterSurface.WaterCausticsResolution.Caustics256;
+    public float CausticIntensity = 1f;
     [Range(0, 2)] public int SimulationBand = 2;
     public float VirtualPlaneDistance = 60f;
 

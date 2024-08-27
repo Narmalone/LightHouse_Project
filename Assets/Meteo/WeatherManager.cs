@@ -43,7 +43,7 @@ public class WeatherManager : Singleton<WeatherManager>
 
     // Paramètres d'environnement
     private float minWindSpeed = 5f;
-    [SerializeField] private float maxWindSpeed = 100f;
+    [SerializeField] public float maxWindSpeed = 100f;
 
     // Variables pour les conditions actuelles interpolées
     public float humidity;
