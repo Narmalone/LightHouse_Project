@@ -177,17 +177,24 @@ public class WeatherManager : Singleton<WeatherManager>
         int sunnysCount = (int)((_weatherPattern.SunnyWeight / totalWeight) * WeatherDurations.Count);
         int rainysCount = (int)((_weatherPattern.RainyWeight / totalWeight) * WeatherDurations.Count);
         int windysCount = (int)((_weatherPattern.WindyWeight / totalWeight) * WeatherDurations.Count);
-        int calmysCount = WeatherDurations.Count - stormsCount - sunnysCount - rainysCount - windysCount;
+        int calmysCount = (int)((_weatherPattern.CalmyWeight / totalWeight) * WeatherDurations.Count);
 
         // Ensure the number of days for each weather type is within the min/max range
         stormsCount = Mathf.Clamp(stormsCount, _weatherPattern.MinStormWeathers, _weatherPattern.MaxStormWeathers);
         sunnysCount = Mathf.Clamp(sunnysCount, _weatherPattern.MinSunnyWeathers, _weatherPattern.MaxSunnyWeathers);
         rainysCount = Mathf.Clamp(rainysCount, _weatherPattern.MinRainyWeathers, _weatherPattern.MaxRainyWeathers);
         windysCount = Mathf.Clamp(windysCount, _weatherPattern.MinWindyWeathers, _weatherPattern.MaxWindyWeathers);
-        calmysCount = Mathf.Clamp(calmysCount, _weatherPattern.MinCalmWeathers, _weatherPattern.MaxCalmyWeathers);
+        calmysCount = Mathf.Clamp(calmysCount, _weatherPattern.MinCalmyWeathers, _weatherPattern.MaxCalmyWeathers);
 
-        int totalWeathers = stormsCount + sunnysCount + rainysCount + windysCount + (calmysCount - 1);
+        int totalWeathers = stormsCount + sunnysCount + rainysCount + windysCount + calmysCount;
 
+        //securité
+        if(totalWeathers < WeatherDurations.Count)
+        {
+            int diff = WeatherDurations.Count - totalWeathers;
+            calmysCount += diff;
+        }
+            
         // Liste pour les types de météo en fonction des jours calculés
         List<WeatherType> weatherTypes = new List<WeatherType>();
 
@@ -200,7 +207,7 @@ public class WeatherManager : Singleton<WeatherManager>
         weatherTypes.Shuffle();
 
         // Générer les paramètres météo pour chaque jour en fonction du type de météo choisi
-        for (int i = 0; i < totalWeathers; i++)
+        for (int i = 0; i < WeatherDurations.Count; i++)
         {
             DayWeather dayWeather = new DayWeather();
             dayWeather.weatherType = weatherTypes[i];

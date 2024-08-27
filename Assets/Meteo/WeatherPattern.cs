@@ -25,7 +25,7 @@ public class WeatherPattern : ScriptableObject
 
     [Header("Journées calmes")]
     [Range(0, 1)] public float CalmyWeight= 0.5f;
-    public int MinCalmWeathers = 5;
+    public int MinCalmyWeathers = 5;
     public int MaxCalmyWeathers = 8;
 
     // Vous pouvez ajouter d'autres types de météo et ajuster les min/max ici.
