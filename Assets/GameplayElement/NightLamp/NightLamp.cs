@@ -19,11 +19,11 @@ public class NightLamp : MonoBehaviour
 
     [Header("Stats")]
     [SerializeField] private float _intensity;
-    [SerializeField] private float _delaySwitchOn;
-    [SerializeField] private float _delaySwitchOff;
     [SerializeField] private float _timeToFadeOn;
     [SerializeField] private AnimationCurve _curveFade;
 
+    private float _delaySwitchOn;
+    private float _delaySwitchOff;
     private Coroutine _coroutineFade;
 
     private void Awake()
@@ -37,8 +37,6 @@ public class NightLamp : MonoBehaviour
         var ratio = GameManager.Instance.gameSettings.DayCycleDuration.Duration;
         _delaySwitchOn = 1.5f / 3600f * ratio;
         _delaySwitchOff = .8f / 3600f * ratio;
-        Debug.Log(_delaySwitchOff);
-        Debug.Log(_delaySwitchOn);
 
         if (!_turnOffOnStart) return;
         SwitchLight(0, 0);
@@ -68,6 +66,7 @@ public class NightLamp : MonoBehaviour
             _coroutineFade = StartCoroutine(FadeLight(intensity, delay));
             return;
         }
+
         _light.intensity = intensity;
     }
 
