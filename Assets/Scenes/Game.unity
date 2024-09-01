@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 262.38358, g: 325.10843, b: 430.30963, a: 1}
+  m_IndirectSpecularColor: {r: 1682.7727, g: 1890.0784, b: 3037.2698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -380,7 +380,7 @@ MonoBehaviour:
   m_IsGlobal: 1
   priority: 0
   blendDistance: 0
-  weight: 0
+  weight: 1
   sharedProfile: {fileID: 11400000, guid: 8ba92e2dd7f884a0f88b98fa2d235fe7, type: 2}
 --- !u!4 &24547883
 Transform:
@@ -2734,7 +2734,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &530439606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9145,156 +9145,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1978897875}
     m_Modifications:
-    - target: {fileID: 1156333629930386925, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: MaxWeatherDuration
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 1156333629930386925, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: MinWeatherDuration
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 1846265981923445069, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: weight
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Float.m_Array.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Int.m_Array.Array.data[0].m_Value
-      value: 100000
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Int.m_Array.Array.data[1].m_Value
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Name
-      value: Kill Sphere Radius
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[1].m_Name
-      value: Spawn Bounds_size
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Overridden
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.y
-      value: 62.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[1].m_Value.x
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[1].m_Value.y
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[1].m_Value.z
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 2094712374136398702, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[1].m_Overridden
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3218559727418443524, guid: 3649f13ae66710c4db66d67ed364573e,
         type: 3}
       propertyPath: m_Name
       value: WeatherManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_Version
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: customMaterial
-      value: 
-      objectReference: {fileID: -876546973899608171, guid: dbb44118872d56741a35b554bbb6b4ed,
-        type: 3}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: largeCurrentMap
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: ripplesFadeMode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: absorptionDistance
-      value: 5.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: largeBand0FadeMode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: largeBand1FadeMode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: largeOrientationValue
-      value: 60.38
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: largeCurrentSpeedValue
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3558458749894546203, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: deformationAreaOffset.y
-      value: -100
-      objectReference: {fileID: 0}
-    - target: {fileID: 3815590563038312402, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -107.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3815590563038312402, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3815590563038312402, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 266.2
       objectReference: {fileID: 0}
     - target: {fileID: 4278920488189100000, guid: 3649f13ae66710c4db66d67ed364573e,
         type: 3}
@@ -9345,16 +9199,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6417113819366433227, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.3000002
-      objectReference: {fileID: 0}
-    - target: {fileID: 7329581837308180954, guid: 3649f13ae66710c4db66d67ed364573e,
-        type: 3}
-      propertyPath: _transitionDuration
-      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12703,7 +12547,7 @@ PrefabInstance:
     - target: {fileID: 1378742170136977645, guid: 188f33ff6d7cdf440a98a193b73ace3f,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0007158256
+      value: 0.011168134
       objectReference: {fileID: 0}
     - target: {fileID: 1421192279383971182, guid: 188f33ff6d7cdf440a98a193b73ace3f,
         type: 3}
@@ -16388,6 +16232,16 @@ PrefabInstance:
       propertyPath: _timeDisplay
       value: 
       objectReference: {fileID: 1887504366}
+    - target: {fileID: 4447844827736923794, guid: e5470f1ba2b07a14fb97bd0d7ce936d5,
+        type: 3}
+      propertyPath: _isDayUpdating
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447844827736923794, guid: e5470f1ba2b07a14fb97bd0d7ce936d5,
+        type: 3}
+      propertyPath: _initialSpeedMultiplier
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 5248929275772439157, guid: e5470f1ba2b07a14fb97bd0d7ce936d5,
         type: 3}
       propertyPath: m_LocalPosition.x

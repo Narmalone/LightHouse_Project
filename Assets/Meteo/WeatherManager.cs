@@ -44,6 +44,7 @@ public class WeatherManager : Singleton<WeatherManager>
     public float difficulty = 1.0f;
 
     public bool FullRandomWeather = false;
+    public bool GenerateWeatherByWeather = false;
 
     [Header("Duration")]
     public float MinWeatherDuration = 25f;
@@ -254,8 +255,6 @@ public class WeatherManager : Singleton<WeatherManager>
 
     private void GenerateRandomWeatherForecast()
     {
-        weatherForecast = new List<DayWeather>();
-
         for (int i = 0; i < 100; i++)
         {
             DayWeather dayWeather = new DayWeather();

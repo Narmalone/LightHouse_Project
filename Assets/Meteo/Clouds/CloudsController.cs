@@ -29,10 +29,14 @@ public class CloudsController : MonoBehaviour
     [SerializeField] private CloudSettings _stormySettings;
     [SerializeField] private CloudSettings _rainySettings;
 
+    public VisualEnvironment visualEnvironment;
+
     private void Awake()
     {
         _cloudsVolume.sharedProfile.TryGet(out _cachedClouds);
         _cloudsVolume.sharedProfile.TryGet(out _cachedEnvironment);
+
+        _cloudsVolume.sharedProfile.TryGet(out visualEnvironment);
 
         _onWeatherChanged.handle += _onWeatherChanged_handle;
 

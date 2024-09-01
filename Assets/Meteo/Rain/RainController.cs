@@ -19,6 +19,7 @@ public class RainController : MonoBehaviour
     [Header("CONTROLLERS REFERENCES")]
     [SerializeField] private VisualEffect _rainEffect;
     [SerializeField] private Volume _rainVolume;
+    [SerializeField] private AudioSource _rainAudioSource;
 
     [Header("--- EVENTS ---")]
     [Header("LISTENERS")]
@@ -79,6 +80,7 @@ public class RainController : MonoBehaviour
             {
                 IsRaining = false;
                 _rainEffect.Stop();
+                _rainAudioSource?.Stop(); //faire en sorte de pouvoir changer en fonction de storm ou autre
                 StartCoroutine(WeightVolume(0f, _currentRainingSettings.VolumeWeightCurve));
             }
             return;
@@ -110,6 +112,7 @@ public class RainController : MonoBehaviour
         }
 
         _rainVolume.weight = targetWeight;
+        _rainAudioSource?.Play();
     }
     #endregion
 }
