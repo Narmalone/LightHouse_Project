@@ -1,3 +1,4 @@
+using FMODUnity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using Random = UnityEngine.Random;
 public class LightningsController : MonoBehaviour
 {
     [SerializeField] private Volume _lightningVolume;
-    [SerializeField] private AudioSource _lightningAudioSource;
+    [SerializeField] private StudioEventEmitter _lightningAudioSource;
     [SerializeField] private AnimationCurve _lightningWeight;
     [SerializeField] private AnimationCurve _lightningCurveFadeIn;
     [SerializeField] private AnimationCurve _lightningCurveFadeOut;
@@ -57,17 +58,18 @@ public class LightningsController : MonoBehaviour
 
     private IEnumerator FadeAudioCoroutine(float targetVolume, float targetDuration, Action onEnd = null)
     {
-        float initialVolume = _lightningAudioSource.volume;
+        float initialVolume = 0f;
+        _lightningAudioSource.EventInstance.getVolume(out initialVolume);
         float timer = 0f;
 
         while (timer < targetDuration)
         {
             timer += Time.deltaTime;
-            _lightningAudioSource.volume = Mathf.Lerp(initialVolume, targetVolume, timer / targetDuration);
+            _lightningAudioSource.EventInstance.setVolume(Mathf.Lerp(initialVolume, targetVolume, timer / targetDuration));
             yield return null;
         }
 
-        _lightningAudioSource.volume = targetVolume;
+        _lightningAudioSource.EventInstance.setVolume(targetVolume);
         onEnd?.Invoke();
     }
 

@@ -1,3 +1,4 @@
+using FMODUnity;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -19,7 +20,7 @@ public class RainController : MonoBehaviour
     [Header("CONTROLLERS REFERENCES")]
     [SerializeField] private VisualEffect _rainEffect;
     [SerializeField] private Volume _rainVolume;
-    [SerializeField] private AudioSource _rainAudioSource;
+    [SerializeField] private StudioEventEmitter _rainAudioSource;
 
     [Header("--- EVENTS ---")]
     [Header("LISTENERS")]
