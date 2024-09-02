@@ -19,6 +19,13 @@ public class OceanController : MonoBehaviour
 
     private WeatherManager _weatherManager;
 
+    public WaterSurface WaterSurface => _water;
+    public OceanSettings CalmSettings => _calmSettings;
+    public OceanSettings SunnySettings => _sunnySettings;
+    public OceanSettings RainySettings => _rainySettings;
+    public OceanSettings WindySettings => _windySettings;
+    public OceanSettings StormySettings => _stormySettings;
+
     private float _lerpTime = 0f;
 
     private void Awake()
@@ -93,6 +100,7 @@ public class OceanController : MonoBehaviour
 
         //Ripples & other
     }
+
     IEnumerator LerpOceanSettingsCoroutine(OceanSettings startSettings, OceanSettings endSettings, float duration)
     {
         //bools
@@ -165,6 +173,11 @@ public class OceanController : MonoBehaviour
             _lerpTime += Time.deltaTime;
             yield return null;
         }
+    }
+
+    public void OverrideSettings(OceanSettings settings)
+    {
+
     }
 
 }

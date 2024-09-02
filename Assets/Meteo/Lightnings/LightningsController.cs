@@ -85,7 +85,7 @@ public class LightningsController : MonoBehaviour
             {
                 _lightningVolume.priority = 0f;
                 StartCoroutine(WeightVolume(0f, _lightningWeight));
-                FadeAudio(0f, 1f, () =>
+                FadeAudio(0f, 3f, () =>
                 {
                     _lightningAudioSource?.Stop();
                 });
@@ -98,7 +98,7 @@ public class LightningsController : MonoBehaviour
     {
         _lightningVolume.priority = 100f;
         _lightningAudioSource?.Play();
-        FadeAudio(0.1f, 1f);
+        FadeAudio(0.1f, 3f);
         StartCoroutine(LightningRoutine(_lightningCurveFadeIn, _lightningCurveFadeOut));
         _isEnabled = true;
     }
