@@ -20,18 +20,15 @@ public class FoamShore : MonoBehaviour
         startTime = Time.realtimeSinceStartup;
         
         aliveTime = Random.Range(minAliveTime, maxAliveTime);
-        m_DecalProjectorComponent = this.GetComponent<DecalProjector>();
+
+        if(m_DecalProjectorComponent == null)
+            m_DecalProjectorComponent = this.GetComponent<DecalProjector>();
         
         // Instantiate a new decal material to avoid sharing it between prefab instances.
         m_DecalProjectorComponent.material = new Material(m_DecalProjectorComponent.material);
         Reset();
     }
     
-    void Start()
-    {
-        this.gameObject.SetActive(false);
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -62,9 +59,9 @@ public class FoamShore : MonoBehaviour
     
     public void Reset()
     {
-        int randomDecalIndexX = Random.Range(0,2);  //Random.Range for int is maxExclusive. 
+/*        int randomDecalIndexX = Random.Range(0,2);  //Random.Range for int is maxExclusive. 
         int randomDecalIndexY = Random.Range(0,2);  //Random.Range for int is maxExclusive. 
-        
+        */
         m_DecalProjectorComponent.material.SetFloat("_Opacity", 0);
     }
         

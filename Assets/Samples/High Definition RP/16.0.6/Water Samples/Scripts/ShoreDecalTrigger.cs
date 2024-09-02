@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class ShoreDecalTrigger : MonoBehaviour
     
     WaterSearchParameters searchParameters = new WaterSearchParameters();
     WaterSearchResult searchResult = new WaterSearchResult();
+
+    public event Action OnWaveGo;
 
     
     // Update is called once per frame
@@ -58,6 +61,10 @@ public class ShoreDecalTrigger : MonoBehaviour
             decalGameObject.transform.localEulerAngles = new Vector3(90, 0, -90);
             decalGameObject.SetActive(true);
         }
-        
+        if (Application.isPlaying)
+        {
+            OnWaveGo?.Invoke();
+        }
+
     }
 }
