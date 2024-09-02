@@ -9,6 +9,8 @@ public class PlayerData : MonoBehaviour
     public CustomEvent _eventLockCameraMovement;
     public CustomEvent _eventUnlockMovement;
     public CustomEvent _eventUnlockCameraMovement;
+    public CustomEvent _eventFreeze;
+    public CustomEvent _eventUnfreeze;
 
     [Header("Components")]
     public CharacterController controller;
@@ -24,6 +26,7 @@ public class PlayerData : MonoBehaviour
     [Header("Drop Item")]
     [SerializeField] private float _currencyShop = 0;
     [SerializeField] private CustomEvent_Float _onCurrencyShopChanged;
+
     public float CurrencyShop { get { return _currencyShop; } set
         {
             _currencyShop = value;

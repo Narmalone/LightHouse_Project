@@ -83,6 +83,8 @@ public class PlayerController : MonoBehaviour
         _manager._data._eventUnlockCameraMovement.handle += OnUnlockCamera;
         _manager._data._eventLockMovement.handle += OnLockMovement;
         _manager._data._eventUnlockMovement.handle += OnUnlockMovement;
+
+        _manager._eventUpdate += OnUpdate;
     }
 
     private void OnDestroy()
@@ -103,9 +105,11 @@ public class PlayerController : MonoBehaviour
         _manager._data._eventUnlockCameraMovement.handle -= OnUnlockCamera;
         _manager._data._eventLockMovement.handle -= OnLockMovement;
         _manager._data._eventUnlockMovement.handle -= OnUnlockMovement;
+
+        _manager._eventUpdate -= OnUpdate;
     }
 
-    private void Update()
+    private void OnUpdate()
     {
         HandleMove();
         controller.Move(velocity * Time.deltaTime);
@@ -163,7 +167,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (lockMovements) return;
+        if (lockMovements || _manager.Freeze) return;
 
         _isCrouching = context.performed;
 
@@ -172,7 +176,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext context)
     {
-        if (lockMovements)
+        if (lockMovements || _manager.Freeze)
         {
             moveInput = Vector2.zero;
             return;
@@ -182,7 +186,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext context)
     {
-        if (lockMovements) return;
+        if (lockMovements || _manager.Freeze) return;
 
         if (isGrounded)
         {
@@ -192,7 +196,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnLook(InputAction.CallbackContext context)
     {
-        if (lockCameraMovements) 
+        if (lockCameraMovements || _manager.Freeze) 
         {
             lookInput = Vector2.zero;
             return; 
@@ -313,4 +317,3 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 }
-
