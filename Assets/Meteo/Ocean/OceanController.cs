@@ -83,23 +83,54 @@ public class OceanController : MonoBehaviour
 
     private void Update()
     {
-        if (!RealisticMode) return;
+        if (!RealisticMode || _weatherManager == null) return;
+
+        // Récupérer les paramètres météorologiques
         float maxWindSpeed = _weatherManager.MaxWindSpeed;
         float windSpeed = _weatherManager.WindSpeed;
         float humidity = _weatherManager.Humidity;
         float airTemperature = _weatherManager.AirTemperature;
         float waterTemperature = _weatherManager.WaterTemperature;
 
-        // Ajuster les paramètres de l'eau en fonction de la vitesse du vent et d'autres paramètres météorologiques
-        _water.timeMultiplier = Mathf.Lerp(1f, 3.5f, windSpeed / maxWindSpeed);
-        _water.largeBand0Multiplier = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * (1 - humidity / 100f));
-        _water.largeBand1Multiplier = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * (1 - humidity / 100f));
-        _water.largeOrientationValue = Mathf.Lerp(0f, 360f, windSpeed / maxWindSpeed * airTemperature / 30f);
-        _water.largeChaos = Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * waterTemperature / 20f);
-        _water.largeWindSpeed = windSpeed;
+        // Simuler des changements progressifs plutôt que des changements brutaux
+        float timeFactor = Time.deltaTime * 0.1f;
 
-        //Ripples & other
+        // Ajuster les paramètres de l'eau en fonction de la vitesse du vent et d'autres paramètres météorologiques
+        _water.timeMultiplier = Mathf.Lerp(_water.timeMultiplier, Mathf.Lerp(1f, 3.5f, windSpeed / maxWindSpeed), timeFactor);
+        _water.largeBand0Multiplier = Mathf.Lerp(_water.largeBand0Multiplier, Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * (1 - humidity / 100f)), timeFactor);
+        _water.largeBand1Multiplier = Mathf.Lerp(_water.largeBand1Multiplier, Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * (1 - humidity / 100f)), timeFactor);
+
+        // L'orientation des vagues peut être influencée par le vent et la température de l'air
+        _water.largeOrientationValue = Mathf.Lerp(_water.largeOrientationValue, Mathf.Lerp(0f, 360f, windSpeed / maxWindSpeed * airTemperature / 30f), timeFactor);
+
+        // Le chaos dans les vagues est lié à la vitesse du vent et à la température de l'eau
+        _water.largeChaos = Mathf.Lerp(_water.largeChaos, Mathf.Lerp(0f, 1f, windSpeed / maxWindSpeed * waterTemperature / 20f), timeFactor);
+
+        // Ajustement de la vitesse du vent appliquée à la surface de l'eau
+        _water.largeWindSpeed = Mathf.Lerp(_water.largeWindSpeed, windSpeed, timeFactor);
+
+        // Ajustements des paramètres de scintillement ou autres effets
+        AdjustAdditionalWaterParameters(timeFactor);
     }
+
+    // Méthode pour ajuster d'autres paramètres comme les ondulations, caustiques, etc.
+    private void AdjustAdditionalWaterParameters(float timeFactor)
+    {
+        // Exemples d'ajustements supplémentaires
+        _water.smoothnessFadeStart = Mathf.Lerp(_water.smoothnessFadeStart, 0.1f, timeFactor);
+        _water.smoothnessFadeDistance = Mathf.Lerp(_water.smoothnessFadeDistance, 0.5f, timeFactor);
+
+        // Ajuster la réfraction en fonction de la température de l'eau
+        _water.refractionColor = Color.Lerp(_water.refractionColor, Color.Lerp(Color.blue, Color.cyan, _weatherManager.WaterTemperature / 25f), timeFactor);
+
+        // Ajustements pour les caustiques et l'absorption de la lumière sous-marine
+        if (_water.caustics)
+        {
+            _water.causticsIntensity = Mathf.Lerp(_water.causticsIntensity, Mathf.Clamp(_weatherManager.AirTemperature / 35f, 0f, 1f), timeFactor);
+            _water.causticsPlaneBlendDistance = Mathf.Lerp(_water.causticsPlaneBlendDistance, Mathf.Lerp(0.5f, 2f, _weatherManager.Humidity / 100f), timeFactor);
+        }
+    }
+
 
     IEnumerator LerpOceanSettingsCoroutine(OceanSettings startSettings, OceanSettings endSettings, float duration)
     {
