@@ -66,6 +66,8 @@ public class LightningsController : MonoBehaviour
         {
             timer += Time.deltaTime;
             _lightningAudioSource.EventInstance.setVolume(Mathf.Lerp(initialVolume, targetVolume, timer / targetDuration));
+            _lightningAudioSource.EventInstance.getVolume(out float vol);
+            Debug.Log(vol);
             yield return null;
         }
 
@@ -100,7 +102,7 @@ public class LightningsController : MonoBehaviour
     {
         _lightningVolume.priority = 100f;
         _lightningAudioSource?.Play();
-        FadeAudio(0.1f, 3f);
+        //FadeAudio(0.1f, 3f);
         StartCoroutine(LightningRoutine(_lightningCurveFadeIn, _lightningCurveFadeOut));
         _isEnabled = true;
     }

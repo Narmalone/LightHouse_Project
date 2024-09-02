@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2346.679, g: 2476.6545, b: 3524.2153, a: 1}
+  m_IndirectSpecularColor: {r: 3171.4102, g: 3070.8196, b: 3097.0183, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -739,6 +739,38 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 157356467}
   m_Mesh: {fileID: 3279640162922618806, guid: 4400f72d87a5554489ba5e8632c80385, type: 3}
+--- !u!1 &161369636
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 161369637}
+  m_Layer: 0
+  m_Name: ---------- GLOBAL SOUNDS ---------------
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &161369637
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161369636}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 480410554}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!21 &171442382
 Material:
   serializedVersion: 8
@@ -1537,6 +1569,69 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 362576147}
   m_Mesh: {fileID: 3279640162922618806, guid: 4400f72d87a5554489ba5e8632c80385, type: 3}
+--- !u!1 &480410553
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 480410554}
+  - component: {fileID: 480410555}
+  m_Layer: 0
+  m_Name: Music
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &480410554
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480410553}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 161369637}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &480410555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480410553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -261720223
+      Data2: 1097998944
+      Data3: -491735136
+      Data4: -735752288
+    Path: event:/Main Menu/mystery-longing-in-film-221427
+  Event: 
+  PlayEvent: 1
+  StopEvent: 2
+  AllowFadeout: 1
+  TriggerOnce: 1
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 1
+  OverrideMinDistance: 200
+  OverrideMaxDistance: 200
 --- !u!4 &496793334 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4565721816072289679, guid: 202cf51cbc77cdb47a45c00d0af990df,
@@ -2035,7 +2130,7 @@ PrefabInstance:
     - target: {fileID: 4385861650331370968, guid: 82b989f52c7d1c544a7345f783d9638c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.024935186
+      value: 0.7117537
       objectReference: {fileID: 0}
     - target: {fileID: 4385861650331370968, guid: 82b989f52c7d1c544a7345f783d9638c,
         type: 3}
@@ -3328,7 +3423,7 @@ PrefabInstance:
     - target: {fileID: 4799696350596320478, guid: 564a1d5a6b3d68743b4d344502c6e1f8,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0026691249
+      value: 0.0027067922
       objectReference: {fileID: 0}
     - target: {fileID: 5171209406842391297, guid: 564a1d5a6b3d68743b4d344502c6e1f8,
         type: 3}
@@ -8426,3 +8521,4 @@ SceneRoots:
   - {fileID: 1445820651}
   - {fileID: 860484113}
   - {fileID: 556730058}
+  - {fileID: 161369637}
