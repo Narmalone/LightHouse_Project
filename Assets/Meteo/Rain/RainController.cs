@@ -67,11 +67,26 @@ public class RainController : MonoBehaviour
         if (obj == WeatherType.Storm)
         {
             _currentRainingSettings = _stormySettings;
+
+            if (!IsRaining)
+            {
+                _rainEffect.Play();
+                _rainAudioSource?.Play();
+                StartCoroutine(WeightVolume(1f, _currentRainingSettings.VolumeWeightCurve));
+            }
             IsRaining = true;
+
         }
         else if (obj == WeatherType.Rainy)
         {
             _currentRainingSettings = _rainySettings;
+
+            if (!IsRaining)
+            {
+                _rainEffect.Play();
+                _rainAudioSource?.Play();
+                StartCoroutine(WeightVolume(1f, _currentRainingSettings.VolumeWeightCurve));
+            }
             IsRaining = true;
         }
         else
@@ -90,8 +105,6 @@ public class RainController : MonoBehaviour
         _rainEffect.SetInt(P_MAXSPAWNRATE, (int)_currentRainingSettings.MaxRainSpawnRate);
         _rainEffect.SetInt(P_MINSPAWNRATE, (int)_currentRainingSettings.MinRainSpawnRate);
         _cachedFog.meanFreePath.value = _currentRainingSettings.FogAttenuationDistance;
-        _rainEffect.Play();
-        StartCoroutine(WeightVolume(1f, _currentRainingSettings.VolumeWeightCurve));
     }
 
     #endregion
@@ -112,7 +125,6 @@ public class RainController : MonoBehaviour
         }
 
         _rainVolume.weight = targetWeight;
-        _rainAudioSource?.Play();
     }
     #endregion
 }

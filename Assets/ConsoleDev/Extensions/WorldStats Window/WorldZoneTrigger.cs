@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class WorldZoneTrigger : MonoBehaviour
 {
-    public static event Action<WorldStatsWindow.Zone> OnZoneChange;
+    public static event Action<GameZone> OnZoneChange;
 
     [SerializeField] private LayerMask layer;
-    [SerializeField] private WorldStatsWindow.Zone ZoneTrigger;
+    [SerializeField] private GameZone ZoneTrigger;
 
     private void OnTriggerEnter(Collider other)
     {

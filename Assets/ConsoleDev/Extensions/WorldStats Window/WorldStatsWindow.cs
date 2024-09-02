@@ -37,17 +37,6 @@ public class WorldStatsWindow : MonoBehaviour
         SouthWest
     }
 
-    public enum Zone
-    {
-        None,
-        OutsideLocal,
-        Kitchen,
-        Bedroom,
-        SDB,
-        Restroom,
-        Salon
-    }
-
     public CardinalPoint GetFacingDirection(Transform target)
     {
         // Get the player's forward direction
@@ -113,7 +102,7 @@ public class WorldStatsWindow : MonoBehaviour
         return direction;
     }
 
-    private Zone m_currentZone;
+    private GameZone m_currentZone;
 
     private void Awake()
     {
