@@ -4,12 +4,15 @@ using UnityEngine;
 #region ENUMS
 public enum GameZone
 {
+    //MAIN ZONES
     OutsideLocal,
     Bathroom,
     BedRoom,
     KitchenAndOther,
     Office,
-    Lens
+    Lens,
+    RDC,
+    OUTSIDE
 }
 #endregion
 
@@ -19,6 +22,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public GameSettings gameSettings;
     [SerializeField] private CustomEvent eventStartTimeCycle;
     [SerializeField] private CustomEvent eventNextDay;
+
+    public static GameZone CurrentPlayerZone;
 
     public static event Action OnDayCycleEnd;
     public static event Action<int> OnNightCycleEnd; //int = NewDayValue
@@ -41,7 +46,7 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        
+        CurrentPlayerZone = GameZone.OUTSIDE;
     }
 
     public TimeSpan GetCurrentInGameTime()

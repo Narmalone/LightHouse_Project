@@ -106,10 +106,10 @@ public class WorldStatsWindow : MonoBehaviour
 
     private void Awake()
     {
-        WorldZoneTrigger.OnZoneChange += (s) =>
+       /* WorldZoneTrigger.OnZoneChange += (s) =>
         {
             m_currentZone = s;
-        };
+        };*/
 
         if (canvasGroup.alpha == 0f)
             Disable();
