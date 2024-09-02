@@ -55,12 +55,12 @@ MonoBehaviour:
   _onWeatherChanged: {fileID: 11400000, guid: 5c9110a41468ab343ae94cbeb856be98, type: 2}
   _weatherPattern: {fileID: 11400000, guid: 581524d9b21e3be4692993462bbb5336, type: 2}
   difficulty: 1
-  FullRandomWeather: 0
+  FullRandomWeather: 1
   GenerateWeatherByWeather: 0
-  MinWeatherDuration: 50
-  MaxWeatherDuration: 100
+  MinWeatherDuration: 10
+  MaxWeatherDuration: 20
   MinWindSpeed: 5
-  MaxWindSpeed: 100
+  MaxWindSpeed: 150
   weatherForecast: []
   _currentWeatherType: 0
   indexWeather: 0
@@ -182,7 +182,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 2f9a4101a87a5ff4aba54bf7c2acd6ef, type: 3}
   m_Resource: {fileID: 8300000, guid: 2f9a4101a87a5ff4aba54bf7c2acd6ef, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.1
+  m_Volume: 0.05
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -644,6 +644,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8946403242877008385, guid: fbff52f6dcd024b489b0a8fea363c22c,
+        type: 3}
+      propertyPath: _transitionCloudsDuration
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8962498496771605663, guid: fbff52f6dcd024b489b0a8fea363c22c,
         type: 3}
       propertyPath: m_Name
@@ -688,13 +693,68 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
         type: 3}
+      propertyPath: largeChaos
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: endSmoothness
+      value: 0.7170722
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeWindSpeed
+      value: 119.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: repetitionSize
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: heightScattering
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: ambientScattering
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
       propertyPath: absorptionDistance
-      value: 5.3
+      value: 42.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: smoothnessFadeStart
+      value: 230.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeBand0Multiplier
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: largeBand1Multiplier
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
         type: 3}
       propertyPath: largeOrientationValue
-      value: 60.38
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: maxRefractionDistance
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: displacementScattering
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
         type: 3}
@@ -705,6 +765,16 @@ PrefabInstance:
         type: 3}
       propertyPath: deformationAreaOffset.y
       value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: directLightTipScattering
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245758912644695847, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
+        type: 3}
+      propertyPath: directLightBodyScattering
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2563296220613194499, guid: 28362c8cce7f99e478a9e6ed2b06f1ef,
         type: 3}
