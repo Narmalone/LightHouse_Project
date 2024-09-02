@@ -25,7 +25,7 @@ public class PlayerInteraction : MonoBehaviour
         playerInputs.Game.Pickup.performed += OnInventoryGrab;
         playerInputs.Game.Interact.performed += OnInteract;
     }
-    
+
     private void OnDestroy()
     {
         playerInputs.Game.Pickup.performed -= OnInventoryGrab;
@@ -84,7 +84,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void OnInteract(InputAction.CallbackContext context)
     {
-        if (currentHitItem == null || currentHitItem.IsUsable == false) return;
+        if (_manager.Freeze || currentHitItem == null || currentHitItem.IsUsable == false) return;
         currentHitItem.go.TryGetComponent(out ItemBase item);
 
         if (item == null) return;

@@ -14,16 +14,19 @@ public class Bed : ItemBase
     [SerializeField] private CustomEvent _eventLockMovementPlayer;
     [SerializeField] private CustomEvent _eventUnlockMovementPlayer;
     [SerializeField] private CustomEvent _eventResetSleepAmount;
+    [SerializeField] private CustomEvent_Color _eventSetColor;
     [SerializeField] private CustomEvent_Float _eventSetTime;
-    [SerializeField] private CustomEvent_Float _eventFade;
+    [SerializeField] private CustomEvent_2Float _eventFade;
     [SerializeField] private CustomEvent_String _eventCrossaireNameUpdate;
 
     [Header("Components")]
     [SerializeField] private CinemachineVirtualCamera _VCam;
 
     [Header("Stats")]
+    [SerializeField] private Color _colorFade;
     [SerializeField] private bool _forEnableSleep;
     [SerializeField] private float _sleepingTime;
+    [SerializeField] private float _sleepingFadeInTime;
 
     private LayerMask _defaultMask;
 
@@ -60,7 +63,8 @@ public class Bed : ItemBase
         _VCam.Priority = 100;
 
         // Sleep
-        _eventFade.Raise(_sleepingTime);
+        _eventSetColor.Raise(_colorFade);
+        _eventFade.Raise(_sleepingFadeInTime, _sleepingTime);
         _eventFadeIsMasking.handle += SetTimeMorning;
         _eventFadeEnd.handle += UnlockPlayer;
         return false;

@@ -69,6 +69,8 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
@@ -164,6 +166,7 @@ MonoBehaviour:
   _inventory: {fileID: 4880216406653816421}
   _interaction: {fileID: 8278778199919373806}
   _data: {fileID: 5932778006218872572}
+  Freeze: 0
 --- !u!114 &5932778006218872572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,6 +187,8 @@ MonoBehaviour:
     type: 2}
   _eventUnlockCameraMovement: {fileID: 11400000, guid: 8b95763651cdf1e439b588130d82a939,
     type: 2}
+  _eventFreeze: {fileID: 11400000, guid: ade0f386c70ad3d43ba1aabf5922a9e0, type: 2}
+  _eventUnfreeze: {fileID: 11400000, guid: a63da4f66d5fa91489338abd18bade1a, type: 2}
   controller: {fileID: 6231699584837158408}
   _rb: {fileID: 8188401736335481780}
   playerInventory: {fileID: 4880216406653816421}
@@ -900,6 +905,8 @@ MonoBehaviour:
   stopNaNs: 1
   taaSharpenStrength: 0.5
   TAAQuality: 1
+  taaSharpenMode: 0
+  taaRingingReduction: 0
   taaHistorySharpening: 0.35
   taaAntiFlicker: 0.5
   taaMotionVectorRejection: 0
@@ -950,6 +957,7 @@ MonoBehaviour:
     sssQualityMode: 0
     sssQualityLevel: 0
     sssCustomSampleBudget: 20
+    sssCustomDownsampleSteps: 0
     msaaMode: 1
     materialQuality: 0
   renderingPathCustomFrameSettingsOverrideMask:
@@ -1222,6 +1230,8 @@ MonoBehaviour:
   stopNaNs: 0
   taaSharpenStrength: 0.5
   TAAQuality: 1
+  taaSharpenMode: 0
+  taaRingingReduction: 0
   taaHistorySharpening: 0.35
   taaAntiFlicker: 0.5
   taaMotionVectorRejection: 0
@@ -1272,6 +1282,7 @@ MonoBehaviour:
     sssQualityMode: 0
     sssQualityLevel: 0
     sssCustomSampleBudget: 20
+    sssCustomDownsampleSteps: 0
     msaaMode: 1
     materialQuality: 0
   renderingPathCustomFrameSettingsOverrideMask:
@@ -2206,6 +2217,8 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:

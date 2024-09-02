@@ -59,19 +59,11 @@ public class PlayerInventory : MonoBehaviour
         _fromStorageToInventory.handle += _fromStorageToInventory_handle;
     }
 
-    public void EnableUseInInventory()
-    {
-        playerInputAction.Game.UseInInventory.performed += OnUseSelectedItem;
-    }
-
-    public void DisableUseInInventory()
-    {
-        playerInputAction.Game.UseInInventory.performed -= OnUseSelectedItem;
-    }
-
     private void Start()
     {
         SelectSlot(0);
+
+        _manager._eventUpdate -= OnUpdate;
     }
 
     private void OnDestroy()
@@ -84,9 +76,11 @@ public class PlayerInventory : MonoBehaviour
         _eventDropItem.handle -= OnDropItem;
 
         _fromStorageToInventory.handle -= _fromStorageToInventory_handle;
+
+        _manager._eventUpdate -= OnUpdate;
     }
 
-    void Update()
+    void OnUpdate()
     {
         // Check for keyboard input to select a slot
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -114,6 +108,16 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
+    public void EnableUseInInventory()
+    {
+        playerInputAction.Game.UseInInventory.performed += OnUseSelectedItem;
+    }
+
+    public void DisableUseInInventory()
+    {
+        playerInputAction.Game.UseInInventory.performed -= OnUseSelectedItem;
+    }
+
     #region OTHER FUNCTIONS
 
     public void Initialize(PlayerManager manager)
@@ -126,6 +130,8 @@ public class PlayerInventory : MonoBehaviour
 
     private void TakeItem(ItemBase item)
     {
+        if (_manager.Freeze) return;
+
         // Ajouter dans le slot (Choix slot, Nom, Icon)
         var slotIndex = GetEmptySlot();
 
@@ -143,6 +149,8 @@ public class PlayerInventory : MonoBehaviour
 
     private void OnDropItem()
     {
+        if (_manager.Freeze) return;
+
         DropItem(false);
     }
 
@@ -260,11 +268,15 @@ public class PlayerInventory : MonoBehaviour
     #region INPUT CALBACK
     private void OnUseSelectedItem(InputAction.CallbackContext context)
     {
+        if (_manager.Freeze) return;
+
         HandleUseSelectedItem();
     }
 
     private void OnDropItem(InputAction.CallbackContext context)
     {
+        if (_manager.Freeze) return;
+
         if (context.performed) HandleDropItem_Start();
         if (context.canceled) HandleDropItem_End();
     }
@@ -276,6 +288,8 @@ public class PlayerInventory : MonoBehaviour
 
     private void HandleDropItem_End()
     {
+        if (_manager.Freeze) return;
+
         DropItem();
         _eventEndDropItem.Raise();
     }

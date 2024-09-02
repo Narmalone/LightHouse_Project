@@ -7,7 +7,8 @@ public class FadeUI : MonoBehaviour
     public static FadeUI Instance;
 
     [Header("Events")]
-    [SerializeField] private CustomEvent_Float _eventStartFade;
+    [SerializeField] private CustomEvent_2Float _eventStartFade;
+    [SerializeField] private CustomEvent_Color _eventSetColor;
     [SerializeField] private CustomEvent _eventOnFade;
     [SerializeField] private CustomEvent _eventOnFadeIsMasking;
     [SerializeField] private CustomEvent _eventOnFadeEnd;
@@ -28,6 +29,7 @@ public class FadeUI : MonoBehaviour
     {
         Instance = this;
         _eventStartFade.handle += OnStartFade;
+        _eventSetColor.handle += OnSetColor;
     }
 
     private void Start()
@@ -39,31 +41,39 @@ public class FadeUI : MonoBehaviour
     private void OnDestroy()
     {
         _eventStartFade.handle -= OnStartFade;
+        _eventSetColor.handle -= OnSetColor;
     }
 
     [ContextMenu("FADE")]
     private void Fade()
     {
-        OnStartFade(3);
+        OnStartFade(1, 1);
     }
 
-    private void OnStartFade(float duration)
+    private void OnStartFade(float fadeInDuration, float duration)
     {
         if (_isFadeStarted) return;
 
         _eventOnFade.Raise();
-        _coroutineFade = StartCoroutine(Fade_Coroutine(duration, 1, true));
+        _coroutineFade = StartCoroutine(Fade_Coroutine(fadeInDuration, duration, 1, true));
     }
 
-    IEnumerator Fade_Coroutine(float duration, float fadeAmountTarget, bool fadeOut)
+    private void OnSetColor(Color color)
+    {
+        _fadeColor.r = color.r;
+        _fadeColor.g = color.g;
+        _fadeColor.b = color.b;
+    }
+
+    IEnumerator Fade_Coroutine(float fadeInDuration, float duration, float fadeAmountTarget, bool fadeOut)
     {
         float time = 0;
         float fadeAmountStart = _fadeColor.a;
 
-        while (time < _fadeInDuration)
+        while (time < fadeInDuration)
         {
             time += Time.deltaTime;
-            Fade(time/ _fadeInDuration, fadeAmountStart, fadeAmountTarget);
+            Fade(time/ fadeInDuration, fadeAmountStart, fadeAmountTarget);
             yield return null;
         }
 
@@ -71,13 +81,13 @@ public class FadeUI : MonoBehaviour
         {
             _eventOnFadeEnd.Raise();
             _coroutineFade = null;
-            yield break; 
+            yield break;
         }
 
         _eventOnFadeIsMasking.Raise();
         yield return new WaitForSeconds(duration);
 
-        _coroutineFade = StartCoroutine(Fade_Coroutine(_fadeInDuration, 0, false));
+        _coroutineFade = StartCoroutine(Fade_Coroutine(fadeInDuration, duration, 0, false));
     }
 
     private void Fade(float time, float fadeAmountStart, float fadeAmountTarget)
