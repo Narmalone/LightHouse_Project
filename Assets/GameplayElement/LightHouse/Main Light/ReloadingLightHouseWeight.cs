@@ -34,9 +34,8 @@ public class ReloadingLightHouseWeight : ItemBase
     private void Awake()
     {
         _input = new PIA();
-        _input.Enable();
 
-        _input.Game.Interact.canceled += OnInteractCancel;
+        _input.Enable();
 
         _eventEvening.handle += OnAllowRotationOn;
         _eventMorning.handle += OnStopRotation;
@@ -56,25 +55,27 @@ public class ReloadingLightHouseWeight : ItemBase
     {
         gameObject.layer = LayerMask.NameToLayer("Default");
 
-        // Luanch Hold Inuput
+        _input.Game.Interact.canceled += OnInteractCancel;
+
         _startTimeHold = Time.time - _tempStartTime;
-        _eventOnReloadingWeight_Cursor.Raise(_timeHoldToReload, _tempStartTime / _timeHoldToReload);
+
         _coroutineOnReloading = StartCoroutine(OnReloading());
+
+        _eventOnReloadingWeight_Cursor.Raise(_timeHoldToReload, _tempStartTime / _timeHoldToReload);
         _eventFreeze.Raise();
+
         _animator.SetFloat(_hasWeight, 1);
+
         return base.Use();
     }
 
     private void OnInteractCancel(InputAction.CallbackContext obj)
     {
         if (_startTimeHold == -1) return;
-        StopCoroutine(_coroutineOnReloading);
-        if(Time.time - _startTimeHold < _timeHoldToReload)
-        {
-            Stop(false);
-            return;
-        }
-        Stop(true);
+        StopCoroutine(_coroutineOnReloading);            
+        Stop(Time.time - _startTimeHold >= _timeHoldToReload);
+
+        _input.Game.Interact.canceled -= OnInteractCancel;
     }
 
     private void OnStopRotation()
