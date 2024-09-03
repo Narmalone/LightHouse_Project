@@ -15,10 +15,10 @@ MonoBehaviour:
   Path: Assets/FMOD/Project/LightHouse_Fmod/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638609121839416950
+  lastModified: 638609161117854010
   FileSizes:
   - Name: Desktop
-    Value: 1086
+    Value: 1132
   Exists: 1
 --- !u!114 &-8229931176858709063
 MonoBehaviour:
@@ -43,10 +43,59 @@ MonoBehaviour:
   IsStream: 1
   Is3D: 1
   IsOneShot: 1
-  Parameters: []
+  Parameters:
+  - {fileID: -3580029229816620929}
   MinDistance: 1
   MaxDistance: 20
   Length: 91115
+--- !u!114 &-3826365628769773624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Pitch
+  m_EditorClassIdentifier: 
+  Name: Pitch
+  StudioPath: parameter:/Pitch
+  Min: -12
+  Max: 12
+  Default: 0
+  ID:
+    data1: 2676146096
+    data2: 1892698445
+  Type: 0
+  IsGlobal: 1
+  Labels: []
+  Exists: 1
+--- !u!114 &-3580029229816620929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/rain-sound-188158/Pitch
+  m_EditorClassIdentifier: 
+  Name: Pitch
+  StudioPath: 
+  Min: -12
+  Max: 12
+  Default: 0
+  ID:
+    data1: 2676146096
+    data2: 1892698445
+  Type: 0
+  IsGlobal: 1
+  Labels: []
+  Exists: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,12 +117,13 @@ MonoBehaviour:
   - {fileID: 7804717508248235245}
   - {fileID: 5273501462796605839}
   - {fileID: -8229931176858709063}
-  EditorParameters: []
+  EditorParameters:
+  - {fileID: -3826365628769773624}
   MasterBanks:
   - {fileID: 1210515606986637335}
   StringsBanks:
   - {fileID: -8397781523623484334}
-  cacheTime: 638609121839416950
+  cacheTime: 638609161117854010
   cacheVersion: 131619
 --- !u!114 &1210515606986637335
 MonoBehaviour:
@@ -90,10 +140,10 @@ MonoBehaviour:
   Path: Assets/FMOD/Project/LightHouse_Fmod/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638609121839380578
+  lastModified: 638609161117809562
   FileSizes:
   - Name: Desktop
-    Value: 4755040
+    Value: 4755328
   Exists: 1
 --- !u!114 &5273501462796605839
 MonoBehaviour:

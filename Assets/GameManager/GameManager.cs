@@ -8,12 +8,14 @@ public enum GameZone
     OutsideLocal,
     Bathroom,
     BedRoom,
-    KitchenAndOther,
+    Kitchen,
     Office,
     Lens,
     RDC,
-    OUTSIDE
+    OutsideLightHouse,
+    Beach
 }
+
 #endregion
 
 
@@ -22,7 +24,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public GameSettings gameSettings;
     [SerializeField] private CustomEvent eventStartTimeCycle;
     [SerializeField] private CustomEvent eventNextDay;
-
+    [SerializeField] private CustomEvent_GameZone _onGameZoneChanged;
+    [SerializeField] private GameZoneTypeInfo _gameZoneTypeInfoSettings;
     public static GameZone CurrentPlayerZone;
 
     public static event Action OnDayCycleEnd;
@@ -37,16 +40,18 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         eventNextDay.handle += OnDayEnd;
+        _onGameZoneChanged.handle += _onGameZoneChanged_handle;
     }
 
     private void OnDestroy()
     {
         eventNextDay.handle -= OnDayEnd;
+        _onGameZoneChanged.handle -= _onGameZoneChanged_handle;
     }
 
     private void Start()
     {
-        CurrentPlayerZone = GameZone.OUTSIDE;
+        CurrentPlayerZone = GameZone.OutsideLightHouse;
     }
 
     public TimeSpan GetCurrentInGameTime()
@@ -58,4 +63,32 @@ public class GameManager : Singleton<GameManager>
     {
         currentDay++;
     }
+
+    public GMTypeInfo GetPlayerLocation()
+    {
+        foreach(GameZone outsideZones in _gameZoneTypeInfoSettings.OutsideZones)
+        {
+            if(outsideZones == CurrentPlayerZone)
+            {
+                return GMTypeInfo.Outside;
+            }
+        }
+
+        foreach(GameZone insideZones in _gameZoneTypeInfoSettings.InsideZones)
+        {
+            if(insideZones == CurrentPlayerZone)
+            {
+                return GMTypeInfo.Inside;
+            }
+        }
+
+        return GMTypeInfo.Outside;
+    }
+
+    private void _onGameZoneChanged_handle(GameZone obj)
+    {
+        if (CurrentPlayerZone != obj)
+            CurrentPlayerZone = obj;
+    }
+
 }
