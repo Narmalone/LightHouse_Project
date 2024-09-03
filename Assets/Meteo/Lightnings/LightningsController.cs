@@ -66,6 +66,7 @@ public class LightningsController : MonoBehaviour
         {
             timer += Time.deltaTime;
             _lightningAudioSource.EventInstance.setVolume(Mathf.Lerp(initialVolume, targetVolume, timer / targetDuration));
+            _lightningAudioSource.EventInstance.getVolume(out float vol);
             yield return null;
         }
 
@@ -87,10 +88,12 @@ public class LightningsController : MonoBehaviour
             {
                 _lightningVolume.priority = 0f;
                 StartCoroutine(WeightVolume(0f, _lightningWeight));
-                FadeAudio(0f, 3f, () =>
+
+                _lightningAudioSource?.Stop();
+/*                FadeAudio(0f, 3f, () =>
                 {
                     _lightningAudioSource?.Stop();
-                });
+                });*/
                 //set the volume to null
             }
         }
@@ -100,7 +103,7 @@ public class LightningsController : MonoBehaviour
     {
         _lightningVolume.priority = 100f;
         _lightningAudioSource?.Play();
-        FadeAudio(0.1f, 3f);
+        //FadeAudio(0.1f, 3f);
         StartCoroutine(LightningRoutine(_lightningCurveFadeIn, _lightningCurveFadeOut));
         _isEnabled = true;
     }

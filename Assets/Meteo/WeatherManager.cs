@@ -101,6 +101,10 @@ public class WeatherManager : Singleton<WeatherManager>
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            elapsedTime = weatherChangeDuration;
+        }
         if (!_weatherLoaded) return;
         // Mettre à jour le temps écoulé
         elapsedTime += Time.deltaTime;

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 public class SimpleBoatMotion : MonoBehaviour
 {
     [Header("Boat Movement")]

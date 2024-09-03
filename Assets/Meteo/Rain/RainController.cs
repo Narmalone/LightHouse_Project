@@ -1,3 +1,4 @@
+using FMOD.Studio;
 using FMODUnity;
 using System.Collections;
 using UnityEngine;
@@ -25,6 +26,7 @@ public class RainController : MonoBehaviour
     [Header("--- EVENTS ---")]
     [Header("LISTENERS")]
     [SerializeField] private CustomEvent_WeatherType _onWeatherChanged;
+    [SerializeField] private CustomEvent_GameZone _customEventGameZone;
 
     [Header("RAIN SETTINGS")]
     [SerializeField] private RainSettings _rainySettings;
@@ -52,16 +54,33 @@ public class RainController : MonoBehaviour
         _rainVolume.sharedProfile.TryGet(out _cachedFog);
         _rainEffect.Stop();
         _onWeatherChanged.handle += _onWeatherChanged_handle;
+        _customEventGameZone.handle += _customEventGameZone_handle;
+
+        //_rainAudioSource.EventInstance.start();
     }
 
     private void OnDestroy()
     {
         _onWeatherChanged.handle -= _onWeatherChanged_handle;
+        _customEventGameZone.handle -= _customEventGameZone_handle;
     }
 
     #endregion
 
     #region DELEGATES
+    private void _customEventGameZone_handle(GameZone obj)
+    {
+        if(obj == GameZone.RDC)
+        {
+            _rainAudioSource.EventInstance.setPitch(.75f);
+            _rainAudioSource.EventInstance.getPitch(out float p);
+        }
+        else if(obj == GameZone.OutsideLightHouse)
+        {
+            _rainAudioSource.EventInstance.setPitch(1f);
+            _rainAudioSource.EventInstance.getPitch(out float p);
+        }
+    }
 
     private void _onWeatherChanged_handle(WeatherType obj)
     {
@@ -73,6 +92,10 @@ public class RainController : MonoBehaviour
             {
                 _rainEffect.Play();
                 _rainAudioSource?.Play();
+                if(GameManager.Instance.GetPlayerLocation() == GMTypeInfo.Inside)
+                {
+                    _rainAudioSource.EventInstance.setPitch(0.75f);
+                }
                 StartCoroutine(WeightVolume(1f, _currentRainingSettings.VolumeWeightCurve));
             }
             IsRaining = true;
@@ -86,6 +109,10 @@ public class RainController : MonoBehaviour
             {
                 _rainEffect.Play();
                 _rainAudioSource?.Play();
+                if (GameManager.Instance.GetPlayerLocation() == GMTypeInfo.Inside)
+                {
+                    _rainAudioSource.EventInstance.setPitch(0.75f);
+                }
                 StartCoroutine(WeightVolume(1f, _currentRainingSettings.VolumeWeightCurve));
             }
             IsRaining = true;
