@@ -36,14 +36,9 @@ public class UiComputerController : MonoBehaviour
         
     }
 
-    public void Select(ComputerTabs target)
+    public void SwitchTab(ComputerTabs target)
     {
-        _topBarController.Select(target);
-    }
-
-    public void UnSelect(ComputerTabs target)
-    {
-        _topBarController.UnSelect(target);
+        _topBarController.SwitchSelected(target);
     }
 
     public void Show()

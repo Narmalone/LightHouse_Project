@@ -19,6 +19,7 @@ public class TopBarController : MonoBehaviour
 
     [SerializeField] private Button _leaveButton;
     [SerializeField] private CustomEvent _onLeaveTabCliqued;
+    public ComputerTabs lastSelected;
 
     private void Awake()
     {
@@ -39,7 +40,17 @@ public class TopBarController : MonoBehaviour
 
     private void _onTabButtonCliqued_handle(ComputerTabs obj)
     {
-        UnSelect(obj);
+        SwitchSelected(obj);
+    }
+
+    public void SwitchSelected(ComputerTabs target)
+    {
+        if (lastSelected != ComputerTabs.None)
+        {
+            UnSelect(lastSelected);
+        }
+        Select(target);
+        lastSelected = target;
     }
 
     private void InitButtons()
@@ -71,9 +82,9 @@ public class TopBarController : MonoBehaviour
         return null;
     }
 
-    public void Select(ComputerTabs target)
+    private void Select(ComputerTabs target)
     {
-        switch(target)
+        switch (target)
         {
             case ComputerTabs.Messagerie:
                 _messagerie.Select();
@@ -93,7 +104,7 @@ public class TopBarController : MonoBehaviour
         }
     }
 
-    public void UnSelect(ComputerTabs target)
+    private void UnSelect(ComputerTabs target)
     {
         switch (target)
         {

@@ -93,7 +93,7 @@ public class ComputerController : ElectricItem
 
     private void Start()
     {
-        _uiComputerController.Select(ComputerTabs.Messagerie);
+        _uiComputerController.SwitchTab(ComputerTabs.Messagerie);
     }
 
     #endregion
