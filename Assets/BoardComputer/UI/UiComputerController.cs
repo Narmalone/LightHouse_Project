@@ -4,62 +4,46 @@ using UnityEngine.UI;
 public class UiComputerController : MonoBehaviour
 {
     [SerializeField] private CanvasGroup _mainCanvasGroup;
-
-    [SerializeField] private ContentWindow[] _allWindows;
-    [SerializeField] private TabBtnDisplay[] mainOnglets;
+    [SerializeField] private TopBarController _topBarController;
 
     [SerializeField] private ShopContent shopWindow;
     [SerializeField] private MeteoContent meteoWindow;
     [SerializeField] private QuestContent questWindow;
     [SerializeField] private IslandContent islandWindow;
     [SerializeField] private RadarContent radarWindow;
-    [SerializeField] private TabBtnDisplay _leaveButton;
 
     [Header("--- EVENTS ---")]
     [Header("RAISE")]
     [SerializeField] private CustomEvent _onLeftButtonCliqued;
 
-    private ContentWindow currentWindow = null;
+    [Header("LISTENERS")]
+    [SerializeField] private CustomEvent_ComputerTopBarButton _onTabCliqued;
 
-    private TabBtnDisplay lastCliqued;
+    private ContentWindow currentWindow = null;
 
     private void Awake()
     {
-        InitTabBtns();
-        InitComputer();
+        _onTabCliqued.handle += _onTabCliqued_handle;
     }
 
-
-    private void InitTabBtns()
+    private void OnDestroy()
     {
-        for (int i = 0; i < mainOnglets.Length; i++)
-        {
-            mainOnglets[i].OnTabClicked += (nexTab) =>
-            {
-                SwitchButtonTab(nexTab);
-                SwitchTab(nexTab.TabToDisplay);
-            };
-        }
-        _leaveButton.OnTabClicked += ((x) =>
-        {
-            _onLeftButtonCliqued?.Raise();
-        });
+        _onTabCliqued.handle -= _onTabCliqued_handle;
     }
 
-    private void InitComputer()
+    private void _onTabCliqued_handle(ComputerTabs obj)
     {
-        SwitchTab(ComputerTabs.Meteo);
-        SwitchButtonTab(mainOnglets[0]);
+        
     }
 
-    private void SwitchButtonTab(TabBtnDisplay nextTab)
+    public void Select(ComputerTabs target)
     {
-        if (lastCliqued != null)
-        {
-            lastCliqued.Unselect();
-        }
-        lastCliqued = nextTab;
-        lastCliqued.Select();
+        _topBarController.Select(target);
+    }
+
+    public void UnSelect(ComputerTabs target)
+    {
+        _topBarController.UnSelect(target);
     }
 
     public void Show()
@@ -70,32 +54,5 @@ public class UiComputerController : MonoBehaviour
     public void Hide()
     {
         _mainCanvasGroup.alpha = 0;
-    }
-
-    public void SwitchTab(ComputerTabs nextTab)
-    {
-        if (currentWindow != null)
-        {
-            currentWindow.Hide();
-        }
-        switch (nextTab)
-        {
-            case ComputerTabs.Meteo:
-                currentWindow = meteoWindow;
-                break;
-            case ComputerTabs.Shop:
-                currentWindow = shopWindow;
-                break;
-            case ComputerTabs.Quest:
-                currentWindow = questWindow;
-                break;
-            case ComputerTabs.IslandInfos:
-                currentWindow = islandWindow;
-                break;
-            case ComputerTabs.Radar:
-                currentWindow = radarWindow;
-                break;
-        }
-        currentWindow?.Show();
     }
 }
