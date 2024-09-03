@@ -6,12 +6,11 @@ using UnityEngine;
 public enum ComputerTabs
 {
     None,
-    Current,
+    Messagerie,
     Meteo,
-    Shop,
-    Quest,
-    IslandInfos,
-    Radar
+    VeilleDeNuit,
+    Maintenance,
+    Ravitaillement
 }
 #endregion
 
@@ -90,6 +89,11 @@ public class ComputerController : ElectricItem
     private void OnDestroy()
     {
         _onLeftButtonCliqued.handle -= _onLeftButtonCliqued_handle;
+    }
+
+    private void Start()
+    {
+        _uiComputerController.Select(ComputerTabs.Messagerie);
     }
 
     #endregion
