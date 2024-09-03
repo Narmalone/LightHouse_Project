@@ -350,27 +350,31 @@ public class WeatherManager : Singleton<WeatherManager>
                 Debug.Log("Tempête en cours !");
                 // Ajouter des effets de tempête, sons, etc.
                 _onWeatherChanged?.Raise(WeatherType.Storm);
+                _onWeatherOverrideStart?.Raise(WeatherType.Storm);
                 break;
             case WeatherType.Windy:
                 Debug.Log("Journée venteuse.");
                 // Ajouter des effets de vent fort
                 _onWeatherChanged?.Raise(WeatherType.Windy);
-
+                _onWeatherOverrideStart?.Raise(WeatherType.Windy);
                 break;
             case WeatherType.Rainy:
                 Debug.Log("Il pleut.");
                 _onWeatherChanged?.Raise(WeatherType.Rainy);
+                _onWeatherOverrideStart?.Raise(WeatherType.Rainy);
                 // Ajouter des effets de pluie
                 break;
             case WeatherType.Sunny:
                 Debug.Log("Journée ensoleillée.");
                 // Ajouter des effets de beau temps
                 _onWeatherChanged?.Raise(WeatherType.Sunny);
+                _onWeatherOverrideStart?.Raise(WeatherType.Sunny);
                 break;
             case WeatherType.Calm:
                 Debug.Log("Eau calme.");
                 // Ajouter des effets d'eau calme
                 _onWeatherChanged?.Raise(WeatherType.Calm);
+                _onWeatherOverrideStart?.Raise(WeatherType.Calm);
                 break;
         }
     }
