@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +8,7 @@ public class ReloadingLightHouseWeight : ItemBase
     [SerializeField] private CustomEvent _eventFreeze;
     [SerializeField] private CustomEvent _eventUnfreeze;
     [SerializeField] private CustomEvent _eventRotationOn;
-    [SerializeField] private CustomEvent _eventOnReloadingWeight;
+    [SerializeField] private CustomEvent_Float _eventOnReloadingWeight;
     [SerializeField] private CustomEvent _eventEndReloadingWeight_Cursor;
     [SerializeField] private CustomEvent_2Float _eventOnReloadingWeight_Cursor;
     [SerializeField] private CustomEvent _eventMorning;
@@ -40,6 +37,7 @@ public class ReloadingLightHouseWeight : ItemBase
         _eventEvening.handle += OnAllowRotationOn;
         _eventMorning.handle += OnStopRotation;
     }
+
     private void Start()
     {
         Name = name;
@@ -109,7 +107,7 @@ public class ReloadingLightHouseWeight : ItemBase
         while (Time.time - _startTimeHold < _timeHoldToReload)
         {
             //Debug.Log(Time.time - _startTimeHold);
-            _eventOnReloadingWeight.Raise();
+            _eventOnReloadingWeight.Raise((Time.time - _startTimeHold) / _timeHoldToReload);
             yield return null;
         }
 
