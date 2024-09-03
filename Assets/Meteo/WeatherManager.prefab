@@ -52,7 +52,10 @@ MonoBehaviour:
   _rainController: {fileID: 578890741923689259}
   _cloudsController: {fileID: 8076470204050097022}
   _oceanController: {fileID: 7329581837308180954}
+  _lightningController: {fileID: 3204089638176701307}
   _onWeatherChanged: {fileID: 11400000, guid: 5c9110a41468ab343ae94cbeb856be98, type: 2}
+  _onWeatherOverrideStart: {fileID: 11400000, guid: 89e4e4e5f0bf144409af771a6917713f,
+    type: 2}
   _weatherPattern: {fileID: 11400000, guid: 581524d9b21e3be4692993462bbb5336, type: 2}
   difficulty: 1
   FullRandomWeather: 1
@@ -87,7 +90,6 @@ MonoBehaviour:
   AtmosphericPressure: 0
   _weatherLoaded: 0
   _targetWeatherDuration: 0
-  WeatherDurations: []
 --- !u!1 &3454110344603239311
 GameObject:
   m_ObjectHideFlags: 0
@@ -577,11 +579,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8946403242877008385, guid: fbff52f6dcd024b489b0a8fea363c22c,
-        type: 3}
-      propertyPath: _transitionCloudsDuration
-      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8962498496771605663, guid: fbff52f6dcd024b489b0a8fea363c22c,
         type: 3}
