@@ -10,7 +10,7 @@ public class PlayerInventory : MonoBehaviour
 
     [SerializeField] private byte slots = 4;
     [SerializeField] private byte currentUsedSlots = 0;
-    [SerializeField] public CustomEvent _eventStartDropItem;
+    [SerializeField] public CustomEvent_2Float _eventStartDropItem;
     [SerializeField] public CustomEvent _eventDropItem;
     [SerializeField] public CustomEvent _eventEndDropItem;
     [SerializeField] private CustomEvent_ItemBase _fromStorageToInventory;
@@ -283,7 +283,7 @@ public class PlayerInventory : MonoBehaviour
     private void HandleDropItem_Start()
     {
         _startDropTime = Time.time;
-        _eventStartDropItem.Raise();
+        _eventStartDropItem.Raise(PlayerManager.Instance._data._timeToAchieveMaxStrength,0);
     }
 
     private void HandleDropItem_End()

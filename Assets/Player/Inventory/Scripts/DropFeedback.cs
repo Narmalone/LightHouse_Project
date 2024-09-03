@@ -5,12 +5,9 @@ using UnityEngine.UI;
 public class DropFeedback : MonoBehaviour
 {
     [SerializeField] private Image _circle;
-    [SerializeField] private CustomEvent _eventStartDrop;
+    [SerializeField] private CustomEvent_2Float _eventStartDrop;
     [SerializeField] private CustomEvent _eventEndDrop;
-    private AnimationCurve _curveStrenghtGrow;
     private float _timeToStrengthMax;
-    private float _timeStart;
-
     private Coroutine _coroutine;
 
     private void Awake()
@@ -19,22 +16,17 @@ public class DropFeedback : MonoBehaviour
         _eventEndDrop.handle += OnEndFeedback;
     }
 
-    private void Start()
-    {
-        _timeToStrengthMax = PlayerManager.Instance._data._timeToAchieveMaxStrength;
-    }
-
     private void OnDestroy()
     {
         _eventStartDrop.handle -= OnStartFeedback;
         _eventEndDrop.handle -= OnEndFeedback;
     }
 
-    private void OnStartFeedback()
+    private void OnStartFeedback(float value, float startValue)
     {
+        _timeToStrengthMax = value;
         _circle.gameObject.SetActive(true);
-        _timeStart = Time.time;
-        _coroutine = StartCoroutine(AnimationDrop());
+        _coroutine = StartCoroutine(AnimationDrop(startValue));
     }
 
     private void OnEndFeedback()
@@ -43,9 +35,10 @@ public class DropFeedback : MonoBehaviour
         _circle.gameObject.SetActive(false);
     }
 
-    IEnumerator AnimationDrop()
+    IEnumerator AnimationDrop(float startValue)
     {
-        float time = 0;
+        float time = startValue;
+        _circle.fillAmount = time;
         while (time < 1)
         {
             time += Time.deltaTime / _timeToStrengthMax;

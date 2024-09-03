@@ -54,7 +54,7 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] private Vector3 _startOrientation;
     [SerializeField] private Vector3 _sunOrientation;
     [SerializeField, Tooltip("In Hour"), Range(0, 24)] private float _currentTime;
-    [SerializeField, Range(0, 100), ConsoleVariable("TimeSpeed"), ConsoleCategory("Gameplay")] private float _initialSpeedMultiplier;
+    [SerializeField, Range(0, 100), ConsoleVariable("TimeSpeed"), ConsoleCategory("Gameplay")] public float _initialSpeedMultiplier;
     [SerializeField] public bool _isDayUpdating;
     [SerializeField] private bool _debug;
 
