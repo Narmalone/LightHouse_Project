@@ -90,6 +90,7 @@ public class LightningsController : MonoBehaviour
                 StartCoroutine(WeightVolume(0f, _lightningWeight));
 
                 _lightningAudioSource?.Stop();
+                _isEnabled = false;
 /*                FadeAudio(0f, 3f, () =>
                 {
                     _lightningAudioSource?.Stop();

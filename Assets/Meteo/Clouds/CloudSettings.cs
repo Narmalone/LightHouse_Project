@@ -1,4 +1,6 @@
+using Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 [CreateAssetMenu(fileName = "CloudSettings_", menuName = "Meteo/Clouds")]
 public class CloudSettings : ScriptableObject

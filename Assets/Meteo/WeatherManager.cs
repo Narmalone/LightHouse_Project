@@ -31,10 +31,12 @@ public class WeatherManager : Singleton<WeatherManager>
     [SerializeField] private RainController _rainController;
     [SerializeField] private CloudsController _cloudsController;
     [SerializeField] private OceanController _oceanController;
+    [SerializeField] private LightningsController _lightningController;
 
     [Header("--- EVENTS ---")]
     [Header("RAISE")]
     [SerializeField] private CustomEvent_WeatherType _onWeatherChanged;
+    [SerializeField] private CustomEvent_WeatherType _onWeatherOverrideStart;
 
     [Header("WEATHER SETTINGS")]
     [SerializeField] private WeatherPattern _weatherPattern;
@@ -73,6 +75,7 @@ public class WeatherManager : Singleton<WeatherManager>
     [SerializeField] private bool _weatherLoaded = false;
     private float _totalWeatherDuration = 0f;
     [SerializeField] private float _targetWeatherDuration = 0f;
+    private List<float> _weatherDurations = new List<float>();
 
     private GameManager _gm;
 
@@ -87,17 +90,14 @@ public class WeatherManager : Singleton<WeatherManager>
             GenerateRandomWeatherForecast();
             UpdateTodayAndTomorrowWeather();
             weatherChangeDuration = todayWeather.weatherDuration;
+            _onWeatherOverrideStart?.Raise(todayWeather.weatherType);
             _weatherLoaded = true;
         }
         else
         {
             StartCoroutine(RoutineGenerate());
         }
-
-        // Charger la météo du premier jour et du lendemain
     }
-
-    public List<float> WeatherDurations = new List<float>();
 
     private void Update()
     {
@@ -105,14 +105,13 @@ public class WeatherManager : Singleton<WeatherManager>
         {
             elapsedTime = weatherChangeDuration;
         }
+
         if (!_weatherLoaded) return;
-        // Mettre à jour le temps écoulé
         elapsedTime += Time.deltaTime;
 
         // Vérifier si le temps écoulé a dépassé la durée aléatoire
         if (elapsedTime >= weatherChangeDuration)
         {
-            // Réinitialiser le temps écoulé et choisir une nouvelle durée aléatoire
             elapsedTime = 0f;
             weatherChangeDuration = tomorrowWeather.weatherDuration;
 
@@ -120,11 +119,7 @@ public class WeatherManager : Singleton<WeatherManager>
             AdvanceToNextWeather();
         }
 
-        // Interpolation des conditions météorologiques
         InterpolateWeatherConditions();
-
-        // Simulation de la météo actuelle
-        //ApplyWeatherEffects();
     }
 
     private int GetTotalDuration(TimeDatas datas, int totalDay)
@@ -159,12 +154,12 @@ public class WeatherManager : Singleton<WeatherManager>
             float remainingDuration = _totalWeatherDuration - _targetWeatherDuration;
             float weatherDuration = Mathf.Min(remainingDuration, Random.Range(MinWeatherDuration, MaxWeatherDuration));
             _targetWeatherDuration += weatherDuration;
-            WeatherDurations.Add(weatherDuration);
+            _weatherDurations.Add(weatherDuration);
             yield return null;
         }
         
         GenerateWeatherForecast();
-        weatherChangeDuration = WeatherDurations[0];
+        weatherChangeDuration = _weatherDurations[0];
         UpdateTodayAndTomorrowWeather();
         _weatherLoaded = true;
     }
@@ -177,11 +172,11 @@ public class WeatherManager : Singleton<WeatherManager>
         float totalWeight = _weatherPattern.StormyWeight + _weatherPattern.SunnyWeight + _weatherPattern.RainyWeight + _weatherPattern.WindyWeight + _weatherPattern.CalmyWeight;
 
         // Calculate the number of days for each weather type based on their weights
-        int stormsCount = (int)((_weatherPattern.StormyWeight / totalWeight) * WeatherDurations.Count);
-        int sunnysCount = (int)((_weatherPattern.SunnyWeight / totalWeight) * WeatherDurations.Count);
-        int rainysCount = (int)((_weatherPattern.RainyWeight / totalWeight) * WeatherDurations.Count);
-        int windysCount = (int)((_weatherPattern.WindyWeight / totalWeight) * WeatherDurations.Count);
-        int calmysCount = (int)((_weatherPattern.CalmyWeight / totalWeight) * WeatherDurations.Count);
+        int stormsCount = (int)((_weatherPattern.StormyWeight / totalWeight) * _weatherDurations.Count);
+        int sunnysCount = (int)((_weatherPattern.SunnyWeight / totalWeight) * _weatherDurations.Count);
+        int rainysCount = (int)((_weatherPattern.RainyWeight / totalWeight) * _weatherDurations.Count);
+        int windysCount = (int)((_weatherPattern.WindyWeight / totalWeight) * _weatherDurations.Count);
+        int calmysCount = (int)((_weatherPattern.CalmyWeight / totalWeight) * _weatherDurations.Count);
 
         // Ensure the number of days for each weather type is within the min/max range
         stormsCount = Mathf.Clamp(stormsCount, _weatherPattern.MinStormWeathers, _weatherPattern.MaxStormWeathers);
@@ -193,9 +188,9 @@ public class WeatherManager : Singleton<WeatherManager>
         int totalWeathers = stormsCount + sunnysCount + rainysCount + windysCount + calmysCount;
 
         //securité
-        if(totalWeathers < WeatherDurations.Count)
+        if(totalWeathers < _weatherDurations.Count)
         {
-            int diff = WeatherDurations.Count - totalWeathers;
+            int diff = _weatherDurations.Count - totalWeathers;
             calmysCount += diff;
         }
             
@@ -211,11 +206,11 @@ public class WeatherManager : Singleton<WeatherManager>
         weatherTypes.Shuffle();
 
         // Générer les paramètres météo pour chaque jour en fonction du type de météo choisi
-        for (int i = 0; i < WeatherDurations.Count; i++)
+        for (int i = 0; i < _weatherDurations.Count; i++)
         {
             DayWeather dayWeather = new DayWeather();
             dayWeather.weatherType = weatherTypes[i];
-            dayWeather.weatherDuration = WeatherDurations[i];
+            dayWeather.weatherDuration = _weatherDurations[i];
 
             // Générer des valeurs basées sur le type de météo
             switch (dayWeather.weatherType)
@@ -355,27 +350,31 @@ public class WeatherManager : Singleton<WeatherManager>
                 Debug.Log("Tempête en cours !");
                 // Ajouter des effets de tempête, sons, etc.
                 _onWeatherChanged?.Raise(WeatherType.Storm);
+                _onWeatherOverrideStart?.Raise(WeatherType.Storm);
                 break;
             case WeatherType.Windy:
                 Debug.Log("Journée venteuse.");
                 // Ajouter des effets de vent fort
                 _onWeatherChanged?.Raise(WeatherType.Windy);
-
+                _onWeatherOverrideStart?.Raise(WeatherType.Windy);
                 break;
             case WeatherType.Rainy:
                 Debug.Log("Il pleut.");
                 _onWeatherChanged?.Raise(WeatherType.Rainy);
+                _onWeatherOverrideStart?.Raise(WeatherType.Rainy);
                 // Ajouter des effets de pluie
                 break;
             case WeatherType.Sunny:
                 Debug.Log("Journée ensoleillée.");
                 // Ajouter des effets de beau temps
                 _onWeatherChanged?.Raise(WeatherType.Sunny);
+                _onWeatherOverrideStart?.Raise(WeatherType.Sunny);
                 break;
             case WeatherType.Calm:
                 Debug.Log("Eau calme.");
                 // Ajouter des effets d'eau calme
                 _onWeatherChanged?.Raise(WeatherType.Calm);
+                _onWeatherOverrideStart?.Raise(WeatherType.Calm);
                 break;
         }
     }
