@@ -13,6 +13,18 @@ public enum WeatherType
     Sunny   // Soleil
 }
 
+public enum WindDirection
+{
+    North,
+    Est,
+    South,
+    West,
+    NorthEast,
+    NorthWest,
+    SouthEast,
+    SouthWest
+}
+
 [System.Serializable]
 public struct DayWeather
 {
