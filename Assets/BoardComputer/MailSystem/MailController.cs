@@ -8,14 +8,43 @@ public class MailController : MonoBehaviour, IPointerClickHandler, IPointerEnter
     public TextMeshProUGUI ObjectDescriptionText;
     public TextMeshProUGUI ArrivalDateText;
 
+    [SerializeField] private CustomEvent_Mail _onMailSelectedChanged;
+
     public MPUIKIT.MPImageBasic background_1;
     public MPUIKIT.MPImageBasic background_2;
 
+    private bool _isSelected;
+
+    [SerializeField] private Color _selectedColor;
+
     public Mail MailDatas;
+
+    private void Awake()
+    {
+        _onMailSelectedChanged.handle += _onMailSelectedChanged_handle;
+    }
+
+    private void OnDestroy()
+    {
+        _onMailSelectedChanged.handle -= _onMailSelectedChanged_handle;
+    }
+
+    private void _onMailSelectedChanged_handle(Mail obj)
+    {
+        if (obj.ExpeditorName != this.MailDatas.ExpeditorName || !_isSelected) return;
+
+        background_1.color = Color.white;
+        background_2.color = Color.white;
+        _isSelected = false;
+    }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("test");
+        if (_isSelected) return;
+        _onMailSelectedChanged?.Raise(MailDatas);
+        _isSelected = true;
+        background_1.color = _selectedColor;
+        background_2.color = _selectedColor;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -35,11 +64,13 @@ public class MailController : MonoBehaviour, IPointerClickHandler, IPointerEnter
     public void SetMail(Mail mail)
     {
         MailDatas = mail;
+        UpdateTextsFromMail(MailDatas);
     }
 
     public void SetMail(string expeditorName, string mailObject, string arrivalTime, string mailContent)
     {
         MailDatas = new Mail(expeditorName, mailObject, arrivalTime, mailContent);
+        UpdateTextsFromMail(MailDatas);
     }
 
 

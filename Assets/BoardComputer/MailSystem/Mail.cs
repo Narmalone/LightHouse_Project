@@ -1,5 +1,5 @@
 [System.Serializable]
-public struct Mail
+public class Mail
 {
     public string ExpeditorName;
     public string EmailObject;

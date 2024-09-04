@@ -6,15 +6,31 @@ public class Messagerie : MonoBehaviour
 {
     [SerializeField] private MailController _mailPrefab;
     [SerializeField] private ScrollWindowController _mailScrollWindow;
+    [SerializeField] private CustomEvent_Mail _onMailSelectedChanged;
     public List<MailController> Controllers;
 
     public Mail CurrentOpenedMail;
+
+    private void Awake()
+    {
+        _onMailSelectedChanged.handle += _onMailSelectedChanged_handle;
+    }
+
+    private void OnDestroy()
+    {
+        _onMailSelectedChanged.handle -= _onMailSelectedChanged_handle;
+    }
+
+    private void _onMailSelectedChanged_handle(Mail obj)
+    {
+        CurrentOpenedMail = obj;
+    }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.L))
         {
-            GenerateMail("Coucou", "Salutation_" + Random.Range(0, 300), $"J-{Random.Range(0, 31)}: h{Random.Range(0, 23)}", $"Je m'appelle kaka {Random.Range(0, 2000)}");
+            GenerateMail("Coucou", "Salutation_" + Random.Range(0, 300), $"J{Random.Range(0, 31)}-{Random.Range(0, 23)}h{Random.Range(1, 60)}", $"Je m'appelle kaka {Random.Range(0, 2000)}");
         }
     }
 
