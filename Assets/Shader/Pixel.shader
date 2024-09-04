@@ -42,21 +42,27 @@ Shader "Hidden/Shader/Pixel"
 
     // List of properties to control your post process effect
     float _Intensity;
+
+    float _PixelResolutionX = 300;
+    float _PixelResolutionY = 170;
+
     TEXTURE2D_X(_MainTex);
 
     float4 CustomPostProcess(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-        uint2 positionSS = input.texcoord * _ScreenSize.xy;
-        float3 sourceColor = LOAD_TEXTURE2D_X(_MainTex, positionSS).xyz;
 
-        float3 blackAndWhite = Luminance(sourceColor).xxx;
+        float2 uv = input.positionCS.xy;
 
-        float dist = length(input.texcoord - float2(0.34,0.5));
-        float mult = smoothstep(0.08, 0.10, dist);
+        float2 pixelSize = float2(_Intensity * _ScreenSize.x, _Intensity * _ScreenSize.y);
 
-        float3 outColor = sourceColor * (1 - mult) + blackAndWhite * mult;
-        return float4(float3(0,0,0), 1);
+        uv = floor(uv / pixelSize) * pixelSize ;
+
+        if(_Intensity < 0.00012) uv = input.positionCS.xy;
+
+        float3 sourceColor = LOAD_TEXTURE2D_X(_MainTex, uv).xyz;
+
+        return float4(sourceColor, 1);
     }
 
     ENDHLSL
