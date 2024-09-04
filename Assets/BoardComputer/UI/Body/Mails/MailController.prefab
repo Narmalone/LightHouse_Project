@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 8297791517703501850}
   - component: {fileID: 367468742484949349}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: ArrivalDateText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
+  m_FillMethod: 1
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 2235402855681083153}
   - component: {fileID: 2887241877525991680}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: ObjectDescription
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -783,6 +783,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3679567817271815496}
+  - component: {fileID: 8424118843278147776}
   m_Layer: 0
   m_Name: MailController
   m_TagString: Untagged
@@ -811,6 +812,28 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0.17608, y: 0.01981}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8424118843278147776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7428108479298890774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfa465f6ca04e75488429ebd81cd6ed8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ExpeditorNameText: {fileID: 6995672210307053229}
+  ObjectDescriptionText: {fileID: 2887241877525991680}
+  ArrivalDateText: {fileID: 367468742484949349}
+  background_1: {fileID: 2052694417039338574}
+  background_2: {fileID: 7968175191762596292}
+  MailDatas:
+    ExpeditorName: 
+    EmailObject: 
+    ArrivalDate: 
+    EmailContent: 
 --- !u!1 &7484691745760385582
 GameObject:
   m_ObjectHideFlags: 0

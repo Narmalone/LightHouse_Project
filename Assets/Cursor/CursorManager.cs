@@ -10,6 +10,9 @@ public class CursorManager : Singleton<CursorManager>
     [SerializeField] private CustomEvent _onComputerLeave;
     [SerializeField] private CustomEvent _onStorageLeave;
 
+    [SerializeField] private Texture2D _cursorNavigationComputer;
+    [SerializeField] private Texture2D _cursorClickableComputer;
+
     protected override void Awake()
     {
         base.Awake();
@@ -46,4 +49,27 @@ public class CursorManager : Singleton<CursorManager>
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
+
+    public void SetCursor(CursorType type)
+    {
+        switch (type)
+        {
+            case CursorType.None:
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                break;
+            case CursorType.ComputerDefault:
+                Cursor.SetCursor(_cursorNavigationComputer, Vector2.zero, CursorMode.Auto);  
+                break;
+            case CursorType.ComputerClick:
+                Cursor.SetCursor(_cursorClickableComputer, Vector2.zero, CursorMode.Auto);
+                break;
+        }
+    }
+}
+
+public enum CursorType
+{
+    None,
+    ComputerDefault,
+    ComputerClick
 }
