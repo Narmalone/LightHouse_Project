@@ -6,6 +6,7 @@ public class UiComputerController : MonoBehaviour
     [SerializeField] private CanvasGroup _mainCanvasGroup;
     [SerializeField] private TopBarController _topBarController;
 
+    [SerializeField] private Messagerie messagerieWindow;
     [SerializeField] private ShopContent shopWindow;
     [SerializeField] private MeteoContent meteoWindow;
     [SerializeField] private QuestContent questWindow;
