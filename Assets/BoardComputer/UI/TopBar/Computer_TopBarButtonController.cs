@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Computer_TopBarButtonController : MonoBehaviour
+public class Computer_TopBarButtonController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Button btn;
     [SerializeField] private RectTransform thisRect;
@@ -50,5 +50,15 @@ public class Computer_TopBarButtonController : MonoBehaviour
         btn.targetGraphic.color = Selected;
         thisRect.sizeDelta = new Vector2(thisRect.sizeDelta.x, rectParent.rect.height);
         IsSelected = true;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        CursorManager.Instance.SetCursor(CursorType.ComputerClick);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        CursorManager.Instance.SetCursor(CursorType.ComputerDefault);
     }
 }

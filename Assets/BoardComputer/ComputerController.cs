@@ -38,6 +38,8 @@ public class ComputerController : ElectricItem
     [Header("--- EVENTS ---")]
     [Header("RAISE")]
     [SerializeField] private CustomEvent _onComputerOpen;
+    [SerializeField] private CustomEvent _inventoryHide;
+    [SerializeField] private CustomEvent _inventoryShow;
     [SerializeField] private CustomEvent _onComputerLeft;
     [SerializeField] private CustomEvent _crosshairShow;
     [SerializeField] private CustomEvent _crosshairHide;
@@ -198,6 +200,7 @@ public class ComputerController : ElectricItem
         _itemCollider.enabled = false;
         _uiComputerController.Show();
 
+        _inventoryHide?.Raise();
         _crosshairHide?.Raise();
         _lockPlayerMovement?.Raise();
         _lockCamera?.Raise();
@@ -209,7 +212,7 @@ public class ComputerController : ElectricItem
     {
         _itemCollider.enabled = true;
         _uiComputerController.Hide();
-
+        _inventoryShow?.Raise();
         _crosshairShow?.Raise();
         _unlockPlayerMovement?.Raise();
         _unlockCamera?.Raise();

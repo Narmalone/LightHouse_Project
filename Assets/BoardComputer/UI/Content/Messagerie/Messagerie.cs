@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Messagerie : MonoBehaviour
+public class Messagerie : ContentWindow
 {
     [SerializeField] private MailController _mailPrefab;
     [SerializeField] private ScrollWindowController _mailScrollWindow;
+    [SerializeField] private DialogWindowController _dialogWindow;
     [SerializeField] private CustomEvent_Mail _onMailSelectedChanged;
     public List<MailController> Controllers;
 

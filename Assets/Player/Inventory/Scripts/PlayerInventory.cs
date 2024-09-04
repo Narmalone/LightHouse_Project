@@ -17,6 +17,10 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] public GameObject previewObjectParent; // Reference to the 3D preview object
     [SerializeField] public List<InventorySlot> listInventorySlots = new List<InventorySlot>();
 
+    [SerializeField] private CanvasGroup _inventoryGroup;
+    [SerializeField] private CustomEvent _inventoryShow; 
+    [SerializeField] private CustomEvent _inventoryHide; 
+
     [SerializeField]
     private List<ItemBase> listPreviewObject = new List<ItemBase> { null, null, null, null};
 
@@ -57,6 +61,23 @@ public class PlayerInventory : MonoBehaviour
         _eventDropItem.handle += OnDropItem;
 
         _fromStorageToInventory.handle += _fromStorageToInventory_handle;
+
+        _inventoryShow.handle += _inventoryShow_handle;
+        _inventoryHide.handle += _inventoryHide_handle;
+    }
+
+    private void _inventoryHide_handle()
+    {
+        _inventoryGroup.alpha = 0f;
+        _inventoryGroup.interactable = false;
+        _inventoryGroup.blocksRaycasts = false;
+    }
+
+    private void _inventoryShow_handle()
+    {
+        _inventoryGroup.alpha = 1f;
+        _inventoryGroup.interactable = true;
+        _inventoryGroup.blocksRaycasts = true;
     }
 
     private void Start()
@@ -78,6 +99,9 @@ public class PlayerInventory : MonoBehaviour
         _fromStorageToInventory.handle -= _fromStorageToInventory_handle;
 
         _manager._eventUpdate -= OnUpdate;
+
+        _inventoryShow.handle -= _inventoryShow_handle;
+        _inventoryHide.handle -= _inventoryHide_handle;
     }
 
     void OnUpdate()
