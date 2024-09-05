@@ -35,7 +35,7 @@ public class PlayerInventory : MonoBehaviour
     }
 
     private int selectedSlot;
-    private PIA playerInputAction;
+    private PIA _inputs;
     private float _startDropTime;
     private float _maxStrengthThrowItem;
     private float _timeToAchieveMaxStrength;
@@ -51,11 +51,17 @@ public class PlayerInventory : MonoBehaviour
     {
         listPreviewObject = new List<ItemBase> { null, null, null, null };
 
-        playerInputAction = new PIA();
-        playerInputAction.Enable();
-        playerInputAction.Game.UseInInventory.performed += OnUseSelectedItem;
-        playerInputAction.Game.DropInventoryItem.performed += OnDropItem;
-        playerInputAction.Game.DropInventoryItem.canceled += OnDropItem;
+        _inputs = new PIA();
+        _inputs.Enable();
+        _inputs.Game.UseInInventory.performed += OnUseSelectedItem;
+        _inputs.Game.DropInventoryItem.performed += OnDropItem;
+        _inputs.Game.DropInventoryItem.canceled += OnDropItem;
+
+        _inputs.Inventory.Slot1.performed += SelectSlot0;
+        _inputs.Inventory.Slot2.performed += SelectSlot1;
+        _inputs.Inventory.Slot3.performed += SelectSlot2;
+        _inputs.Inventory.Slot4.performed += SelectSlot3;
+        _inputs.Inventory.Scroll.performed += ScrollWheel;
 
         TakeItemAction += TakeItem;
         _eventDropItem.handle += OnDropItem;
@@ -64,6 +70,35 @@ public class PlayerInventory : MonoBehaviour
 
         _inventoryShow.handle += _inventoryShow_handle;
         _inventoryHide.handle += _inventoryHide_handle;
+    }
+    private void Start()
+    {
+        SelectSlot(0);
+
+        _manager._eventUpdate -= OnUpdate;
+    }
+
+    private void OnDestroy()
+    {
+        TakeItemAction -= TakeItem;
+        _inputs.Game.UseInInventory.performed -= OnUseSelectedItem;
+        _inputs.Game.DropInventoryItem.performed -= OnDropItem;
+        _inputs.Game.DropInventoryItem.canceled -= OnDropItem;
+
+        _inputs.Inventory.Slot1.performed -= SelectSlot0;
+        _inputs.Inventory.Slot2.performed -= SelectSlot1;
+        _inputs.Inventory.Slot3.performed -= SelectSlot2;
+        _inputs.Inventory.Slot4.performed -= SelectSlot3;
+        _inputs.Inventory.Scroll.performed -= ScrollWheel;
+
+        _eventDropItem.handle -= OnDropItem;
+
+        _fromStorageToInventory.handle -= _fromStorageToInventory_handle;
+
+        _manager._eventUpdate -= OnUpdate;
+
+        _inventoryShow.handle -= _inventoryShow_handle;
+        _inventoryHide.handle -= _inventoryHide_handle;
     }
 
     private void _inventoryHide_handle()
@@ -80,66 +115,29 @@ public class PlayerInventory : MonoBehaviour
         _inventoryGroup.blocksRaycasts = true;
     }
 
-    private void Start()
+    void OnUpdate() { }
+
+    private void ScrollWheel(InputAction.CallbackContext context)
     {
-        SelectSlot(0);
-
-        _manager._eventUpdate -= OnUpdate;
-    }
-
-    private void OnDestroy()
-    {
-        TakeItemAction -= TakeItem;
-        playerInputAction.Game.UseInInventory.performed -= OnUseSelectedItem;
-        playerInputAction.Game.DropInventoryItem.performed -= OnDropItem;
-        playerInputAction.Game.DropInventoryItem.canceled -= OnDropItem;
-
-        _eventDropItem.handle -= OnDropItem;
-
-        _fromStorageToInventory.handle -= _fromStorageToInventory_handle;
-
-        _manager._eventUpdate -= OnUpdate;
-
-        _inventoryShow.handle -= _inventoryShow_handle;
-        _inventoryHide.handle -= _inventoryHide_handle;
-    }
-
-    void OnUpdate()
-    {
-        // Check for keyboard input to select a slot
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (context.ReadValue<Vector2>() != Vector2.zero)
         {
-            SelectSlot(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SelectSlot(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            SelectSlot(2);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            SelectSlot(3);
-        }
-
-        // Check for mouse wheel input to select a slot
-        if (Input.GetAxis("Mouse ScrollWheel") != 0)
-        {
-            int scrollDirection = Input.GetAxis("Mouse ScrollWheel") > 0 ? -1 : 1;
+            int scrollDirection = context.ReadValue<Vector2>().y < 0? -1 : 1;
             SelectSlot(selectedSlot + scrollDirection);
         }
     }
+    private void SelectSlot0(InputAction.CallbackContext context) => SelectSlot(0);
+    private void SelectSlot1(InputAction.CallbackContext context) => SelectSlot(1);
+    private void SelectSlot2(InputAction.CallbackContext context) => SelectSlot(2);
+    private void SelectSlot3(InputAction.CallbackContext context) => SelectSlot(3);
 
     public void EnableUseInInventory()
     {
-        playerInputAction.Game.UseInInventory.performed += OnUseSelectedItem;
+        _inputs.Game.UseInInventory.performed += OnUseSelectedItem;
     }
 
     public void DisableUseInInventory()
     {
-        playerInputAction.Game.UseInInventory.performed -= OnUseSelectedItem;
+        _inputs.Game.UseInInventory.performed -= OnUseSelectedItem;
     }
 
     #region OTHER FUNCTIONS
