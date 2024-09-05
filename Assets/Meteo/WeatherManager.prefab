@@ -56,14 +56,22 @@ MonoBehaviour:
   _onWeatherChanged: {fileID: 11400000, guid: 5c9110a41468ab343ae94cbeb856be98, type: 2}
   _onWeatherOverrideStart: {fileID: 11400000, guid: 89e4e4e5f0bf144409af771a6917713f,
     type: 2}
+  _weatherPresets:
+  - {fileID: 11400000, guid: 5cb994b67331b27438873b26abd16890, type: 2}
+  - {fileID: 11400000, guid: abd5022b05415ba4f897dccf87418e75, type: 2}
+  - {fileID: 11400000, guid: b17ee9286262eb544bb39c2a1381d0c6, type: 2}
+  - {fileID: 11400000, guid: 1f1bce9d822414749a6d9caca5455e2e, type: 2}
+  - {fileID: 11400000, guid: 0116358840e48a14e9dedce0e225853b, type: 2}
   _weatherPattern: {fileID: 11400000, guid: 581524d9b21e3be4692993462bbb5336, type: 2}
   difficulty: 1
-  FullRandomWeather: 1
+  FullRandomWeather: 0
   GenerateWeatherByWeather: 0
   MinWeatherDuration: 360
   MaxWeatherDuration: 840
   MinWindSpeed: 5
   MaxWindSpeed: 150
+  MinAtmosphericPressure: 950
+  MaxAtmosphericPressure: 1100
   weatherForecast: []
   _currentWeatherType: 0
   indexWeather: 0
@@ -71,6 +79,8 @@ MonoBehaviour:
     humidity: 0
     windSpeed: 0
     airTemperature: 0
+    windOrientationValue: 0
+    windDirection: 0
     waterTemperature: 0
     atmosphericPressure: 0
     weatherDuration: 0
@@ -79,12 +89,15 @@ MonoBehaviour:
     humidity: 0
     windSpeed: 0
     airTemperature: 0
+    windOrientationValue: 0
+    windDirection: 0
     waterTemperature: 0
     atmosphericPressure: 0
     weatherDuration: 0
     weatherType: 0
   Humidity: 0
   WindSpeed: 0
+  WindOrientationValue: 0
   AirTemperature: 0
   WaterTemperature: 0
   AtmosphericPressure: 0
