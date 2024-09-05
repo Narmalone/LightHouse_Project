@@ -63,6 +63,10 @@ public class WeatherManager : Singleton<WeatherManager>
     public float MinWeatherDuration = 25f;
     public float MaxWeatherDuration = 150f;
 
+    [Header("RANDOM VALUES")]
+    public float MinAtmosphericPressure = 950f;
+    public float MaxAtmosphericPressure = 1100f;
+
     [Header("Wind")]
     public float MinWindSpeed = 5f;
     public float MaxWindSpeed = 100f;
