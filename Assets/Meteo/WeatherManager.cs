@@ -79,7 +79,7 @@ public class WeatherManager : Singleton<WeatherManager>
     [Header("DEBUGS INFOS --- ONLY")]
     [SerializeField] public List<DayWeather> weatherForecast;
     [SerializeField] private WeatherType _currentWeatherType;
-    [SerializeField] private int indexWeather = 0;
+    public int indexWeather = 0;
 
     public DayWeather currentWeather;
     public DayWeather nextWeather;

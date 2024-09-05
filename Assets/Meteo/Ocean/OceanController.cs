@@ -77,7 +77,7 @@ public class OceanController : MonoBehaviour
         _water.refractionColor = Color.Lerp(_water.refractionColor, realisticWaterColor, timeFactor);
 
         // Scattering (diffusion de la lumière) ajusté selon les conditions
-        AdjustScatteringSettings(windSpeed, airTemperature, humidity, timeFactor);
+        //AdjustScatteringSettings(windSpeed, airTemperature, humidity, timeFactor);
 
         // Ajustements supplémentaires pour des effets comme les caustiques et la réfraction
         AdjustAdditionalWaterParameters(timeFactor);
