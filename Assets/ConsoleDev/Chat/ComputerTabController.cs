@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TabController : MonoBehaviour
+public class ComputerTabController : MonoBehaviour
 {
     public int maxMessagesOnTab = 30;
     public Button tabBtn;
