@@ -13,12 +13,26 @@ public enum WeatherType
     Sunny   // Soleil
 }
 
+public enum WindDirection
+{
+    North,
+    East,
+    South,
+    West,
+    NorthEast,
+    NorthWest,
+    SouthEast,
+    SouthWest
+}
+
 [System.Serializable]
 public struct DayWeather
 {
     public float humidity;
     public float windSpeed;
     public float airTemperature;
+    public float windOrientationValue;
+    public WindDirection windDirection;
     public float waterTemperature;
     public float atmosphericPressure;
     public float weatherDuration;
@@ -39,6 +53,9 @@ public class WeatherManager : Singleton<WeatherManager>
     [SerializeField] private CustomEvent_WeatherType _onWeatherOverrideStart;
 
     [Header("WEATHER SETTINGS")]
+    [SerializeField] private List<WeatherPreset> _weatherPresets;
+
+    [Header("WEATHER SETTINGS")]
     [SerializeField] private WeatherPattern _weatherPattern;
     // Variable de difficulté
     [Range(0f, 2f)]
@@ -55,6 +72,10 @@ public class WeatherManager : Singleton<WeatherManager>
     public float MinWindSpeed = 5f;
     public float MaxWindSpeed = 100f;
 
+    [Header("Wind")]
+    public float MinAtmosphericPressure = 950f;
+    public float MaxAtmosphericPressure = 1100f;
+
     [Header("DEBUGS INFOS --- ONLY")]
     [SerializeField] private List<DayWeather> weatherForecast;
     [SerializeField] private WeatherType _currentWeatherType;
@@ -65,6 +86,7 @@ public class WeatherManager : Singleton<WeatherManager>
 
     public float Humidity;
     public float WindSpeed;
+    public float WindOrientationValue;
     public float AirTemperature;
     public float WaterTemperature;
     public float AtmosphericPressure;
@@ -168,32 +190,14 @@ public class WeatherManager : Singleton<WeatherManager>
     {
         weatherForecast = new List<DayWeather>();
 
-        // Calculate the total weight of all weather types
         float totalWeight = _weatherPattern.StormyWeight + _weatherPattern.SunnyWeight + _weatherPattern.RainyWeight + _weatherPattern.WindyWeight + _weatherPattern.CalmyWeight;
 
-        // Calculate the number of days for each weather type based on their weights
-        int stormsCount = (int)((_weatherPattern.StormyWeight / totalWeight) * _weatherDurations.Count);
-        int sunnysCount = (int)((_weatherPattern.SunnyWeight / totalWeight) * _weatherDurations.Count);
-        int rainysCount = (int)((_weatherPattern.RainyWeight / totalWeight) * _weatherDurations.Count);
-        int windysCount = (int)((_weatherPattern.WindyWeight / totalWeight) * _weatherDurations.Count);
-        int calmysCount = (int)((_weatherPattern.CalmyWeight / totalWeight) * _weatherDurations.Count);
+        int stormsCount = Mathf.Clamp((int)((_weatherPattern.StormyWeight / totalWeight) * _weatherDurations.Count), _weatherPattern.MinStormWeathers, _weatherPattern.MaxStormWeathers);
+        int sunnysCount = Mathf.Clamp((int)((_weatherPattern.SunnyWeight / totalWeight) * _weatherDurations.Count), _weatherPattern.MinSunnyWeathers, _weatherPattern.MaxSunnyWeathers);
+        int rainysCount = Mathf.Clamp((int)((_weatherPattern.RainyWeight / totalWeight) * _weatherDurations.Count), _weatherPattern.MinRainyWeathers, _weatherPattern.MaxRainyWeathers);
+        int windysCount = Mathf.Clamp((int)((_weatherPattern.WindyWeight / totalWeight) * _weatherDurations.Count), _weatherPattern.MinWindyWeathers, _weatherPattern.MaxWindyWeathers);
+        int calmysCount = Mathf.Clamp((int)((_weatherPattern.CalmyWeight / totalWeight) * _weatherDurations.Count), _weatherPattern.MinCalmyWeathers, _weatherPattern.MaxCalmyWeathers);
 
-        // Ensure the number of days for each weather type is within the min/max range
-        stormsCount = Mathf.Clamp(stormsCount, _weatherPattern.MinStormWeathers, _weatherPattern.MaxStormWeathers);
-        sunnysCount = Mathf.Clamp(sunnysCount, _weatherPattern.MinSunnyWeathers, _weatherPattern.MaxSunnyWeathers);
-        rainysCount = Mathf.Clamp(rainysCount, _weatherPattern.MinRainyWeathers, _weatherPattern.MaxRainyWeathers);
-        windysCount = Mathf.Clamp(windysCount, _weatherPattern.MinWindyWeathers, _weatherPattern.MaxWindyWeathers);
-        calmysCount = Mathf.Clamp(calmysCount, _weatherPattern.MinCalmyWeathers, _weatherPattern.MaxCalmyWeathers);
-
-        int totalWeathers = stormsCount + sunnysCount + rainysCount + windysCount + calmysCount;
-
-        //securité
-        if(totalWeathers < _weatherDurations.Count)
-        {
-            int diff = _weatherDurations.Count - totalWeathers;
-            calmysCount += diff;
-        }
-            
         // Liste pour les types de météo en fonction des jours calculés
         List<WeatherType> weatherTypes = new List<WeatherType>();
 
@@ -203,52 +207,43 @@ public class WeatherManager : Singleton<WeatherManager>
         AddWeatherType(weatherTypes, WeatherType.Windy, windysCount);
         AddWeatherType(weatherTypes, WeatherType.Calm, calmysCount);
 
+        // Vérification : s'il manque des types de météo pour correspondre au nombre de jours
+        int totalWeathers = weatherTypes.Count;
+        if (totalWeathers < _weatherDurations.Count)
+        {
+            int diff = _weatherDurations.Count - totalWeathers;
+            // Ajoute des types de météo supplémentaires (par exemple, "Calm") pour combler l'écart
+            AddWeatherType(weatherTypes, WeatherType.Calm, diff);
+        }
+
+        // Mélange aléatoire des types de météo
         weatherTypes.Shuffle();
 
-        // Générer les paramètres météo pour chaque jour en fonction du type de météo choisi
+        // Générer les paramètres météo pour chaque jour
         for (int i = 0; i < _weatherDurations.Count; i++)
         {
             DayWeather dayWeather = new DayWeather();
             dayWeather.weatherType = weatherTypes[i];
             dayWeather.weatherDuration = _weatherDurations[i];
 
-            // Générer des valeurs basées sur le type de météo
-            switch (dayWeather.weatherType)
-            {
-                case WeatherType.Storm:
-                    dayWeather.windSpeed = Random.Range(80f, MaxWindSpeed);
-                    dayWeather.humidity = Random.Range(70f, 100f);
-                    dayWeather.airTemperature = Random.Range(10f, 25f);
-                    dayWeather.atmosphericPressure = Random.Range(950f, 990f);
-                    break;
-                case WeatherType.Sunny:
-                    dayWeather.windSpeed = Random.Range(MinWindSpeed, 20f);
-                    dayWeather.humidity = Random.Range(30f, 50f);
-                    dayWeather.airTemperature = Random.Range(20f, 35f);
-                    dayWeather.atmosphericPressure = Random.Range(1010f, 1050f);
-                    break;
-                case WeatherType.Rainy:
-                    dayWeather.windSpeed = Random.Range(MinWindSpeed, 50f);
-                    dayWeather.humidity = Random.Range(80f, 100f);
-                    dayWeather.airTemperature = Random.Range(10f, 20f);
-                    dayWeather.atmosphericPressure = Random.Range(970f, 1005f);
-                    break;
-                case WeatherType.Windy:
-                    dayWeather.windSpeed = Random.Range(50f, 80f);
-                    dayWeather.humidity = Random.Range(50f, 70f);
-                    dayWeather.airTemperature = Random.Range(15f, 25f);
-                    dayWeather.atmosphericPressure = Random.Range(1000f, 1020f);
-                    break;
-                case WeatherType.Calm:
-                    dayWeather.windSpeed = Random.Range(MinWindSpeed, 15f);
-                    dayWeather.humidity = Random.Range(40f, 60f);
-                    dayWeather.airTemperature = Random.Range(15f, 25f);
-                    dayWeather.atmosphericPressure = Random.Range(1005f, 1025f);
-                    break;
-            }
+            WeatherPreset preset = GetWeatherPresetForType(dayWeather.weatherType);
+
+            dayWeather.windSpeed = Random.Range(preset.minWindSpeed, preset.maxWindSpeed) * difficulty;
+            dayWeather.humidity = Random.Range(preset.minHumidity, preset.maxHumidity);
+            dayWeather.airTemperature = Random.Range(preset.minAirTemperature, preset.maxAirTemperature);
+            dayWeather.waterTemperature = Random.Range(preset.minWaterTemperature, preset.maxWaterTemperature);
+            dayWeather.atmosphericPressure = Random.Range(preset.minAtmosphericPressure, preset.maxAtmosphericPressure);
+
+            dayWeather.windOrientationValue = Random.Range(0f, 360f);
+            dayWeather.windDirection = DetermineWindDirection(dayWeather.windOrientationValue);
 
             weatherForecast.Add(dayWeather);
         }
+    }
+
+    private WeatherPreset GetWeatherPresetForType(WeatherType weatherType)
+    {
+        return _weatherPresets.Find(x => x.weatherType == weatherType);
     }
 
     private void GenerateRandomWeatherForecast()
@@ -296,6 +291,26 @@ public class WeatherManager : Singleton<WeatherManager>
         }
     }
 
+    private WindDirection DetermineWindDirection(float windOrientation)
+    {
+        if (windOrientation >= 337.5f || windOrientation < 22.5f)
+            return WindDirection.North;
+        else if (windOrientation >= 22.5f && windOrientation < 67.5f)
+            return WindDirection.NorthEast;
+        else if (windOrientation >= 67.5f && windOrientation < 112.5f)
+            return WindDirection.East;
+        else if (windOrientation >= 112.5f && windOrientation < 157.5f)
+            return WindDirection.SouthEast;
+        else if (windOrientation >= 157.5f && windOrientation < 202.5f)
+            return WindDirection.South;
+        else if (windOrientation >= 202.5f && windOrientation < 247.5f)
+            return WindDirection.SouthWest;
+        else if (windOrientation >= 247.5f && windOrientation < 292.5f)
+            return WindDirection.West;
+        else
+            return WindDirection.NorthWest;
+    }
+
 
     // Mettre à jour la météo d'aujourd'hui et de demain
     private void UpdateTodayAndTomorrowWeather()
@@ -333,6 +348,7 @@ public class WeatherManager : Singleton<WeatherManager>
 
         Humidity = Mathf.Lerp(todayWeather.humidity, tomorrowWeather.humidity, lerpFactor);
         WindSpeed = Mathf.Lerp(todayWeather.windSpeed, tomorrowWeather.windSpeed, lerpFactor);
+        WindOrientationValue = Mathf.Lerp(todayWeather.windOrientationValue, tomorrowWeather.windOrientationValue, lerpFactor);
         AirTemperature = Mathf.Lerp(todayWeather.airTemperature, tomorrowWeather.airTemperature, lerpFactor);
         WaterTemperature = Mathf.Lerp(todayWeather.waterTemperature, tomorrowWeather.waterTemperature, lerpFactor);
         AtmosphericPressure = Mathf.Lerp(todayWeather.atmosphericPressure, tomorrowWeather.atmosphericPressure, lerpFactor);

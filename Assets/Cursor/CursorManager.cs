@@ -46,8 +46,8 @@ public class CursorManager : Singleton<CursorManager>
 
     public void LockCursor()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        /*Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;*/
     }
 
     public void SetCursor(CursorType type)

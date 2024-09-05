@@ -52,14 +52,14 @@ public class ChatController : Singleton<ChatController>
     [SerializeField] private WorldStatsWindow worldWindow = null;
 
     [Header("TABS")]
-    [SerializeField] private TabController[] allTabs;
-    [SerializeField] private TabController devTab;
-    [SerializeField] private TabController gameTab;
-    [SerializeField] private TabController historicTab;
+    [SerializeField] private ComputerTabController[] allTabs;
+    [SerializeField] private ComputerTabController devTab;
+    [SerializeField] private ComputerTabController gameTab;
+    [SerializeField] private ComputerTabController historicTab;
     #endregion
 
     #region PRIVATE FIELDS
-    private TabController currentSelectedTab = null;
+    private ComputerTabController currentSelectedTab = null;
 
     private Dictionary<string, Action<string[]>> commandDictionary;
     private List<string> availableCommands;
@@ -69,7 +69,7 @@ public class ChatController : Singleton<ChatController>
 
     #endregion
 
-    public TabController[] AllTabs { get { return allTabs; } set { allTabs = value; } }
+    public ComputerTabController[] AllTabs { get { return allTabs; } set { allTabs = value; } }
     public FpsWindowController FpsWindow => fpsWindow;
     public PrefabLoader PrefabLoader => prefabLoader;
     public WorldStatsWindow WorldWindow => worldWindow;
@@ -301,9 +301,9 @@ public class ChatController : Singleton<ChatController>
         return varWithAttributes;
     }
     
-    public List<TabController> GetTargetTabs(ChatTabs where)
+    public List<ComputerTabController> GetTargetTabs(ChatTabs where)
     {
-        List<TabController> targetTabs = new List<TabController>();
+        List<ComputerTabController> targetTabs = new List<ComputerTabController>();
         switch (where)
         {
             case ChatTabs.Game:
@@ -516,8 +516,8 @@ public class ChatController : Singleton<ChatController>
     #region CHAT MESSAGES FUNCTIONS
     public void SendChatMessage(string message, ChatTabs where, string fromWho = "Console", LogLevel logLevel = LogLevel.Normal)
     {
-        List<TabController> targetTabs = GetTargetTabs(where);
-        foreach (TabController targetTab in targetTabs)
+        List<ComputerTabController> targetTabs = GetTargetTabs(where);
+        foreach (ComputerTabController targetTab in targetTabs)
         {
             if (targetTab != null)
             {
@@ -534,8 +534,8 @@ public class ChatController : Singleton<ChatController>
 
     public void SendButtonChatMessage(string message, Action act, ChatTabs where, string fromWho = "Console", LogLevel logLevel = LogLevel.Normal)
     {
-        List<TabController> targetTabs = GetTargetTabs(where);
-        foreach (TabController targetTab in targetTabs)
+        List<ComputerTabController> targetTabs = GetTargetTabs(where);
+        foreach (ComputerTabController targetTab in targetTabs)
         {
             if (targetTab != null)
             {
@@ -556,7 +556,7 @@ public class ChatController : Singleton<ChatController>
 
     public void ClearAll()
     {
-        foreach(TabController tab in allTabs)
+        foreach(ComputerTabController tab in allTabs)
         {
             tab.ClearTab();
         }
