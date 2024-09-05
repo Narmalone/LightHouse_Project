@@ -26,7 +26,7 @@ public enum WindDirection
 }
 
 [System.Serializable]
-public struct DayWeather
+public struct WeatherData
 {
     public float humidity;
     public float windSpeed;
@@ -77,12 +77,12 @@ public class WeatherManager : Singleton<WeatherManager>
     public float MaxAtmosphericPressure = 1100f;
 
     [Header("DEBUGS INFOS --- ONLY")]
-    [SerializeField] public List<DayWeather> weatherForecast;
+    [SerializeField] public List<WeatherData> weatherForecast;
     [SerializeField] private WeatherType _currentWeatherType;
     public int indexWeather = 0;
 
-    public DayWeather currentWeather;
-    public DayWeather nextWeather;
+    public WeatherData currentWeather;
+    public WeatherData nextWeather;
 
     public float Humidity;
     public float WindSpeed;
@@ -95,7 +95,7 @@ public class WeatherManager : Singleton<WeatherManager>
     private float weatherChangeDuration;
 
     [SerializeField] private bool _weatherLoaded = false;
-    private float _totalWeatherDuration = 0f;
+    public float _totalWeatherDuration = 0f;
     [SerializeField] private float _targetWeatherDuration = 0f;
     private List<float> _weatherDurations = new List<float>();
 
@@ -188,7 +188,7 @@ public class WeatherManager : Singleton<WeatherManager>
 
     private void GenerateWeatherForecast()
     {
-        weatherForecast = new List<DayWeather>();
+        weatherForecast = new List<WeatherData>();
 
         float totalWeight = _weatherPattern.StormyWeight + _weatherPattern.SunnyWeight + _weatherPattern.RainyWeight + _weatherPattern.WindyWeight + _weatherPattern.CalmyWeight;
 
@@ -222,7 +222,7 @@ public class WeatherManager : Singleton<WeatherManager>
         // Générer les paramètres météo pour chaque jour
         for (int i = 0; i < _weatherDurations.Count; i++)
         {
-            DayWeather dayWeather = new DayWeather();
+            WeatherData dayWeather = new WeatherData();
             dayWeather.weatherType = weatherTypes[i];
             dayWeather.weatherDuration = _weatherDurations[i];
 
@@ -250,7 +250,7 @@ public class WeatherManager : Singleton<WeatherManager>
     {
         for (int i = 0; i < 100; i++)
         {
-            DayWeather dayWeather = new DayWeather();
+            WeatherData dayWeather = new WeatherData();
             dayWeather.weatherDuration = Random.Range(MinWeatherDuration, MaxWeatherDuration);
             dayWeather.airTemperature = Random.Range(-15f, 40f);
             dayWeather.waterTemperature = Random.Range(0f, 30f);
@@ -267,7 +267,7 @@ public class WeatherManager : Singleton<WeatherManager>
     }
 
     // Déterminer le type de météo pour un jour donné en complexifiant la logique
-    public WeatherType DetermineWeatherType(DayWeather dayWeather)
+    public WeatherType DetermineWeatherType(WeatherData dayWeather)
     {
         if (dayWeather.windSpeed > 80f || (dayWeather.atmosphericPressure < 980f && dayWeather.windSpeed > 50f))
         {
