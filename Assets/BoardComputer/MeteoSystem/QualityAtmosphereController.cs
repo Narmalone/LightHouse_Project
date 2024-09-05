@@ -8,7 +8,7 @@ public class QualityAtmosphereController : MonoBehaviour
     [SerializeField] private Slider _humiditySlider;
     [SerializeField] private TextMeshProUGUI _humiditySelectedText;
 
-    public UiLineRenderer rend;
+    [SerializeField] private UiLineRenderer _uiLineRenderer;
 
     private void Awake()
     {
@@ -21,31 +21,31 @@ public class QualityAtmosphereController : MonoBehaviour
         float normalizedPressure = (pressure - 950f) / 150f;
 
         // Calculer la position Y en mappant la valeur normalisée à la hauteur de la grille
-        float positionY = normalizedPressure * rend.gridSize.y;
+        float positionY = normalizedPressure * _uiLineRenderer.gridSize.y;
 
         // Vérifier si le nombre de points dépasse la largeur de la grille (gridSize.x)
-        if (rend.points.Count >= rend.gridSize.x)
+        if (_uiLineRenderer.points.Count >= _uiLineRenderer.gridSize.x)
         {
             // Retirer le premier point (le plus vieux)
-            rend.points.RemoveAt(0);
+            _uiLineRenderer.points.RemoveAt(0);
 
             // Décaler tous les autres points vers la gauche sur l'axe X
-            for (int i = 0; i < rend.points.Count; i++)
+            for (int i = 0; i < _uiLineRenderer.points.Count; i++)
             {
-                Vector2 point = rend.points[i];
+                Vector2 point = _uiLineRenderer.points[i];
                 point.x -= 1;  // Déplacer chaque point d'une unité à gauche
-                rend.points[i] = point;  // Mettre à jour la liste avec la nouvelle position
+                _uiLineRenderer.points[i] = point;  // Mettre à jour la liste avec la nouvelle position
             }
         }
 
         // La position X est toujours égale au dernier index des points existants (après suppression et décalage)
-        float positionX = rend.points.Count;
+        float positionX = _uiLineRenderer.points.Count;
 
         // Ajouter le nouveau point à la liste
-        rend.points.Add(new Vector2(positionX, positionY));
+        _uiLineRenderer.points.Add(new Vector2(positionX, positionY));
 
         // Met à jour les vertices du rendu
-        rend.SetVerticesDirty();
+        _uiLineRenderer.SetVerticesDirty();
     }
 
 
