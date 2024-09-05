@@ -78,7 +78,7 @@ public class WeatherForecast : MonoBehaviour
             // Calculer les météos pour chaque jour
             dayWeathers = CalculateWeatherForDays(weatherForecast, gameSettings.DayCycleDuration.Seconds);
 
- /*           WeatherData morningWeather = GetWeatherAtTime(8f, _dayNightManager._homeTime);
+            /*WeatherData morningWeather = GetWeatherAtTime(8f, _dayNightManager._homeTime);
             Debug.Log($"Météo à 8h: Humidité = {morningWeather.humidity}%");
 
             // Obtenir la météo à 12h (midi)
@@ -87,8 +87,8 @@ public class WeatherForecast : MonoBehaviour
 
             // Obtenir la météo à 15h
             WeatherData afternoonWeather = GetWeatherAtTime(18f, _dayNightManager._homeTime);
-            Debug.Log($"Météo à 15h: Humidité = {afternoonWeather.humidity}%");
-*/
+            Debug.Log($"Météo à 15h: Humidité = {afternoonWeather.humidity}%");*/
+
             CalculateWeatherInSeconds();
             _isInitialized = true;
         }
@@ -182,9 +182,6 @@ public class WeatherForecast : MonoBehaviour
                     firstWeather.atmosphericPressure = secondWeather.atmosphericPressure;
                     firstWeather.weatherType = secondWeather.weatherType;
 
-                    Debug.Log(firstWeather.humidity);
-                    Debug.Log(secondWeather.humidity);
-
                     // Garder la durée originale
                     firstWeather.weatherClampedDuration = nextDay.weatherEvents[0].weatherClampedDuration;
                     firstWeather.weatherInitialDuration = nextDay.weatherEvents[0].weatherInitialDuration;
@@ -197,7 +194,39 @@ public class WeatherForecast : MonoBehaviour
         return days;
     }
 
-    public WeatherData GetWeatherAtTime(float gameHour, float startHour)
+    public void GetWeatherTarget(int day)
+    {
+        DayWeather dayWeather = dayWeathers.Find(x => x.dayNumber == day);
+        DayWeather target = new DayWeather();
+
+        if(dayWeathers.Count == 1)
+        {
+            //regarder le prochain jour
+            var nextDay = dayWeathers[day + 1];
+        }
+        //On a 400s donc la durée totale de une journée
+    }
+
+    private void Update()
+    {
+        Debug.Log(_dayNightManager.TimeUntil(8f));
+        //donc par exemple 400 c'est 133.3 donc toutes les 133.3s on choppe les valeurs
+        //Debug.Log(_dayNightManager.TimeTo(0f, 8f));
+
+        //en gros au start on calcule depuis home time to 8f par ex pour le matin, puis on fais décalage de 400s à chaque fois
+        //
+        Debug.Log(_dayNightManager.TimeTo(_dayNightManager._homeTime, 8f));
+    }
+
+    /*public DayWeather GetWeatherAtHour(float hour)
+    {
+
+    }*/
+
+    //sinon, vu qu'on a le temps total dans le jeu, on trouve le moyen de chopper à chaque fois le 8h du mat avec
+    //les valeurs !!!!!!!
+
+    /*public WeatherData GetWeatherAtTime(float gameHour, float startHour)
     {
         // Ajuster l'heure du jeu pour tenir compte de l'heure de début de la journée
         float adjustedHour = gameHour - startHour;
@@ -237,7 +266,7 @@ public class WeatherForecast : MonoBehaviour
 
         // Retourner la dernière météo si nous dépassons la durée totale
         return dayWeathers.Last().weatherEvents.Last();
-    }
+    }*/
 
 
 

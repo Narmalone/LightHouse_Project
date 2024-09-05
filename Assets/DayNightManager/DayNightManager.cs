@@ -272,6 +272,30 @@ public class DayNightManager : MonoBehaviour
         return timeUntil;
     }
 
+    public float TimeTo(float fromHour, float toHour)
+    {
+        // Normaliser les heures pour qu'elles soient comprises entre 0 et 24
+        fromHour = fromHour % 24;
+        toHour = toHour % 24;
+
+        // Calculer la différence en heures
+        float hourDiff = toHour - fromHour;
+
+        // Si la différence est négative, cela signifie que nous devons passer à la journée suivante
+        if (hourDiff < 0)
+        {
+            hourDiff += 24;
+        }
+
+        // Convertir la différence en heures en secondes
+        float timeTo = hourDiff * 3600;
+
+        // Prendre en compte la vitesse du cycle jour-nuit
+        timeTo /= _speedMultiplier * _initialSpeedMultiplier;
+
+        return timeTo;
+    }
+
     /*
         private float Remap(float value, float oldRangeMin, float oldRangeMax, float newRangeMin, float newRangeMax)
         {
