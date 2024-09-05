@@ -53,7 +53,7 @@ public class DayNightManager : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private Vector3 _startOrientation;
     [SerializeField] private Vector3 _sunOrientation;
-    [SerializeField, Tooltip("In Hour"), Range(0, 24)] private float _currentTime;
+    [SerializeField, Tooltip("In Hour"), Range(0, 24)] public float _currentTime;
     [SerializeField, Range(0, 100), ConsoleVariable("TimeSpeed"), ConsoleCategory("Gameplay")] public float _initialSpeedMultiplier;
     [SerializeField] public bool _isDayUpdating;
     [SerializeField] private bool _debug;
@@ -73,6 +73,30 @@ public class DayNightManager : MonoBehaviour
     {
         get { return _state; }
         set { _state = value; }
+    }
+
+    public float TimeBeforeMidday
+    {
+        get
+        {
+            if (CurrentTime < 12)
+            {
+                return 12 - CurrentTime;
+            }
+            else
+            {
+                return 12 - (CurrentTime - 12);
+            }
+        }
+    }
+
+    public float TimeBeforeMiddayInSeconds
+    {
+        get
+        {
+            float timeBeforeMidday = TimeBeforeMidday;
+            return timeBeforeMidday * 3600;
+        }
     }
 
     private float CurrentTime
@@ -217,6 +241,26 @@ public class DayNightManager : MonoBehaviour
             Debug.Log("LE NB DE JOUR MAX A ETE COMPTE");
         }
         UpdateDayDisplay();
+    }
+
+    public float TimeUntil(float targetHour)
+    {
+        float currentTime = CurrentTime;
+        float timeUntil = 0;
+
+        if (currentTime < targetHour)
+        {
+            timeUntil = (targetHour - currentTime) * 3600;
+        }
+        else
+        {
+            timeUntil = (24 - currentTime + targetHour) * 3600;
+        }
+
+        // Prendre en compte la vitesse du cycle jour-nuit
+        timeUntil /= _speedMultiplier * _initialSpeedMultiplier;
+
+        return timeUntil;
     }
 
     /*

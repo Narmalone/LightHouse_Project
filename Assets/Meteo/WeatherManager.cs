@@ -77,12 +77,12 @@ public class WeatherManager : Singleton<WeatherManager>
     public float MaxAtmosphericPressure = 1100f;
 
     [Header("DEBUGS INFOS --- ONLY")]
-    [SerializeField] private List<DayWeather> weatherForecast;
+    [SerializeField] public List<DayWeather> weatherForecast;
     [SerializeField] private WeatherType _currentWeatherType;
     [SerializeField] private int indexWeather = 0;
 
-    public DayWeather todayWeather;
-    public DayWeather tomorrowWeather;
+    public DayWeather currentWeather;
+    public DayWeather nextWeather;
 
     public float Humidity;
     public float WindSpeed;
@@ -111,8 +111,8 @@ public class WeatherManager : Singleton<WeatherManager>
         {
             GenerateRandomWeatherForecast();
             UpdateTodayAndTomorrowWeather();
-            weatherChangeDuration = todayWeather.weatherDuration;
-            _onWeatherOverrideStart?.Raise(todayWeather.weatherType);
+            weatherChangeDuration = currentWeather.weatherDuration;
+            _onWeatherOverrideStart?.Raise(currentWeather.weatherType);
             _weatherLoaded = true;
         }
         else
@@ -135,7 +135,7 @@ public class WeatherManager : Singleton<WeatherManager>
         if (elapsedTime >= weatherChangeDuration)
         {
             elapsedTime = 0f;
-            weatherChangeDuration = tomorrowWeather.weatherDuration;
+            weatherChangeDuration = nextWeather.weatherDuration;
 
             // Changer la météo
             AdvanceToNextWeather();
@@ -267,7 +267,7 @@ public class WeatherManager : Singleton<WeatherManager>
     }
 
     // Déterminer le type de météo pour un jour donné en complexifiant la logique
-    private WeatherType DetermineWeatherType(DayWeather dayWeather)
+    public WeatherType DetermineWeatherType(DayWeather dayWeather)
     {
         if (dayWeather.windSpeed > 80f || (dayWeather.atmosphericPressure < 980f && dayWeather.windSpeed > 50f))
         {
@@ -291,7 +291,7 @@ public class WeatherManager : Singleton<WeatherManager>
         }
     }
 
-    private WindDirection DetermineWindDirection(float windOrientation)
+    public WindDirection DetermineWindDirection(float windOrientation)
     {
         if (windOrientation >= 337.5f || windOrientation < 22.5f)
             return WindDirection.North;
@@ -317,11 +317,11 @@ public class WeatherManager : Singleton<WeatherManager>
     {
         if (indexWeather < weatherForecast.Count)
         {
-            todayWeather = weatherForecast[indexWeather];
+            currentWeather = weatherForecast[indexWeather];
             if (indexWeather + 1 < weatherForecast.Count)
-                tomorrowWeather = weatherForecast[indexWeather + 1];
+                nextWeather = weatherForecast[indexWeather + 1];
             else
-                tomorrowWeather = todayWeather; // Si nous sommes au dernier jour, demain sera identique à aujourd'hui
+                nextWeather = currentWeather; // Si nous sommes au dernier jour, demain sera identique à aujourd'hui
             ApplyWeatherEffects();
         }
     }
@@ -346,18 +346,18 @@ public class WeatherManager : Singleton<WeatherManager>
     {
         float lerpFactor = elapsedTime / weatherChangeDuration;
 
-        Humidity = Mathf.Lerp(todayWeather.humidity, tomorrowWeather.humidity, lerpFactor);
-        WindSpeed = Mathf.Lerp(todayWeather.windSpeed, tomorrowWeather.windSpeed, lerpFactor);
-        WindOrientationValue = Mathf.Lerp(todayWeather.windOrientationValue, tomorrowWeather.windOrientationValue, lerpFactor);
-        AirTemperature = Mathf.Lerp(todayWeather.airTemperature, tomorrowWeather.airTemperature, lerpFactor);
-        WaterTemperature = Mathf.Lerp(todayWeather.waterTemperature, tomorrowWeather.waterTemperature, lerpFactor);
-        AtmosphericPressure = Mathf.Lerp(todayWeather.atmosphericPressure, tomorrowWeather.atmosphericPressure, lerpFactor);
+        Humidity = Mathf.Lerp(currentWeather.humidity, nextWeather.humidity, lerpFactor);
+        WindSpeed = Mathf.Lerp(currentWeather.windSpeed, nextWeather.windSpeed, lerpFactor);
+        WindOrientationValue = Mathf.Lerp(currentWeather.windOrientationValue, nextWeather.windOrientationValue, lerpFactor);
+        AirTemperature = Mathf.Lerp(currentWeather.airTemperature, nextWeather.airTemperature, lerpFactor);
+        WaterTemperature = Mathf.Lerp(currentWeather.waterTemperature, nextWeather.waterTemperature, lerpFactor);
+        AtmosphericPressure = Mathf.Lerp(currentWeather.atmosphericPressure, nextWeather.atmosphericPressure, lerpFactor);
     }
 
     // Appliquer les effets de la météo en fonction du type de météo actuel
     private void ApplyWeatherEffects()
     {
-        _currentWeatherType = todayWeather.weatherType;
+        _currentWeatherType = currentWeather.weatherType;
 
         // Vous pouvez ajouter des effets visuels/sonores ici en fonction du type de météo
         switch (_currentWeatherType)
