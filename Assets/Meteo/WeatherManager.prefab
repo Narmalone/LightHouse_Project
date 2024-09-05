@@ -56,6 +56,7 @@ MonoBehaviour:
   _onWeatherChanged: {fileID: 11400000, guid: 5c9110a41468ab343ae94cbeb856be98, type: 2}
   _onWeatherOverrideStart: {fileID: 11400000, guid: 89e4e4e5f0bf144409af771a6917713f,
     type: 2}
+  _onWeatherLoaded: {fileID: 11400000, guid: b369ff2e6d621a44b94ce5ce039131f4, type: 2}
   _weatherPresets:
   - {fileID: 11400000, guid: 5cb994b67331b27438873b26abd16890, type: 2}
   - {fileID: 11400000, guid: abd5022b05415ba4f897dccf87418e75, type: 2}
@@ -75,7 +76,7 @@ MonoBehaviour:
   weatherForecast: []
   _currentWeatherType: 0
   indexWeather: 0
-  todayWeather:
+  currentWeather:
     humidity: 0
     windSpeed: 0
     airTemperature: 0
@@ -85,7 +86,7 @@ MonoBehaviour:
     atmosphericPressure: 0
     weatherDuration: 0
     weatherType: 0
-  tomorrowWeather:
+  nextWeather:
     humidity: 0
     windSpeed: 0
     airTemperature: 0
@@ -102,6 +103,7 @@ MonoBehaviour:
   WaterTemperature: 0
   AtmosphericPressure: 0
   _weatherLoaded: 0
+  _totalWeatherDuration: 0
   _targetWeatherDuration: 0
 --- !u!1 &3454110344603239311
 GameObject:

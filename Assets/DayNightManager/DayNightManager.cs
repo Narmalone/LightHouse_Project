@@ -30,6 +30,7 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] private CustomEvent _eventEvening;
     [SerializeField] private CustomEvent _eventMidNight;
     [SerializeField] private CustomEvent_Float _eventSetTime;
+    [SerializeField] private CustomEvent _onWeatherLoaded;
 
     [Header("Color")]
     [SerializeField] private Gradient _colorSunOverTime;
@@ -47,7 +48,7 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] private AnimationCurve _fogAmount;
 
     [Header("Time")]
-    [SerializeField, Range(0, 24)] private float _homeTime;
+    [SerializeField, Range(0, 24)] public float _homeTime;
     [SerializeField] private int currentDay = 0;
 
     [Header("Stats")]
@@ -150,12 +151,20 @@ public class DayNightManager : MonoBehaviour
     {
         _eventStartTimeCycle.handle += OnStartTimeCycle;
         _eventSetTime.handle += OnSetTime;
+        _onWeatherLoaded.handle += _onWeatherLoaded_handle;
+    }
+
+    private void _onWeatherLoaded_handle()
+    {
+        _isDayUpdating = true;
+        Debug.Log("on loaded");
     }
 
     private void OnDestroy()
     {
         _eventStartTimeCycle.handle -= OnStartTimeCycle;
         _eventSetTime.handle -= OnSetTime;
+        _onWeatherLoaded.handle -= _onWeatherLoaded_handle;
     }
 
     private void Start()

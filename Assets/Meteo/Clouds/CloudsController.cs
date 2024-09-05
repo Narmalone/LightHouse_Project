@@ -184,7 +184,7 @@ public class CloudsController : MonoBehaviour
         if (_weatherManager != null)
         {
             WeatherType tomorrowWeatherType = _weatherManager.nextWeather.weatherType;
-            weatherDuration = _weatherManager.currentWeather.weatherDuration;
+            weatherDuration = _weatherManager.currentWeather.weatherInitialDuration;
             _targetCloudSettings = GetCloudSettingsFromWeatherType(tomorrowWeatherType);
         }
 
