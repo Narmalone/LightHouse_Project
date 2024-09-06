@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -38,6 +37,7 @@ public struct WeatherData
     public float atmosphericPressure;
     public float weatherInitialDuration;
     public float weatherClampedDuration;
+    public float startAtTime;
     public WeatherType weatherType; // Type de météo
 }
 
@@ -95,7 +95,7 @@ public class WeatherManager : Singleton<WeatherManager>
     public float WaterTemperature;
     public float AtmosphericPressure;
 
-    private float elapsedTime = 0f;
+    public float elapsedTime = 0f;
     private float weatherChangeDuration;
 
     [SerializeField] private bool _weatherLoaded = false;
@@ -126,6 +126,7 @@ public class WeatherManager : Singleton<WeatherManager>
         }
     }
 
+    public float GlobalTimer = 0f;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
@@ -135,6 +136,7 @@ public class WeatherManager : Singleton<WeatherManager>
 
         if (!_weatherLoaded) return;
         elapsedTime += Time.deltaTime;
+        GlobalTimer += Time.deltaTime;
 
         // Vérifier si le temps écoulé a dépassé la durée aléatoire
         if (elapsedTime >= weatherChangeDuration)
@@ -225,12 +227,17 @@ public class WeatherManager : Singleton<WeatherManager>
         // Mélange aléatoire des types de météo
         weatherTypes.Shuffle();
 
+        float total = 0f;
         // Générer les paramètres météo pour chaque jour
         for (int i = 0; i < _weatherDurations.Count; i++)
         {
             WeatherData dayWeather = new WeatherData();
             dayWeather.weatherType = weatherTypes[i];
             dayWeather.weatherInitialDuration = _weatherDurations[i];
+
+            dayWeather.startAtTime = total;
+
+            total += dayWeather.weatherInitialDuration;
 
             WeatherPreset preset = GetWeatherPresetForType(dayWeather.weatherType);
 
@@ -368,31 +375,31 @@ public class WeatherManager : Singleton<WeatherManager>
         switch (_currentWeatherType)
         {
             case WeatherType.Storm:
-                Debug.Log("Tempête en cours !");
+                //Debug.Log("Tempête en cours !");
                 // Ajouter des effets de tempête, sons, etc.
                 _onWeatherChanged?.Raise(WeatherType.Storm);
                 _onWeatherOverrideStart?.Raise(WeatherType.Storm);
                 break;
             case WeatherType.Windy:
-                Debug.Log("Journée venteuse.");
+                //Debug.Log("Journée venteuse.");
                 // Ajouter des effets de vent fort
                 _onWeatherChanged?.Raise(WeatherType.Windy);
                 _onWeatherOverrideStart?.Raise(WeatherType.Windy);
                 break;
             case WeatherType.Rainy:
-                Debug.Log("Il pleut.");
+                //Debug.Log("Il pleut.");
                 _onWeatherChanged?.Raise(WeatherType.Rainy);
                 _onWeatherOverrideStart?.Raise(WeatherType.Rainy);
                 // Ajouter des effets de pluie
                 break;
             case WeatherType.Sunny:
-                Debug.Log("Journée ensoleillée.");
+                //Debug.Log("Journée ensoleillée.");
                 // Ajouter des effets de beau temps
                 _onWeatherChanged?.Raise(WeatherType.Sunny);
                 _onWeatherOverrideStart?.Raise(WeatherType.Sunny);
                 break;
             case WeatherType.Calm:
-                Debug.Log("Eau calme.");
+                //Debug.Log("Eau calme.");
                 // Ajouter des effets d'eau calme
                 _onWeatherChanged?.Raise(WeatherType.Calm);
                 _onWeatherOverrideStart?.Raise(WeatherType.Calm);

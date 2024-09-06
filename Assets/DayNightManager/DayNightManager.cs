@@ -157,7 +157,6 @@ public class DayNightManager : MonoBehaviour
     private void _onWeatherLoaded_handle()
     {
         _isDayUpdating = true;
-        Debug.Log("on loaded");
     }
 
     private void OnDestroy()
