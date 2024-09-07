@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -295,6 +296,110 @@ public class DayNightManager : MonoBehaviour
         return timeTo;
     }
 
+    public string TimeUntilEvent(float seconds)
+    {
+        float timeUntil = seconds;
+
+        // Prendre en compte la vitesse du cycle jour-nuit
+        timeUntil *= _speedMultiplier * _initialSpeedMultiplier;
+
+        // Calculer les jours, heures et minutes
+        int days = (int)(timeUntil / (3600 * 24));
+        int hours = (int)((timeUntil % (3600 * 24)) / 3600);
+        int minutes = (int)((timeUntil % 3600) / 60);
+
+        // Retourner le temps restant sous forme de chaîne
+        return $"{days} jours, {hours} heures et {minutes} minutes";
+    }
+
+    [System.Serializable]
+    public struct PeriodData
+    {
+        public WeatherData data;
+        public float Hour;
+        public float Minits;
+        public float Seconds;
+        public int Day;
+    }
+
+    public List<PeriodData> periodDatas = new List<PeriodData>();
+    public void AfficherHeureMeteo(List<WeatherData> weatherDatas, float homeTime)
+    {
+        float tempsTotalJournee = 400f; // Temps total d'une journée en secondes
+
+        foreach (WeatherData weatherData in weatherDatas)
+        {
+            PeriodData newPeriodData = new PeriodData();
+            // Calculer le jour, l'heure, les minutes et les secondes où la météo sera lancée
+            int jour = (int)(weatherData.startAtTime / tempsTotalJournee);
+            float heure = (weatherData.startAtTime % tempsTotalJournee) / tempsTotalJournee * 24;
+            heure += homeTime; // Ajouter l'offset du homeTime
+            if (heure >= 24)
+            {
+                heure -= 24;
+                jour++;
+            }
+            int heures = (int)heure;
+            int minutes = (int)((heure - heures) * 60);
+            int secondes = (int)(((heure - heures) * 60 - minutes) * 60);
+
+            newPeriodData.data = weatherData;
+            newPeriodData.Hour = heure;
+            newPeriodData.Minits = minutes;
+            newPeriodData.Seconds = secondes;
+
+            periodDatas.Add(newPeriodData);
+            // Afficher le jour, l'heure, les minutes et les secondes où la météo sera lancée
+            //Debug.Log($"La météo {weatherData.weatherType} sera lancée le jour {jour + 1} à {heures:D2}:{minutes:D2}:{secondes:D2} en jeu.");
+        }
+    }
+
+    public WeatherData GetWeatherAtTime(int day, float hour)
+    {
+        // Convert the hour to seconds since the start of the day
+        float targetTime = (int)hour * 400 + (hour % 1) * (400 / 24);
+
+        Debug.Log("Target time: " + targetTime);
+
+        // Find the two PeriodData elements that enclose the target time
+        PeriodData prevPeriodData = new PeriodData();
+        PeriodData nextPeriodData = new PeriodData();
+        nextPeriodData.Day = -1;
+        foreach (PeriodData periodData in periodDatas)
+        {
+            if (periodData.Day == day)
+            {
+                float periodTime = (int)periodData.Hour * 400 + (periodData.Hour % 1) * (400 / 24) + periodData.Minits * (400 / 24 / 60) + periodData.Seconds;
+                Debug.Log("Period time: " + periodTime);
+
+                if (periodTime <= targetTime)
+                {
+                    prevPeriodData = periodData;
+                }
+                else if (periodTime > targetTime && nextPeriodData.Day == -1)
+                {
+                    nextPeriodData = periodData;
+                    break;
+                }
+            }
+        }
+
+        // Calculate the time fraction between the two PeriodData elements
+        float timeFraction = (targetTime - prevPeriodData.Hour * (400 / 24) - prevPeriodData.Minits * (400 / 24 / 60) - prevPeriodData.Seconds) /
+                       (nextPeriodData.Hour * (400 / 24) + nextPeriodData.Minits * (400 / 24 / 60) + nextPeriodData.Seconds -
+                        prevPeriodData.Hour * (400 / 24) - prevPeriodData.Minits * (400 / 24 / 60) - prevPeriodData.Seconds);
+
+        // Interpolate the weather data using the time fraction
+        WeatherData interpolatedWeatherData = new WeatherData();
+        interpolatedWeatherData.weatherType = prevPeriodData.data.weatherType;
+        interpolatedWeatherData.airTemperature = Mathf.Lerp(prevPeriodData.data.airTemperature, nextPeriodData.data.airTemperature, timeFraction);
+        interpolatedWeatherData.waterTemperature = Mathf.Lerp(prevPeriodData.data.waterTemperature, nextPeriodData.data.waterTemperature, timeFraction);
+        interpolatedWeatherData.windSpeed = Mathf.Lerp(prevPeriodData.data.windSpeed, nextPeriodData.data.windSpeed, timeFraction);
+        interpolatedWeatherData.windOrientationValue = Mathf.Lerp(prevPeriodData.data.windOrientationValue, nextPeriodData.data.windOrientationValue, timeFraction);
+        interpolatedWeatherData.humidity = Mathf.Lerp(prevPeriodData.data.humidity, nextPeriodData.data.humidity, timeFraction);
+
+        return interpolatedWeatherData;
+    }
     /*
         private float Remap(float value, float oldRangeMin, float oldRangeMax, float newRangeMin, float newRangeMax)
         {
