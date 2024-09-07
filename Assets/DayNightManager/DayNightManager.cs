@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -333,6 +334,7 @@ public class DayNightManager : MonoBehaviour
             // Calculer le jour, l'heure, les minutes et les secondes où la météo sera lancée
             int jour = (int)(weatherData.startAtTime / tempsTotalJournee);
             float heure = (weatherData.startAtTime % tempsTotalJournee) / tempsTotalJournee * 24;
+            newPeriodData.Day = jour;
             heure += homeTime; // Ajouter l'offset du homeTime
             if (heure >= 24)
             {
@@ -354,49 +356,97 @@ public class DayNightManager : MonoBehaviour
         }
     }
 
+    int GetTotalTimeInSeconds(PeriodData periodData)
+    {
+        int totalTimeInSeconds = periodData.Day * 24 * 60 * 60; // days to seconds
+        totalTimeInSeconds += (int)periodData.Hour * 60 * 60; // hours to seconds
+        totalTimeInSeconds += (int)periodData.Minits * 60; // minutes to seconds
+        totalTimeInSeconds += (int)periodData.Seconds; // seconds
+        return totalTimeInSeconds;
+    }
+
+    public List<PeriodData> identifiedDatas;
+    public PeriodData deMeteo;
+    public PeriodData versMeteo;
     public WeatherData GetWeatherAtTime(int day, float hour)
     {
         // Convert the hour to seconds since the start of the day
         float targetTime = (int)hour * 400 + (hour % 1) * (400 / 24);
 
-        Debug.Log("Target time: " + targetTime);
-
-        // Find the two PeriodData elements that enclose the target time
-        PeriodData prevPeriodData = new PeriodData();
-        PeriodData nextPeriodData = new PeriodData();
-        nextPeriodData.Day = -1;
-        foreach (PeriodData periodData in periodDatas)
+        identifiedDatas = new List<PeriodData>();
+        identifiedDatas = periodDatas.Where(x => x.Day == day).ToList();
+        List<int> indexes = new List<int>();
+        for(int i = 0; i < identifiedDatas.Count; i++)
         {
-            if (periodData.Day == day)
-            {
-                float periodTime = (int)periodData.Hour * 400 + (periodData.Hour % 1) * (400 / 24) + periodData.Minits * (400 / 24 / 60) + periodData.Seconds;
-                Debug.Log("Period time: " + periodTime);
-
-                if (periodTime <= targetTime)
-                {
-                    prevPeriodData = periodData;
-                }
-                else if (periodTime > targetTime && nextPeriodData.Day == -1)
-                {
-                    nextPeriodData = periodData;
-                    break;
-                }
-            }
+            indexes.Add(periodDatas.IndexOf(identifiedDatas[i]));
         }
 
+        //cela veut dire qu'une ancienne météo va couvrir toute la  journée !
+        //IL FAUT DONC FAIRE ATTENTION AVEC L'INDEX PAS BETEMENT METTRE LE DAY
+        //ON RECUPERE L'INDEX DE LA METEO PRECEDENTE, si on a rien on regarde si on a un jour précédant
+        //ou jour suivant
+
+        if (identifiedDatas.Count <= 0)
+        {
+            /*PeriodData previous;
+            PeriodData nextData;
+            List<int> caca = new List<int>();
+
+            previous = periodDatas.Find(x => x.Day < day);
+            nextData = periodDatas.Find(x => x.Day > day);*/
+
+            PeriodData previous = new PeriodData();
+            PeriodData nextData = new PeriodData();
+
+            // Trouver le jour précédent immédiatement
+            for (int i = day - 1; i >= 0; i--)
+            {
+                deMeteo = periodDatas.Find(x => x.Day == i);
+            }
+
+            // Trouver le jour suivant immédiatement
+            for (int i = day + 1; i < gameSettings.TotalDays; i++)
+            {
+                versMeteo = periodDatas.Find(x => x.Day == i);
+            }
+
+            //SI VERS METEO EST EMPTY C QUON EST A LA FIN ET DONC IL FAUT PRENDRE LA DERNIERE METEO OU VOIR EN FONCTION
+
+            //deMeteo = periodDatas[day - 1]; //si on met j 31 ça marchera pas car on a genre 19 / 20 élément dans la liste ça dépend
+            //de la durée totale de une météo donc enfait on veut l'index ou le jour correspond
+            //versMeteo = periodDatas[day + 1];
+
+            Debug.Log("aucune météo dans le temps donnée assignation de period datas");
+        }
+        else
+        {
+            deMeteo = periodDatas[indexes[0]];
+            if (indexes[0] + 1 < periodDatas.Count)
+            {
+                versMeteo = periodDatas[indexes[0] + 1];
+            }
+            
+        }
+
+
+        // Print the two weather periods that the target time falls between
+        //Debug.Log("Entre météo du j: " + prevPeriodData.Day + ":" + prevPeriodData.Hour + "h - " + prevPeriodData.data.weatherType);
+        //Debug.Log("Et météo du j: " + nextPeriodData.Day + ":" + nextPeriodData.Hour + "h - " + nextPeriodData.data.weatherType);
+
+
         // Calculate the time fraction between the two PeriodData elements
-        float timeFraction = (targetTime - prevPeriodData.Hour * (400 / 24) - prevPeriodData.Minits * (400 / 24 / 60) - prevPeriodData.Seconds) /
-                       (nextPeriodData.Hour * (400 / 24) + nextPeriodData.Minits * (400 / 24 / 60) + nextPeriodData.Seconds -
-                        prevPeriodData.Hour * (400 / 24) - prevPeriodData.Minits * (400 / 24 / 60) - prevPeriodData.Seconds);
+        float timeFraction = (targetTime - deMeteo.Hour * (400 / 24) - deMeteo.Minits * (400 / 24 / 60) - deMeteo.Seconds) /
+                       (versMeteo.Hour * (400 / 24) + versMeteo.Minits * (400 / 24 / 60) + versMeteo.Seconds -
+                        deMeteo.Hour * (400 / 24) - deMeteo.Minits * (400 / 24 / 60) - deMeteo.Seconds);
 
         // Interpolate the weather data using the time fraction
         WeatherData interpolatedWeatherData = new WeatherData();
-        interpolatedWeatherData.weatherType = prevPeriodData.data.weatherType;
-        interpolatedWeatherData.airTemperature = Mathf.Lerp(prevPeriodData.data.airTemperature, nextPeriodData.data.airTemperature, timeFraction);
-        interpolatedWeatherData.waterTemperature = Mathf.Lerp(prevPeriodData.data.waterTemperature, nextPeriodData.data.waterTemperature, timeFraction);
-        interpolatedWeatherData.windSpeed = Mathf.Lerp(prevPeriodData.data.windSpeed, nextPeriodData.data.windSpeed, timeFraction);
-        interpolatedWeatherData.windOrientationValue = Mathf.Lerp(prevPeriodData.data.windOrientationValue, nextPeriodData.data.windOrientationValue, timeFraction);
-        interpolatedWeatherData.humidity = Mathf.Lerp(prevPeriodData.data.humidity, nextPeriodData.data.humidity, timeFraction);
+        interpolatedWeatherData.weatherType = deMeteo.data.weatherType;
+        interpolatedWeatherData.airTemperature = Mathf.Lerp(deMeteo.data.airTemperature, versMeteo.data.airTemperature, timeFraction);
+        interpolatedWeatherData.waterTemperature = Mathf.Lerp(deMeteo.data.waterTemperature, versMeteo.data.waterTemperature, timeFraction);
+        interpolatedWeatherData.windSpeed = Mathf.Lerp(deMeteo.data.windSpeed, versMeteo.data.windSpeed, timeFraction);
+        interpolatedWeatherData.windOrientationValue = Mathf.Lerp(deMeteo.data.windOrientationValue, versMeteo.data.windOrientationValue, timeFraction);
+        interpolatedWeatherData.humidity = Mathf.Lerp(deMeteo.data.humidity, versMeteo.data.humidity, timeFraction);
 
         return interpolatedWeatherData;
     }
