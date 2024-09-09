@@ -1,24 +1,11 @@
 using UnityEngine;
-using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 
 
-public class WeatherForecast : Singleton<WeatherForecast>
+public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
 {
-    [System.Serializable]
-    public struct DayWeather
-    {
-        public int dayNumber;
-        public List<WeatherData> weatherEvents;
-
-        public DayWeather(int dayNumber)
-        {
-            this.dayNumber = dayNumber;
-            this.weatherEvents = new List<WeatherData>();
-        }
-    }
-
+    #region STRUCTS
     [System.Serializable]
     public struct PeriodData
     {
@@ -28,7 +15,9 @@ public class WeatherForecast : Singleton<WeatherForecast>
         public float Seconds;
         public int Day;
     }
+    #endregion
 
+    #region SERIALIZED FIELDS
     [SerializeField] private GameSettings gameSettings;
 
     [Header("Weather Manager")]
@@ -38,17 +27,10 @@ public class WeatherForecast : Singleton<WeatherForecast>
     [SerializeField] private CustomEvent_WeatherType _onWeatherGenerated;
     [SerializeField] private CustomEvent _eventMidNight;
 
-    [Header("UI Elements")]
-    [SerializeField] private TextMeshProUGUI morningWeatherText;
-    [SerializeField] private TextMeshProUGUI middayWeatherText;
-    [SerializeField] private TextMeshProUGUI eveningWeatherText;
-
     [Header("Forecast Settings")]
     [SerializeField] private float morningStart = 6f;
     [SerializeField] private float middayStart = 12f;
     [SerializeField] private float eveningStart = 18f;
-
-    private bool _isInitialized = false;
 
     [Header("START OFFSETS IN SECONDS FROM GAME START")]
     public float StartoffSetMorning;
@@ -67,25 +49,29 @@ public class WeatherForecast : Singleton<WeatherForecast>
     public List<WeatherData> MorningX = new();
     public List<WeatherData> MiddaysX = new();
     public List<WeatherData> EveningsX = new();
+    #endregion
+
+    #region PRIVATE FIELDS
+
+    private bool _isInitialized = false;
+    #endregion
+
+    #region MONO'S CALLBACKS
 
     protected override void Awake()
     {
         base.Awake();
         _onWeatherGenerated.handle += _onWeatherUpdate_handle;
-        _eventMidNight.handle += _eventMidNight_handle;
     }
 
     private void OnDestroy()
     {
         _onWeatherGenerated.handle -= _onWeatherUpdate_handle;
-        _eventMidNight.handle -= _eventMidNight_handle;
     }
 
+    #endregion
 
-    private void _eventMidNight_handle()
-    {
-        
-    }
+    #region DELEGATES
 
     private void _onWeatherUpdate_handle(WeatherType obj)
     {
@@ -116,6 +102,9 @@ public class WeatherForecast : Singleton<WeatherForecast>
         }
     }
 
+    #endregion
+
+    #region GET / CALCULATIONS FUNCTIONS
     public List<float> GetStepsAtTime(float initOffset, int totalDays, float dayDycleDuration)
     {
         List<float> steps = new List<float>();  
@@ -243,6 +232,10 @@ public class WeatherForecast : Singleton<WeatherForecast>
         return InterpolateWeatherData(fromMeteo, toMeteo, offset);
     }
 
+    #endregion
+
+    #region INTERPOLATED FUNCTIONS
+
     private WeatherData InterpolateWeatherData(PeriodData deMeteo, PeriodData versMeteo, float offset)
     {
         float timeRemaining = deMeteo.data.weatherInitialDuration - offset;
@@ -268,24 +261,6 @@ public class WeatherForecast : Singleton<WeatherForecast>
     {
         return startValue + (endValue - startValue) * (1 - (timeRemaining / totalDuration));
     }
-   
-    private void UpdateWeatherUI()
-    {
-        // Afficher les prévisions dans l'UI
-       /* morningWeatherText.text = FormatWeather(morningWeather, "Matin");
-        middayWeatherText.text = FormatWeather(middayWeather, "Midi");
-        eveningWeatherText.text = FormatWeather(eveningWeather, "Soir");*/
-    }
 
-    private string FormatWeather(WeatherData weather, string period)
-    {
-        // Formatage des données météo pour l'affichage
-        return $"{period}: {weather.weatherType}\n" +
-               $"Température de l'air: {weather.airTemperature}°C\n" +
-               $"Température de l'eau: {weather.waterTemperature}°C\n" +
-               $"Humidité: {weather.humidity}%\n" +
-               $"Pression atmosphérique: {weather.atmosphericPressure} hPa\n" +
-               $"Vitesse du vent: {weather.windSpeed} km/h\n" +
-               $"Direction du vent: {weather.windDirection}";
-    }
+    #endregion
 }

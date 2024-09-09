@@ -36,7 +36,6 @@ public struct WeatherData
     public float waterTemperature;
     public float atmosphericPressure;
     public float weatherInitialDuration;
-    public float weatherClampedDuration;
     public float startAtTime;
     public WeatherType weatherType; // Type de météo
 }
