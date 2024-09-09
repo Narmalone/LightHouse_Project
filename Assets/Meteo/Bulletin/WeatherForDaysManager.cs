@@ -48,6 +48,9 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     public List<WeatherData> MorningX = new();
     public List<WeatherData> MiddaysX = new();
     public List<WeatherData> EveningsX = new();
+
+    [Header("REPORT")]
+    public WeatherData DesiredWeatherValueForNextDay; // TO DO:: A savoir comment on l'a definis et quand
     #endregion
 
     #region PRIVATE FIELDS
@@ -201,12 +204,12 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
             // Si aucune météo n'est trouvée pour les jours précédents ou suivants
             if (noPreviousDayFound || noNextDayFound)
             {
-                Debug.LogError("Erreur : Impossible de trouver une météo précédente ou suivante pour le jour spécifié. " + day);
+                //Debug.LogError("Erreur : Impossible de trouver une météo précédente ou suivante pour le jour spécifié. " + day);
                 return default; // Gestion d'erreur, peut renvoyer une valeur par défaut
             }
 
             offset = _dayNightManager.TimeTo(fromMeteo.Hour, fromMeteo.Minits, fromMeteo.Seconds, fromMeteo.Day, day, hour);
-            Debug.Log($"day {fromMeteo.Day}, à {toMeteo.Day}, pour {day} il y'aura un offset de: " + offset);
+            //Debug.Log($"day {fromMeteo.Day}, à {toMeteo.Day}, pour {day} il y'aura un offset de: " + offset);
             return InterpolateWeatherData(fromMeteo, toMeteo, offset);
         }
         else

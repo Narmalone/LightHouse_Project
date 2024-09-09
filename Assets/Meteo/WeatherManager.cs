@@ -100,6 +100,7 @@ public class WeatherManager : Singleton<WeatherManager>
     public float AirTemperature;
     public float WaterTemperature;
     public float AtmosphericPressure;
+    public WindDirection WindDirection;
     #endregion
 
     #region PRIVATE FIELDS
@@ -138,7 +139,7 @@ public class WeatherManager : Singleton<WeatherManager>
             // Changer la météo
             AdvanceToNextWeather();
         }
-
+        WindDirection =  DetermineWindDirection(WindOrientationValue);
         InterpolateWeatherConditions();
     }
 

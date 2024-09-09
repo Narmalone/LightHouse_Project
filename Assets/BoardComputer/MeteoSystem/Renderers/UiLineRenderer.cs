@@ -7,6 +7,7 @@ public class UiLineRenderer : Graphic
     public Vector2Int gridSize;  // Taille de la grille (par exemple 10x10)
     public List<Vector2> points; // Liste des points à rendre
     public UiGridRenderer grid;  // Référence à la grille
+    public bool IsCenter = true; // Booléen pour gérer le centrage
 
     public float thickness = 10f; // Épaisseur de la ligne
 
@@ -30,6 +31,16 @@ public class UiLineRenderer : Graphic
             return;
         }
 
+        // Calcul des offsets pour centrer ou non la grille
+        float xOffset = 0f;
+        float yOffset = 0f;
+
+        if (IsCenter)
+        {
+            xOffset = -width / 2f;
+            yOffset = -height / 2f;
+        }
+
         float angle = 0;
 
         // Dessine les segments de ligne pour chaque point
@@ -38,36 +49,36 @@ public class UiLineRenderer : Graphic
             Vector2 point1 = points[i];
             Vector2 point2 = points[i + 1];
 
+            // Ajoute les offsets en fonction de IsCenter
+            point1 = new Vector2(point1.x * unitWidth + xOffset, point1.y * unitHeight + yOffset);
+            point2 = new Vector2(point2.x * unitWidth + xOffset, point2.y * unitHeight + yOffset);
+
             angle = GetAngle(point1, point2);
             CreateLineSegment(point1, point2, angle, vh);
         }
     }
 
     // Crée un segment de ligne entre deux points
-    private void CreateLineSegment(Vector2 point1, Vector2 point2, float angle, VertexHelper vh)
+    private void CreateLineSegment(Vector3 point1, Vector3 point2, float angle, VertexHelper vh)
     {
-        // Créer des vertex pour chaque extrémité du segment de ligne
-        Vector3 p1 = new Vector3(unitWidth * point1.x, unitHeight * point1.y);
-        Vector3 p2 = new Vector3(unitWidth * point2.x, unitHeight * point2.y);
-
         UIVertex vertex = UIVertex.simpleVert;
         vertex.color = color;
 
-        // Déplace le point 1 selon l'angle calculé
+        // Calcul de l'offset pour l'épaisseur de la ligne
         Quaternion rotation = Quaternion.Euler(0, 0, angle + 90);
         Vector3 thicknessOffset = rotation * new Vector3(thickness / 2, 0);
 
         // Ajouter les quatre vertices nécessaires pour dessiner le rectangle qui représente la ligne
-        vertex.position = p1 - thicknessOffset;
+        vertex.position = point1 - thicknessOffset;
         vh.AddVert(vertex);
 
-        vertex.position = p1 + thicknessOffset;
+        vertex.position = point1 + thicknessOffset;
         vh.AddVert(vertex);
 
-        vertex.position = p2 + thicknessOffset;
+        vertex.position = point2 + thicknessOffset;
         vh.AddVert(vertex);
 
-        vertex.position = p2 - thicknessOffset;
+        vertex.position = point2 - thicknessOffset;
         vh.AddVert(vertex);
 
         // Ajoute deux triangles pour former un rectangle (un segment de ligne)
