@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class RadarContent : ContentWindow
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private BuoyReporterUI[] _buoyReporters;
+    private int _buoyCount => _buoyReporters.Length;
+
+    private void Start()
     {
-        
+        InitializeAllBuoy();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void InitializeAllBuoy()
     {
-        
+        int id = 0;
+        foreach ( var buoy in _buoyReporters)
+        {
+            id++;
+            buoy.Intialize(id);
+        }
     }
 }
