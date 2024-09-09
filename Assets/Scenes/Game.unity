@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 5122.7505, g: 4734.2974, b: 4792.606, a: 1}
+  m_IndirectSpecularColor: {r: 5347.469, g: 4876.739, b: 4803.321, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1911,6 +1911,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65aaf9614a7808f49a83c90d2be496f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsPersistent: 0
   gameSettings: {fileID: 11400000, guid: f4798f3eb11afa24198a7c6ee10d297b, type: 2}
   _weatherManager: {fileID: 1319185286}
   _dayNightManager: {fileID: 5250352298110937228}
@@ -1923,9 +1924,7 @@ MonoBehaviour:
   morningStart: 6
   middayStart: 12
   eveningStart: 18
-  TargetDay: 0
   totalDays: 0
-  dayWeathers: []
   StartoffSetMorning: 0
   StartoffSetMidDay: 0
   StartoffSetEvening: 0
@@ -1935,9 +1934,44 @@ MonoBehaviour:
   weathersMornings: []
   weathersMidday: []
   weathersEvening: []
-  offsetsMornings: []
-  offsetsMidday: []
-  offsetsEvenings: []
+  MorningAtTime: []
+  MorningX: []
+  identifiedDatas: []
+  deMeteo:
+    data:
+      humidity: 0
+      windSpeed: 0
+      airTemperature: 0
+      windOrientationValue: 0
+      windDirection: 0
+      waterTemperature: 0
+      atmosphericPressure: 0
+      weatherInitialDuration: 0
+      weatherClampedDuration: 0
+      startAtTime: 0
+      weatherType: 0
+    Hour: 0
+    Minits: 0
+    Seconds: 0
+    Day: 0
+  versMeteo:
+    data:
+      humidity: 0
+      windSpeed: 0
+      airTemperature: 0
+      windOrientationValue: 0
+      windDirection: 0
+      waterTemperature: 0
+      atmosphericPressure: 0
+      weatherInitialDuration: 0
+      weatherClampedDuration: 0
+      startAtTime: 0
+      weatherType: 0
+    Hour: 0
+    Minits: 0
+    Seconds: 0
+    Day: 0
+  periodDatas: []
 --- !u!1 &530439605
 GameObject:
   m_ObjectHideFlags: 0

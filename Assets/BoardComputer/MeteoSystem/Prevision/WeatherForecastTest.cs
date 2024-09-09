@@ -1,12 +1,10 @@
-using System;
 using UnityEngine;
 using TMPro;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using static UnityEngine.Analytics.IAnalytic;
 
-public class WeatherForecast : MonoBehaviour
+
+public class WeatherForecast : Singleton<WeatherForecast>
 {
     [System.Serializable]
     public struct DayWeather
@@ -19,6 +17,16 @@ public class WeatherForecast : MonoBehaviour
             this.dayNumber = dayNumber;
             this.weatherEvents = new List<WeatherData>();
         }
+    }
+
+    [System.Serializable]
+    public struct PeriodData
+    {
+        public WeatherData data;
+        public float Hour;
+        public float Minits;
+        public float Seconds;
+        public int Day;
     }
 
     [SerializeField] private GameSettings gameSettings;
@@ -40,21 +48,31 @@ public class WeatherForecast : MonoBehaviour
     [SerializeField] private float middayStart = 12f;
     [SerializeField] private float eveningStart = 18f;
 
-    private WeatherData morningWeather;
-    private WeatherData middayWeather;
-    private WeatherData eveningWeather;
-
-    public int TargetDay;
-    public int totalDays;
     private bool _isInitialized = false;
 
-    public List<DayWeather> dayWeathers = new List<DayWeather>();
+    [Header("START OFFSETS IN SECONDS FROM GAME START")]
+    public float StartoffSetMorning;
+    public float StartoffSetMidDay;
+    public float StartoffSetEvening;
 
-    private void Awake()
+    [Header("ALL NEXTS X HOURS IN SECONDS")]
+    public List<float> MorningAtTime = new List<float>();
+    public List<float> MiddayAtTime = new List<float>();
+    public List<float> EveningAtTime = new List<float>();
+
+    [Header("Weathers Separated by Days")]
+    public List<PeriodData> WeathersInDays = new List<PeriodData>();
+
+    [Header("VALUES FOR")]
+    public List<WeatherData> MorningX = new();
+    public List<WeatherData> MiddaysX = new();
+    public List<WeatherData> EveningsX = new();
+
+    protected override void Awake()
     {
+        base.Awake();
         _onWeatherGenerated.handle += _onWeatherUpdate_handle;
         _eventMidNight.handle += _eventMidNight_handle;
-        totalDays = gameSettings.TotalDays;
     }
 
     private void OnDestroy()
@@ -66,677 +84,184 @@ public class WeatherForecast : MonoBehaviour
 
     private void _eventMidNight_handle()
     {
-        CalculateWeatherInSeconds();
+        
     }
 
-    public float StartoffSetMorning;
-    public float StartoffSetMidDay;
-    public float StartoffSetEvening;
-
-    public float OffsetMorningFromMidnight;
-    public float OffsetMiddayFromMidnight;
-    public float OffsetEveningFromMidnight;
-
-
-    public List<WeatherData> weathersMornings = new List<WeatherData>();
-    public List<WeatherData> weathersMidday = new List<WeatherData>();
-    public List<WeatherData> weathersEvening = new List<WeatherData>();
     private void _onWeatherUpdate_handle(WeatherType obj)
     {
         if (!_isInitialized)
         {
-            // Exemple de prévisions météo (weatherForecast serait une liste de WeatherData)
-            List<WeatherData> weatherForecast = _weatherManager.weatherForecast;
-
-            // Calculer les météos pour chaque jour
-            //dayWeathers = CalculateWeatherForDays(weatherForecast, gameSettings.DayCycleDuration.Seconds);
-
+            //Calculer les offsets de départs en fonction de quand on commence lejeu
             StartoffSetMorning = _dayNightManager.TimeUntil(morningStart);
-            //StartoffSetMorning = _dayNightManager.TimeTo(0f, 3f);
             StartoffSetMidDay = _dayNightManager.TimeUntil(middayStart);
             StartoffSetEvening = _dayNightManager.TimeUntil(eveningStart);
 
-            OffsetMorningFromMidnight = _dayNightManager.TimeTo(0f, morningStart);
-            OffsetMiddayFromMidnight = _dayNightManager.TimeTo(0f, middayStart);
-            OffsetEveningFromMidnight = _dayNightManager.TimeTo(0f, eveningStart);
+            //Calculer à quelles secondes après le début du jeu tombe X heure sur X jour
+            MorningAtTime = GetStepsAtTime(StartoffSetMorning, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
+            MiddayAtTime = GetStepsAtTime(StartoffSetMidDay, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
+            EveningAtTime = GetStepsAtTime(StartoffSetEvening, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
 
-            dayWeathers = CalculateWeatherFor(_weatherManager.weatherForecast, gameSettings.DayCycleDuration.Seconds, StartoffSetMorning, OffsetMorningFromMidnight);
+            //Calculer quelles météos tombent quels jours et à quelle heure
+            WeathersInDays = GetWeathersInDays(_weatherManager.weatherForecast, _dayNightManager._homeTime, gameSettings.DayCycleDuration.Seconds);
 
+            //Calculer et interpoler les météos aux heures voulus pour avoir une prévision météorologique
+            for(int i = 0; i < gameSettings.TotalDays; i++)
+            {
+                MorningX.Add(GetWeatherAtTime(i, morningStart, MorningAtTime));
+                MiddaysX.Add(GetWeatherAtTime(i, middayStart, MiddayAtTime));
+                EveningsX.Add(GetWeatherAtTime(i, eveningStart, EveningAtTime));
+            }
 
-            _dayNightManager.AfficherHeureMeteo(_weatherManager.weatherForecast, _dayNightManager._homeTime);
-
-            MorningX.Add(_dayNightManager.GetWeatherAtTime(0, 6f));
-            
-            //weathersMornings = TryCalculateWeathers(StartoffSetMorning);
-            //weathersMornings = GenerateWeatherForecastEveryMornings(StartoffSetMorning);
-
-            GetMorningWeatherForDay(1);
-
-            //CalculateWeathersWithOffsets();
-            CalculateWeatherInSeconds();
             _isInitialized = true;
         }
     }
 
-    //3 listes d'offset, une le matin, une le midi et une le soir
-    //cela permettra de savoir dans à combien de secondes tombe la période
-    //on cherche la météo qui sera le plus proche ou celle qui correspond la fourchette donc matin j 8 = 3458 -> trouver météo
-    //qui correspond à 3458s, une fois qu'on a la météo
-    public List<float> offsetsMornings = new List<float>();
-    public List<float> offsetsMidday = new List<float>();
-    public List<float> offsetsEvenings = new List<float>();
-
-    public List<float> MorningAtTime = new List<float>();
-    public List<WeatherData> MorningX = new();
-
-    [System.Serializable]
-    public struct WeatherPeriodData
+    public List<float> GetStepsAtTime(float initOffset, int totalDays, float dayDycleDuration)
     {
-        public List<float> morningsTimes;
-        public WeatherData morningData;
-    }
-
-
-    public void GetMorningWeatherForDay(int baseDay)
-    {
-        float morningTargetTime = 6f * 60f; // 6h du matin en secondes dans la journée (360s)
-        float startOfDayTime = baseDay * gameSettings.DayCycleDuration.Seconds; // Temps de début de la journée en secondes
-        float targetTimeInSimulation = startOfDayTime + morningTargetTime; // Temps total dans la simulation
-
-        float step = 400f; // Durée d'une journée en secondes
-        float currentStep = StartoffSetMorning;
+        List<float> steps = new List<float>();  
+        float step = dayDycleDuration; // Durée d'une journée en secondes
+        float currentStep = initOffset;
 
         // Stocker les temps précis des "matins" dans MorningAtTime
-        for (int i = 0; i < gameSettings.TotalDays; i++)
+        for (int i = 0; i < totalDays; i++)
         {
-            MorningAtTime.Add(currentStep);
+            steps.Add(currentStep);
             currentStep += step;
         }
+        return steps;
+    }
+    public List<PeriodData> GetWeathersInDays(List<WeatherData> weatherDatas, float homeTime, float dayCycleDuration)
+    {
+        List<PeriodData> wethersInDays = new List<PeriodData>();
+        float tempsTotalJournee = dayCycleDuration; // Temps total d'une journée en secondes
 
-
-        for (int i = 0; i < MorningAtTime.Count; i++)
+        foreach (WeatherData weatherData in weatherDatas)
         {
-            WeatherPeriodData periodData = new WeatherPeriodData();
-            int index = GetWeatherIndexForecastFromTotalSeconds(MorningAtTime[i], _weatherManager.weatherForecast);
+            PeriodData newPeriodData = new PeriodData();
+            // Calculer le jour, l'heure, les minutes et les secondes où la météo sera lancée
+            int jour = (int)(weatherData.startAtTime / tempsTotalJournee);
+            float heure = (weatherData.startAtTime % tempsTotalJournee) / tempsTotalJournee * 24;
+            heure += homeTime; // Ajouter l'offset du homeTime
+            if (heure >= 24)
+            {
+                heure -= 24;
+                jour++;
+            }
+            int heures = (int)heure;
+            int minutes = (int)((heure - heures) * 60);
+            int secondes = (int)(((heure - heures) * 60 - minutes) * 60);
 
+            newPeriodData.Day = jour;
+            newPeriodData.data = weatherData;
+            newPeriodData.Hour = heures;
+            newPeriodData.Minits = minutes;
+            newPeriodData.Seconds = secondes;
 
+            wethersInDays.Add(newPeriodData);
         }
-        // Boucle à travers les prévisions météo pour trouver la bonne météo à 6h du matin
-        var d = dayWeathers[baseDay];
-
-        
-        //Debug.Log($"Prévision Météo du jour{d.dayNumber} pour 6h: ");
+        return wethersInDays;
     }
 
-    public WeatherData FindNextWeatherWithDifferentValues(List<DayWeather> days, int startIndex, WeatherData currentWeatherData)
+    public WeatherData GetWeatherAtTime(int day, float hour, List<float> timesOffset)
     {
-        for (int i = startIndex; i < days.Count; i++)
+        float startInSeconds = timesOffset[day];
+        List<PeriodData> _identifiedDatas = new List<PeriodData>();
+        _identifiedDatas = WeathersInDays.Where(x => x.Day == day).ToList();
+
+        List<int> indexes = new List<int>();
+
+        for (int i = 0; i < _identifiedDatas.Count; i++)
         {
-            DayWeather day = days[i];
-            for (int j = 0; j < day.weatherEvents.Count; j++)
+            indexes.Add(WeathersInDays.IndexOf(_identifiedDatas[i]));
+        }
+
+        float offset = 0f;
+        PeriodData fromMeteo = new PeriodData();
+        PeriodData toMeteo = new PeriodData();
+
+        if (_identifiedDatas.Count <= 0)
+        {
+            PeriodData previous = new PeriodData();
+            PeriodData nextData = new PeriodData();
+
+            // Indicateur si aucun jour trouvé dans les périodes précédentes
+            bool noPreviousDayFound = true;
+            bool noNextDayFound = true;
+
+            // Trouver le jour précédent immédiatement
+            for (int i = day - 1; i >= 0; i--)
             {
-                WeatherData weatherData = day.weatherEvents[j];
-                if (j == 0 || !AreWeatherDataSimilar(currentWeatherData, weatherData))
+                fromMeteo = WeathersInDays.Find(x => x.Day == i);
+                if (fromMeteo.data.weatherInitialDuration != 0) // Si une météo est trouvée pour ce jour
                 {
-                    return weatherData;
+                    noPreviousDayFound = false;
+                    break;
                 }
             }
-        }
 
-        // Si on arrive ici, c'est que l'on a parcouru toute la liste sans trouver de WeatherData différente
-        // On peut donc retourner null ou throw une exception
-        return new WeatherData();
-    }
-
-    private bool AreWeatherDataSimilar(WeatherData weatherData1, WeatherData weatherData2)
-    {
-        return weatherData1.weatherType == weatherData2.weatherType &&
-               weatherData1.humidity == weatherData2.humidity 
-               // ajoutez d'autres conditions pour vérifier la similarité
-               ;
-    }
-
-    public List<WeatherData> GenerateWeatherForecastEveryMornings(float startStep)
-    {
-        float step = 400f; // Durée d'une journée en secondes
-        float currentStep = startStep;
-
-        // Stocker les temps précis des "matins" dans MorningAtTime
-        for (int i = 0; i < gameSettings.TotalDays; i++)
-        {
-            MorningAtTime.Add(currentStep);
-            currentStep += step;
-        }
-
-        List<WeatherData> weatherDataList = new List<WeatherData>();
-
-        // Calculer la météo pour chaque moment stocké dans MorningAtTime
-        foreach (float morningTime in MorningAtTime)
-        {
-            WeatherData weatherAtTime = GetWeatherAtSpecificTime(morningTime);
-            weatherDataList.Add(weatherAtTime);
-        }
-
-        return weatherDataList;
-    }
-
-    private WeatherData GetWeatherAtSpecificTime(float timeInSeconds)
-    {
-        float elapsedTime = 0f;
-
-        // Parcourir les météos pour trouver celle correspondant au moment donné
-        for (int i = 0; i < _weatherManager.weatherForecast.Count - 1; i++)
-        {
-            WeatherData currentWeather = _weatherManager.weatherForecast[i];
-            WeatherData nextWeather = _weatherManager.weatherForecast[i + 1];
-
-
-            elapsedTime += currentWeather.weatherInitialDuration;
-            // Vérifier si le temps en secondes se situe dans cette météo
-            if (timeInSeconds <= elapsedTime)
+            // Trouver le jour suivant immédiatement
+            for (int i = day + 1; i < gameSettings.TotalDays; i++)
             {
-                // Calculer le temps restant dans la météo actuelle
-                float timeInCurrentWeather = timeInSeconds - (elapsedTime - currentWeather.weatherInitialDuration);
-
-                // Interpoler les valeurs météorologiques entre la météo actuelle et la suivante
-                return InterpolateWeatherData(currentWeather.weatherInitialDuration - MorningAtTime[0], currentWeather, nextWeather);
-            }
-        }
-
-        // Si aucune météo n'est trouvée (fin du cycle), retourner la dernière météo
-        return _weatherManager.weatherForecast.Last();
-    }
-
-    private WeatherData InterpolateWeatherData(float timeRemaining, WeatherData currentWeather, WeatherData nextWeather)
-    {
-        WeatherData weather = new WeatherData();
-
-        // Interpoler les valeurs météorologiques entre la météo actuelle et la suivante
-        weather.humidity = GetLerpedFloatAtTime(timeRemaining, currentWeather.humidity, nextWeather.humidity, currentWeather.weatherInitialDuration);
-        weather.airTemperature = GetLerpedFloatAtTime(timeRemaining, currentWeather.airTemperature, nextWeather.airTemperature, currentWeather.weatherInitialDuration);
-        weather.waterTemperature = GetLerpedFloatAtTime(timeRemaining, currentWeather.waterTemperature, nextWeather.waterTemperature, currentWeather.weatherInitialDuration);
-        weather.atmosphericPressure = GetLerpedFloatAtTime(timeRemaining, currentWeather.atmosphericPressure, nextWeather.atmosphericPressure, currentWeather.weatherInitialDuration);
-        weather.windSpeed = GetLerpedFloatAtTime(timeRemaining, currentWeather.windSpeed, nextWeather.windSpeed, currentWeather.weatherInitialDuration);
-        weather.windOrientationValue = GetLerpedFloatAtTime(timeRemaining, currentWeather.windOrientationValue, nextWeather.windOrientationValue, currentWeather.weatherInitialDuration);
-        weather.windDirection = _weatherManager.DetermineWindDirection(weather.windOrientationValue);
-
-        // Conserver le type de météo
-        weather.weatherType = currentWeather.weatherType;
-
-        return weather;
-    }
-
-
-    public List<WeatherData> TryCalculateWeathers(float startOffsetTarget)
-    {
-        List<WeatherData> periodData = new List<WeatherData>();
-        float step = 400f;  // Suppose un cycle de 400 secondes par jour
-        float currentStep = startOffsetTarget;
-        int day = 0;
-
-        while (day < gameSettings.TotalDays)
-        {
-            // Trouver la météo qui couvre le temps actuel
-            int weatherForecastIdFromOffset = GetWeatherIndexForecastFromTotalSeconds(currentStep, _weatherManager.weatherForecast);
-
-            // Si la météo est trouvée et que la suivante existe
-            if (weatherForecastIdFromOffset + 1 < _weatherManager.weatherForecast.Count)
-            {
-                WeatherData currentWeather = _weatherManager.weatherForecast[weatherForecastIdFromOffset];
-                WeatherData nextWeather = _weatherManager.weatherForecast[weatherForecastIdFromOffset + 1];
-
-                // Si la météo déborde sur le jour suivant
-                if (currentWeather.startAtTime + currentWeather.weatherInitialDuration > currentStep + step)
+                toMeteo = WeathersInDays.Find(x => x.Day == i);
+                if (toMeteo.data.weatherInitialDuration != 0) // Si une météo est trouvée pour ce jour
                 {
-                    // Lerp entre la météo actuelle et la prochaine pour le matin du jour suivant
-                    var lerpedWeather = LerpWeatherOverDayBoundary(currentWeather, nextWeather, currentStep, step);
-                    periodData.Add(lerpedWeather);
-                }
-                else
-                {
-                    // Générer les données météo sans débordement
-                    var d = GenerateWeatherDatas(currentWeather, nextWeather, startOffsetTarget, currentStep);
-                    periodData.Add(d);
-                }
-
-                currentStep += step;  // Avance au prochain jour
-                day++;  // Passer au jour suivant
-            }
-            else
-            {
-                // Si aucune météo n'est trouvée, avancer au jour suivant
-                currentStep += step;
-                day++;
-            }
-        }
-
-        return periodData;
-    }
-
-    public WeatherData LerpWeatherOverDayBoundary(WeatherData current, WeatherData next, float currentStep, float dayDuration)
-    {
-        // Le pourcentage du débordement de la météo sur le jour suivant
-        float timeOverlappingIntoNextDay = (currentStep + dayDuration) - (current.startAtTime + current.weatherInitialDuration);
-        float lerpFactor = timeOverlappingIntoNextDay / current.weatherInitialDuration;
-
-        WeatherData dataToReturn = new WeatherData();
-        dataToReturn.weatherType = current.weatherType;
-        dataToReturn.windDirection = current.windDirection;
-
-        // Interpolation basée sur le débordement de la météo
-        dataToReturn.humidity = GetLerpedFloatAtTime(lerpFactor, current.humidity, next.humidity, current.weatherInitialDuration);
-        dataToReturn.airTemperature = GetLerpedFloatAtTime(lerpFactor, current.airTemperature, next.airTemperature, current.weatherInitialDuration);
-        dataToReturn.waterTemperature = GetLerpedFloatAtTime(lerpFactor, current.waterTemperature, next.waterTemperature, current.weatherInitialDuration);
-        dataToReturn.windSpeed = GetLerpedFloatAtTime(lerpFactor, current.windSpeed, next.windSpeed, current.weatherInitialDuration);
-        dataToReturn.windOrientationValue = GetLerpedFloatAtTime(lerpFactor, current.windOrientationValue, next.windOrientationValue, current.weatherInitialDuration);
-        dataToReturn.atmosphericPressure = GetLerpedFloatAtTime(lerpFactor, current.atmosphericPressure, next.atmosphericPressure, current.weatherInitialDuration);
-
-        return dataToReturn;
-    }
-
-    public WeatherData GenerateWeatherDatas(WeatherData current, WeatherData target, float startOffset, float currentStep)
-    {
-        float remainingSeconds = current.weatherInitialDuration - startOffset;
-        WeatherData dataToReturn = new WeatherData();
-        dataToReturn.weatherType = current.weatherType;
-        dataToReturn.windDirection = current.windDirection;
-
-        // Interpolation classique sans débordement
-        dataToReturn.humidity = GetLerpedFloatAtTime(remainingSeconds, current.humidity, target.humidity, current.weatherInitialDuration);
-        dataToReturn.airTemperature = GetLerpedFloatAtTime(remainingSeconds, current.airTemperature, target.airTemperature, current.weatherInitialDuration);
-        dataToReturn.waterTemperature = GetLerpedFloatAtTime(remainingSeconds, current.waterTemperature, target.waterTemperature, current.weatherInitialDuration);
-        dataToReturn.windSpeed = GetLerpedFloatAtTime(remainingSeconds, current.windSpeed, target.windSpeed, current.weatherInitialDuration);
-        dataToReturn.windOrientationValue = GetLerpedFloatAtTime(remainingSeconds, current.windOrientationValue, target.windOrientationValue, current.weatherInitialDuration);
-        dataToReturn.atmosphericPressure = GetLerpedFloatAtTime(remainingSeconds, current.atmosphericPressure, target.atmosphericPressure, current.weatherInitialDuration);
-
-        return dataToReturn;
-    }
-
-
-    
-
-    public int GetWeatherIndexForecastFromTotalSeconds(float currentStep, List<WeatherData> weatherForecast)
-    {
-        // Parcourir la liste des prévisions météo pour trouver celle correspondant à totalSeconds
-        for (int i = 0; i < weatherForecast.Count; i++)
-        {
-            //TROUVER LA METEO A PAR EXEMPLE 16S, 416S
-            // Obtenir le startAtTime et la durée de l'événement météo actuel
-            float startAt = weatherForecast[i].startAtTime;
-            float endAt = startAt + weatherForecast[i].weatherInitialDuration;
-
-            // Si totalSeconds est compris entre startAt et endAt, on a trouvé la bonne météo
-            if (currentStep >= startAt && currentStep < endAt)
-            {
-                return i;
-            }
-        }
-
-        // Retourner -1 si aucun événement météo n'a été trouvé pour le totalSeconds donné
-        return -1;
-    }
-
-    public WeatherData GetWeatherForecastFromTotalSeconds(float totalSeconds, List<WeatherData> weatherForecast)
-    {
-        float countSeconts = 0f;
-
-        for(int i = 0; i < weatherForecast.Count; i++)
-        {
-            countSeconts += weatherForecast[i].weatherInitialDuration;
-
-            if(countSeconts >= totalSeconds)
-            {
-                return weatherForecast[i];
-            }
-        }
-
-        return new WeatherData();
-    }
-
-    public List<DayWeather> CalculateWeatherFor(List<WeatherData> forecasts, float dayDuration, float startOffset, float mainOffset)
-    {
-        List<DayWeather> days = new List<DayWeather>();
-        List<WeatherData> weatherForecast = forecasts;
-        int currentDay = 0;
-
-        DayWeather newDayDatas = new DayWeather();
-        newDayDatas.weatherEvents = new List<WeatherData>();
-        float totalDayDuration = 0f;
-
-        for (int i = 0; i < weatherForecast.Count; i++)
-        {
-            float weatherDurationRemaining = weatherForecast[i].weatherInitialDuration;
-
-            while (weatherDurationRemaining > 0)
-            {
-                float durationToAdd = Mathf.Min(weatherDurationRemaining, dayDuration - totalDayDuration);
-
-                WeatherData data = weatherForecast[i];
-
-                if (i + 1 < weatherForecast.Count)
-                {
-                    //générer matin midi soir à partir des 400s et en matchant avec la prochaine météo :)
-                    //le matin midi, soir tombent toujours à la même heure compte tenant des offsets
-
-                    //le premier est généré avec un offset
-                    if (i == 0)
-                    {
-                        //period peut être morning, midday, evening...
-                        //data = GenerateWeatherData(weatherForecast[i], weatherForecast[i + 1], startOffset);
-                        //data.weatherInitialDuration = weatherForecast[i].weatherInitialDuration;
-                        data.weatherClampedDuration = durationToAdd;
-                    }
-                    else
-                    {
-                        //data = GenerateWeatherData(weatherForecast[i], weatherForecast[i + 1], mainOffset);
-                        //data.weatherInitialDuration = weatherForecast[i].weatherInitialDuration;
-                        data.weatherClampedDuration = durationToAdd;
-                    }
-                }
-
-                newDayDatas.dayNumber = currentDay;
-                newDayDatas.weatherEvents.Add(data);
-
-                if (newDayDatas.weatherEvents.Count > 1)
-                {
-                    for (int j = 1; j < newDayDatas.weatherEvents.Count; j++)
-                    {
-                        WeatherData previousData = newDayDatas.weatherEvents[j - 1];
-                        WeatherData currentData = newDayDatas.weatherEvents[j];
-
-                        // Effectuer un lerp entre les valeurs de humidity des deux météos
-                        //currentData.humidity = GetLerpedFloatAtTime(currentData.weatherInitialDuration -  mainOffset)
-                        //currentData.humidity = f;
-                        newDayDatas.weatherEvents[j] = currentData;
-
-                    }
-
-                    /*WeatherData duplicatedData = newDayDatas.weatherEvents[newDayDatas.weatherEvents.Count - 1];
-                    // modifier la durée de la données dupliquée si elle dépasse les 400s
-                    duplicatedData.humidity = 150f;
-                    newDayDatas.weatherEvents[newDayDatas.weatherEvents.Count - 1] = duplicatedData;*/
-                }
-
-                totalDayDuration += durationToAdd;
-                weatherDurationRemaining -= durationToAdd;
-
-                if (totalDayDuration >= dayDuration)
-                {
-                    days.Add(newDayDatas);
-                    currentDay++;
-                    newDayDatas = new DayWeather(currentDay);
-                    newDayDatas.weatherEvents = new List<WeatherData>();
-                    totalDayDuration = 0f;
+                    noNextDayFound = false;
+                    break;
                 }
             }
-        }
 
-
-        //CENSE ETRE UNREACHEABLE LOGIQUEMENT
-        // Ajout de la dernière journée si elle contient des événements météo
-        if (newDayDatas.weatherEvents.Count > 0)
-        {
-            days.Add(newDayDatas);
-        }
-
-        // Ajout de jours supplémentaires pour atteindre 31 jours
-        while (days.Count < 31)
-        {
-            DayWeather newDay = new DayWeather(days.Count);
-            newDay.weatherEvents = new List<WeatherData>();
-            days.Add(newDay);
-        }
-
-        return days;
-    }
-
-    public List<DayWeather> CalculateWeatherFor2(List<WeatherData> forecasts, float dayDuration, float startOffset, float mainOffset)
-    {
-        List<DayWeather> days = new List<DayWeather>();
-        List<WeatherData> weatherForecast = forecasts;
-        int currentDay = 0;
-
-        DayWeather newDayDatas = new DayWeather();
-        newDayDatas.weatherEvents = new List<WeatherData>();
-        float totalDayDuration = 0f;
-
-        for (int i = 0; i < weatherForecast.Count; i++)
-        {
-            float weatherDurationRemaining = weatherForecast[i].weatherInitialDuration;
-
-            while (weatherDurationRemaining > 0)
+            // Si aucune météo n'est trouvée pour les jours précédents ou suivants
+            if (noPreviousDayFound || noNextDayFound)
             {
-                float durationToAdd = Mathf.Min(weatherDurationRemaining, dayDuration - totalDayDuration);
-
-                WeatherData data = weatherForecast[i];
-
-                if (i + 1 < weatherForecast.Count)
-                {
-                    //générer matin midi soir à partir des 400s et en matchant avec la prochaine météo :)
-                    //le matin midi, soir tombent toujours à la même heure compte tenant des offsets
-
-                    //le premier est généré avec un offset
-                    if (i == 0)
-                    {
-                        //period peut être morning, midday, evening...
-                        data = GenerateWeatherData(weatherForecast[i], weatherForecast[i + 1], startOffset);
-                        data.weatherInitialDuration = weatherForecast[i].weatherInitialDuration;
-                        data.weatherClampedDuration = durationToAdd;
-                        Debug.Log(data.humidity);
-                    }
-                    else
-                    {
-                        data = GenerateWeatherData(weatherForecast[i], weatherForecast[i + 1], mainOffset);
-                        data.weatherInitialDuration = weatherForecast[i].weatherInitialDuration;
-                        data.weatherClampedDuration = durationToAdd;
-
-                        data.humidity = 150f;
-                        Debug.Log(data.humidity);
-                        //Debug.Log(period.humidity);
-                    }
-                }
-
-                if (newDayDatas.weatherEvents.Count == 0)
-                {
-                    newDayDatas.dayNumber = currentDay;
-                    newDayDatas.weatherEvents.Add(data);
-                }
-                else
-                {
-                    // Si il y a déjà une WeatherData dans le DayWeather, on crée un nouveau DayWeather
-                    days.Add(newDayDatas);
-                    currentDay++;
-                    newDayDatas = new DayWeather(currentDay);
-                    newDayDatas.weatherEvents = new List<WeatherData>();
-                    newDayDatas.dayNumber = currentDay;
-                    newDayDatas.weatherEvents.Add(data);
-                }
-
-                totalDayDuration += durationToAdd;
-                weatherDurationRemaining -= durationToAdd;
-
-                if (totalDayDuration >= dayDuration)
-                {
-                    totalDayDuration = 0f;
-                }
+                Debug.LogError("Erreur : Impossible de trouver une météo précédente ou suivante pour le jour spécifié. " + day);
+                return default; // Gestion d'erreur, peut renvoyer une valeur par défaut
             }
+
+            offset = _dayNightManager.TimeTo(fromMeteo.Hour, fromMeteo.Minits, fromMeteo.Seconds, fromMeteo.Day, day, hour);
+            Debug.Log($"day {fromMeteo.Day}, à {toMeteo.Day}, pour {day} il y'aura un offset de: " + offset);
+            return InterpolateWeatherData(fromMeteo, toMeteo, offset);
         }
-
-        // Ajout de la dernière journée si elle contient des événements météo
-        if (newDayDatas.weatherEvents.Count > 0)
+        else
         {
-            days.Add(newDayDatas);
-        }
 
-        // Ajout de jours supplémentaires pour atteindre 31 jours
-        while (days.Count < 31)
-        {
-            DayWeather newDay = new DayWeather(days.Count);
-            newDay.weatherEvents = new List<WeatherData>();
-            days.Add(newDay);
-        }
-
-        return days;
-    }
-
-    public WeatherData GenerateWeatherData(WeatherData current, WeatherData target, float offset)
-    {
-        WeatherData dataToReturn = new WeatherData();
-        dataToReturn.weatherType = current.weatherType;
-        dataToReturn.windDirection = current.windDirection;
-        dataToReturn.humidity = GetLerpedFloatAtTime(current.weatherInitialDuration - offset, current.humidity, target.humidity, current.weatherInitialDuration);
-        dataToReturn.airTemperature = GetLerpedFloatAtTime(current.weatherInitialDuration - offset, current.airTemperature, target.airTemperature, current.weatherInitialDuration);
-        dataToReturn.waterTemperature = GetLerpedFloatAtTime(current.weatherInitialDuration - offset, current.waterTemperature, target.waterTemperature, current.weatherInitialDuration);
-        dataToReturn.windSpeed = GetLerpedFloatAtTime(current.weatherInitialDuration - offset, current.windSpeed, target.windSpeed, current.weatherInitialDuration);
-        dataToReturn.windOrientationValue = GetLerpedFloatAtTime(current.weatherInitialDuration - offset, current.windOrientationValue, target.windOrientationValue, current.weatherInitialDuration);
-        dataToReturn.atmosphericPressure = GetLerpedFloatAtTime(current.weatherInitialDuration - offset, current.atmosphericPressure, target.atmosphericPressure, current.weatherInitialDuration);
-        //ENCORE PRECISER DIRECTION DU VENT, TYPE DE METEOS ECT
-        return dataToReturn;
-    }
-
-
-    private List<DayWeather> CalculateWeatherForDays(List<WeatherData> weatherForecast, float dayDuration)
-    {
-        List<DayWeather> days = new List<DayWeather>();
-        float remainingTimeInDay = dayDuration;
-        int currentDay = 1;
-
-        DayWeather currentDayWeather = new DayWeather(currentDay);
-        float totalWeatherDuration = 0f; // Garder une trace de la durée totale de la météo pour la journée
-
-        for (int i = 0; i < weatherForecast.Count; i++)
-        {
-            WeatherData weather = weatherForecast[i];
-            float remainingWeatherDuration = weather.weatherInitialDuration;
-
-            // Trouver la météo suivante pour remplacer les valeurs en cas de division de la météo
-            WeatherData nextWeather = (i + 1 < weatherForecast.Count) ? weatherForecast[i + 1] : weatherForecast[0];
-
-            while (remainingWeatherDuration > 0f)
+            //pas chercher en fonction des jours mais plutot du start at time
+            fromMeteo = WeathersInDays[indexes[0]];
+            if (indexes[0] + 1 < WeathersInDays.Count)
             {
-                // Calculer la durée qui peut être ajoutée à la journée en cours
-                float durationToAdd = Mathf.Min(remainingWeatherDuration, remainingTimeInDay);
-
-                // Créer un nouvel objet WeatherData avec la durée calculée
-                WeatherData weatherToAdd = new WeatherData
-                {
-                    humidity = weather.humidity,
-                    windSpeed = weather.windSpeed,
-                    airTemperature = weather.airTemperature,
-                    windOrientationValue = weather.windOrientationValue,
-                    windDirection = weather.windDirection,
-                    waterTemperature = weather.waterTemperature,
-                    atmosphericPressure = weather.atmosphericPressure,
-                    weatherClampedDuration = durationToAdd,
-                    weatherInitialDuration = weather.weatherInitialDuration,
-                    weatherType = weather.weatherType,
-                    startAtTime = weather.startAtTime,
-                };
-
-                currentDayWeather.weatherEvents.Add(weatherToAdd);
-
-                remainingTimeInDay -= durationToAdd;
-                totalWeatherDuration += durationToAdd; // Mettre à jour la durée totale de la météo
-
-                // Si la durée totale atteint celle de la journée, terminer la journée en cours
-                if (totalWeatherDuration >= dayDuration)
-                {
-                    days.Add(currentDayWeather);
-                    currentDay++;
-                    currentDayWeather = new DayWeather(currentDay);
-                    remainingTimeInDay = dayDuration;
-                    totalWeatherDuration = 0f; // Réinitialiser la durée totale pour le nouveau jour
-                }
-
-                // Réduire la durée restante de la météo
-                remainingWeatherDuration -= durationToAdd;
+                toMeteo = WeathersInDays[indexes[0] + 1];
             }
-        }
 
-        // Ajout de la dernière journée si elle contient des événements météo
-        if (currentDayWeather.weatherEvents.Count > 0)
-        {
-            days.Add(currentDayWeather);
-        }
-
-        // Deuxième phase : ajustement des météos pour les jours avec une seule météo de 400s
-        for (int j = 0; j < days.Count - 1; j++) // On boucle jusqu'à l'avant-dernier jour
-        {
-            DayWeather currentDayW = days[j];
-            DayWeather nextDay = days[j + 1];
-
-            // Vérifier si le jour actuel a une seule météo et que sa durée est de 400s
-            if (currentDayW.weatherEvents.Count == 1 && currentDayW.weatherEvents[0].weatherClampedDuration == dayDuration)
+            if (fromMeteo.data.startAtTime > startInSeconds)
             {
-                // Vérifier si le jour suivant a plus d'une météo
-                if (nextDay.weatherEvents.Count > 1)
-                {
-                    // Remplacer les valeurs de la première météo du jour suivant par celles de la deuxième, sauf la durée
-                    WeatherData firstWeather = nextDay.weatherEvents[0];
-                    WeatherData secondWeather = nextDay.weatherEvents[1];
-
-                    firstWeather.humidity = secondWeather.humidity;
-                    firstWeather.windSpeed = secondWeather.windSpeed;
-                    firstWeather.airTemperature = secondWeather.airTemperature;
-                    firstWeather.windOrientationValue = secondWeather.windOrientationValue;
-                    firstWeather.windDirection = secondWeather.windDirection;
-                    firstWeather.waterTemperature = secondWeather.waterTemperature;
-                    firstWeather.atmosphericPressure = secondWeather.atmosphericPressure;
-
-                    //firstWeather.weatherType = secondWeather.weatherType;
-
-                    // Garder la durée originale
-                    //firstWeather.weatherClampedDuration = currentDayW.weatherEvents[0].weatherClampedDuration;
-                    //firstWeather.weatherInitialDuration = currentDayW.weatherEvents[0].weatherInitialDuration;
-
-                    nextDay.weatherEvents[0] = firstWeather;
-                }
+                toMeteo = fromMeteo;
+                fromMeteo = WeathersInDays[indexes[0] - 1];
             }
+
+            offset = _dayNightManager.TimeTo(fromMeteo.Hour, fromMeteo.Minits, fromMeteo.Seconds, fromMeteo.Day, day, hour);
         }
 
-        return days;
+        return InterpolateWeatherData(fromMeteo, toMeteo, offset);
     }
 
-
-    private void CalculateWeatherInSeconds()
+    private WeatherData InterpolateWeatherData(PeriodData deMeteo, PeriodData versMeteo, float offset)
     {
-        float timeRemainingMorning = _weatherManager.currentWeather.weatherInitialDuration - _dayNightManager.TimeUntil(morningStart);
-        float timeRemainingMidday = _weatherManager.currentWeather.weatherInitialDuration - _dayNightManager.TimeUntil(middayStart);
-        float timeRemainingEvening = _weatherManager.currentWeather.weatherInitialDuration - _dayNightManager.TimeUntil(eveningStart);
+        float timeRemaining = deMeteo.data.weatherInitialDuration - offset;
 
-        morningWeather = PredictWeatherToTime(timeRemainingMorning, _weatherManager.currentWeather, _weatherManager.nextWeather);
-        middayWeather = PredictWeatherToTime(timeRemainingMidday, _weatherManager.currentWeather, _weatherManager.nextWeather);
-        eveningWeather = PredictWeatherToTime(timeRemainingEvening, _weatherManager.currentWeather, _weatherManager.nextWeather);
+        WeatherData interpolatedWeatherData = new WeatherData
+        {
+            weatherInitialDuration = deMeteo.data.weatherInitialDuration,
+            humidity = GetLerpedFloatAtTime(timeRemaining, deMeteo.data.humidity, versMeteo.data.humidity, deMeteo.data.weatherInitialDuration),
+            airTemperature = GetLerpedFloatAtTime(timeRemaining, deMeteo.data.airTemperature, versMeteo.data.airTemperature, deMeteo.data.weatherInitialDuration),
+            waterTemperature = GetLerpedFloatAtTime(timeRemaining, deMeteo.data.waterTemperature, versMeteo.data.waterTemperature, deMeteo.data.weatherInitialDuration),
+            atmosphericPressure = GetLerpedFloatAtTime(timeRemaining, deMeteo.data.atmosphericPressure, versMeteo.data.atmosphericPressure, deMeteo.data.weatherInitialDuration),
+            windSpeed = GetLerpedFloatAtTime(timeRemaining, deMeteo.data.windSpeed, versMeteo.data.windSpeed, deMeteo.data.weatherInitialDuration),
+            windOrientationValue = GetLerpedFloatAtTime(timeRemaining, deMeteo.data.windOrientationValue, versMeteo.data.windOrientationValue, deMeteo.data.weatherInitialDuration),
+            windDirection = _weatherManager.DetermineWindDirection(versMeteo.data.windOrientationValue),
+            weatherType = deMeteo.data.weatherType
+        };
 
-        UpdateWeatherUI();
+        return interpolatedWeatherData;
     }
-
-
-    private WeatherData PredictWeatherToTime(float timeRemaining, WeatherData currentWeather, WeatherData nextWeather)
-    {
-        WeatherData weather = new WeatherData();
-
-        // Humidity
-        weather.humidity = GetLerpedFloatAtTime(timeRemaining, currentWeather.humidity, nextWeather.humidity, currentWeather.weatherInitialDuration);
-
-        // Temperatures
-        weather.airTemperature = GetLerpedFloatAtTime(timeRemaining, currentWeather.airTemperature, nextWeather.airTemperature, currentWeather.weatherInitialDuration);
-        weather.waterTemperature = GetLerpedFloatAtTime(timeRemaining, currentWeather.waterTemperature, nextWeather.waterTemperature, currentWeather.weatherInitialDuration);
-
-        // Atmospheric pressure
-        weather.atmosphericPressure = GetLerpedFloatAtTime(timeRemaining, currentWeather.atmosphericPressure, nextWeather.atmosphericPressure, currentWeather.weatherInitialDuration);
-
-        // Wind
-        weather.windSpeed = GetLerpedFloatAtTime(timeRemaining, currentWeather.windSpeed, nextWeather.windSpeed, currentWeather.weatherInitialDuration);
-        weather.windOrientationValue = GetLerpedFloatAtTime(timeRemaining, currentWeather.windOrientationValue, nextWeather.windOrientationValue, currentWeather.weatherInitialDuration);
-        weather.windDirection = _weatherManager.DetermineWindDirection(weather.windOrientationValue);
-
-        // Type (Ne pas interpoler le type de météo)
-        weather.weatherType = currentWeather.weatherType;
-
-        return weather;
-    }
-
 
     //Start + (end - start) * (time / duration)
     private float GetLerpedFloatAtTime(float timeRemaining, float startValue, float endValue, float totalDuration)
@@ -747,9 +272,9 @@ public class WeatherForecast : MonoBehaviour
     private void UpdateWeatherUI()
     {
         // Afficher les prévisions dans l'UI
-        morningWeatherText.text = FormatWeather(morningWeather, "Matin");
+       /* morningWeatherText.text = FormatWeather(morningWeather, "Matin");
         middayWeatherText.text = FormatWeather(middayWeather, "Midi");
-        eveningWeatherText.text = FormatWeather(eveningWeather, "Soir");
+        eveningWeatherText.text = FormatWeather(eveningWeather, "Soir");*/
     }
 
     private string FormatWeather(WeatherData weather, string period)
