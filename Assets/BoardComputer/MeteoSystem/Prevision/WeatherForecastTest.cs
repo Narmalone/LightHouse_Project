@@ -25,7 +25,6 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     [SerializeField] private DayNightManager _dayNightManager;
 
     [SerializeField] private CustomEvent_WeatherType _onWeatherGenerated;
-    [SerializeField] private CustomEvent _eventMidNight;
 
     [Header("Forecast Settings")]
     [SerializeField] private float morningStart = 6f;

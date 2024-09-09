@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+#region ENUMS
 public enum WeatherType
 {
     Calm,   // Eau calme
@@ -25,6 +26,9 @@ public enum WindDirection
     SouthWest
 }
 
+#endregion
+
+#region STRUCTS
 [System.Serializable]
 public struct WeatherData
 {
@@ -40,8 +44,11 @@ public struct WeatherData
     public WeatherType weatherType; // Type de météo
 }
 
+#endregion
+
 public class WeatherManager : Singleton<WeatherManager>
 {
+    #region SERIALIZED FIELDS
     [Header("CONTROLLERS")]
     [SerializeField] private RainController _rainController;
     [SerializeField] private CloudsController _cloudsController;
@@ -64,9 +71,6 @@ public class WeatherManager : Singleton<WeatherManager>
     [Range(0f, 2f)]
     public float difficulty = 1.0f;
 
-    public bool FullRandomWeather = false;
-    public bool GenerateWeatherByWeather = false;
-
     [Header("Duration")]
     public float MinWeatherDuration = 25f;
     public float MaxWeatherDuration = 150f;
@@ -75,15 +79,18 @@ public class WeatherManager : Singleton<WeatherManager>
     public float MinWindSpeed = 5f;
     public float MaxWindSpeed = 100f;
 
-    [Header("Wind")]
+    [Header("Atmospheric Pressure")]
     public float MinAtmosphericPressure = 950f;
     public float MaxAtmosphericPressure = 1100f;
 
     [Header("DEBUGS INFOS --- ONLY")]
     [SerializeField] public List<WeatherData> weatherForecast;
     [SerializeField] private WeatherType _currentWeatherType;
-    public int indexWeather = 0;
+    public int CurrentWeatherIndex = 0;
+    public float TotalWeatherElapsedTime = 0f;
+    public float CurrentWeatherElapsedTime = 0f;
 
+    [Header("Current Datas")]
     public WeatherData currentWeather;
     public WeatherData nextWeather;
 
@@ -93,16 +100,19 @@ public class WeatherManager : Singleton<WeatherManager>
     public float AirTemperature;
     public float WaterTemperature;
     public float AtmosphericPressure;
+    #endregion
 
-    public float elapsedTime = 0f;
-    private float weatherChangeDuration;
-
-    [SerializeField] private bool _weatherLoaded = false;
-    public float _totalWeatherDuration = 0f;
-    [SerializeField] private float _targetWeatherDuration = 0f;
-    private List<float> _weatherDurations = new List<float>();
-
+    #region PRIVATE FIELDS
     private GameManager _gm;
+    private bool _weatherLoaded = false;
+
+    private float weatherChangeDuration;
+    private List<float> _weatherDurations = new List<float>();
+    private float _totalWeatherDuration = 0f;
+    private float _targetWeatherDuration = 0f;
+    #endregion
+
+    #region MONO'S CALLBACKS
 
     private void Start()
     {
@@ -110,37 +120,19 @@ public class WeatherManager : Singleton<WeatherManager>
 
         _totalWeatherDuration = GetTotalDuration(_gm.gameSettings.DayCycleDuration, _gm.gameSettings.TotalDays);
 
-        if (FullRandomWeather)
-        {
-            GenerateRandomWeatherForecast();
-            UpdateTodayAndTomorrowWeather();
-            weatherChangeDuration = currentWeather.weatherInitialDuration;
-            _onWeatherOverrideStart?.Raise(currentWeather.weatherType);
-            _weatherLoaded = true;
-            _onWeatherLoaded?.Raise();
-        }
-        else
-        {
-            StartCoroutine(RoutineGenerate());
-        }
+        StartCoroutine(RoutineGenerate());
     }
 
-    public float GlobalTimer = 0f;
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            elapsedTime = weatherChangeDuration;
-        }
-
         if (!_weatherLoaded) return;
-        elapsedTime += Time.deltaTime;
-        GlobalTimer += Time.deltaTime;
+        CurrentWeatherElapsedTime += Time.deltaTime;
+        TotalWeatherElapsedTime += Time.deltaTime;
 
         // Vérifier si le temps écoulé a dépassé la durée aléatoire
-        if (elapsedTime >= weatherChangeDuration)
+        if (CurrentWeatherElapsedTime >= weatherChangeDuration)
         {
-            elapsedTime = 0f;
+            CurrentWeatherElapsedTime = 0f;
             weatherChangeDuration = nextWeather.weatherInitialDuration;
 
             // Changer la météo
@@ -150,6 +142,9 @@ public class WeatherManager : Singleton<WeatherManager>
         InterpolateWeatherConditions();
     }
 
+    #endregion
+
+    #region GET FUNCTIONS
     private int GetTotalDuration(TimeDatas datas, int totalDay)
     {
         TimeSpan duration = new TimeSpan(
@@ -166,33 +161,15 @@ public class WeatherManager : Singleton<WeatherManager>
         return calculation;
     }
 
-    // Fonction utilitaire pour ajouter un certain nombre de jours d'un type de météo donné
-    private void AddWeatherType(List<WeatherType> list, WeatherType type, int count)
+
+    private WeatherPreset GetWeatherPresetForType(WeatherType weatherType)
     {
-        for (int i = 0; i < count; i++)
-        {
-            list.Add(type);
-        }
+        return _weatherPresets.Find(x => x.weatherType == weatherType);
     }
 
-    IEnumerator RoutineGenerate()
-    {
-        while (_targetWeatherDuration < _totalWeatherDuration)
-        {
-            float remainingDuration = _totalWeatherDuration - _targetWeatherDuration;
-            float weatherDuration = Mathf.Min(remainingDuration, Random.Range(MinWeatherDuration, MaxWeatherDuration));
-            _targetWeatherDuration += weatherDuration;
-            _weatherDurations.Add(weatherDuration);
-            yield return null;
-        }
-        
-        GenerateWeatherForecast();
-        weatherChangeDuration = _weatherDurations[0];
-        UpdateTodayAndTomorrowWeather();
-        _weatherLoaded = true;
-        _onWeatherLoaded?.Raise();
-    }
+    #endregion
 
+    #region GENERATE FUNCS
     private void GenerateWeatherForecast()
     {
         weatherForecast = new List<WeatherData>();
@@ -253,30 +230,39 @@ public class WeatherManager : Singleton<WeatherManager>
         }
     }
 
-    private WeatherPreset GetWeatherPresetForType(WeatherType weatherType)
-    {
-        return _weatherPresets.Find(x => x.weatherType == weatherType);
-    }
+    #endregion
 
-    private void GenerateRandomWeatherForecast()
+    #region ADDITIONNAL FUNCS
+    private void AddWeatherType(List<WeatherType> list, WeatherType type, int count)
     {
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < count; i++)
         {
-            WeatherData dayWeather = new WeatherData();
-            dayWeather.weatherInitialDuration = Random.Range(MinWeatherDuration, MaxWeatherDuration);
-            dayWeather.airTemperature = Random.Range(-15f, 40f);
-            dayWeather.waterTemperature = Random.Range(0f, 30f);
-            dayWeather.humidity = Random.Range(20f, 100f);
-            dayWeather.atmosphericPressure = Random.Range(950f, 1050f);
-            dayWeather.windSpeed = Random.Range(MinWindSpeed, MaxWindSpeed);
-
-            // Déterminer le type de météo basé sur des conditions corrélées
-            dayWeather.weatherType = DetermineWeatherType(dayWeather);
-
-            // Ajouter à la liste des prévisions
-            weatherForecast.Add(dayWeather);
+            list.Add(type);
         }
     }
+    #endregion
+
+    #region COROUTINES
+    IEnumerator RoutineGenerate()
+    {
+        while (_targetWeatherDuration < _totalWeatherDuration)
+        {
+            float remainingDuration = _totalWeatherDuration - _targetWeatherDuration;
+            float weatherDuration = Mathf.Min(remainingDuration, Random.Range(MinWeatherDuration, MaxWeatherDuration));
+            _targetWeatherDuration += weatherDuration;
+            _weatherDurations.Add(weatherDuration);
+            yield return null;
+        }
+        
+        GenerateWeatherForecast();
+        weatherChangeDuration = _weatherDurations[0];
+        UpdateTodayAndTomorrowWeather();
+        _weatherLoaded = true;
+        _onWeatherLoaded?.Raise();
+    }
+    #endregion
+
+    #region DETERMINE FUNCTIONS
 
     // Déterminer le type de météo pour un jour donné en complexifiant la logique
     public WeatherType DetermineWeatherType(WeatherData dayWeather)
@@ -323,15 +309,18 @@ public class WeatherManager : Singleton<WeatherManager>
             return WindDirection.NorthWest;
     }
 
+    #endregion
+
+    #region UPDATE INDEXES & NEXT WEATHERS FUNCTIONS
 
     // Mettre à jour la météo d'aujourd'hui et de demain
     private void UpdateTodayAndTomorrowWeather()
     {
-        if (indexWeather < weatherForecast.Count)
+        if (CurrentWeatherIndex < weatherForecast.Count)
         {
-            currentWeather = weatherForecast[indexWeather];
-            if (indexWeather + 1 < weatherForecast.Count)
-                nextWeather = weatherForecast[indexWeather + 1];
+            currentWeather = weatherForecast[CurrentWeatherIndex];
+            if (CurrentWeatherIndex + 1 < weatherForecast.Count)
+                nextWeather = weatherForecast[CurrentWeatherIndex + 1];
             else
                 nextWeather = currentWeather; // Si nous sommes au dernier jour, demain sera identique à aujourd'hui
             ApplyWeatherEffects();
@@ -341,22 +330,24 @@ public class WeatherManager : Singleton<WeatherManager>
     // Avancer au jour suivant
     private void AdvanceToNextWeather()
     {
-        indexWeather++;
-        if (indexWeather < weatherForecast.Count)
+        CurrentWeatherIndex++;
+        if (CurrentWeatherIndex < weatherForecast.Count)
         {
             UpdateTodayAndTomorrowWeather();
-            Debug.Log("Changement météo vers le jour suivant : " + indexWeather);
+            Debug.Log("Changement météo vers le jour suivant : " + CurrentWeatherIndex);
         }
         else
         {
             Debug.Log("Simulation des 31 jours terminée.");
         }
     }
+    #endregion
 
+    #region INTERPOLATE FUNC
     // Interpolation des conditions météorologiques entre aujourd'hui et demain
     private void InterpolateWeatherConditions()
     {
-        float lerpFactor = elapsedTime / weatherChangeDuration;
+        float lerpFactor = CurrentWeatherElapsedTime / weatherChangeDuration;
 
         Humidity = Mathf.Lerp(currentWeather.humidity, nextWeather.humidity, lerpFactor);
         WindSpeed = Mathf.Lerp(currentWeather.windSpeed, nextWeather.windSpeed, lerpFactor);
@@ -365,6 +356,10 @@ public class WeatherManager : Singleton<WeatherManager>
         WaterTemperature = Mathf.Lerp(currentWeather.waterTemperature, nextWeather.waterTemperature, lerpFactor);
         AtmosphericPressure = Mathf.Lerp(currentWeather.atmosphericPressure, nextWeather.atmosphericPressure, lerpFactor);
     }
+
+    #endregion
+
+    #region EVENTS RAISE
     // Appliquer les effets de la météo en fonction du type de météo actuel
     private void ApplyWeatherEffects()
     {
@@ -405,4 +400,6 @@ public class WeatherManager : Singleton<WeatherManager>
                 break;
         }
     }
+
+    #endregion
 }
