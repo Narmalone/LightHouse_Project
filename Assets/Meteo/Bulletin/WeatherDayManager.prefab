@@ -50,6 +50,8 @@ MonoBehaviour:
   _dayNightManager: {fileID: 0}
   _onWeatherGenerated: {fileID: 11400000, guid: 5c9110a41468ab343ae94cbeb856be98,
     type: 2}
+  _onDaysWeatherInitialized: {fileID: 11400000, guid: e5f982e5adf1eb943bc580814cc3e338,
+    type: 2}
   morningStart: 6
   middayStart: 12
   eveningStart: 18
@@ -59,7 +61,20 @@ MonoBehaviour:
   MorningAtTime: []
   MiddayAtTime: []
   EveningAtTime: []
+  MiddnightAtTime: []
   WeathersInDays: []
   MorningX: []
   MiddaysX: []
   EveningsX: []
+  MiddnightX: []
+  DesiredWeatherValueForNextDay:
+    humidity: 0
+    windSpeed: 0
+    airTemperature: 0
+    windOrientationValue: 0
+    windDirection: 0
+    waterTemperature: 0
+    atmosphericPressure: 0
+    weatherInitialDuration: 0
+    startAtTime: 0
+    weatherType: 0

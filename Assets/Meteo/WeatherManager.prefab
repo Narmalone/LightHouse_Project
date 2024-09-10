@@ -65,17 +65,23 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0116358840e48a14e9dedce0e225853b, type: 2}
   _weatherPattern: {fileID: 11400000, guid: 581524d9b21e3be4692993462bbb5336, type: 2}
   difficulty: 1
-  FullRandomWeather: 0
-  GenerateWeatherByWeather: 0
   MinWeatherDuration: 360
   MaxWeatherDuration: 840
-  MinWindSpeed: 5
+  MinWindSpeed: 0
   MaxWindSpeed: 150
+  MinHumidity: 0
+  MaxHumidity: 100
+  MinAirTemperature: 0
+  MaxAirTemperature: 35
+  MinWaterTemperature: 0
+  MaxWaterTemperature: 25
   MinAtmosphericPressure: 950
   MaxAtmosphericPressure: 1100
   weatherForecast: []
   _currentWeatherType: 0
-  indexWeather: 0
+  CurrentWeatherIndex: 0
+  TotalWeatherElapsedTime: 0
+  CurrentWeatherElapsedTime: 0
   currentWeather:
     humidity: 0
     windSpeed: 0
@@ -84,7 +90,8 @@ MonoBehaviour:
     windDirection: 0
     waterTemperature: 0
     atmosphericPressure: 0
-    weatherDuration: 0
+    weatherInitialDuration: 0
+    startAtTime: 0
     weatherType: 0
   nextWeather:
     humidity: 0
@@ -94,7 +101,8 @@ MonoBehaviour:
     windDirection: 0
     waterTemperature: 0
     atmosphericPressure: 0
-    weatherDuration: 0
+    weatherInitialDuration: 0
+    startAtTime: 0
     weatherType: 0
   Humidity: 0
   WindSpeed: 0
@@ -102,9 +110,13 @@ MonoBehaviour:
   AirTemperature: 0
   WaterTemperature: 0
   AtmosphericPressure: 0
-  _weatherLoaded: 0
-  _totalWeatherDuration: 0
-  _targetWeatherDuration: 0
+  WindDirection: 0
+  Humiditys: []
+  AirTemperatures: []
+  WaterTemperatures: []
+  AtmosphericsPressures: []
+  WindSpeeds: []
+  WindOrientations: []
 --- !u!1 &3454110344603239311
 GameObject:
   m_ObjectHideFlags: 0

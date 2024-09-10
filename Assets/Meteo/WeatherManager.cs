@@ -79,6 +79,18 @@ public class WeatherManager : Singleton<WeatherManager>
     public float MinWindSpeed = 5f;
     public float MaxWindSpeed = 100f;
 
+    [Header("Humidity")]
+    public float MinHumidity = 0f;
+    public float MaxHumidity = 100f;
+
+    [Header("Air Temperature")]
+    public float MinAirTemperature = 5f;
+    public float MaxAirTemperature = 35f;
+
+    [Header("Water Temperature")]
+    public float MinWaterTemperature = 5f;
+    public float MaxWaterTemperature = 25f;
+
     [Header("Atmospheric Pressure")]
     public float MinAtmosphericPressure = 950f;
     public float MaxAtmosphericPressure = 1100f;
@@ -101,6 +113,13 @@ public class WeatherManager : Singleton<WeatherManager>
     public float WaterTemperature;
     public float AtmosphericPressure;
     public WindDirection WindDirection;
+
+    [HideInInspector] public List<float> Humiditys = new List<float>();
+    [HideInInspector] public List<float> AirTemperatures = new List<float>();
+    [HideInInspector] public List<float> WaterTemperatures = new List<float>();
+    [HideInInspector] public List<float> AtmosphericsPressures = new List<float>();
+    [HideInInspector] public List<float> WindSpeeds = new List<float>();
+    [HideInInspector] public List<float> WindOrientations = new List<float>();
     #endregion
 
     #region PRIVATE FIELDS
@@ -228,6 +247,13 @@ public class WeatherManager : Singleton<WeatherManager>
             dayWeather.windDirection = DetermineWindDirection(dayWeather.windOrientationValue);
 
             weatherForecast.Add(dayWeather);
+
+            Humiditys.Add(dayWeather.humidity);
+            AtmosphericsPressures.Add(dayWeather.atmosphericPressure);
+            AirTemperatures.Add(dayWeather.airTemperature);
+            WaterTemperatures.Add(dayWeather.waterTemperature);
+            WindSpeeds.Add(dayWeather.windSpeed);
+            WindOrientations.Add(dayWeather.windOrientationValue);
         }
     }
 

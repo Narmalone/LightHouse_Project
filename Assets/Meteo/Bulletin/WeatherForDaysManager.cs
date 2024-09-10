@@ -25,6 +25,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     [SerializeField] private DayNightManager _dayNightManager;
 
     [SerializeField] private CustomEvent_WeatherType _onWeatherGenerated;
+    [SerializeField] private CustomEvent _onDaysWeatherInitialized;
 
     [Header("Forecast Settings")]
     [SerializeField] private float morningStart = 6f;
@@ -40,6 +41,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     public List<float> MorningAtTime = new List<float>();
     public List<float> MiddayAtTime = new List<float>();
     public List<float> EveningAtTime = new List<float>();
+    public List<float> MiddnightAtTime = new List<float>();
 
     [Header("Weathers Separated by Days")]
     public List<PeriodData> WeathersInDays = new List<PeriodData>();
@@ -48,6 +50,8 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     public List<WeatherData> MorningX = new();
     public List<WeatherData> MiddaysX = new();
     public List<WeatherData> EveningsX = new();
+
+    public List<WeatherData> MiddnightX = new();
 
     [Header("REPORT")]
     public WeatherData DesiredWeatherValueForNextDay; // TO DO:: A savoir comment on l'a definis et quand
@@ -89,6 +93,10 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
             MiddayAtTime = GetStepsAtTime(StartoffSetMidDay, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
             EveningAtTime = GetStepsAtTime(StartoffSetEvening, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
 
+            float startOffsetMidnight = _dayNightManager.TimeUntil(24f);
+            MiddnightAtTime = GetStepsAtTime(startOffsetMidnight, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
+            //MiddnightX = 
+
             //Calculer quelles météos tombent quels jours et à quelle heure
             WeathersInDays = GetWeathersInDays(_weatherManager.weatherForecast, _dayNightManager._homeTime, gameSettings.DayCycleDuration.Seconds);
 
@@ -98,9 +106,11 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
                 MorningX.Add(GetWeatherAtTime(i, morningStart, MorningAtTime));
                 MiddaysX.Add(GetWeatherAtTime(i, middayStart, MiddayAtTime));
                 EveningsX.Add(GetWeatherAtTime(i, eveningStart, EveningAtTime));
+                MiddnightX.Add(GetWeatherAtTime(i, 24f, MiddnightAtTime));
             }
 
             _isInitialized = true;
+            _onDaysWeatherInitialized?.Raise();
         }
     }
 
@@ -201,6 +211,12 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
                 }
             }
 
+            if (day == gameSettings.TotalDays)
+            {
+                toMeteo = WeathersInDays[0];
+                noNextDayFound = false;
+            }
+
             // Si aucune météo n'est trouvée pour les jours précédents ou suivants
             if (noPreviousDayFound || noNextDayFound)
             {
@@ -226,6 +242,11 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
             {
                 toMeteo = fromMeteo;
                 fromMeteo = WeathersInDays[indexes[0] - 1];
+            }
+
+            if (day == gameSettings.TotalDays)
+            {
+                toMeteo = WeathersInDays[0];
             }
 
             offset = _dayNightManager.TimeTo(fromMeteo.Hour, fromMeteo.Minits, fromMeteo.Seconds, fromMeteo.Day, day, hour);
