@@ -1,6 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum BoatReportType
+{
+    DANGEREUX,
+    SOS,
+    PANNE,
+    INFRACTION
+}
+
 public class SeaManager : Singleton<SeaManager>
 {
     public enum ReportedType{
