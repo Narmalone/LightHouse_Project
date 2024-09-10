@@ -19,6 +19,20 @@ public class RadarContent : ContentWindow
         {
             id++;
             buoy.Intialize(id);
+            buoy._reportEvent += OnReport;
         }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var buoy in _buoyReporters)
+        {
+            buoy._reportEvent -= OnReport;
+        }
+    }
+
+    private void OnReport(int id)
+    {
+        Debug.Log($"Buoy {id} is not working, send somebody to repair it.");
     }
 }
