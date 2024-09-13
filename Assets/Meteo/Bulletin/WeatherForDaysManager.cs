@@ -26,6 +26,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
 
     [SerializeField] private CustomEvent_WeatherType _onWeatherGenerated;
     [SerializeField] private CustomEvent _onDaysWeatherInitialized;
+    [SerializeField] private CustomEvent _middnightReached;
 
     [Header("Forecast Settings")]
     [SerializeField] private float morningStart = 6f;
@@ -50,11 +51,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     public List<WeatherData> MorningX = new();
     public List<WeatherData> MiddaysX = new();
     public List<WeatherData> EveningsX = new();
-
     public List<WeatherData> MiddnightX = new();
-
-    [Header("REPORT")]
-    public WeatherData DesiredWeatherValueForNextDay; // TO DO:: A savoir comment on l'a definis et quand
     #endregion
 
     #region PRIVATE FIELDS
@@ -68,16 +65,25 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     {
         base.Awake();
         _onWeatherGenerated.handle += _onWeatherUpdate_handle;
+        _middnightReached.handle += _middnightReached_handle;
     }
 
     private void OnDestroy()
     {
         _onWeatherGenerated.handle -= _onWeatherUpdate_handle;
+        _middnightReached.handle -= _middnightReached_handle;
     }
 
     #endregion
-
+    //la station attend un relevé météo entre 6h et 18h et à partir du moment ou c'est dans la fourchette
+    //on considère que c'est bon
+    //TOUT LES CHAMPS COMPLETES AVANT D'ENVOYER
     #region DELEGATES
+
+    private void _middnightReached_handle()
+    {
+        //
+    }
 
     private void _onWeatherUpdate_handle(WeatherType obj)
     {
@@ -211,7 +217,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
                 }
             }
 
-            if (day == gameSettings.TotalDays)
+            if (day == gameSettings.TotalDays || noNextDayFound)
             {
                 toMeteo = WeathersInDays[0];
                 noNextDayFound = false;
@@ -244,7 +250,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
                 fromMeteo = WeathersInDays[indexes[0] - 1];
             }
 
-            if (day == gameSettings.TotalDays)
+            if (day == gameSettings.TotalDays || day == WeathersInDays[WeathersInDays.Count - 1].Day)
             {
                 toMeteo = WeathersInDays[0];
             }

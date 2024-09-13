@@ -17,19 +17,19 @@ public class ShopContent : ContentWindow
 
     private void Awake()
     {
-        SortItems();
-        InitShopCards();
+        //SortItems();
+        //InitShopCards();
 
-        _onPlayerCurrencyChanged.handle += _onPlayerCurrencyChanged_handle;
+        //_onPlayerCurrencyChanged.handle += _onPlayerCurrencyChanged_handle;
     }
 
     private void Start()
     {
         playerManagerInstance = PlayerManager.Instance;
-        SetDeliveryTime(shopItemConfig.AverageDeliveryTime);
+        //SetDeliveryTime(shopItemConfig.AverageDeliveryTime);
 
-        CheckCostForPlayersMoney();
-        UpdatePlayerCurrencyText();
+        //CheckCostForPlayersMoney();
+        //UpdatePlayerCurrencyText();
     }
 
     private void Update()
@@ -42,7 +42,7 @@ public class ShopContent : ContentWindow
 
     private void OnDestroy()
     {
-        _onPlayerCurrencyChanged.handle -= _onPlayerCurrencyChanged_handle;
+        //_onPlayerCurrencyChanged.handle -= _onPlayerCurrencyChanged_handle;
     }
 
     private void InitShopCards()

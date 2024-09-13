@@ -19,6 +19,9 @@ public class MeteoDebbugerWindow : MonoBehaviour
     [Header("ATMOSPHERIC PRESSURE")]
     [SerializeField] private GraphMeteoDebugger atmosGraph;
 
+    [Header("WIND")]
+    [SerializeField] private GraphMeteoDebugger windSpeedGraph;
+
     private WeatherManager _weatherManager;
     private WeatherForDaysManager _dayWeathersManager;
 
@@ -26,6 +29,8 @@ public class MeteoDebbugerWindow : MonoBehaviour
     public List<float> atmosphericsPressures = new List<float>();
     public List<float> airTemps = new List<float>();
     public List<float> waterTemps = new List<float>();
+    public List<float> windsSpeeds = new List<float>();
+    public List<float> windsOrientations = new List<float>();
 
     private void Awake()
     {
@@ -45,12 +50,15 @@ public class MeteoDebbugerWindow : MonoBehaviour
             atmosphericsPressures.Add(_dayWeathersManager.MorningX[i].atmosphericPressure);
             airTemps.Add(_dayWeathersManager.MorningX[i].airTemperature);
             waterTemps.Add(_dayWeathersManager.MorningX[i].waterTemperature);
+            windsSpeeds.Add(_dayWeathersManager.MorningX[i].windSpeed);
+            windsOrientations.Add(_dayWeathersManager.MorningX[i].windOrientationValue);
         }
 
         InitValues(humiditys, _gameSettings.TotalDays, humidityGraph.Grid, humidityGraph.Line, _weatherManager.MinHumidity, _weatherManager.MaxHumidity);
         InitValues(airTemps, _gameSettings.TotalDays, airTempGraph.Grid, airTempGraph.Line, _weatherManager.MinAirTemperature, _weatherManager.MaxAirTemperature);
         InitValues(waterTemps, _gameSettings.TotalDays, waterTempGraph.Grid, waterTempGraph.Line, _weatherManager.MinWaterTemperature, _weatherManager.MaxWaterTemperature);
         InitValues(atmosphericsPressures, _gameSettings.TotalDays, atmosGraph.Grid, atmosGraph.Line, _weatherManager.MinAtmosphericPressure, _weatherManager.MaxAtmosphericPressure);
+        InitValues(windsSpeeds, _gameSettings.TotalDays, windSpeedGraph.Grid, windSpeedGraph.Line, _weatherManager.MinWindSpeed, _weatherManager.MaxWindSpeed);
     }
 
     private void Start()
@@ -62,6 +70,7 @@ public class MeteoDebbugerWindow : MonoBehaviour
         InitScales(airTempGraph, _weatherManager.MinAirTemperature, _weatherManager.MaxAirTemperature / 2f, _weatherManager.MaxAirTemperature, "°C");
         InitScales(waterTempGraph, _weatherManager.MinWaterTemperature, _weatherManager.MaxWaterTemperature / 2f, _weatherManager.MaxWaterTemperature, "°C");
         InitScales(atmosGraph, _weatherManager.MinAtmosphericPressure, (_weatherManager.MinAtmosphericPressure +_weatherManager.MaxAtmosphericPressure) / 2, _weatherManager.MaxAtmosphericPressure, "hPA");
+        InitScales(windSpeedGraph, _weatherManager.MinWindSpeed, _weatherManager.MaxWindSpeed / 2, _weatherManager.MaxWindSpeed, "km/h");
     }
 
     private void InitScales(GraphMeteoDebugger graph, float min, float median, float max, string suffix, Color background = default, Color lines = default)
