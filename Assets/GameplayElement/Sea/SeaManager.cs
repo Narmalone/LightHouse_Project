@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public enum BoatReportType
 {
+    NULL,
     DANGEREUX,
     SOS,
     PANNE,
@@ -11,23 +15,24 @@ public enum BoatReportType
 
 public class SeaManager : Singleton<SeaManager>
 {
-    public enum ReportedType{
+    public enum ReportedObjectType{
         BUOY = 0,
         BOAT = 1
     }
 
-    [SerializeField] private CustomEvent_Float _eventReportBuoy;
-    [SerializeField] private CustomEvent_Float _eventReportBoat;
+    [SerializeField] private CustomEvent_String _eventReportBuoy;
+    [SerializeField] private CustomEvent_String _eventReportBoat;
+    [SerializeField] private CustomEvent _eventWrongID;
     [SerializeField] private BoatCheckingReported _prefabBoatCheckingReported;
     [SerializeField] private Transform _parentBoatCheckingReported;
     [SerializeField] private Transform _spawnPointBoatCheckingReported;
-    [SerializeField] private SeaReportedObject[] _allBuoy;
-    [SerializeField] private SeaReportedObject[] _allBoat;
+    [SerializeField] private SeaElement[] _allBuoyObject;
+    [SerializeField] private SeaElement[] _allBoatObject;
 
     private BoatCheckingReported _currentBoatCheckingReported;
 
-    private List<List<SeaReportedObject>> _allSeaObjects = new List<List<SeaReportedObject>>();
-    private List<List<SeaReportedObject>> _allReported = new List<List<SeaReportedObject>>();
+    private List<List<SeaElement>> _allSeaObjects = new List<List<SeaElement>>(2);
+    private List<List<SeaElement>> _allReported = new List<List<SeaElement>>(2);
 
     protected override void Awake()
     {
@@ -40,8 +45,10 @@ public class SeaManager : Singleton<SeaManager>
     {
         SpawnPointBoatCheckingReported();
 
-        _allSeaObjects[(int)ReportedType.BUOY].AddRange(_allBuoy);
-        _allSeaObjects[(int)ReportedType.BOAT].AddRange(_allBuoy);
+        _allSeaObjects.Add(new List<SeaElement>());
+        _allSeaObjects.Add(new List<SeaElement>());
+        _allSeaObjects[(int)ReportedObjectType.BUOY].AddRange(_allBuoyObject);
+        _allSeaObjects[(int)ReportedObjectType.BOAT].AddRange(_allBoatObject);
     }
 
     private void OnDestroy()
@@ -50,20 +57,29 @@ public class SeaManager : Singleton<SeaManager>
         _eventReportBoat.handle -= ReportBoat;
     }
 
-    public void ReportBuoy(float id)
+    public void ReportBuoy(string id)
     {
-        Report(ReportedType.BUOY, id);
+        Report(ReportedObjectType.BUOY, id);
     }
 
-    public void ReportBoat(float id)
+    public void ReportBoat(string id)
     {
-        Report(ReportedType.BOAT, id);
+        Report(ReportedObjectType.BOAT, id);
     }
 
-    private void Report(ReportedType type, float id)
+    private void Report(ReportedObjectType type, string id)
     {
         // Ajouter dans la list des bouée a check
-        var reported = GetReportedObject(type, id);
+        Debug.Log((id));
+        Debug.Log(_allSeaObjects[(int)type][0]._id);
+
+        Debug.Log(id.Equals(_allSeaObjects[(int)type][0]._id, StringComparison.CurrentCultureIgnoreCase));
+        var reported = GetReportedObject(type, id.GetHashCode());
+
+        if (CheckIfIDIsReal(reported)) return;
+
+        Debug.Log($"Boat {id} has bean reported for {type} reason, send somebody to repair it.");
+        
         _allReported[(int)type].Add(reported);
 
         _currentBoatCheckingReported.UpdateDictionnary(reported);
@@ -76,13 +92,23 @@ public class SeaManager : Singleton<SeaManager>
         }
     }
 
-    private SeaReportedObject GetReportedObject(ReportedType type, float id)
+    private SeaElement GetReportedObject(ReportedObjectType type, int id)
     {
-        return _allSeaObjects[(int)type].Find(x => x.ID == id);
+        foreach (var item in _allSeaObjects[(int)type])
+        {
+            Debug.Log(id);
+        }
+        return _allSeaObjects[(int)type].Find(x => x._idHash == id); ;
     }
 
     private void SpawnPointBoatCheckingReported()
     {
         _currentBoatCheckingReported = Instantiate(_prefabBoatCheckingReported, _spawnPointBoatCheckingReported.position, _spawnPointBoatCheckingReported.rotation, _parentBoatCheckingReported);
+    }
+
+    public bool CheckIfIDIsReal(SeaElement obj)
+    {
+        if (obj == null) _eventWrongID.Raise();
+        return obj == null;
     }
 }

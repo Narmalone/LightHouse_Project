@@ -10,7 +10,7 @@ public class BoatCheckingReported : MonoBehaviour
         FIXING
     }
 
-    private List<SeaReportedObject> _allReported = new List<SeaReportedObject>();
+    private List<SeaElement> _allReported = new List<SeaElement>();
 
     private BoatState state;
     public BoatState State => state;
@@ -26,7 +26,7 @@ public class BoatCheckingReported : MonoBehaviour
         // Sinon retourner au spawn point
     }
 
-    public void UpdateDictionnary(SeaReportedObject go)
+    public void UpdateDictionnary(SeaElement go)
     {
         _allReported.Add(go);
     }

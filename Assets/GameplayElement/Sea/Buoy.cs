@@ -1,10 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Buoy : MonoBehaviour, SeaReportedObject
+public class Buoy : SeaElement
 {
-    private int _id;
-    public int ID { get => _id; set => _id = value; }
-    public GameObject This { get => gameObject;}
 }
