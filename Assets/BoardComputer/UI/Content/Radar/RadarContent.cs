@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class RadarContent : ContentWindow
 {
-    [SerializeField] private CustomEvent _eventWrongID;
     [SerializeField] private CustomEvent _eventOnButtonReportBoat;
     [SerializeField] private CustomEvent_String _eventReportBoat;
     [SerializeField] private TMP_InputField _inputField;
@@ -68,7 +67,7 @@ public class RadarContent : ContentWindow
     private void OnBoatReport()
     {
         var id = _inputField.textComponent.text;
-        _eventReportBoat.Raise(id);
-        _inputField.textComponent.text = string.Empty;
+        _eventReportBoat.Raise(id.Remove(id.Length-1));
+        _inputField.text = string.Empty;
     }
 }

@@ -23,6 +23,7 @@ public class SeaManager : Singleton<SeaManager>
     [SerializeField] private CustomEvent_String _eventReportBuoy;
     [SerializeField] private CustomEvent_String _eventReportBoat;
     [SerializeField] private CustomEvent _eventWrongID;
+    [SerializeField] private CustomEvent _eventIDCorrect;
     [SerializeField] private BoatCheckingReported _prefabBoatCheckingReported;
     [SerializeField] private Transform _parentBoatCheckingReported;
     [SerializeField] private Transform _spawnPointBoatCheckingReported;
@@ -47,6 +48,8 @@ public class SeaManager : Singleton<SeaManager>
 
         _allSeaObjects.Add(new List<SeaElement>());
         _allSeaObjects.Add(new List<SeaElement>());
+        _allReported.Add(new List<SeaElement>());
+        _allReported.Add(new List<SeaElement>());
         _allSeaObjects[(int)ReportedObjectType.BUOY].AddRange(_allBuoyObject);
         _allSeaObjects[(int)ReportedObjectType.BOAT].AddRange(_allBoatObject);
     }
@@ -70,16 +73,12 @@ public class SeaManager : Singleton<SeaManager>
     private void Report(ReportedObjectType type, string id)
     {
         // Ajouter dans la list des bouée a check
-        Debug.Log((id));
-        Debug.Log(_allSeaObjects[(int)type][0]._id);
-
-        Debug.Log(id.Equals(_allSeaObjects[(int)type][0]._id, StringComparison.CurrentCultureIgnoreCase));
-        var reported = GetReportedObject(type, id.GetHashCode());
+        var reported = GetReportedObject(type, id);
 
         if (CheckIfIDIsReal(reported)) return;
 
         Debug.Log($"Boat {id} has bean reported for {type} reason, send somebody to repair it.");
-        
+
         _allReported[(int)type].Add(reported);
 
         _currentBoatCheckingReported.UpdateDictionnary(reported);
@@ -92,13 +91,9 @@ public class SeaManager : Singleton<SeaManager>
         }
     }
 
-    private SeaElement GetReportedObject(ReportedObjectType type, int id)
+    private SeaElement GetReportedObject(ReportedObjectType type, string id)
     {
-        foreach (var item in _allSeaObjects[(int)type])
-        {
-            Debug.Log(id);
-        }
-        return _allSeaObjects[(int)type].Find(x => x._idHash == id); ;
+        return _allSeaObjects[(int)type].Find(x => id.Equals(x._id, StringComparison.CurrentCultureIgnoreCase));
     }
 
     private void SpawnPointBoatCheckingReported()
@@ -109,6 +104,8 @@ public class SeaManager : Singleton<SeaManager>
     public bool CheckIfIDIsReal(SeaElement obj)
     {
         if (obj == null) _eventWrongID.Raise();
+        else _eventIDCorrect.Raise();
+
         return obj == null;
     }
 }
