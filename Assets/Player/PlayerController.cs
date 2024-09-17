@@ -136,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
     private bool CheckWallAbove()
     {
-        //Debug.DrawRay(transform.position + controller.height / 2 * Vector3.up, Vector3.up * _heightCheckWallAbove, Color.red);
+        //Debug.DrawRay(_transform.position + controller.height / 2 * Vector3.up, Vector3.up * _heightCheckWallAbove, Color.red);
         var startPoint = transform.position + controller.height / 2 * Vector3.up;
         return Physics.CheckCapsule(startPoint, startPoint + Vector3.up * _heightCheckWallAbove, controller.radius, _layerWall);
     }
@@ -250,7 +250,7 @@ public class PlayerController : MonoBehaviour
 
     private bool HandleUncrounch()
     {
-        //Debug.DrawLine(transform.position + _initialHeight / 2 * Vector3.up, transform.position + _initialHeight / 2 * Vector3.up + _initialHeight / 2 * Vector3.up * _heightCheckWallAbove, Color.red, 10);
+        //Debug.DrawLine(_transform.position + _initialHeight / 2 * Vector3.up, _transform.position + _initialHeight / 2 * Vector3.up + _initialHeight / 2 * Vector3.up * _heightCheckWallAbove, Color.red, 10);
         var startPoint = transform.position + _initialHeight / 2 * Vector3.up;
         return !Physics.CheckCapsule(startPoint, startPoint + _initialHeight / 2 * Vector3.up * _heightCheckWallAbove, controller.radius, _layerWall);
     }

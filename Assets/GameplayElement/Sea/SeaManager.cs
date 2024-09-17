@@ -26,9 +26,7 @@ public class SeaManager : Singleton<SeaManager>
     [SerializeField] private CustomEvent _eventIDCorrect;
     [SerializeField] private BoatCheckingReported _prefabBoatCheckingReported;
     [SerializeField] private Transform _parentBoatCheckingReported;
-    [SerializeField] private Transform _spawnPointBoatCheckingReported;
-    [SerializeField] private SeaElement[] _allBuoyObject;
-    [SerializeField] private SeaElement[] _allBoatObject;
+    [SerializeField] private Transform[] _spawnPointBoatCheckingReported;
 
     private BoatCheckingReported _currentBoatCheckingReported;
 
@@ -40,24 +38,27 @@ public class SeaManager : Singleton<SeaManager>
         base.Awake();
         _eventReportBuoy.handle += ReportBuoy;
         _eventReportBoat.handle += ReportBoat;
+
+        _allSeaObjects.Add(new List<SeaElement>());
+        _allSeaObjects.Add(new List<SeaElement>());
+        _allReported.Add(new List<SeaElement>());
+        _allReported.Add(new List<SeaElement>());
     }
 
     private void Start()
     {
         SpawnPointBoatCheckingReported();
-
-        _allSeaObjects.Add(new List<SeaElement>());
-        _allSeaObjects.Add(new List<SeaElement>());
-        _allReported.Add(new List<SeaElement>());
-        _allReported.Add(new List<SeaElement>());
-        _allSeaObjects[(int)ReportedObjectType.BUOY].AddRange(_allBuoyObject);
-        _allSeaObjects[(int)ReportedObjectType.BOAT].AddRange(_allBoatObject);
     }
 
     private void OnDestroy()
     {
         _eventReportBuoy.handle -= ReportBuoy;
         _eventReportBoat.handle -= ReportBoat;
+    }
+
+    internal void InitSeaElement(ReportedObjectType type, SeaElement elem)
+    {
+        _allSeaObjects[(int)type].Add(elem);
     }
 
     public void ReportBuoy(string id)
@@ -81,7 +82,7 @@ public class SeaManager : Singleton<SeaManager>
 
         _allReported[(int)type].Add(reported);
 
-        _currentBoatCheckingReported.UpdateDictionnary(reported);
+        _currentBoatCheckingReported.UpdateList(reported);
 
         // Si pas de check en cours
         if (_currentBoatCheckingReported.State == BoatCheckingReported.BoatState.IDLE)
@@ -98,7 +99,9 @@ public class SeaManager : Singleton<SeaManager>
 
     private void SpawnPointBoatCheckingReported()
     {
-        _currentBoatCheckingReported = Instantiate(_prefabBoatCheckingReported, _spawnPointBoatCheckingReported.position, _spawnPointBoatCheckingReported.rotation, _parentBoatCheckingReported);
+        var spawnTransform = GetSpawnPosition();
+        _currentBoatCheckingReported = Instantiate(_prefabBoatCheckingReported, spawnTransform.position, spawnTransform.rotation, _parentBoatCheckingReported);
+        _currentBoatCheckingReported.SetSpawnPoints(_spawnPointBoatCheckingReported);
     }
 
     public bool CheckIfIDIsReal(SeaElement obj)
@@ -108,4 +111,10 @@ public class SeaManager : Singleton<SeaManager>
 
         return obj == null;
     }
+
+    private Transform GetSpawnPosition()
+    {
+        return _spawnPointBoatCheckingReported[UnityEngine.Random.Range(0,_spawnPointBoatCheckingReported.Length)];
+    }
+
 }

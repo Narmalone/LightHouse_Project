@@ -51,7 +51,7 @@ public class PlayerInteraction : MonoBehaviour
         if (playerCamera == null) return;
 
         Ray ray = new Ray(playerCamera.position, playerCamera.forward);
-        // Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * _raycastDistance, Color.red);
+        // Debug.DrawRay(playerCamera._transform.position, playerCamera._transform.forward * _raycastDistance, Color.red);
         if (Physics.Raycast(ray, out RaycastHit hit, _raycastDistance, _itemMask))
         {
             Debug.DrawRay(playerCamera.position, hit.point - playerCamera.position);
