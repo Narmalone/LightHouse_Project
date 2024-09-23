@@ -9,4 +9,5 @@ public class MeteoContent : ContentWindow
     public TemperatureController TemperatureController;
     public QualityAtmosphereController QualityAtmosphereController;
 
+    public LanguageText[] AllFixedTexts;
 }

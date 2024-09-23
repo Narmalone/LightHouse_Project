@@ -9,4 +9,12 @@ public class LanguageText : MonoBehaviour
 
     public TextMeshProUGUI Text;
     public List<MultiLanguage> mLanguages = new List<MultiLanguage>();
+
+    private void OnValidate()
+    {
+        if(GetComponent<TextMeshProUGUI>() != null)
+        {
+            Text = GetComponent<TextMeshProUGUI>();
+        }
+    }
 }

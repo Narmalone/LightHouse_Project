@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -17,6 +18,9 @@ public class LanguagesEditorWindow : EditorWindow
     public List<Button> HeaderButtons = new List<Button>();
 
     private VisualElement gameplayPannel;
+    private VisualElement lastComputerPageDisplayed;
+    private VisualElement messageriePannel;
+    private VisualElement meteoPannel;
 
     [MenuItem("Window/UI Toolkit/LanguagesEditorWindow")]
     public static void ShowExample()
@@ -97,92 +101,157 @@ public class LanguagesEditorWindow : EditorWindow
     {
         ObjectField computerField = gameplayPannel.Q<ObjectField>("ComputerObjectField");
         GameObject obj = computerField.value as GameObject;
+        messageriePannel = gameplayPannel.Q<VisualElement>("Messagerie");
+        meteoPannel = gameplayPannel.Q<VisualElement>("Meteo");
         if (obj == null) return;
 
         ComputerController targetComputer = obj.GetComponent<ComputerController>();
         if (targetComputer == null) return;
 
-        var ss = targetComputer._uiComputerController.messagerieWindow.AllTextsLanguages[0];
-        // Liste des langues (interface)
-        VisualElement languagesListContainer = new VisualElement();
-        languagesListContainer.style.flexDirection = FlexDirection.Column;
-        gameplayPannel.Add(languagesListContainer);
+        DropdownField computerPages = gameplayPannel.Q<DropdownField>("DropdownComputer");
+        computerPages.RegisterValueChangedCallback(OnDropDownChangedSelected);
 
-        // Bouton pour ajouter un groupe de langues
-        Button addButton = new Button();
-        addButton.text = "Add language group";
-        addButton.clicked += () =>
-        {
-            ss.mLanguages.Add(new MultiLanguage { Language = Languages.EN, Value = "New Text" });
-            RefreshLanguageList(languagesListContainer, targetComputer); // Rafraîchir l'UI après l'ajout
-        };
-        gameplayPannel.Add(addButton);
+        // Conteneur pour afficher la liste des sections de langues
+        VisualElement languagesSectionsContainer = new VisualElement();
+        languagesSectionsContainer.style.flexDirection = FlexDirection.Column;
+        messageriePannel.Add(languagesSectionsContainer);
 
         // Bouton pour sauvegarder les changements
         Button saveChanges = new Button();
         saveChanges.text = "Save Changes";
         saveChanges.clicked += () =>
         {
-            Undo.RecordObject(targetComputer, "Save Language Changes"); // Permet d'annuler
-            EditorUtility.SetDirty(targetComputer); // Marquer comme modifié
-
-            Debug.Log("Languages saved!");
-            // Ajouter du code pour sauvegarder les changements si nécessaire
+            Undo.RecordObject(targetComputer, "Save Language Changes");
+            EditorUtility.SetDirty(targetComputer);
+            Debug.Log("Languages saved and object marked as dirty!");
         };
         gameplayPannel.Add(saveChanges);
 
-        // Remplir la liste de langues
-        RefreshLanguageList(languagesListContainer, targetComputer);
+        // Remplir la liste des sections de langues, messagerie
+        SetupMessagerie(targetComputer, languagesSectionsContainer);
+        SetupMeteo(targetComputer, languagesSectionsContainer);
     }
 
-    private void RefreshLanguageList(VisualElement container, ComputerController targetComputer)
+    private void OnDropDownChangedSelected(ChangeEvent<string> evt)
+    {
+        if(evt.newValue != string.Empty && lastComputerPageDisplayed != null)
+        {
+            lastComputerPageDisplayed.style.display = DisplayStyle.None;
+        }
+
+        switch (evt.newValue)
+        {
+            case "Messagerie":
+                lastComputerPageDisplayed = messageriePannel;
+                break;
+            case "Météo":
+                lastComputerPageDisplayed = meteoPannel;
+                break;
+            case "Veille de nuit":
+                break;
+            case "Maintenance":
+                break;
+            case "Ravitaillement":
+                break;
+        }
+
+        lastComputerPageDisplayed.style.display = DisplayStyle.Flex;
+    }
+
+    private void SetupMessagerie(ComputerController targetComputer, VisualElement container)
+    {
+        RefreshLanguageSections(container, targetComputer, targetComputer._uiComputerController.messagerieWindow.AllTextsLanguages);
+
+    }
+    
+    private void SetupMeteo(ComputerController targetComputer, VisualElement container)
+    {
+        //RefreshLanguageSections(container, targetComputer, targetComputer._uiComputerController.meteoWindow.AllFixedTexts);
+
+    }
+
+
+    private void RefreshLanguageSections(VisualElement container, ComputerController targetComputer, LanguageText[] targetTexts)
     {
         container.Clear(); // Effacer les anciens éléments
 
-        // Récupérer la liste directement sans copie pour modifier l'original
-        var ss = targetComputer._uiComputerController.messagerieWindow.AllTextsLanguages[0].mLanguages;
-
-        // Pour chaque élément dans la liste des langues, créer un Foldout
-        for (int i = 0; i < ss.Count; i++)
+        // Pour chaque élément dans la liste AllTextsLanguages, créer un Foldout pour chaque section
+        for (int i = 0; i < targetTexts.Length; i++)
         {
-            int index = i; // Stocker l'index localement pour l'utiliser dans les callbacks
-            MultiLanguage languageEntry = ss[index];
+            int sectionIndex = i; // Stocker l'index localement pour l'utiliser dans les callbacks
+            var languageGroup = targetTexts[sectionIndex];
 
-            Foldout languageFoldout = new Foldout { text = $"Language {index + 1}" };
-            container.Add(languageFoldout);
+            // Créer un Foldout pour chaque section avec un nom lisible
+            Foldout sectionFoldout = new Foldout { text = targetTexts[sectionIndex].Text.text };
+            container.Add(sectionFoldout);
 
-            // Dropdown pour sélectionner la langue
-            EnumField languageEnumField = new EnumField(languageEntry.Language);
-            languageEnumField.label = "Language";
-            languageEnumField.Init(Languages.EN);
-            languageEnumField.RegisterValueChangedCallback(evt =>
+            // Ajouter un sous-Foldout pour chaque langue de cette section
+            VisualElement languagesListContainer = new VisualElement();
+            languagesListContainer.style.flexDirection = FlexDirection.Column;
+            sectionFoldout.Add(languagesListContainer);
+
+            // Ajouter les langues pour cette section
+            for (int j = 0; j < languageGroup.mLanguages.Count; j++)
             {
-                ss[index] = new MultiLanguage { Language = (Languages)evt.newValue, Value = ss[index].Value };
-                EditorUtility.SetDirty(targetComputer);  // Marquer l'objet comme modifié après chaque changement
-            });
-            languageFoldout.Add(languageEnumField);
+                int languageIndex = j;
+                MultiLanguage languageEntry = languageGroup.mLanguages[languageIndex];
 
-            // Champ texte pour entrer la valeur de la langue
-            TextField valueField = new TextField("Value");
-            valueField.value = languageEntry.Value;
-            valueField.RegisterValueChangedCallback(evt =>
-            {
-                ss[index] = new MultiLanguage { Language = ss[index].Language, Value = evt.newValue };
-                EditorUtility.SetDirty(targetComputer);  // Marquer l'objet comme modifié après chaque changement
-            });
-            languageFoldout.Add(valueField);
+                // Foldout pour chaque langue
+                Foldout languageFoldout = new Foldout { text = $"Language {languageIndex + 1}" };
+                languagesListContainer.Add(languageFoldout);
 
-            // Bouton pour supprimer un élément
-            Button removeButton = new Button { text = "Remove" };
-            removeButton.clicked += () =>
+                // Dropdown pour sélectionner la langue
+                EnumField languageEnumField = new EnumField(languageEntry.Language);
+                languageEnumField.label = "Language";
+                languageEnumField.Init(Languages.EN);
+                languageEnumField.RegisterValueChangedCallback(evt =>
+                {
+                    targetTexts[sectionIndex].mLanguages[languageIndex] = new MultiLanguage
+                    {
+                        Language = (Languages)evt.newValue,
+                        Value = targetTexts[sectionIndex].mLanguages[languageIndex].Value
+                    };
+                    EditorUtility.SetDirty(targetComputer);  // Marquer l'objet comme modifié après chaque changement
+                });
+                languageFoldout.Add(languageEnumField);
+
+                // Champ texte pour entrer la valeur de la langue
+                TextField valueField = new TextField("Value");
+                valueField.value = languageEntry.Value;
+                valueField.RegisterValueChangedCallback(evt =>
+                {
+                    targetTexts[sectionIndex].mLanguages[languageIndex] = new MultiLanguage
+                    {
+                        Language = targetTexts[sectionIndex].mLanguages[languageIndex].Language,
+                        Value = evt.newValue
+                    };
+                    EditorUtility.SetDirty(targetComputer);  // Marquer l'objet comme modifié après chaque changement
+                });
+                languageFoldout.Add(valueField);
+
+                // Bouton pour supprimer un élément
+                Button removeButton = new Button { text = "Remove" };
+                removeButton.clicked += () =>
+                {
+                    targetTexts[sectionIndex].mLanguages.RemoveAt(languageIndex);
+                    RefreshLanguageSections(container, targetComputer, targetTexts); // Rafraîchir l'UI après la suppression
+                    EditorUtility.SetDirty(targetComputer);  // Marquer l'objet comme modifié après la suppression
+                };
+                languageFoldout.Add(removeButton);
+            }
+
+            // Bouton pour ajouter une langue dans cette section
+            Button addLanguageButton = new Button { text = "Add language group" };
+            addLanguageButton.clicked += () =>
             {
-                ss.RemoveAt(index);
-                RefreshLanguageList(container, targetComputer); // Rafraîchir l'UI après la suppression
-                EditorUtility.SetDirty(targetComputer);  // Marquer l'objet comme modifié après la suppression
+                targetTexts[sectionIndex].mLanguages.Add(new MultiLanguage { Language = Languages.EN, Value = "New Text" });
+                RefreshLanguageSections(container, targetComputer, targetTexts); // Rafraîchir l'UI après l'ajout
+                EditorUtility.SetDirty(targetComputer);  // Marquer l'objet comme modifié après l'ajout
             };
-            languageFoldout.Add(removeButton);
+            sectionFoldout.Add(addLanguageButton);
         }
     }
+
 
 
     //Afficher les pages de l'ordinateur et pré sélectionner la première
