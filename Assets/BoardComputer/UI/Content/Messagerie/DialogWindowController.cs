@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class DialogWindowController : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _expeditorText;
-    [SerializeField] private TextMeshProUGUI _mailObjectText;
-    [SerializeField] private TextMeshProUGUI _mailBodyText;
+    [SerializeField] public TextMeshProUGUI _expeditorText;
+    [SerializeField] public TextMeshProUGUI _mailObjectText;
+    [SerializeField] public TextMeshProUGUI _mailBodyText;
     [SerializeField] private AutoSizeText _autoSizeText;
 
     [SerializeField] private CustomEvent_Mail _onMailSelectedChanged;

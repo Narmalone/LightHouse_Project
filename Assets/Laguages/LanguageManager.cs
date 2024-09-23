@@ -15,3 +15,10 @@ public class LanguageManager : MonoBehaviour
 {
     
 }
+
+[System.Serializable]
+public struct MultiLanguage
+{
+    public Languages Language;
+    public string Value;
+}

@@ -1,13 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Messagerie : ContentWindow
 {
     [SerializeField] private MailController _mailPrefab;
     [SerializeField] private ScrollWindowController _mailScrollWindow;
-    [SerializeField] private DialogWindowController _dialogWindow;
+    [SerializeField] public DialogWindowController _dialogWindow;
     [SerializeField] private CustomEvent_Mail _onMailSelectedChanged;
+    public TextMeshProUGUI ReceptionBoxText;
+    public TextMeshProUGUI UnreadsText;
+    public TextMeshProUGUI NowPlayingText;
+    public TextMeshProUGUI ReadsText;
+
+    public LanguageText[] AllTextsLanguages;
+
     public List<MailController> Controllers;
 
     public Mail CurrentOpenedMail;

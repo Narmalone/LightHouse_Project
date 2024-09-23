@@ -22,7 +22,7 @@ public class ComputerController : ElectricItem
 
     #region SERIALIZED FIELDS
     [Header("CONTROLLER")]
-    [SerializeField] private UiComputerController _uiComputerController;
+    [SerializeField] public UiComputerController _uiComputerController;
     [SerializeField] private BoxCollider _boxCollider;
 
     [Header("COMPUTER BUTTON")]

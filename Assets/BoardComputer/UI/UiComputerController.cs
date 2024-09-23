@@ -6,12 +6,12 @@ public class UiComputerController : MonoBehaviour
     [SerializeField] private CanvasGroup _mainCanvasGroup;
     [SerializeField] private TopBarController _topBarController;
 
-    [SerializeField] private Messagerie messagerieWindow;
-    [SerializeField] private ShopContent shopWindow;
-    [SerializeField] private MeteoContent meteoWindow;
-    [SerializeField] private QuestContent questWindow;
-    [SerializeField] private IslandContent islandWindow;
-    [SerializeField] private RadarContent radarWindow;
+    [SerializeField] public Messagerie messagerieWindow;
+    [SerializeField] public ShopContent shopWindow;
+    [SerializeField] public MeteoContent meteoWindow;
+    [SerializeField] public QuestContent questWindow;
+    [SerializeField] public IslandContent islandWindow;
+    [SerializeField] public RadarContent radarWindow;
 
     [Header("--- EVENTS ---")]
     [Header("RAISE")]
