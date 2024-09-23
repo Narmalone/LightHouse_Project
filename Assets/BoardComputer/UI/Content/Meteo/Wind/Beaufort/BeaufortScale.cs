@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,22 +6,68 @@ public class BeaufortScale : MonoBehaviour
 {
     public RectTransform[] BeaufortScales;
 
-    public float[] beaufortBoundaries = new float[] { 0, 1, 5, 11, 19, 28, 38, 49, 61, 74, 88, 102, 128 };
-    public float[] sliderValues = new float[] { 0, 0.0833f, 0.1667f, 0.25f, 0.3333f, 0.4167f, 0.5f, 0.5833f, 0.6667f, 0.75f, 0.8333f, 0.9167f, 1 };
+    private float[] _beaufortBoundaries = new float[] { 0, 1, 5, 11, 19, 28, 38, 49, 61, 74, 88, 102, 128 };
+    private float[] _sliderValues = new float[] { 0, 0.0833f, 0.1667f, 0.25f, 0.3333f, 0.4167f, 0.5f, 0.5833f, 0.6667f, 0.75f, 0.8333f, 0.9167f, 1 };
+    private BeaufortScaleInfo[] _beaufortScaleInfo = new BeaufortScaleInfo[]
+    {
+        new BeaufortScaleInfo("0", "0", ""),
+        new BeaufortScaleInfo("1", "0", ""),
+        new BeaufortScaleInfo("2", "1", ""),
+        new BeaufortScaleInfo("3", "1", ""),
+        new BeaufortScaleInfo("4", "1-2", ""),
+        new BeaufortScaleInfo("5", "2-3", ""),
+        new BeaufortScaleInfo("6", "3-4", ""),
+        new BeaufortScaleInfo("7", "4-5", ""),
+        new BeaufortScaleInfo("8", "5-7", ""),
+        new BeaufortScaleInfo("9", "7-10", ""),
+        new BeaufortScaleInfo("10", "9-12", ""),
+        new BeaufortScaleInfo("11", "12-16", ""),
+        new BeaufortScaleInfo("12", ">= 14", ""),
+    };
+
     public Slider Slider;
+    public TextMeshProUGUI ScaleTitleText;
+    public TextMeshProUGUI ScaleValueText;    
+    
+    public TextMeshProUGUI DescriptionTitleText;
+    public TextMeshProUGUI DescriptionValueText;
+
+    public TextMeshProUGUI WaveHeightTitleText;
+    public TextMeshProUGUI WaveHeightValueText;
+
+    public int CurrentBeaufortIndex = -1;
+
+    public void UpdateBeaufort(BeaufortScaleInfo scaleInfo)
+    {
+        ScaleValueText.text = scaleInfo.Scale;
+        DescriptionValueText.text = scaleInfo.Description;
+        WaveHeightValueText.text = scaleInfo.WavesHeight;
+    }
+
+    public void UpdateSlider(float sliderValue)
+    {
+        Slider.value = BeaufortToSlider(sliderValue);
+    }
+
+    public void UpdateBeaufortTitle()
+    {
+        DescriptionValueText.text = CurrentBeaufortIndex.ToString();
+    }
 
     public float BeaufortToSlider(float windSpeedKmH)
     {
         // Find the corresponding Beaufort scale value
-        for (int i = 0; i < beaufortBoundaries.Length - 1; i++)
+        for (int i = 0; i < _beaufortBoundaries.Length - 1; i++)
         {
-            if (windSpeedKmH <= beaufortBoundaries[i + 1])
+            if (windSpeedKmH <= _beaufortBoundaries[i + 1])
             {
-                float sliderValueInterp = sliderValues[i] + (windSpeedKmH - beaufortBoundaries[i]) / (beaufortBoundaries[i + 1] - beaufortBoundaries[i]) * (sliderValues[i + 1] - sliderValues[i]);
+                float sliderValueInterp = _sliderValues[i] + (windSpeedKmH - _beaufortBoundaries[i]) / (_beaufortBoundaries[i + 1] - _beaufortBoundaries[i]) * (_sliderValues[i + 1] - _sliderValues[i]);
+                CurrentBeaufortIndex = i;
                 return sliderValueInterp;
             }
         }
 
+        CurrentBeaufortIndex = _beaufortBoundaries.Length - 1;
         // If wind speed is above 128 km/h, return 1
         return 1;
     }
