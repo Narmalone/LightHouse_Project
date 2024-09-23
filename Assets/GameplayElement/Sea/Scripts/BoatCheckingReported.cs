@@ -60,10 +60,11 @@ public class BoatCheckingReported : MonoBehaviour
 
     private void PositionCloseToReported()
     {
-        _closestSpawnPoint = GetClosestPoint();
+        var targetPos = _currentTarget.transform.position;
+        _closestSpawnPoint = GetClosestPoint(targetPos);
 
         _agent.Move(_closestSpawnPoint - _transform.position);
-        transform.LookAt(_currentTarget.transform.position, Vector3.up);
+        transform.LookAt(targetPos, Vector3.up);
     }
 
     private void ReachTarget(Vector3 position)
@@ -110,6 +111,8 @@ public class BoatCheckingReported : MonoBehaviour
 
     private void GoingBack()
     {
+        _closestSpawnPoint = GetClosestPoint(transform.position);
+
         ReachTarget(_closestSpawnPoint);
     }
 
@@ -123,17 +126,17 @@ public class BoatCheckingReported : MonoBehaviour
         _spawnPoints = spawnPoints;
     }
 
-    private Vector3 GetClosestPoint()
+    private Vector3 GetClosestPoint(Vector3 comparePosition)
     {
-        var closestPoint = _spawnPoints[0];
+        var closestPoint = _spawnPoints[0].position;
         foreach (var item in _spawnPoints)
         {
-            if ((_currentTarget.transform.position - item.position).magnitude < (_currentTarget.transform.position - closestPoint.position).magnitude)
+            if ((comparePosition - item.position).magnitude < (comparePosition - closestPoint).magnitude)
             {
-                closestPoint = item;
+                closestPoint = item.position;
             }
         }
-        return closestPoint.position;
+        return closestPoint;
     }
 
     IEnumerator Fixing_Coroutine(float fixingDuration)
