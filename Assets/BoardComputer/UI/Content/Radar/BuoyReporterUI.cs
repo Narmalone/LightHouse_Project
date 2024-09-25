@@ -16,24 +16,25 @@ public class BuoyReporterUI : MonoBehaviour
     [SerializeField] private string _contentIdle;
     [SerializeField] private string _contentActivated;
 
-    private int _id;
+    private string _id;
 
     public Action<int> _reportEvent;
 
-    public void Intialize(int id)
+    public void Intialize(string id)
     {
         _id = id;
 
-        var idString = id.ToString();
+        var idInt = int.Parse(id);
 
-        _textLogoNumber.text= idString;
-        _textIdNumber.text = $"{(id > 99? "" : "0")}{(id > 9 ?"":"0")}{idString}";
+        _textLogoNumber.text= id;
+        _textIdNumber.text = $"{(idInt > 99? "" : "0")}{(idInt > 9 ?"":"0")}{id}";
 
         _textReportedBuoy.text = _contentIdle;
 
         _ledReported.color = _colorLedReportedIdle;
         _borderLogoNumber.color = _buttonReport.colors.normalColor;
     }
+
     public void Report()
     {
         _buttonReport.interactable = false;
@@ -43,9 +44,9 @@ public class BuoyReporterUI : MonoBehaviour
         _borderLogoNumber.color = _buttonReport.colors.selectedColor;
 
         // Raise
-        _reportEvent.Invoke(_id);
+        _reportEvent.Invoke(_id.GetHashCode());
     }
-    [ContextMenu("IDLE")]
+
     public void Idle()
     {
         _buttonReport.interactable = true;

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEditor.Progress;
+using Random = UnityEngine.Random;
 
 public enum BoatReportType
 {
@@ -22,16 +22,26 @@ public class SeaManager : Singleton<SeaManager>
 
     [SerializeField] private CustomEvent_String _eventReportBuoy;
     [SerializeField] private CustomEvent_String _eventReportBoat;
+    [SerializeField] private CustomEvent_String _eventSpawnBuoy;
     [SerializeField] private CustomEvent _eventWrongID;
     [SerializeField] private CustomEvent _eventIDCorrect;
     [SerializeField] private BoatCheckingReported _prefabBoatCheckingReported;
+    [SerializeField] private Buoy _buoyPrefab;
+    [SerializeField] private Transform _parentBuoy;
     [SerializeField] private Transform _parentBoatCheckingReported;
     [SerializeField] private Transform[] _spawnPointBoatCheckingReported;
+    [SerializeField] private Transform[] _spawnPointBuoy;
+    [SerializeField] private int _buoyAmount;
+
+    private List<Transform> _tempSpawnPointBuoy = new List<Transform>();
 
     private BoatCheckingReported _currentBoatCheckingReported;
 
     private List<List<SeaElement>> _allSeaObjects = new List<List<SeaElement>>(2);
     private List<List<SeaElement>> _allReported = new List<List<SeaElement>>(2);
+
+    private string _idChar = "ABCDEFGHJKLMNOPQRSTUVWXYZ0123456789";
+    private string _idCharBuoy = "0123456789";
 
     protected override void Awake()
     {
@@ -47,6 +57,7 @@ public class SeaManager : Singleton<SeaManager>
 
     private void Start()
     {
+        SpawnBuoys();
         SpawnPointBoatCheckingReported();
     }
 
@@ -99,7 +110,7 @@ public class SeaManager : Singleton<SeaManager>
 
     private void SpawnPointBoatCheckingReported()
     {
-        var spawnTransform = GetSpawnPosition();
+        var spawnTransform = GetCheckerSpawnPosition();
         _currentBoatCheckingReported = Instantiate(_prefabBoatCheckingReported, spawnTransform.position, spawnTransform.rotation, _parentBoatCheckingReported);
         _currentBoatCheckingReported.SetSpawnPoints(_spawnPointBoatCheckingReported);
     }
@@ -112,9 +123,54 @@ public class SeaManager : Singleton<SeaManager>
         return obj == null;
     }
 
-    private Transform GetSpawnPosition()
+    private Transform GetCheckerSpawnPosition()
     {
         return _spawnPointBoatCheckingReported[UnityEngine.Random.Range(0,_spawnPointBoatCheckingReported.Length)];
     }
+    
+    private Transform GetBuoySpawnPosition()
+    {
+        var spawnPoint = _tempSpawnPointBuoy[UnityEngine.Random.Range(0, _tempSpawnPointBuoy.Count)];
+        _tempSpawnPointBuoy.Remove(spawnPoint);
+        return spawnPoint;
+    }
 
+    private void SpawnBuoys()
+    {
+        _tempSpawnPointBuoy = _spawnPointBuoy.ToList();
+
+        for (int i = 0; i < _buoyAmount; i++)
+        {
+            AddBuoy();
+        }
+    }
+
+    private void AddBuoy()
+    {
+        var buoy = SpawnBuoy();
+        buoy.Initialize(GetID(true));
+        // Add buoy in list
+        _allSeaObjects[(int)ReportedObjectType.BUOY].Add(buoy);
+        // Raise event 
+        _eventSpawnBuoy.Raise(buoy.ID);
+    }
+
+    public Buoy SpawnBuoy()
+    {
+        var spawn = GetBuoySpawnPosition();
+        return Instantiate(_buoyPrefab, spawn.position, spawn.rotation, _parentBuoy);
+    }
+
+    private string GetID(bool isBuoy = false)
+    {
+        string id = "";
+        string idChar = isBuoy ? _idCharBuoy : _idChar;
+        int lengthId = isBuoy ? Random.Range(1,4) : 3;
+
+        for (int i = 0; i < lengthId; i++)
+        {
+            id = $"{id}{idChar[Random.Range(0, idChar.Length)]}";
+        }
+        return id;
+    }
 }

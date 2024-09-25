@@ -8,4 +8,10 @@ public class Buoy : SeaElement
         _type = ReportedObjectType.BUOY;
         base.Start();
     }
+
+    public void Initialize(string id)
+    {
+        _id = id;
+
+    }
 }

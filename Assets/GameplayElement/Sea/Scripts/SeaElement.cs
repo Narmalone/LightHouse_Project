@@ -7,7 +7,7 @@ public class SeaElement : MonoBehaviour
 {
     [SerializeField] public string _id;
     [SerializeField] private float _fixingDuration;
-    public int ID { get => _id.GetHashCode(); }
+    public string ID { get => _id; }
     public GameObject This { get => gameObject; }
 
     [Header("STATES")]
