@@ -8,18 +8,24 @@ public class RadarContent : ContentWindow
 {
     [SerializeField] private CustomEvent _eventOnButtonReportBoat;
     [SerializeField] private CustomEvent_String _eventReportBoat;
+    [SerializeField] private CustomEvent_String _eventReportBuoy;
     [SerializeField] private CustomEvent_String _eventAddBuoy;
     [SerializeField] private TMP_InputField _inputField;
-    [SerializeField] private Transform _parentBuoyReporterUI;
+    [SerializeField] private RectTransform _parentBuoyReporterUI;
     [SerializeField] private BuoyReporterUI _prefabBuoyReporterUI;
+    [SerializeField] private float _marginContentUI = 0.002f;
     [SerializeField] private List<BuoyReporterUI> _buoyReporters;
     [SerializeField] private ToggleBoatReportType[] _toggleReportType;
     private int _buoyCount => _buoyReporters.Count;
 
     private BoatReportType _boatReportType;
 
+    private Vector2 _sizeDeltaContentBuoyUI;
+
     private void Awake()
     {
+        _sizeDeltaContentBuoyUI.x = _parentBuoyReporterUI.sizeDelta.x;
+
         _eventAddBuoy.handle += OnBuoyAdded;
         _eventOnButtonReportBoat.handle += OnBoatReport;
     }
@@ -49,8 +55,9 @@ public class RadarContent : ContentWindow
         }
     }
 
-    private void OnReportBuoy(int id)
+    private void OnReportBuoy(string id)
     {
+        _eventReportBuoy.Raise(id);
         Debug.Log($"Buoy {id} is not working, send somebody to repair it.");
     }
 
@@ -70,6 +77,14 @@ public class RadarContent : ContentWindow
     {
         var buoyUI = Instantiate(_prefabBuoyReporterUI, _parentBuoyReporterUI);
         buoyUI.Intialize(id);
+        buoyUI._reportEvent += OnReportBuoy;
         _buoyReporters.Add(buoyUI);
+        UpdateContentReporterHeight();
+    }
+
+    private void UpdateContentReporterHeight()
+    {
+        _sizeDeltaContentBuoyUI.y = (_prefabBuoyReporterUI.GetComponent<RectTransform>().rect.height + _marginContentUI )* _buoyReporters.Count;
+        _parentBuoyReporterUI.sizeDelta = _sizeDeltaContentBuoyUI;
     }
 }

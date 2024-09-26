@@ -87,7 +87,7 @@ public class SeaManager : Singleton<SeaManager>
         // Ajouter dans la list des bouée a check
         var reported = GetReportedObject(type, id);
 
-        if (CheckIfIDIsReal(reported)) return;
+        if (type == ReportedObjectType.BOAT && CheckIfIDIsReal(reported)) return;
 
         Debug.Log($"Boat {id} has bean reported for {type} reason, send somebody to repair it.");
 

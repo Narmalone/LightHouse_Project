@@ -18,7 +18,7 @@ public class BuoyReporterUI : MonoBehaviour
 
     private string _id;
 
-    public Action<int> _reportEvent;
+    public Action<string> _reportEvent;
 
     public void Intialize(string id)
     {
@@ -44,7 +44,7 @@ public class BuoyReporterUI : MonoBehaviour
         _borderLogoNumber.color = _buttonReport.colors.selectedColor;
 
         // Raise
-        _reportEvent.Invoke(_id.GetHashCode());
+        _reportEvent.Invoke(_id);
     }
 
     public void Idle()
