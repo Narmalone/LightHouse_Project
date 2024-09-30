@@ -16,7 +16,7 @@ public class BuoyReporterUI : MonoBehaviour
     [SerializeField] private string _contentIdle;
     [SerializeField] private string _contentActivated;
 
-    private string _id;
+    public string _id;
 
     public Action<string> _reportEvent;
 

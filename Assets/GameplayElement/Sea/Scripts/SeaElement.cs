@@ -11,7 +11,7 @@ public class SeaElement : MonoBehaviour
     public GameObject This { get => gameObject; }
 
     [Header("STATES")]
-    [SerializeField] protected ReportedObjectType _type;
+    [SerializeField] public ReportedObjectType _type;
     [SerializeField] protected bool _startDamaged = false;
 
     [Header("EVENTS")]
@@ -44,20 +44,17 @@ public class SeaElement : MonoBehaviour
     
     private void OnStartFixing()
     {
-        Debug.Log($"Start Fixing Element {_id}");
         StartFixing();
     }
 
     public void OnUpdateFixing()
     {
-        Debug.Log($"Fixing Element {_id}");
         UpdateFixing();
     }
 
     private void OnEndFixing()
     {
         // Handle End Fixing
-        Debug.Log($"End Fixing Element {_id}");
 
         _eventFixing_Started.handle -= OnStartFixing;
         _eventFixing_Update.handle -= OnUpdateFixing;

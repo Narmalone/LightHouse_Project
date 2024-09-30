@@ -9,6 +9,7 @@ public class RadarContent : ContentWindow
     [SerializeField] private CustomEvent _eventOnButtonReportBoat;
     [SerializeField] private CustomEvent_String _eventReportBoat;
     [SerializeField] private CustomEvent_String _eventReportBuoy;
+    [SerializeField] private CustomEvent_String _eventRepairBuoy;
     [SerializeField] private CustomEvent_String _eventAddBuoy;
     [SerializeField] private TMP_InputField _inputField;
     [SerializeField] private RectTransform _parentBuoyReporterUI;
@@ -26,6 +27,7 @@ public class RadarContent : ContentWindow
     {
         _sizeDeltaContentBuoyUI.x = _parentBuoyReporterUI.sizeDelta.x;
 
+        _eventRepairBuoy.handle += OnRepairBuoy;
         _eventAddBuoy.handle += OnBuoyAdded;
         _eventOnButtonReportBoat.handle += OnBoatReport;
     }
@@ -38,6 +40,7 @@ public class RadarContent : ContentWindow
 
     private void OnDestroy()
     {
+        _eventRepairBuoy.handle -= OnRepairBuoy;
         _eventAddBuoy.handle -= OnBuoyAdded;
         _eventOnButtonReportBoat.handle -= OnBoatReport;
 
@@ -86,5 +89,14 @@ public class RadarContent : ContentWindow
     {
         _sizeDeltaContentBuoyUI.y = (_prefabBuoyReporterUI.GetComponent<RectTransform>().rect.height + _marginContentUI )* _buoyReporters.Count;
         _parentBuoyReporterUI.sizeDelta = _sizeDeltaContentBuoyUI;
+    }
+
+    private void OnRepairBuoy(string id)
+    {
+        Debug.Log(id);
+        var buoy = _buoyReporters.Find(x => x._id.Equals(id));
+        Debug.Log(buoy._id);
+        Debug.Log(buoy, buoy);
+        buoy.Idle();
     }
 }

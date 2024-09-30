@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
+using static SeaManager;
 
 public class BoatCheckingReported : MonoBehaviour
 {
@@ -18,10 +19,14 @@ public class BoatCheckingReported : MonoBehaviour
     [SerializeField] public CustomEvent _eventFixing_Started;
     [SerializeField] public CustomEvent _eventFixing_Update;
     [SerializeField] public CustomEvent _eventFixing_Finish;
+    [SerializeField] public CustomEvent_String _eventRepairBuoy;
+    [SerializeField] public CustomEvent_String _eventRepairBoat;
     [SerializeField] private NavMeshAgent _agent;
     [SerializeField] private List<SeaElement> _allReported = new List<SeaElement>();
 
     private Vector3 _closestSpawnPoint;
+
+    private Dictionary<ReportedObjectType, CustomEvent_String> _repairEvent = new Dictionary<ReportedObjectType, CustomEvent_String>();
     private Transform _transform;
     private Transform[] _spawnPoints;
     private SeaElement _currentTarget;
@@ -31,6 +36,9 @@ public class BoatCheckingReported : MonoBehaviour
 
     private void Start()
     {
+        _repairEvent.Add(ReportedObjectType.BOAT, _eventRepairBoat);
+        _repairEvent.Add(ReportedObjectType.BUOY, _eventRepairBuoy);
+
         _transform = transform;
         state = BoatState.IDLE;
     }
@@ -154,6 +162,8 @@ public class BoatCheckingReported : MonoBehaviour
 
         // Notify réparation finit
         _eventFixing_Finish.Raise();
+
+        _repairEvent[_currentTarget._type].Raise(_currentTarget._id);
 
         RemoveCurrentReported();
         HandleGoingBackOrContinue();
