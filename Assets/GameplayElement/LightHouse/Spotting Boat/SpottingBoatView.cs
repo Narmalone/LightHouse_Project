@@ -9,6 +9,7 @@ using UnityEngine.Rendering.HighDefinition;
 public class SpottingBoatView : ItemBase
 {
     [Header("Events")]
+    [SerializeField] private CustomEvent _eventActiveSpottingView;
     [SerializeField] private CustomEvent _eventFreezePlayer;
     [SerializeField] private CustomEvent _eventUnfreezePlayer;
     [SerializeField] private CustomEvent_Color _eventSetFadeColor;
@@ -77,6 +78,8 @@ public class SpottingBoatView : ItemBase
         _inputs.Game.Interact.performed += OnInteract;
         _inputs.Game.UseInInventory.performed += OnZoom;
 
+        _eventActiveSpottingView.handle += OnActiveView;
+
         transformCamera = _cameraView.transform;
         parentTransformCamera = transformCamera.parent;
     }
@@ -103,6 +106,8 @@ public class SpottingBoatView : ItemBase
         _inputs.Disable();
 
         _inputs.Game.Look.performed -= OnLook;
+        
+        _eventActiveSpottingView.handle -= OnActiveView;
     }
 
     public override bool Use()
@@ -115,6 +120,10 @@ public class SpottingBoatView : ItemBase
         HandleInteraction();
 
         return false;
+    }
+    private void OnActiveView()
+    {
+        Use();
     }
 
     private void OnZoom(InputAction.CallbackContext context)
