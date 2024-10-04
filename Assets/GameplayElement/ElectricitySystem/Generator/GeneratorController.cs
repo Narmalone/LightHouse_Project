@@ -15,13 +15,6 @@ public class GeneratorController : MonoBehaviour
     [SerializeField] private BoutonGenerator btnController;
     [SerializeField] private FuelLid fuelLid;
 
-    [Header("LIFE 3D BAR")]
-    [SerializeField] private Transform m_targetLife;
-    private Vector3 startPosition;
-    private Vector3 endPosition; 
-    private Vector3 startScale; 
-    public float endScaleY = 0f;
-
     [Header("GENERATOR")]
     [SerializeField] private float m_fuelValue = 100f;
     [SerializeField] private TriggerEvent m_triggerFuel;
@@ -56,9 +49,6 @@ public class GeneratorController : MonoBehaviour
     private void Awake()
     {
         m_fuelValue = m_maxFuelValue;
-        startPosition = m_targetLife.position;
-        startScale = m_targetLife.localScale;
-        endPosition = startPosition - (new Vector3(0f, startPosition.y / 2, 0f));
         m_shutdownEvent.eventAction += OnEventCalled;
 
         m_triggerFuel.OnEntered += M_triggerFuel_OnEntered;
@@ -217,10 +207,6 @@ public class GeneratorController : MonoBehaviour
     {
         if(IsOn)
             UpdateFuel();
-
-        float t = 1 - (m_fuelValue / m_maxFuelValue);
-        m_targetLife.position = Vector3.Lerp(startPosition, endPosition, t);
-        m_targetLife.localScale = new Vector3(startScale.x, Mathf.Lerp(startScale.y, endScaleY, t), startScale.z);
     }
 
     private void OnFuelValueChange(float value)

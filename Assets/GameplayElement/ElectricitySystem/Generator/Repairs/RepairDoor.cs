@@ -1,7 +1,13 @@
+using UnityEngine;
+
 public class RepairDoor : ItemBaseAnim
 {
     private string forPlayer;
     public override string Name { get => forPlayer; set => forPlayer = value; }
+
+    [Header("Languages")]
+    [SerializeField] private KeyWordLanguage _close;
+    [SerializeField] private KeyWordLanguage _open;
 
     private void Awake()
     {
@@ -16,7 +22,7 @@ public class RepairDoor : ItemBaseAnim
 
     private void UpdateName()
     {
-        forPlayer = isEnabled ? "Close" : "Open";
+        forPlayer = isEnabled ? $"{_close.CurrentValue}" : $"{_open.CurrentValue}";
         eventName?.Raise(forPlayer);
     }
 }

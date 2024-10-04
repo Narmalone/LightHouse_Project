@@ -26,6 +26,12 @@ public class HandleGenerator : ItemBase
     public event Action<bool> OnChanged; //param new Value
     [SerializeField] private CustomEvent_String eventName;
 
+
+    [Header("Languages")]
+    [SerializeField] private KeyWordLanguage switchTo;
+    [SerializeField] private KeyWordLanguage on;
+    [SerializeField] private KeyWordLanguage off;
+
     public override bool Use()
     {
         base.Use();
@@ -43,11 +49,11 @@ public class HandleGenerator : ItemBase
         animator.SetBool("IsEnabled", IsEnabled);
         if (isEnabled)
         {
-            forPlayer = "Switch to Off";
+            forPlayer = $"{switchTo.CurrentValue} {off.CurrentValue}";
         }
         else
         {
-            forPlayer = "Switch to On";
+            forPlayer = $"{switchTo.CurrentValue} {on.CurrentValue}";
         }
         eventName?.Raise(forPlayer);
     }

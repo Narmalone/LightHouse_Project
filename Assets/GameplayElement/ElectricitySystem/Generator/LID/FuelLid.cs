@@ -22,6 +22,10 @@ public class FuelLid : ItemBase
 
     [SerializeField] private CustomEvent_String eventName;
 
+    [Header("Languages")]
+    [SerializeField] private KeyWordLanguage _close;
+    [SerializeField] private KeyWordLanguage _open;
+
     private void Awake()
     {
         UpdateOpen();
@@ -38,11 +42,11 @@ public class FuelLid : ItemBase
         animator.SetBool("Open", isOpen);
         if (isOpen)
         {
-            forPlayer = "Close";
+            forPlayer = $"{_close.CurrentValue}";
         }
         else
         {
-            forPlayer = "Open";
+            forPlayer = $"{_open.CurrentValue}";
         }
         eventName?.Raise(forPlayer);
     }

@@ -8,6 +8,7 @@ public class MeteoContent : ContentWindow
     [SerializeField] private TextMeshProUGUI _weatherReportTxt;   
     public TemperatureController TemperatureController;
     public QualityAtmosphereController QualityAtmosphereController;
+    public WindController WindController;
 
     public LanguageText[] AllFixedTexts;
 }

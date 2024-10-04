@@ -1,25 +1,15 @@
 using MPUIKIT;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 [System.Serializable]
 public struct BeaufortScaleInfo
 {
-    public string Scale;
+    public string ScaleLevel;
     public string WavesHeight;
-    public string Description;
-
-    public BeaufortScaleInfo(string scale, string wavesHeight, string description)
-    {
-        this.Scale = scale;
-        this.WavesHeight = wavesHeight;
-        this.Description = description;
-    }
-
-    public void SetDescription()
-    {
-
-    }
+    public string WaterDescription;
+    public List<MultiLanguage> waterDescriptionLanguages;
 }
 
 

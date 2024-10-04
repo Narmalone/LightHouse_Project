@@ -61,6 +61,8 @@ public class ComputerController : ElectricItem
     [SerializeField] private CinemachineVirtualCamera _computerCam;
 
     [SerializeField] private string _interactName = "Enter";
+    [SerializeField] private CustomEvent_Int _onLanguageChanged;
+    [SerializeField] private KeyWordLanguage _enterLanguage;
 
     private Material _instanceMat;
     private bool _isInComputer = false;
@@ -85,12 +87,15 @@ public class ComputerController : ElectricItem
     private void Awake()
     {
         _onLeftButtonCliqued.handle += _onLeftButtonCliqued_handle;
+        _onLanguageChanged.handle += _onLanguageChanged_handle;
         _changeEmissiveRoutine = PulseRoutine();
+        _interactName = _enterLanguage.CurrentValue;
     }
 
     private void OnDestroy()
     {
         _onLeftButtonCliqued.handle -= _onLeftButtonCliqued_handle;
+        _onLanguageChanged.handle -= _onLanguageChanged_handle;
     }
 
     private void Start()
@@ -105,6 +110,11 @@ public class ComputerController : ElectricItem
     private void _onLeftButtonCliqued_handle()
     {
         LeaveComputer();
+    }
+
+    private void _onLanguageChanged_handle(int obj)
+    {
+        _interactName = _enterLanguage.CurrentValue;
     }
 
     #endregion

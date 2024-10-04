@@ -7,13 +7,13 @@
         <engine:GroupBox>
             <editor:ObjectField label="Object Field" value="project://database/Assets/BoardComputer/3D/SM_Computer.prefab?fileID=1696037683023708227&amp;guid=188f33ff6d7cdf440a98a193b73ace3f&amp;type=3#SM_Computer" name="ComputerObjectField" style="visibility: visible; display: none;" />
         </engine:GroupBox>
-        <engine:VisualElement name="Computer" style="flex-grow: 1;">
-            <engine:GroupBox>
+        <engine:VisualElement name="ComputerContainer" style="flex-grow: 1; display: none;">
+            <engine:GroupBox name="GroupBox">
                 <engine:DropdownField label="Pages de l&apos;ordinateur: " name="DropdownComputer" choices="Messagerie,Météo,Veille de nuit,Maintenance,Ravitaillement" index="-1" style="font-size: 18px;" />
             </engine:GroupBox>
             <engine:GroupBox name="Messagerie" style="height: auto; display: none;" />
             <engine:GroupBox name="Meteo" style="height: auto; display: none;" />
         </engine:VisualElement>
-        <engine:VisualElement name="UsableObjects" style="flex-grow: 1; display: none;" />
+        <engine:VisualElement name="UsableObjectsContainer" style="flex-grow: 1; display: none;" />
     </engine:VisualElement>
 </engine:UXML>

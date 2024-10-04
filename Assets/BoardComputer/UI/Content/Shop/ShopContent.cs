@@ -61,10 +61,10 @@ public class ShopContent : ContentWindow
     {
         foreach(ShopCardController ctrl in controllers)
         {
-            ctrl.BuyBtn.onClick.AddListener(() =>
+            /*ctrl.BuyBtn.onClick.AddListener(() =>
             {
                 playerManagerInstance._data.CurrencyShop -= ctrl.ShopItemData.Cost;
-            });
+            });*/
         }
     }
 
@@ -107,7 +107,7 @@ public class ShopContent : ContentWindow
         var currency = playerManagerInstance._data.CurrencyShop;
         foreach (ShopCardController ctrl in controllers)
         {
-            ctrl.BuyBtn.interactable = ctrl.ShopItemData.Cost <= currency; 
+            //ctrl.BuyBtn.interactable = ctrl.ShopItemData.Cost <= currency; 
         }
     }
 

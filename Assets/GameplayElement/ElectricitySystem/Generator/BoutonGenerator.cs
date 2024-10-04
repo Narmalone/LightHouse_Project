@@ -27,6 +27,11 @@ public class BoutonGenerator : ItemBase
 
     [SerializeField] private CustomEvent_String eventName;
 
+    [Header("Languages")]
+    [SerializeField] private KeyWordLanguage switchTo;
+    [SerializeField] private KeyWordLanguage on;
+    [SerializeField] private KeyWordLanguage off;
+
     private void Awake()
     {
         UpdateButton();
@@ -48,11 +53,11 @@ public class BoutonGenerator : ItemBase
 
         if (isEnabled)
         {
-            forPlayer = "Switch to Off";
+            forPlayer = $"{switchTo.CurrentValue} {off.CurrentValue}";
         }
         else
         {
-            forPlayer = "Switch to On";
+            forPlayer = $"{switchTo.CurrentValue} {on.CurrentValue}";
         }
         eventName?.Raise(forPlayer);
     }
