@@ -29,4 +29,16 @@ public static class ListExtentions
         }
         return ts;
     }
+
+    public static void ClearAndResetObjects<T>(this List<T> target) where T : MonoBehaviour
+    {
+        for (int i = 0; i < target.Count; i++)
+        {
+            target[i].enabled = false; // disable the MonoBehaviour
+            target[i].gameObject.SetActive(false); // deactivate the GameObject
+                                                   // Add any other reset logic you need here
+            Object.Destroy(target[i].gameObject);
+        }
+        target.Clear();
+    }
 }

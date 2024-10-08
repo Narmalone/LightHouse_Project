@@ -1,9 +1,6 @@
 using MPUIKIT;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ShopCardController : MonoBehaviour
 {
@@ -14,11 +11,30 @@ public class ShopCardController : MonoBehaviour
     public TextMeshProUGUI ItemCost;
     public TextMeshProUGUI dollarText;
 
-    public ShopItemData ShopItemData;
+    public ShopItemData ItemDataInstance;
+    private ShopItemData _itemData;
 
-    public void SetCardsInfos(string name, int cost)
+    private void Awake()
     {
-        ItemName.text = name;
-        ItemCost.text = cost.ToString();
+        ItemDataInstance = ScriptableObject.CreateInstance<ShopItemData>();
+    }
+
+    public void SetItemData(ShopItemData item)
+    {
+        _itemData = item;
+        ItemDataInstance.Name = _itemData.Name;
+        ItemDataInstance.Description = _itemData.Description;
+        ItemDataInstance.BaseCost = _itemData.BaseCost;
+        ItemDataInstance.StockItems = _itemData.StockItems;
+        ItemDataInstance.Prefab = _itemData.Prefab;
+
+        UpdateCardInfoFromItemData();
+    }
+
+    public virtual void UpdateCardInfoFromItemData()
+    {
+        ItemName.text = ItemDataInstance.Name;
+        ItemDescription.text = ItemDataInstance.Description;
+        ItemCost.text = ItemDataInstance.BaseCost.ToString();
     }
 }

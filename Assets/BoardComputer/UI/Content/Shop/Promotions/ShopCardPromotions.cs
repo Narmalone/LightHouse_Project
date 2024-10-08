@@ -10,4 +10,11 @@ public class ShopCardPromotions : ShopCardController
     public TextMeshProUGUI OldCostTxt;
     public TextMeshProUGUI NumberOfItemRemaining;
 
+    public override void UpdateCardInfoFromItemData()
+    {
+        NumberOfItemRemaining.text = "x" + ItemDataInstance.StockItems.ToString();
+        ItemName.text = ItemDataInstance.Name;
+        ItemDescription.text = ItemDataInstance.Description;
+        OldCostTxt.text = ItemDataInstance.BaseCost.ToString();
+    }
 }

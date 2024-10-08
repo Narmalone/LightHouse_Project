@@ -12,6 +12,10 @@ public class LanguageText : MonoBehaviour
 
     private void Awake()
     {
+        if (Text == null && GetComponent<TextMeshProUGUI>() != null)
+        {
+            Text = GetComponent<TextMeshProUGUI>();
+        }
         _onLanguageChanged.handle += _onLanguageChanged_handle;
     }
 
@@ -32,7 +36,7 @@ public class LanguageText : MonoBehaviour
 
     private void OnValidate()
     {
-        if(GetComponent<TextMeshProUGUI>() != null)
+        if(GetComponent<TextMeshProUGUI>() != null && Text == null)
         {
             Text = GetComponent<TextMeshProUGUI>();
         }
