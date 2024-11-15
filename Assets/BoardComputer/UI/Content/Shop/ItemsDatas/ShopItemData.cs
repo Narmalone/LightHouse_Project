@@ -10,4 +10,5 @@ public class ShopItemData : ScriptableObject
     public int BaseCost;
     public int StockItems;
     public ItemBase Prefab;
+    public uint ItemID;
 }

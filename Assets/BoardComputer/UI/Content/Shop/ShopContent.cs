@@ -7,33 +7,33 @@ public class ShopContent : ContentWindow
 {
     [SerializeField] private TextMeshProUGUI playerCurrencyTxt;
     [SerializeField] private TextMeshProUGUI deliveryTimeTxt;
-    [SerializeField] private ShopCardController buyableCardsPrefab;
-    [SerializeField] private ShopCardController cartCardsPrefab;
-    [SerializeField] private ShopCardController commandCardsPrefab;
-    [SerializeField] private Transform shopCardsTransform;
     [SerializeField] private ShopItemConfig shopItemConfig;
     public Promotions PromotionsController;
+    public Market MarketController;
+    public Cart CartController;
+    public Commands CommandsController;
     [SerializeField] private CustomEvent_Float _onPlayerCurrencyChanged;
-    [SerializeField] private List<ShopCardController> controllers = new List<ShopCardController>();
 
     private PlayerManager playerManagerInstance;
 
     private void Awake()
     {
-        //SortItems();
-        //InitShopCards();
-
-        //_onPlayerCurrencyChanged.handle += _onPlayerCurrencyChanged_handle;
+        _onPlayerCurrencyChanged.handle += _onPlayerCurrencyChanged_handle;
+        PromotionsController.OnItemBuyCliqued += PromotionsController_OnItemBuyCliqued;
+        MarketController.OnItemBuyCliqued += MarketController_OnItemBuyCliqued;
+        CartController.CommandButton.onClick.AddListener(OnCommandCartCliqued);
     }
 
     private void Start()
     {
         playerManagerInstance = PlayerManager.Instance;
         PromotionsController.GenerateRandomPromotions(shopItemConfig);
-        //SetDeliveryTime(shopItemConfig.AverageDeliveryTime);
+        MarketController.GenerateMarketItems(shopItemConfig);
 
-        //CheckCostForPlayersMoney();
-        //UpdatePlayerCurrencyText();
+        UpdatePlayerCurrencyText(playerManagerInstance._data.CurrencyShop);
+        CartController.SetCartPriceText(0);
+        PlayerValidateCartButtonCheck();
+        //SetDeliveryTime(shopItemConfig.AverageDeliveryTime);
     }
 
     private void Update()
@@ -46,30 +46,10 @@ public class ShopContent : ContentWindow
 
     private void OnDestroy()
     {
-        //_onPlayerCurrencyChanged.handle -= _onPlayerCurrencyChanged_handle;
-    }
-
-    private void InitShopCards()
-    {
-        for (int i = 0; i < shopItemConfig.Items.Count; i++)
-        {
-            ShopCardController newItem = Instantiate(buyableCardsPrefab, shopCardsTransform);
-            //newItem.SetCardsInfos(shopItemConfig.Items[i].Name, shopItemConfig.Items[i].Cost);
-            newItem.ItemDataInstance = shopItemConfig.Items[i];
-            controllers.Add(newItem);
-        }
-        InitCardButtons();
-    }
-
-    private void InitCardButtons()
-    {
-        foreach(ShopCardController ctrl in controllers)
-        {
-            /*ctrl.BuyBtn.onClick.AddListener(() =>
-            {
-                playerManagerInstance._data.CurrencyShop -= ctrl.ShopItemData.Cost;
-            });*/
-        }
+        _onPlayerCurrencyChanged.handle -= _onPlayerCurrencyChanged_handle;
+        PromotionsController.OnItemBuyCliqued -= PromotionsController_OnItemBuyCliqued;
+        MarketController.OnItemBuyCliqued -= MarketController_OnItemBuyCliqued;
+        CartController.CommandButton.onClick.RemoveAllListeners();
     }
 
     private void SortItems()
@@ -91,11 +71,80 @@ public class ShopContent : ContentWindow
         }
     }
 
-   
+
+    private void MarketController_OnItemBuyCliqued(ShopCardBasic obj)
+    {
+        GenerateCartItem(obj.ItemDataInstance.BaseCost, obj.ItemDataInstance, obj.ItemState);
+        PlayerValidateCartButtonCheck();
+    }
+
+    private void PromotionsController_OnItemBuyCliqued(ShopCardPromotions obj)
+    {
+        GenerateCartItem(obj.CostWithPromotion, obj.ItemDataInstance, obj.ItemState, true);
+        PlayerValidateCartButtonCheck();
+    }
+
+    private void OnCommandCartCliqued()
+    {
+        //réinitialiser la thune
+        playerManagerInstance._data.CurrencyShop -= CartController.TotalPriceInCart;
+        CommandsController.MoveCartToCommands(CartController.Controllers);
+        CartController.ResetCart();
+        PlayerValidateCartButtonCheck();
+    }
+
+    public void GenerateCartItem(int itemPrice, ShopItemData itemData, ShopItemState boughtFromItemState, bool fromPromotion = false)
+    {
+        ShopCartItem generatedItem = CartController.OnItemAddedToCart(itemPrice, itemData, boughtFromItemState, (removedItem) =>
+        {
+            CartController.TotalPriceInCart -= removedItem.StoredPrice;
+            CartController.UpdateCartPrice();
+            CartController.Scroller.UpdateContentTransform();
+
+            switch (removedItem.BoughtFromItemState)
+            {
+                case ShopItemState.Promotion:
+                    ShopCardPromotions item = PromotionsController.FindItemByName(removedItem.ItemDataInstance.Name)[0];
+                    item.AddAndUpdateStock(1);
+                    break;
+                case ShopItemState.MainMarket:
+                    ShopCardBasic marketItm = MarketController.FindItemByName(removedItem.ItemDataInstance.Name)[0];
+                    marketItm.AddAndUpdateStock(1);
+                    break;
+            }
+            CartController.Controllers.Remove(removedItem);
+            Destroy(removedItem.gameObject);
+            PlayerValidateCartButtonCheck();
+        });
+
+        if (fromPromotion)
+            generatedItem.ItemCost.color = Color.green;
+        
+    }
 
     public void UpdatePlayerCurrencyText(float value)
     {
         playerCurrencyTxt.text = value.ToString();
+    }
+
+    public bool PlayerValidateCartButtonCheck()
+    {
+        if (CartController.TotalPriceInCart <= 0 || CartController.Controllers.Count == 0)
+        {
+            CartController.CommandButton.interactable = false;
+            return false;
+        }
+        if (CartController.TotalPriceInCart > playerManagerInstance._data.CurrencyShop && CartController.CommandButton.interactable == true)
+        {
+            //Désactiver
+            CartController.CommandButton.interactable = false;
+        }
+        else if (CartController.TotalPriceInCart <= playerManagerInstance._data.CurrencyShop && CartController.CommandButton.interactable == false)
+        {
+            //activer
+            CartController.CommandButton.interactable = true;
+        }
+        return CartController.CommandButton.interactable;
     }
 
     public override void OnShow()
@@ -103,18 +152,9 @@ public class ShopContent : ContentWindow
         
     }
 
-    private void CheckCostForPlayersMoney()
-    {
-        var currency = playerManagerInstance._data.CurrencyShop;
-        foreach (ShopCardController ctrl in controllers)
-        {
-            //ctrl.BuyBtn.interactable = ctrl.ShopItemData.Cost <= currency; 
-        }
-    }
-
     private void _onPlayerCurrencyChanged_handle(float obj)
     {
-        CheckCostForPlayersMoney();
         UpdatePlayerCurrencyText(obj);
+        PlayerValidateCartButtonCheck();
     }
 }

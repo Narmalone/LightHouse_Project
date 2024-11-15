@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.054265, y: 0.0153}
+  m_SizeDelta: {x: 0.055425, y: 0.0153}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3060922859755152318
 MonoBehaviour:
@@ -283,7 +283,7 @@ MonoBehaviour:
   m_DrawShape: 3
   m_ImageType: 0
   m_StrokeWidth: 0
-  m_FalloffDistance: 0
+  m_FalloffDistance: 0.001
   m_OutlineWidth: 0.0006
   m_OutlineColor: {r: 0, g: 0, b: 0, a: 1}
   m_ShapeRotation: 0
@@ -788,7 +788,7 @@ MonoBehaviour:
   m_DrawShape: 3
   m_ImageType: 0
   m_StrokeWidth: 0
-  m_FalloffDistance: 0
+  m_FalloffDistance: 0.001
   m_OutlineWidth: 0.001
   m_OutlineColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
   m_ShapeRotation: 0
@@ -884,7 +884,7 @@ MonoBehaviour:
   m_DrawShape: 3
   m_ImageType: 0
   m_StrokeWidth: 0
-  m_FalloffDistance: 0
+  m_FalloffDistance: 0.001
   m_OutlineWidth: 0.0007
   m_OutlineColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
   m_ShapeRotation: 0
@@ -1342,7 +1342,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.17608, y: 0.01981}
+  m_SizeDelta: {x: 0.12711, y: 0.01981}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8535717159626386840
 MonoBehaviour:
@@ -1362,8 +1362,13 @@ MonoBehaviour:
   ItemDescription: {fileID: 400370656976958891}
   ItemCost: {fileID: 3461589117177580950}
   dollarText: {fileID: 3469179340592706485}
-  ShopItemData: {fileID: 0}
+  ItemState: 0
+  ItemDataInstance: {fileID: 0}
+  StoredPrice: 0
   RemoveFromCartButton: {fileID: 6196259619559789367}
+  BoughtFromItemState: 0
+  RightHorizontalLayout: {fileID: 6675296419384977881}
+  RemoveButtonParent: {fileID: 1477552406587825861}
 --- !u!1 &9137927752085833466
 GameObject:
   m_ObjectHideFlags: 0
@@ -1473,8 +1478,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.000008381903, y: 0}
+  m_SizeDelta: {x: -0.00003916, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6675296419384977881
 MonoBehaviour:

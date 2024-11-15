@@ -10,7 +10,17 @@ public class Promotions : MonoBehaviour
     public ShopCardPromotions Prefab;
     public RectTransform InstParent;
     public List<ShopCardPromotions> Controllers = new List<ShopCardPromotions>();
-    public event Action<ShopItemData> OnBuyCliqued;
+    public event Action<ShopCardPromotions> OnItemBuyCliqued;
+
+    public List<ShopCardPromotions> FindItemByName(string name)
+    {
+        return Controllers.FindAll(x => x.ItemDataInstance.Name == name);
+    }
+
+    public List<ShopCardPromotions> FindItemByID(uint ID)
+    {
+        return Controllers.FindAll(x => x.ItemDataInstance.ItemID == ID);
+    }
 
     public List<ShopCardPromotions> GenerateRandomPromotions(ShopItemConfig shopConfig)
     {
@@ -32,19 +42,22 @@ public class Promotions : MonoBehaviour
             int rdmItemInList = Random.Range(0, possibleItems.Count);
             ShopItemData rdmItem = possibleItems[rdmItemInList];
             controller.SetItemData(rdmItem);
+            controller.SetItemState(ShopItemState.Promotion);
 
             float minPromotion = 15f;
             float maxPromotion = 50f;
 
             float promotionRandomPercentage = Random.Range(minPromotion, maxPromotion);
-            float resultPromotionItemValue = rdmItem.BaseCost * (1 - promotionRandomPercentage / 100f);
-            controller.ItemCost.text = Mathf.RoundToInt(resultPromotionItemValue).ToString();
+            int resultPromotionItemValue = Mathf.RoundToInt(rdmItem.BaseCost * (1 - promotionRandomPercentage / 100f));
+            controller.ItemCost.text = resultPromotionItemValue.ToString();
+            controller.CostWithPromotion = resultPromotionItemValue;
 
             //calculer la durée d'une promotion (rotation hebdo ? Quotidienne ?)
 
             controller.BuyButton.onClick.AddListener(() =>
             {
-                OnBuyCliqued?.Invoke(controller.ItemDataInstance);
+                OnItemBuyCliqued?.Invoke(controller);
+                controller.OnItemAddedToCart();
             });
 
             possibleItems.RemoveAt(rdmItemInList);

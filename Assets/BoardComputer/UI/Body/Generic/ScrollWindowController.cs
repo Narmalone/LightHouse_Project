@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,8 @@ public class ScrollWindowController : MonoBehaviour
     [SerializeField] public RectTransform Content;
     [SerializeField] protected Button UpButton;
     [SerializeField] protected Button DownButton;
+    public Scrollbar ScrollBar;
+    public ScrollRect ScrollRect;
 
     [SerializeField] protected float UpPower = 1f;
     [SerializeField] protected float DownPower = 1f;
@@ -30,6 +33,18 @@ public class ScrollWindowController : MonoBehaviour
         Content.anchoredPosition = new Vector2(Content.anchoredPosition.x, childPosY - childHeight);
     }
 */
+
+    private void Start()
+    {
+        UpButton.onClick.AddListener(OnUpCliqued);
+        DownButton.onClick.AddListener(OnDownCliqued);
+    }
+
+    private void OnDestroy()
+    {
+        DownButton.onClick.RemoveAllListeners();
+        UpButton.onClick.RemoveAllListeners();
+    }
     public void UpdateContentTransform()
     {
         if (Content.childCount <= 0) return;
@@ -46,8 +61,32 @@ public class ScrollWindowController : MonoBehaviour
         {
             // Update the content height to fit all children
             Content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, totalHeight);
-            // You may also want to adjust the anchored position of the content
-            // depending on your layout requirements
+            /*ScrollBar.Rebuild(CanvasUpdate.MaxUpdateValue);
+            ScrollRect.Rebuild(CanvasUpdate.MaxUpdateValue);*/
         }
     }
+
+    private void OnDownCliqued()
+    {
+        ScrollBar.value -= 0.1f;
+    }
+
+    private void OnUpCliqued()
+    {
+        ScrollBar.value += 0.1f;
+    }
+
+    private void OnValidate()
+    {
+        if(ScrollBar == null)
+        {
+            ScrollBar = GetComponentInChildren<Scrollbar>();
+        }
+
+        if(ScrollRect == null)
+        {
+            ScrollRect = GetComponent<ScrollRect>();
+        }
+    }
+
 }
