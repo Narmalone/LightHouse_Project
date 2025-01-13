@@ -52,7 +52,7 @@ public class CursorManager : Singleton<CursorManager>
 
     public void SetCursor(CursorType type)
     {
-        switch (type)
+        /*switch (type)
         {
             case CursorType.None:
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
@@ -63,7 +63,7 @@ public class CursorManager : Singleton<CursorManager>
             case CursorType.ComputerClick:
                 Cursor.SetCursor(_cursorClickableComputer, Vector2.zero, CursorMode.Auto);
                 break;
-        }
+        }*/
     }
 }
 

@@ -9,8 +9,7 @@ public class UiComputerController : MonoBehaviour
     [SerializeField] public Messagerie messagerieWindow;
     [SerializeField] public ShopContent shopWindow;
     [SerializeField] public MeteoContent meteoWindow;
-    [SerializeField] public QuestContent questWindow;
-    [SerializeField] public IslandContent islandWindow;
+    [SerializeField] public NightVeilContent nightVeil;
     [SerializeField] public RadarContent radarWindow;
 
     [Header("--- EVENTS ---")]
@@ -30,6 +29,16 @@ public class UiComputerController : MonoBehaviour
     private void OnDestroy()
     {
         _onTabCliqued.handle -= _onTabCliqued_handle;
+    }
+
+    private void Start()
+    {
+        messagerieWindow.Show();
+        shopWindow.Hide();
+        meteoWindow.Hide();
+        nightVeil.Hide();
+        
+        radarWindow.Hide();
     }
 
     private void _onTabCliqued_handle(ComputerTabs obj)
