@@ -19,7 +19,7 @@ public enum GameZone
 #endregion
 
 
-public class GameManager : Singleton<GameManager>
+public class GameManager : Singleton<GameManager>, ISerializationCallbackReceiver
 {
     [SerializeField] public GameSettings gameSettings;
     [SerializeField] private CustomEvent eventStartTimeCycle;
@@ -35,6 +35,9 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private int currentDay = 0;
     public int CurrentDay => currentDay;
     private float cycleTimeLeft;
+
+    [SerializeField, Range(0, 10)] private float _globalSpeedTime = 1.0f;
+    public static float GlobalSpeedTime = 1.0f;
 
     protected override void Awake()
     {
@@ -62,6 +65,15 @@ public class GameManager : Singleton<GameManager>
     private void OnDayEnd()
     {
         currentDay++;
+        if(currentDay >= gameSettings.TotalDays)
+        {
+            EndGame();  
+        }
+    }
+
+    public void EndGame()
+    {
+        LightHouseSceneManager.Instance.LoadAsync(LightHouseSceneManager.BuildScenes.Credits);
     }
 
     public GMTypeInfo GetPlayerLocation()
@@ -91,4 +103,13 @@ public class GameManager : Singleton<GameManager>
             CurrentPlayerZone = obj;
     }
 
+    public void OnBeforeSerialize()
+    {
+        GlobalSpeedTime = _globalSpeedTime;
+    }
+
+    public void OnAfterDeserialize()
+    {
+        
+    }
 }

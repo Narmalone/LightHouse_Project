@@ -11,6 +11,7 @@ using Random = UnityEngine.Random;
 public class LightningsController : MonoBehaviour
 {
     [SerializeField] private Volume _lightningVolume;
+    [SerializeField] private float _lightningsTimeSpeedMultiplier = 1.0f;
     [SerializeField] private StudioEventEmitter _lightningAudioSource;
     [SerializeField] private AnimationCurve _lightningWeight;
     [SerializeField] private AnimationCurve _lightningCurveFadeIn;
@@ -40,7 +41,7 @@ public class LightningsController : MonoBehaviour
     {
         if(!_isEnabled) return;
 
-        currentTimer += Time.deltaTime;
+        currentTimer += _lightningsTimeSpeedMultiplier * Time.deltaTime * GameManager.GlobalSpeedTime;
         if(currentTimer >= timerTest)
         {
             timerTest = Random.Range(
@@ -64,7 +65,7 @@ public class LightningsController : MonoBehaviour
 
         while (timer < targetDuration)
         {
-            timer += Time.deltaTime;
+            timer += _lightningsTimeSpeedMultiplier * Time.deltaTime * GameManager.GlobalSpeedTime;
             _lightningAudioSource.EventInstance.setVolume(Mathf.Lerp(initialVolume, targetVolume, timer / targetDuration));
             _lightningAudioSource.EventInstance.getVolume(out float vol);
             yield return null;

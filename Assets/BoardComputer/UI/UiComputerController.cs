@@ -23,6 +23,8 @@ public class UiComputerController : MonoBehaviour
 
     private ContentWindow currentWindow = null;
 
+    private ContentWindow lastSelectedTab;
+
     private void Awake()
     {
         _onTabCliqued.handle += _onTabCliqued_handle;
@@ -39,17 +41,19 @@ public class UiComputerController : MonoBehaviour
         shopWindow.Hide();
         meteoWindow.Hide();
         nightVeil.Hide();
-        
         radarWindow.Hide();
     }
 
     private void _onTabCliqued_handle(ComputerTabs obj)
     {
-        
+        SwitchTab(obj);
     }
 
     public void SwitchTab(ComputerTabs target)
     {
+        lastSelectedTab?.Hide();
+        lastSelectedTab = GetWindowByEnum(target);
+        lastSelectedTab?.Show();
         _topBarController.SwitchSelected(target);
     }
 
@@ -61,5 +65,25 @@ public class UiComputerController : MonoBehaviour
     public void Hide()
     {
         _mainCanvasGroup.alpha = 0;
+    }
+
+    public ContentWindow GetWindowByEnum(ComputerTabs target)
+    {
+        switch (target)
+        {
+            case ComputerTabs.None:
+                return null;
+            case ComputerTabs.Messagerie:
+                return messagerieWindow;
+            case ComputerTabs.Meteo:
+                return meteoWindow;
+            case ComputerTabs.VeilleDeNuit:
+                return nightVeil;
+            case ComputerTabs.Maintenance:
+                return radarWindow;
+            case ComputerTabs.Ravitaillement:
+                return shopWindow;
+        }
+        return null;
     }
 }

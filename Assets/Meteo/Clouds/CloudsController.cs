@@ -7,7 +7,8 @@ using UnityEngine.Rendering.HighDefinition;
 public class CloudsController : MonoBehaviour
 {
     [SerializeField] private Volume _cloudsVolume;
-    [SerializeField] private float _cloudSpeedMultiplier = 3f;
+    [SerializeField] private float _additionnalCloudSpeedMultiplier = 3f;
+    [SerializeField] private float _cloudsTimeSpeedMultiplier = 1f;
     private VolumetricClouds _cachedClouds;
     private VisualEnvironment _cachedEnvironment;
 
@@ -21,7 +22,7 @@ public class CloudsController : MonoBehaviour
 
     [SerializeField] private float _transitionCloudsDuration = 25f;
 
-    private CloudSettings _oldCloudSettings;
+    private CloudSettings _previousCloudSettings;
     private CloudSettings _targetCloudSettings;
     private float _transitionElapsedTime;
 
@@ -52,7 +53,7 @@ public class CloudsController : MonoBehaviour
         ApplyCloudSettingsDirectly(overrideSettings);
 
         // Ensuite, nous définissons les anciens paramètres pour la transition suivante
-        _oldCloudSettings = overrideSettings;
+        _previousCloudSettings = overrideSettings;
         _transitionElapsedTime = 0f; // Réinitialiser le timer pour la prochaine transition
     }
 
@@ -86,9 +87,9 @@ public class CloudsController : MonoBehaviour
     {
         _targetCloudSettings = GetCloudSettingsFromWeatherType(obj);
 
-        if (_oldCloudSettings == null)
+        if (_previousCloudSettings == null)
         {
-            _oldCloudSettings = _calmSettings;
+            _previousCloudSettings = _calmSettings;
         }
 
         _transitionElapsedTime = 0f; // Reset transition timer when weather changes
@@ -188,24 +189,24 @@ public class CloudsController : MonoBehaviour
             _targetCloudSettings = GetCloudSettingsFromWeatherType(tomorrowWeatherType);
         }
 
-        if (_targetCloudSettings != null && _oldCloudSettings != null)
+        if (_targetCloudSettings != null && _previousCloudSettings != null)
         {
-            _transitionElapsedTime += Time.deltaTime;
+            _transitionElapsedTime += _cloudsTimeSpeedMultiplier * Time.deltaTime * GameManager.GlobalSpeedTime;
             float t = Mathf.Clamp01(_transitionElapsedTime / weatherDuration);
             t = t * t * (3f - 2f * t); // Smoothstep
 
             // Interpoler les paramètres de nuages directement dans l'Update
-            LerpCloudSettings(_oldCloudSettings, _targetCloudSettings, t);
+            LerpCloudSettings(_previousCloudSettings, _targetCloudSettings, t);
 
             // Si la transition est terminée, actualiser les anciens paramètres
             if (t >= 1f)
             {
-                _oldCloudSettings = _targetCloudSettings;
+                _previousCloudSettings = _targetCloudSettings;
             }
         }
 
         // Mise à jour du vent en fonction de la météo
-        _currentWindParameter.customValue = _weatherManager.WindSpeed * _cloudSpeedMultiplier;
+        _currentWindParameter.customValue = _weatherManager.WindSpeed * _additionnalCloudSpeedMultiplier;
         _currentWindSpeed.Override(_currentWindParameter);
         _cachedClouds.globalWindSpeed.SetValue(_currentWindSpeed);
     }

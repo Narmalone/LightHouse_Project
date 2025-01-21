@@ -14,7 +14,6 @@ public class GameSettings : ScriptableObject
     {
         if (TotalDays < 31) TotalDays = 31;
     }
-
 }
 
 [System.Serializable]

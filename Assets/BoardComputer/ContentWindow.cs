@@ -6,6 +6,8 @@ using UnityEngine;
 public class ContentWindow : MonoBehaviour
 {
     [SerializeField] protected CanvasGroup _canvasGroup;
+    public bool IsShowed = false;
+    [field: SerializeField] public ComputerTabs ComputerTabs { get; private set; }
 
     public void Show()
     {
@@ -13,6 +15,7 @@ public class ContentWindow : MonoBehaviour
         _canvasGroup.blocksRaycasts = true;
         _canvasGroup.ignoreParentGroups = true;
         _canvasGroup.interactable = true;
+        IsShowed = true;
         OnShow();
     }
 
@@ -22,10 +25,11 @@ public class ContentWindow : MonoBehaviour
         _canvasGroup.blocksRaycasts = false;
         _canvasGroup.ignoreParentGroups = false;
         _canvasGroup.interactable = false;
+        IsShowed = false;
         OnHide();
     }
 
-    public virtual void OnShow(){ }
+    protected virtual void OnShow(){ }
 
-    public virtual void OnHide() { }
+    protected virtual void OnHide() { }
 }

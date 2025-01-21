@@ -147,7 +147,7 @@ public class ShopContent : ContentWindow
         return CartController.CommandButton.interactable;
     }
 
-    public override void OnShow()
+    protected override void OnShow()
     {
         
     }

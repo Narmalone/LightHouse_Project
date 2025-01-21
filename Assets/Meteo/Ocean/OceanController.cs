@@ -8,6 +8,7 @@ public class OceanController : MonoBehaviour
     public bool RealisticMode = true;
 
     [SerializeField] private float _transitionDuration = 40f;
+    [SerializeField] private float _oceanTimeMultiplier = 1.0f;
     private OceanSettings _currentOceanSettings;
     [SerializeField] private OceanSettings _calmSettings;
     [SerializeField] private OceanSettings _sunnySettings;
@@ -57,7 +58,7 @@ public class OceanController : MonoBehaviour
         float windOrientation = _weatherManager.WindOrientationValue;
 
         // Ajustements progressifs des paramètres
-        float timeFactor = Time.deltaTime * 0.1f;
+        float timeFactor = _oceanTimeMultiplier * Time.deltaTime * GameManager.GlobalSpeedTime * 0.1f;
 
         // Dynamique des vagues et du vent
         _water.timeMultiplier = Mathf.Lerp(_water.timeMultiplier, Mathf.Lerp(1f, 3.5f, windSpeed / maxWindSpeed), timeFactor);
@@ -175,7 +176,7 @@ public class OceanController : MonoBehaviour
             _water.directLightTipScattering = Mathf.Lerp(startSettings.DirectLightTipTerm, endSettings.DirectLightTipTerm, t);
             _water.directLightBodyScattering = Mathf.Lerp(startSettings.DirectLightBodyTerm, endSettings.DirectLightBodyTerm, t);
 
-            lerpTime += Time.deltaTime;
+            lerpTime += _oceanTimeMultiplier * Time.deltaTime * GameManager.GlobalSpeedTime;
             yield return null;
         }
     }

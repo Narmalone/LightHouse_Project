@@ -146,8 +146,8 @@ public class WeatherManager : Singleton<WeatherManager>
     private void Update()
     {
         if (!_weatherLoaded) return;
-        CurrentWeatherElapsedTime += Time.deltaTime;
-        TotalWeatherElapsedTime += Time.deltaTime;
+        CurrentWeatherElapsedTime += Time.deltaTime * GameManager.GlobalSpeedTime;
+        TotalWeatherElapsedTime += Time.deltaTime * GameManager.GlobalSpeedTime;
 
         // Vérifier si le temps écoulé a dépassé la durée aléatoire
         if (CurrentWeatherElapsedTime >= weatherChangeDuration)

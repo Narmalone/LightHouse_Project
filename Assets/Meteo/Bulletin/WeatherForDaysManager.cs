@@ -188,9 +188,6 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
 
         if (_identifiedDatas.Count <= 0)
         {
-            PeriodData previous = new PeriodData();
-            PeriodData nextData = new PeriodData();
-
             // Indicateur si aucun jour trouvé dans les périodes précédentes
             bool noPreviousDayFound = true;
             bool noNextDayFound = true;

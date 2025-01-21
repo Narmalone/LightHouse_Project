@@ -182,7 +182,7 @@ public class DayNightManager : MonoBehaviour
     {
         if (_isDayUpdating == false) return;
 
-        var value = CurrentTime + Time.deltaTime / 3600 * _speedMultiplier * _initialSpeedMultiplier;
+        var value = CurrentTime + Time.deltaTime / 3600 * _speedMultiplier * _initialSpeedMultiplier * GameManager.GlobalSpeedTime;
 
         if (value < CurrentTime) return;
 
@@ -243,10 +243,11 @@ public class DayNightManager : MonoBehaviour
     {
         _isDayUpdating = true;
     }
+
     private void AddDay()
     {
         currentDay++;
-        if(currentDay >= gameSettings.TotalDays)
+        if (currentDay >= gameSettings.TotalDays)
         {
             Debug.Log("LE NB DE JOUR MAX A ETE COMPTE");
         }
@@ -268,7 +269,7 @@ public class DayNightManager : MonoBehaviour
         }
 
         // Prendre en compte la vitesse du cycle jour-nuit
-        timeUntil /= _speedMultiplier * _initialSpeedMultiplier;
+        timeUntil /= _speedMultiplier * _initialSpeedMultiplier * GameManager.GlobalSpeedTime;
 
         return timeUntil;
     }
@@ -326,7 +327,7 @@ public class DayNightManager : MonoBehaviour
         }
 
         // Prendre en compte la vitesse du cycle jour-nuit (si nécessaire)
-        timeDifferenceInSeconds /= _speedMultiplier * _initialSpeedMultiplier;
+        timeDifferenceInSeconds /= _speedMultiplier * _initialSpeedMultiplier * GameManager.GlobalSpeedTime;
 
         return timeDifferenceInSeconds;
     }
