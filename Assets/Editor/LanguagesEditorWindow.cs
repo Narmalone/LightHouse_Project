@@ -22,9 +22,20 @@ public class LanguagesEditorWindow : EditorWindow
     private VisualElement currentGameplayOptionDisplayed;
 
     //COMPUTER
+    private const string MAILBOX_PANNEL_KEY = "MailBox";
+    private const string METEO_PANNEL_KEY = "Meteo";
+    private const string NIGHTVEIL_PANNEL_KEY = "NightVeil";
+    private const string MAINTENANCE_PANNEL_KEY = "Maintenance";
+    private const string SUPPLY_PANNEL_KEY = "Supply";
+
     private VisualElement lastComputerPageDisplayed;
-    private VisualElement messageriePannel;
-    private VisualElement meteoPannel;
+    private VisualElement _mailBoxPannel;
+    private VisualElement _meteoPannel;
+    private VisualElement _nightVeilPannel;
+    private VisualElement _maintenancePannel;
+    private VisualElement _supplyPannel;
+
+    private ComputerController _lastSelectedComputer;
 
     [MenuItem("Window/UI Toolkit/LanguagesEditorWindow")]
     public static void ShowExample()
@@ -310,15 +321,21 @@ public class LanguagesEditorWindow : EditorWindow
         // Récupération des panels existants
         ObjectField computerField = gameplayPannel.Q<ObjectField>("ComputerObjectField");
         GameObject obj = computerField.value as GameObject;
-        messageriePannel = gameplayPannel.Q<VisualElement>("Messagerie");
-        meteoPannel = gameplayPannel.Q<VisualElement>("Meteo");
+
+        //récupérer les container sous le dropdown ou on va stocker tous les texts ect...
+        _mailBoxPannel = gameplayPannel.Q<VisualElement>(MAILBOX_PANNEL_KEY);
+        _meteoPannel = gameplayPannel.Q<VisualElement>(METEO_PANNEL_KEY);
+        _nightVeilPannel = gameplayPannel.Q<VisualElement>(NIGHTVEIL_PANNEL_KEY);
+        _maintenancePannel = gameplayPannel.Q<VisualElement>(MAINTENANCE_PANNEL_KEY);
+        _supplyPannel = gameplayPannel.Q<VisualElement>(SUPPLY_PANNEL_KEY);
 
         if (obj == null) return;
 
         ComputerController targetComputer = obj.GetComponent<ComputerController>();
         if (targetComputer == null) return;
+        _lastSelectedComputer = targetComputer;
 
-        // DropdownField pour sélectionner la page
+        // DropdownField pour sélectionner la page à afficher dans le tool
         DropdownField computerPages = gameplayPannel.Q<DropdownField>("DropdownComputer");
         computerPages.RegisterValueChangedCallback(OnDropDownChangedSelected);
 
@@ -346,17 +363,20 @@ public class LanguagesEditorWindow : EditorWindow
 
         switch (evt.newValue)
         {
-            case "Messagerie":
-                lastComputerPageDisplayed = messageriePannel;
+            case MAILBOX_PANNEL_KEY:
+                lastComputerPageDisplayed = _mailBoxPannel;
                 break;
-            case "Météo":
-                lastComputerPageDisplayed = meteoPannel;
+            case METEO_PANNEL_KEY:
+                lastComputerPageDisplayed = _meteoPannel;
                 break;
-            case "Veille de nuit":
+            case NIGHTVEIL_PANNEL_KEY:
+                lastComputerPageDisplayed = _nightVeilPannel;
                 break;
-            case "Maintenance":
+            case MAINTENANCE_PANNEL_KEY:
+                lastComputerPageDisplayed = _maintenancePannel;
                 break;
-            case "Ravitaillement":
+            case SUPPLY_PANNEL_KEY:
+                lastComputerPageDisplayed = _supplyPannel;
                 break;
         }
 
@@ -365,14 +385,15 @@ public class LanguagesEditorWindow : EditorWindow
 
     private void SetupPanels(ComputerController targetComputer)
     {
+
         // Création des conteneurs pour chaque section
         VisualElement messagerieContainer = new VisualElement();
         messagerieContainer.style.flexDirection = FlexDirection.Column;
-        messageriePannel.Add(messagerieContainer);
+        _mailBoxPannel.Add(messagerieContainer);
 
         VisualElement meteoContainer = new VisualElement();
         meteoContainer.style.flexDirection = FlexDirection.Column;
-        meteoPannel.Add(meteoContainer);
+        _meteoPannel.Add(meteoContainer);
 
         // Initialisation des sections spécifiques
         SetupMessagerie(targetComputer, messagerieContainer);
@@ -382,7 +403,8 @@ public class LanguagesEditorWindow : EditorWindow
     private void SetupMessagerie(ComputerController targetComputer, VisualElement container)
     {
         // Utiliser le texte spécifique à la messagerie
-        RefreshLanguageSections(container, targetComputer, targetComputer._uiComputerController.messagerieWindow.AllTextsLanguages);
+        CreateAndRefreshLanguageSections(container, targetComputer, targetComputer._uiComputerController.messagerieWindow.AllTextsLanguages);
+        
     }
 
     // Setup pour la section Météo
@@ -425,7 +447,7 @@ public class LanguagesEditorWindow : EditorWindow
         // Contenu du Foldout "Weather Text Information"
         VisualElement weatherTextContainer = new VisualElement();
         weatherTextFoldout.Add(weatherTextContainer);
-        RefreshLanguageSections(weatherTextContainer, targetComputer, targetComputer._uiComputerController.meteoWindow.AllFixedTexts);
+        CreateAndRefreshLanguageSections(weatherTextContainer, targetComputer, targetComputer._uiComputerController.meteoWindow.AllFixedTexts);
 
         // Contenu du Foldout "Beaufort Scale"
         VisualElement beaufortContainer = new VisualElement();
@@ -609,12 +631,10 @@ public class LanguagesEditorWindow : EditorWindow
         container.Add(addLanguageButton);
     }
 
-
-
-
     // Méthode pour rafraîchir les sections avec les langues ou autres textes
-    private void RefreshLanguageSections(VisualElement container, ComputerController targetComputer, LanguageText[] targetTexts)
+    private void CreateAndRefreshLanguageSections(VisualElement container, ComputerController targetComputer, LanguageText[] targetTexts)
     {
+      
         // Dictionnaire pour stocker l'état des Foldouts (ouvert/fermé) par section
         Dictionary<int, bool> foldoutStates = new Dictionary<int, bool>();
 
@@ -695,7 +715,7 @@ public class LanguagesEditorWindow : EditorWindow
                 removeButton.clicked += () =>
                 {
                     targetTexts[sectionIndex].mLanguages.RemoveAt(languageIndex);
-                    RefreshLanguageSections(container, targetComputer, targetTexts);
+                    CreateAndRefreshLanguageSections(container, targetComputer, targetTexts);
                 };
                 languagesListContainer.Add(removeButton);
             }
@@ -705,7 +725,7 @@ public class LanguagesEditorWindow : EditorWindow
             addLanguageButton.clicked += () =>
             {
                 targetTexts[sectionIndex].mLanguages.Add(new MultiLanguage { Language = Languages.EN, Value = "New Text" });
-                RefreshLanguageSections(container, targetComputer, targetTexts);
+                CreateAndRefreshLanguageSections(container, targetComputer, targetTexts);
                 sectionFoldout.value = true; // Ouvre le Foldout après avoir ajouté une nouvelle langue
             };
             sectionFoldout.Add(addLanguageButton);

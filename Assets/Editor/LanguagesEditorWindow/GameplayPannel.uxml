@@ -9,10 +9,13 @@
         </engine:GroupBox>
         <engine:VisualElement name="ComputerContainer" style="flex-grow: 1; display: none;">
             <engine:GroupBox name="GroupBox">
-                <engine:DropdownField label="Pages de l&apos;ordinateur: " name="DropdownComputer" choices="Messagerie,Météo,Veille de nuit,Maintenance,Ravitaillement" index="-1" style="font-size: 18px;" />
+                <engine:DropdownField label="Pages de l&apos;ordinateur: " name="DropdownComputer" choices="MailBox,Meteo,NightVeil,Maintenance,Supply" index="-1" style="font-size: 18px;" />
             </engine:GroupBox>
-            <engine:GroupBox name="Messagerie" style="height: auto; display: none;" />
+            <engine:GroupBox name="MailBox" style="height: auto; display: none;" />
             <engine:GroupBox name="Meteo" style="height: auto; display: none;" />
+            <engine:GroupBox name="NightVeil" style="height: auto; display: none;" />
+            <engine:GroupBox name="Maintenance" style="height: auto; display: none;" />
+            <engine:GroupBox name="Supply" style="height: auto; display: none;" />
         </engine:VisualElement>
         <engine:VisualElement name="UsableObjectsContainer" style="flex-grow: 1; display: none;" />
     </engine:VisualElement>

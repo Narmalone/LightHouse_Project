@@ -1,5 +1,6 @@
 using NUnit.Framework.Internal;
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -21,6 +22,9 @@ public class Computer_TopBarButtonController : MonoBehaviour, IPointerEnterHandl
     public Color UnSelected;
 
     private Vector2 initDeltaSize;
+
+    private LanguageText _buttonText;
+    public LanguageText ButtonText => _buttonText;
 
     private void Awake()
     {
@@ -60,5 +64,13 @@ public class Computer_TopBarButtonController : MonoBehaviour, IPointerEnterHandl
     public void OnPointerExit(PointerEventData eventData)
     {
         CursorManager.Instance.SetCursor(CursorType.ComputerDefault);
+    }
+
+    private void OnValidate()
+    {
+        if(_buttonText == null)
+        {
+            _buttonText = GetComponentInChildren<LanguageText>();
+        }
     }
 }

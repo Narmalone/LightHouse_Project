@@ -4,6 +4,8 @@ using UnityEngine.UI;
 public class UiComputerController : MonoBehaviour
 {
     [SerializeField] private CanvasGroup _mainCanvasGroup;
+
+    public TopBarController TopBarController => _topBarController;
     [SerializeField] private TopBarController _topBarController;
 
     [SerializeField] public Messagerie messagerieWindow;

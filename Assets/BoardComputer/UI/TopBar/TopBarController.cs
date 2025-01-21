@@ -7,6 +7,12 @@ public class TopBarController : MonoBehaviour
 {
     [HideInInspector] public Computer_TopBarButtonController LastCliquedTab;
 
+    public Computer_TopBarButtonController MessagerieTopBar => _messagerie;
+    public Computer_TopBarButtonController MeteoTopBar => _meteo;
+    public Computer_TopBarButtonController NightVeilTopBar => _veilleDeNuit;
+    public Computer_TopBarButtonController RefundTopBar => _ravitaillement;
+    public Computer_TopBarButtonController MaintenanceTopBar => _maintenance;
+
     [SerializeField] private RectTransform _horizontalLayoutTransform;
     [SerializeField] private Computer_TopBarButtonController[] Buttons;
     [SerializeField] private Computer_TopBarButtonController _messagerie;
