@@ -7,4 +7,6 @@ public class ActEvents : ScriptableObject
 {
     //Une liste d'évènements
     public List<ScenarioEvent> possibleEvents;
+
+    public int NumberOfEventsToPlayInAct = 3;
 }

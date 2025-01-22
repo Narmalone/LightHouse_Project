@@ -7,6 +7,7 @@ public class ScenarioEvent : ScriptableObject
     public string eventName;
     public ScenarioCondition condition;
     public Action eventAction;
+    public bool IsMandatory = false; //si l'event est obligatoire
 
     public void Play()
     {
