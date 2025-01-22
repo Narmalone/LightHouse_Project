@@ -91,25 +91,24 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     {
         if (!_isInitialized)
         {
-            //Calculer les offsets de départs en fonction de quand on commence lejeu
+            // Calcul des offsets de départ
             StartoffSetMorning = _dayNightManager.TimeUntil(morningStart);
             StartoffSetMidDay = _dayNightManager.TimeUntil(middayStart);
             StartoffSetEvening = _dayNightManager.TimeUntil(eveningStart);
 
-            //Calculer à quelles secondes après le début du jeu tombe X heure sur X jour
-            MorningAtTime = GetStepsAtTime(StartoffSetMorning, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
-            MiddayAtTime = GetStepsAtTime(StartoffSetMidDay, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
-            EveningAtTime = GetStepsAtTime(StartoffSetEvening, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
+            // Calcul des temps des différentes périodes
+            float dayDuration = gameSettings.DayCycleDuration.DurationInSeconds;
+            MorningAtTime = GetStepsAtTime(StartoffSetMorning, gameSettings.TotalDays, dayDuration);
+            MiddayAtTime = GetStepsAtTime(StartoffSetMidDay, gameSettings.TotalDays, dayDuration);
+            EveningAtTime = GetStepsAtTime(StartoffSetEvening, gameSettings.TotalDays, dayDuration);
 
             float startOffsetMidnight = _dayNightManager.TimeUntil(24f);
-            MiddnightAtTime = GetStepsAtTime(startOffsetMidnight, gameSettings.TotalDays, gameSettings.DayCycleDuration.Seconds);
-            //MiddnightX = 
+            MiddnightAtTime = GetStepsAtTime(startOffsetMidnight, gameSettings.TotalDays, dayDuration);
 
-            //Calculer quelles météos tombent quels jours et à quelle heure
-            WeathersInDays = GetWeathersInDays(_weatherManager.weatherForecast, _dayNightManager._homeTime, gameSettings.DayCycleDuration.Seconds);
+            // Calcul des météos pour chaque période
+            WeathersInDays = GetWeathersInDays(_weatherManager.weatherForecast, _dayNightManager._homeTime, dayDuration);
 
-            //Calculer et interpoler les météos aux heures voulus pour avoir une prévision météorologique
-            for(int i = 0; i < gameSettings.TotalDays; i++)
+            for (int i = 0; i < gameSettings.TotalDays; i++)
             {
                 MorningX.Add(GetWeatherAtTime(i, morningStart, MorningAtTime));
                 MiddaysX.Add(GetWeatherAtTime(i, middayStart, MiddayAtTime));
@@ -121,6 +120,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
             _onDaysWeatherInitialized?.Raise();
         }
     }
+
 
     #endregion
 

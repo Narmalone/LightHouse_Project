@@ -49,6 +49,8 @@ public struct WeatherData
 public class WeatherManager : Singleton<WeatherManager>
 {
     #region SERIALIZED FIELDS
+    [SerializeField] private GameSettings _gameSettings;
+
     [Header("CONTROLLERS")]
     [SerializeField] private RainController _rainController;
     [SerializeField] private CloudsController _cloudsController;
@@ -63,10 +65,10 @@ public class WeatherManager : Singleton<WeatherManager>
     [SerializeField] private CustomEvent _onWeatherLoaded;
 
     [Header("WEATHER SETTINGS")]
+    public float WeatherSpeedMultiplier = 1.0f;
     [SerializeField] private List<WeatherPreset> _weatherPresets;
-
-    [Header("WEATHER SETTINGS")]
     [SerializeField] private WeatherPattern _weatherPattern;
+
     // Variable de difficulté
     [Range(0f, 2f)]
     public float difficulty = 1.0f;
@@ -123,9 +125,7 @@ public class WeatherManager : Singleton<WeatherManager>
     #endregion
 
     #region PRIVATE FIELDS
-    private GameManager _gm;
     private bool _weatherLoaded = false;
-
     private float weatherChangeDuration;
     private List<float> _weatherDurations = new List<float>();
     private float _totalWeatherDuration = 0f;
@@ -136,18 +136,15 @@ public class WeatherManager : Singleton<WeatherManager>
 
     private void Start()
     {
-        _gm = GameManager.Instance;
-
-        _totalWeatherDuration = GetTotalDuration(_gm.gameSettings.DayCycleDuration, _gm.gameSettings.TotalDays);
-
+        _totalWeatherDuration = _gameSettings.GetTotalGameDurationInSeconds(); 
         StartCoroutine(RoutineGenerate());
     }
 
     private void Update()
     {
         if (!_weatherLoaded) return;
-        CurrentWeatherElapsedTime += Time.deltaTime * GameManager.GlobalSpeedTime;
-        TotalWeatherElapsedTime += Time.deltaTime * GameManager.GlobalSpeedTime;
+        CurrentWeatherElapsedTime += WeatherSpeedMultiplier * Time.deltaTime * GameManager.GlobalSpeedTime;
+        TotalWeatherElapsedTime += WeatherSpeedMultiplier * Time.deltaTime * GameManager.GlobalSpeedTime;
 
         // Vérifier si le temps écoulé a dépassé la durée aléatoire
         if (CurrentWeatherElapsedTime >= weatherChangeDuration)
@@ -165,22 +162,6 @@ public class WeatherManager : Singleton<WeatherManager>
     #endregion
 
     #region GET FUNCTIONS
-    private int GetTotalDuration(TimeDatas datas, int totalDay)
-    {
-        TimeSpan duration = new TimeSpan(
-        (int)datas.Hour, // hours
-        (int)datas.Minutes, // minutes
-        (int)datas.Seconds // seconds
-        );
-
-        int calculation = 0;
-        for (int i = 0; i < totalDay; i++)
-        {
-            calculation += (int)duration.TotalSeconds;
-        }
-        return calculation;
-    }
-
 
     private WeatherPreset GetWeatherPresetForType(WeatherType weatherType)
     {
@@ -272,6 +253,14 @@ public class WeatherManager : Singleton<WeatherManager>
     #region COROUTINES
     IEnumerator RoutineGenerate()
     {
+        //sécurité si on dit qu'une journée est très courte et que 
+        //on a mis un chiffre assez élevée dans les settings de la météo
+        if(_totalWeatherDuration <= MinWeatherDuration)
+        {
+            MinWeatherDuration = _totalWeatherDuration / 3;
+            MaxWeatherDuration = _totalWeatherDuration / 2;
+        }
+
         while (_targetWeatherDuration < _totalWeatherDuration)
         {
             float remainingDuration = _totalWeatherDuration - _targetWeatherDuration;

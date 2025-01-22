@@ -15,10 +15,25 @@ public class GameSettings : ScriptableObject
         //if (TotalDays < 31) TotalDays = 31;
     }
 
-   /* public float GetTotalGameDurationInSeconds()
+    public float GetTotalGameDurationInSeconds(int totalDays)
     {
+        float calculation = 0f;
+        for (int i = 0; i < totalDays; i++)
+        {
+            calculation += DayCycleDuration.DurationInSeconds;
+        }
+        return calculation;
+    }
 
-    }*/
+    public float GetTotalGameDurationInSeconds()
+    {
+        float calculation = 0f;
+        for (int i = 0; i < TotalDays; i++)
+        {
+            calculation += DayCycleDuration.DurationInSeconds;
+        }
+        return calculation;
+    }
 }
 
 [System.Serializable]
@@ -28,8 +43,12 @@ public struct TimeDatas
     public float Minutes;
     public float Seconds;
 
+    //temps en seconde de une journée dans le jeu
     public float DurationInSeconds => Hour * 3600 + Minutes * 60 + Seconds;
-    public float DurationScale => 86400f / DurationInSeconds;
+
+    //échelle à laquelle la vitesse d'une journée dans le jeu est multiplié 
+    //par rapport à celle de la vrai vie
+    public float DurationScale => 86400f / DurationInSeconds; 
 
     public TimeDatas(float hour, float minutes, float seconds)    
     {
