@@ -64,8 +64,10 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     protected override void Awake()
     {
         base.Awake();
-        _onWeatherGenerated.handle += _onWeatherUpdate_handle;
-        _middnightReached.handle += _middnightReached_handle;
+        if(_onDaysWeatherInitialized != null)
+            _onWeatherGenerated.handle += _onWeatherUpdate_handle;
+        if(_middnightReached != null)
+            _middnightReached.handle += _middnightReached_handle;
     }
 
     private void OnDestroy()

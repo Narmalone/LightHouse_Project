@@ -125,15 +125,15 @@ public class WorldStatsWindow : MonoBehaviour
         {
             m_totalDays.text = "Current Day: " + newDay;
         };
-        m_player = FindObjectOfType<PlayerController>().transform;
+        m_player = FindFirstObjectByType<PlayerController>()?.transform;
         m_targetToCardinalPoint = m_player;
     }
 
     private void Start()
     {
-        if (GameManager.Instance)
+        if (GameManager.Instance != null)
         {
-            m_totalDays.text = "Current Day: " + GameManager.Instance.CurrentDay;
+            m_totalDays.text = "Current Day: " + GameManager.Instance?.CurrentDay;
         }
     }
     public void ResetWindow()

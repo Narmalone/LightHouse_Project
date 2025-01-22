@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "StatAction", menuName = "CustomConsole/Action/StatAction")]
+[CreateAssetMenu(fileName = "StatAction", menuName = "CustomConsole/Action/Windows/StatAction")]
 public class StatFPSAction : SO_CommandAction
 {
     public override void Execute(string[] args, ChatController instance)

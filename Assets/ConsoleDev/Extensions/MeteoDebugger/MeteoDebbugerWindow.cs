@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MeteoDebbugerWindow : MonoBehaviour
 {
@@ -32,8 +33,36 @@ public class MeteoDebbugerWindow : MonoBehaviour
     public List<float> windsSpeeds = new List<float>();
     public List<float> windsOrientations = new List<float>();
 
+    public bool IsShowed = false;
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private Button _closeWindowButton;
+    [SerializeField] private ResizableConsoleWidth resizableConsole;
+
+    public void Enable()
+    {
+        IsShowed = true;
+        canvasGroup.alpha = 1.0f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+    }
+
+    public void Disable()
+    {
+        IsShowed = false;
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    public void ResetWindow()
+    {
+        resizableConsole.consoleRect.anchoredPosition = resizableConsole.StartPos;
+        resizableConsole.consoleRect.sizeDelta = new Vector2(resizableConsole.InitialSize.x, resizableConsole.InitialSize.y);
+    }
+
     private void Awake()
     {
+        _closeWindowButton.onClick.AddListener(() => Disable());
         _onDayWeatherInitialized.handle += _onDayWeatherInitialized_handle;
     }
 
@@ -44,6 +73,8 @@ public class MeteoDebbugerWindow : MonoBehaviour
 
     private void _onDayWeatherInitialized_handle()
     {
+        if (_weatherManager == null || _dayWeathersManager == null) return;
+
         for (int i = 0; i < _dayWeathersManager.MorningX.Count; i++)
         {
             humiditys.Add(_dayWeathersManager.MorningX[i].humidity);
@@ -66,6 +97,7 @@ public class MeteoDebbugerWindow : MonoBehaviour
         _weatherManager = WeatherManager.Instance;
         _dayWeathersManager= WeatherForDaysManager.Instance;
 
+        if (_weatherManager == null || _dayWeathersManager == null) return;
         InitScales(humidityGraph, _weatherManager.MinHumidity, _weatherManager.MaxHumidity / 2f, _weatherManager.MaxHumidity, "%");
         InitScales(airTempGraph, _weatherManager.MinAirTemperature, _weatherManager.MaxAirTemperature / 2f, _weatherManager.MaxAirTemperature, "°C");
         InitScales(waterTempGraph, _weatherManager.MinWaterTemperature, _weatherManager.MaxWaterTemperature / 2f, _weatherManager.MaxWaterTemperature, "°C");

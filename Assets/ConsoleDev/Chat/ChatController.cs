@@ -50,6 +50,7 @@ public class ChatController : Singleton<ChatController>
     [SerializeField] private FpsWindowController fpsWindow = null;
     [SerializeField] private PrefabLoader prefabLoader = null;
     [SerializeField] private WorldStatsWindow worldWindow = null;
+    [SerializeField] private MeteoDebbugerWindow meteoWindow = null;
 
     [Header("TABS")]
     [SerializeField] private ComputerTabController[] allTabs;
@@ -73,6 +74,7 @@ public class ChatController : Singleton<ChatController>
     public FpsWindowController FpsWindow => fpsWindow;
     public PrefabLoader PrefabLoader => prefabLoader;
     public WorldStatsWindow WorldWindow => worldWindow;
+    public MeteoDebbugerWindow MeteoWindow => meteoWindow;
     public SO_Command[] Commands => _commands;
 
     #region MONOBEHAVIOUR CALLBACKS
@@ -164,7 +166,7 @@ public class ChatController : Singleton<ChatController>
     public void InitializeFunctions()
     {
         _functions = new Dictionary<string, (MethodInfo, Type[], object)>();
-        var allMonoBehaviours = FindObjectsOfType<MonoBehaviour>();
+        var allMonoBehaviours = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
 
         foreach (var mb in allMonoBehaviours)
         {

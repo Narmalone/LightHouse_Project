@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "StatWorldWindow", menuName = "CustomConsole/Action/StatWorldWindow")]
+[CreateAssetMenu(fileName = "StatWorldWindow", menuName = "CustomConsole/Action/Windows/StatWorldWindow")]
 public class WorldWindowStatAction : SO_CommandAction
 {
     public override void Execute(string[] args, ChatController instance)
