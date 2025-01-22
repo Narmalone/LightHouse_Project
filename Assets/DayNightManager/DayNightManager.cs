@@ -61,7 +61,7 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] public bool _isDayUpdating;
     [SerializeField] private bool _debug;
 
-    private float _speedMultiplier;
+    [SerializeField] private float _speedMultiplier;
 
     private bool _readyMorning;
     private bool _readyMidday;
@@ -171,7 +171,7 @@ public class DayNightManager : MonoBehaviour
     private void Start()
     {
         gameSettings = GameManager.Instance.gameSettings;
-        SetSpeedWithStateDuration(gameSettings.DayCycleDuration.Duration);
+        SetSpeedWithStateDuration(gameSettings.DayCycleDuration.DurationScale);
         UpdateDayDisplay();
         _readyMorning = true;
         _lightTransform = _sunLight.transform;
@@ -183,7 +183,6 @@ public class DayNightManager : MonoBehaviour
         if (_isDayUpdating == false) return;
 
         var value = CurrentTime + Time.deltaTime / 3600 * _speedMultiplier * _initialSpeedMultiplier * GameManager.GlobalSpeedTime;
-
         if (value < CurrentTime) return;
 
         CurrentTime = value;

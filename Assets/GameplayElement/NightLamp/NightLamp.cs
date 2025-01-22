@@ -34,7 +34,7 @@ public class NightLamp : MonoBehaviour
 
     private void Start()
     {
-        var ratio = GameManager.Instance.gameSettings.DayCycleDuration.Duration;
+        var ratio = GameManager.Instance.gameSettings.DayCycleDuration.DurationScale;
         _delaySwitchOn = 1.5f / 3600f * ratio;
         _delaySwitchOff = .8f / 3600f * ratio;
 

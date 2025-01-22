@@ -25,7 +25,7 @@ public class WeightHandler : MonoBehaviour
 
     private void Start()
     {
-        _timeSpeed = GameManager.Instance.gameSettings.DayCycleDuration.Duration;
+        _timeSpeed = GameManager.Instance.gameSettings.DayCycleDuration.DurationScale;
 
         _initialWeightPosition = _weightTransform.position;
         _maxWeightPosition = _targetWeightPosition.position;

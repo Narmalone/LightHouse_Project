@@ -12,8 +12,13 @@ public class GameSettings : ScriptableObject
 
     private void OnValidate()
     {
-        if (TotalDays < 31) TotalDays = 31;
+        //if (TotalDays < 31) TotalDays = 31;
     }
+
+   /* public float GetTotalGameDurationInSeconds()
+    {
+
+    }*/
 }
 
 [System.Serializable]
@@ -23,7 +28,8 @@ public struct TimeDatas
     public float Minutes;
     public float Seconds;
 
-    public float Duration => 86400 / (Hour * 3600 + Minutes * 60 + Seconds);
+    public float DurationInSeconds => Hour * 3600 + Minutes * 60 + Seconds;
+    public float DurationScale => 86400f / DurationInSeconds;
 
     public TimeDatas(float hour, float minutes, float seconds)    
     {
@@ -31,4 +37,6 @@ public struct TimeDatas
         Minutes = minutes;
         Seconds = seconds;
     }
+
+   
 }

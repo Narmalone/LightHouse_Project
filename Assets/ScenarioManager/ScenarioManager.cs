@@ -6,6 +6,7 @@ public class ScenarioManager : MonoBehaviour
 {
     [Header("REFERENCES")]
     [SerializeField] private List<ThemeScenario> themes = new List<ThemeScenario>();
+    [SerializeField] private GameSettings _gameSettings;
 
     [Header("AUTO LINKED REFS")]
     [SerializeField] private ThemeScenario currentFollowedTheme;
