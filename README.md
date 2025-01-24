@@ -1,20 +1,21 @@
 🌊 Lighthouse Project 🌑
-Bienvenue dans Lighthouse Project, une expérience unique qui mêle simulation de gardien de phare et thriller horrifique. Plongez dans une ambiance oppressante où solitude, mystère et ténèbres se rencontrent.
+Une aventure immersive où simulation de gardien de phare et thriller horrifique se rencontrent.
 
 🌀 Synopsis
-En tant que gardien de phare isolé sur une île battue par les vents, votre mission semble simple : veiller à ce que la lumière du phare reste allumée, guidant les navires dans la nuit. Mais rapidement, l'île commence à révéler ses sombres secrets. Entre hallucinations, phénomènes inexpliqués et ombres tapies dans la brume, votre esprit sera mis à rude épreuve.
+En tant que gardien de phare isolé sur une île balayée par les vents, vous veillez sur la lumière qui guide les navires.
+Mais derrière cette routine solitaire se cachent des mystères qui mettront à l'épreuve votre santé mentale.
+Ombres dans la brume, phénomènes inexpliqués... jusqu’où irez-vous avant de perdre pied ?
 
-Serez-vous capable de distinguer la réalité des illusions ?
-Ou succomberez-vous à la folie qui hante ces lieux oubliés ?
+<details> <summary><strong>🎮 Gameplay</strong> (cliquez pour développer)</summary>
+Survie et gestion : Prenez soin du phare, gérez les ressources et réparez les équipements pour éviter la catastrophe.
+Exploration mystérieuse : Parcourez l'île, résolvez des énigmes et découvrez son passé sinistre.
+Thriller psychologique : Surmontez des visions troublantes et des événements surnaturels. Restez sain d'esprit, ou affrontez les conséquences.
+</details> <details> <summary><strong>🛠️ Fonctionnalités principales</strong> (cliquez pour développer)</summary>
+Une ambiance sonore immersive avec le bruit des vagues, le vent et des sons effrayants.
+Une narration riche, ponctuée de révélations et de dilemmes moraux.
+Des graphismes captivants, jouant sur la lumière rassurante et les ténèbres menaçantes.
+Des choix impactants qui influencent le déroulement et la fin de l’histoire.
+</details> <details> <summary><strong>📸 Aperçu visuel</strong> (cliquez pour développer)</summary>
+(Ajoutez ici des captures d’écran ou des GIFs de gameplay.)
 
-🎮 Gameplay
-Survie et gestion : Gérez les tâches quotidiennes d’un gardien de phare : alimentation de la lumière, réparation des équipements, gestion des ressources.
-Exploration mystérieuse : Découvrez les recoins cachés de l’île et les indices qui révèlent son passé troublant.
-Thriller psychologique : Faites face à des événements étranges et des apparitions terrifiantes. Votre santé mentale est votre pire ennemi.
-🛠️ Fonctionnalités principales
-Une ambiance immersive : bruits de vagues, vent hurlant et sons inquiétants.
-Une progression narrative riche et mystérieuse.
-Des graphismes qui jouent sur les contrastes entre la lumière rassurante du phare et les ténèbres oppressantes de l'île.
-Des choix qui influencent l'issue de l'histoire.
-📸 Aperçu visuel
-(Ajoutez ici des captures d’écran ou GIFs pour illustrer le jeu.)
+</details>
