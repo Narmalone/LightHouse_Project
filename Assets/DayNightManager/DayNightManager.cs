@@ -14,9 +14,16 @@ public class DayNightManager : MonoBehaviour
         MID_NIGHT
     }
 
+    public enum GlobalDayState
+    {
+        DAY = 0,
+        NIGHT = 1
+    }
+
 
     [Header("State")]
     [SerializeField] private DayState _state;
+    [SerializeField] private GlobalDayState _globalDayState;
 
     [Header("Components")]
     [SerializeField] private Light _sunLight;
@@ -31,6 +38,7 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] private CustomEvent _eventMidDay;
     [SerializeField] private CustomEvent _eventEvening;
     [SerializeField] private CustomEvent _eventMidNight;
+    [SerializeField] private CustomEvent_Int _onGlobalDayStateChanged;
     [SerializeField] private CustomEvent_Float _eventSetTime;
     [SerializeField] private CustomEvent _onWeatherLoaded;
 
@@ -50,8 +58,9 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] private AnimationCurve _fogAmount;
 
     [Header("Time")]
-    [SerializeField, Range(0, 24)] public float _homeTime;
-    [SerializeField] private int currentDay = 0;
+    [SerializeField, Range(0, 24)] public float _startAtHour;
+    [SerializeField] private DayNightSettings _dayNightSettings;
+    [SerializeField] private float currentDay = 0;
 
     [Header("Stats")]
     [SerializeField] private Vector3 _startOrientation;
@@ -109,34 +118,94 @@ public class DayNightManager : MonoBehaviour
         {
             _currentTime = value % 24;
 
-            switch (value)
-            {
-                case > 6 when _readyMorning:
-                    _readyMorning = false;
-                    _readyMidday = true;
-                    _eventMorning.Raise();
-                    State = DayState.MORNING;
-                    break;
-                case > 12 when _readyMidday:
-                    _readyMidday = false;
-                    _readyEvening = true;
-                    _eventMidDay.Raise();
-                    State = DayState.MID_DAY;
-                    break;
-                case > 18 when _readyEvening:
-                    _readyEvening = false;
-                    _readyMidnight = true;
-                    _eventEvening.Raise();
-                    State = DayState.EVENING;
-                    break;
-                case < 1 when _readyMidnight:
-                    _readyMidnight = false;
-                    _readyMorning = true;
-                    _eventMidNight.Raise();
-                    State = DayState.MID_NIGHT;
-                    AddDay();
-                    break;
-            }
+            /* switch (value)
+             {
+                 case > 6 when _readyMorning:
+                     _readyMorning = false;
+                     _readyMidday = true;
+                     _eventMorning.Raise();
+                     State = DayState.MORNING;
+                     _globalDayState = GlobalDayState.DAY;
+                     _onGlobalDayStateChanged?.Raise((int)GlobalDayState.DAY);
+                     break;
+                 case > 12 when _readyMidday:
+                     _readyMidday = false;
+                     _readyEvening = true;
+                     _eventMidDay.Raise();
+                     State = DayState.MID_DAY;
+                     break;
+                 case > 18 when _readyEvening:
+                     _readyEvening = false;
+                     _readyMidnight = true;
+                     _eventEvening.Raise();
+                     State = DayState.EVENING;
+                     break;
+                 case > 21 when _readyMidnight:
+                     _globalDayState = GlobalDayState.NIGHT;
+                     _onGlobalDayStateChanged?.Raise((int)GlobalDayState.NIGHT);
+                     break;
+                 case < 1 when _readyMidnight:
+                     _readyMidnight = false;
+                     _readyMorning = true;
+                     _eventMidNight.Raise();
+                     State = DayState.MID_NIGHT;
+                     AddDay();
+                     break;
+             }*/
+            UpdateState(value);
+        }
+    }
+
+    private void UpdateState(float value)
+    {
+        if (value > _dayNightSettings.MorningStartHour && _readyMorning)
+        {
+            _readyMorning = false;
+            _readyMidday = true;
+            _eventMorning.Raise();
+            State = DayState.MORNING;
+            _globalDayState = GlobalDayState.DAY;
+            _onGlobalDayStateChanged?.Raise((int)GlobalDayState.DAY);
+        }
+        else if (value > _dayNightSettings.MiddayStartHour && _readyMidday)
+        {
+            _readyMidday = false;
+            _readyEvening = true;
+            _eventMidDay.Raise();
+            State = DayState.MID_DAY;
+        }
+        else if (value > _dayNightSettings.EveningStartHour && _readyEvening)
+        {
+            _readyEvening = false;
+            _readyMidnight = true;
+            _eventEvening.Raise();
+            State = DayState.EVENING;
+        }
+        else if (value > _dayNightSettings.NightStartHour && _readyMidnight)
+        {
+            _globalDayState = GlobalDayState.NIGHT;
+            _onGlobalDayStateChanged?.Raise((int)GlobalDayState.NIGHT);
+        }
+        else if (value < 1 && _readyMidnight)
+        {
+            _readyMidnight = false;
+            _readyMorning = true;
+            _eventMidNight.Raise();
+            State = DayState.MID_NIGHT;
+            AddDay();
+        }
+    }
+
+    private void CheckIfStartAtNightState()
+    {
+        if(_startAtHour < _dayNightSettings.MorningStartHour)
+        {
+            _eventEvening.Raise();
+            _readyMidnight = false;
+            _readyMorning = true;
+            _eventMidNight.Raise();
+            State = DayState.MID_NIGHT;
+            _globalDayState = GlobalDayState.NIGHT;
         }
     }
 
@@ -175,7 +244,8 @@ public class DayNightManager : MonoBehaviour
         UpdateDayDisplay();
         _readyMorning = true;
         _lightTransform = _sunLight.transform;
-        SetTime(_homeTime);
+        SetTime(_startAtHour);
+        CheckIfStartAtNightState();
     }
 
     private void Update()

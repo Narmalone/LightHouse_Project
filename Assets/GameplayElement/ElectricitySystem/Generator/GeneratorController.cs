@@ -49,7 +49,7 @@ public class GeneratorController : MonoBehaviour
     private void Awake()
     {
         m_fuelValue = m_maxFuelValue;
-        m_shutdownEvent.eventAction += OnEventCalled;
+        m_shutdownEvent.EventAction += OnEventCalled;
 
         m_triggerFuel.OnEntered += M_triggerFuel_OnEntered;
         m_triggerFuel.OnExited += M_triggerFuel_OnExited;
@@ -189,7 +189,7 @@ public class GeneratorController : MonoBehaviour
 
     private void OnDestroy()
     {
-        m_shutdownEvent.eventAction -= OnEventCalled;
+        m_shutdownEvent.EventAction -= OnEventCalled;
 
         m_triggerFuel.OnEntered -= M_triggerFuel_OnEntered;
         m_triggerFuel.OnExited -= M_triggerFuel_OnExited;

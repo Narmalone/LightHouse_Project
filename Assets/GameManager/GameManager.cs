@@ -55,6 +55,7 @@ public class GameManager : Singleton<GameManager>, ISerializationCallbackReceive
     private void Start()
     {
         CurrentPlayerZone = GameZone.OutsideLightHouse;
+        _onGameZoneChanged?.Raise(CurrentPlayerZone);
     }
 
     public TimeSpan GetCurrentInGameTime()

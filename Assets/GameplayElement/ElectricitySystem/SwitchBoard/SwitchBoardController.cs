@@ -37,7 +37,7 @@ public class SwitchBoardController : MonoBehaviour
     private void Awake()
     {
         InitSwitches();
-        m_fusibleEvent.eventAction += OnfusibleEventCalled;
+        m_fusibleEvent.EventAction += OnfusibleEventCalled;
     }
 
     private void Start()
@@ -48,7 +48,7 @@ public class SwitchBoardController : MonoBehaviour
 
     private void OnDestroy()
     {
-        m_fusibleEvent.eventAction -= OnfusibleEventCalled;
+        m_fusibleEvent.EventAction -= OnfusibleEventCalled;
     }
 
     #endregion

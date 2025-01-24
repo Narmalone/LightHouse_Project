@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _state: 0
+  _globalDayState: 0
   _sunLight: {fileID: 0}
   _moonLight: {fileID: 0}
   _skyBox: {fileID: 0}
@@ -56,6 +57,8 @@ MonoBehaviour:
   _eventMidDay: {fileID: 11400000, guid: b280f9676d2fa1549bf32b7433f2a0c3, type: 2}
   _eventEvening: {fileID: 11400000, guid: 607da7d1137229b4c94e9a373cde5594, type: 2}
   _eventMidNight: {fileID: 11400000, guid: 4fb450ef5be257e4a91916ea60ada29d, type: 2}
+  _onGlobalDayStateChanged: {fileID: 11400000, guid: d9b646f5f7ba92d4faae26dc4e4a7d73,
+    type: 2}
   _eventSetTime: {fileID: 11400000, guid: e5643463280c24a4e9d5cc46f29ccee4, type: 2}
   _onWeatherLoaded: {fileID: 11400000, guid: b369ff2e6d621a44b94ce5ce039131f4, type: 2}
   _colorSunOverTime:
@@ -355,7 +358,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _homeTime: 12
+  _startAtHour: 5
+  _dayNightSettings: {fileID: 11400000, guid: 2177a0e4651f85c43bc2300dab1419ff, type: 2}
   currentDay: 0
   _startOrientation: {x: -90, y: 90, z: 0}
   _sunOrientation: {x: 1, y: 0, z: 0}
@@ -363,3 +367,4 @@ MonoBehaviour:
   _initialSpeedMultiplier: 1
   _isDayUpdating: 1
   _debug: 0
+  _speedMultiplier: 0

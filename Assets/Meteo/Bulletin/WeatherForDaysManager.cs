@@ -29,9 +29,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     [SerializeField] private CustomEvent _middnightReached;
 
     [Header("Forecast Settings")]
-    [SerializeField] private float morningStart = 6f;
-    [SerializeField] private float middayStart = 12f;
-    [SerializeField] private float eveningStart = 18f;
+    [SerializeField] private DayNightSettings _dayNightSettings;
 
     [Header("START OFFSETS IN SECONDS FROM GAME START")]
     public float StartoffSetMorning;
@@ -92,9 +90,9 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
         if (!_isInitialized)
         {
             // Calcul des offsets de départ
-            StartoffSetMorning = _dayNightManager.TimeUntil(morningStart);
-            StartoffSetMidDay = _dayNightManager.TimeUntil(middayStart);
-            StartoffSetEvening = _dayNightManager.TimeUntil(eveningStart);
+            StartoffSetMorning = _dayNightManager.TimeUntil(_dayNightSettings.MorningStartHour);
+            StartoffSetMidDay = _dayNightManager.TimeUntil(_dayNightSettings.MiddayStartHour);
+            StartoffSetEvening = _dayNightManager.TimeUntil(_dayNightSettings.EveningStartHour);
 
             // Calcul des temps des différentes périodes
             float dayDuration = gameSettings.DayCycleDuration.DurationInSeconds;
@@ -106,14 +104,30 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
             MiddnightAtTime = GetStepsAtTime(startOffsetMidnight, gameSettings.TotalDays, dayDuration);
 
             // Calcul des météos pour chaque période
-            WeathersInDays = GetWeathersInDays(_weatherManager.weatherForecast, _dayNightManager._homeTime, dayDuration);
+            WeathersInDays = GetWeathersInDays(_weatherManager.weatherForecast, _dayNightManager._startAtHour, dayDuration);
 
             for (int i = 0; i < gameSettings.TotalDays; i++)
             {
-                MorningX.Add(GetWeatherAtTime(i, morningStart, MorningAtTime));
-                MiddaysX.Add(GetWeatherAtTime(i, middayStart, MiddayAtTime));
-                EveningsX.Add(GetWeatherAtTime(i, eveningStart, EveningAtTime));
+                MorningX.Add(GetWeatherAtTime(i, _dayNightSettings.MorningStartHour, MorningAtTime));
+                MiddaysX.Add(GetWeatherAtTime(i, _dayNightSettings.MiddayStartHour, MiddayAtTime));
+                EveningsX.Add(GetWeatherAtTime(i, _dayNightSettings.EveningStartHour, EveningAtTime));
                 MiddnightX.Add(GetWeatherAtTime(i, 24f, MiddnightAtTime));
+            }
+
+            if(_dayNightManager._startAtHour > _dayNightSettings.EveningStartHour)
+            {
+                MorningX.RemoveAt(0);
+                MiddaysX.RemoveAt(0);
+                EveningsX.RemoveAt(0);
+            }
+            else if(_dayNightManager._startAtHour > _dayNightSettings.MiddayStartHour)
+            {
+                MorningX.RemoveAt(0);
+                MiddaysX.RemoveAt(0);
+            }
+            else if (_dayNightManager._startAtHour > _dayNightSettings.MorningStartHour)
+            {
+                MorningX.RemoveAt(0);
             }
 
             _isInitialized = true;
