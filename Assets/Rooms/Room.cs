@@ -31,11 +31,11 @@ public class Room : MonoBehaviour
 
     private void Start()
     {
-        foreach (ElectricItem item in ElectricityItems)
+        /*foreach (ElectricItem item in ElectricityItems)
         {
             item.HasElectricity = false;
             item.OnElecDisabled();
-        }
+        }*/
     }
 
     protected virtual void OnDestroy()

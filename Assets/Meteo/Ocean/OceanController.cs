@@ -119,7 +119,7 @@ public class OceanController : MonoBehaviour
 
     private void OnWeatherOverrideStartHandle(WeatherType obj)
     {
-        _water.largeOrientationValue = _weatherManager.currentWeather.windOrientationValue;
+        _water.largeOrientationValue = _weatherManager.CurrentWeather.windOrientationValue;
     }
 
     private void OnWeatherChangedHandle(WeatherType obj)

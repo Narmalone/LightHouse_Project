@@ -30,14 +30,15 @@ public class BeaufortScale : MonoBehaviour
         WaveHeightValueText.text = scaleInfo.WavesHeight;
     }
 
-    public void UpdateSlider(float sliderValue)
+    public void UpdateSlider(float windSpeedKmH)
     {
-        Slider.value = BeaufortToSlider(sliderValue);
+        Slider.value = Mathf.Clamp(BeaufortToSlider(windSpeedKmH), 0, 1);
     }
+
 
     public void UpdateBeaufortTitle()
     {
-        DescriptionValueText.text = CurrentBeaufortIndex.ToString();
+        //DescriptionValueText.text = CurrentBeaufortIndex.ToString();
     }
 
     public float BeaufortToSlider(float windSpeedKmH)
@@ -56,6 +57,25 @@ public class BeaufortScale : MonoBehaviour
         CurrentBeaufortIndex = _beaufortBoundaries.Length - 1;
         // If wind speed is above 128 km/h, return 1
         return 1;
+    }
+
+    public float SliderToBeaufort(float sliderValue)
+    {
+        // Parcourir les plages de slider pour trouver la correspondance
+        for (int i = 0; i < _sliderValues.Length - 1; i++)
+        {
+            if (sliderValue <= _sliderValues[i + 1])
+            {
+                // Interpolation inverse pour retrouver la vitesse du vent
+                float windSpeedInterp = _beaufortBoundaries[i] +
+                    (sliderValue - _sliderValues[i]) / (_sliderValues[i + 1] - _sliderValues[i])
+                    * (_beaufortBoundaries[i + 1] - _beaufortBoundaries[i]);
+                return windSpeedInterp;
+            }
+        }
+
+        // Si le slider est au maximum, retourner la vitesse maximale
+        return _beaufortBoundaries[_beaufortBoundaries.Length - 1];
     }
 
 

@@ -217,8 +217,8 @@ public class ScenarioManager : MonoBehaviour
             {
                 totalSteps = 0;
                 playActTransitionAtTime = targetSeconds[0] / 2;
-                Debug.Log($"Temps depuis le départ du jeu 0s et temps du premier évènement" +
-                $" du prochain acte {targetSeconds[i]} la transition de l'acte {i} à {i + 1} se joue à: {playActTransitionAtTime}");
+                //Debug.Log($"Temps depuis le départ du jeu 0s et temps du premier évènement" +
+                //$" du prochain acte {targetSeconds[i]} la transition de l'acte {i} à {i + 1} se joue à: {playActTransitionAtTime}");
             }
             else
             {
@@ -227,8 +227,8 @@ public class ScenarioManager : MonoBehaviour
                 nextEventInAct = targetSeconds[totalSteps]; //premier event de l'acte suivant
                 differenceBetweenLastAndNext = nextEventInAct - lastEventInCurrentAct;
                 playActTransitionAtTime = lastEventInCurrentAct + (differenceBetweenLastAndNext / 2);
-                Debug.Log($"Temps du dernier évènement de l'acte {i} à {lastEventInCurrentAct}, temps du premier évènement" +
-                $" du prochain acteà  {nextEventInAct} la transition de l'acte {i} à {i + 1} se joue à: {playActTransitionAtTime}");
+                //Debug.Log($"Temps du dernier évènement de l'acte {i} à {lastEventInCurrentAct}, temps du premier évènement" +
+                //$" du prochain acteà  {nextEventInAct} la transition de l'acte {i} à {i + 1} se joue à: {playActTransitionAtTime}");
             }
 
             list.Add(playActTransitionAtTime);
@@ -364,7 +364,7 @@ public class ScenarioManager : MonoBehaviour
                 float eventTime = Random.Range(minTime, maxTime);
 
                 result.Add(eventTime);
-                Debug.Log($"L'événement {i + 1} devrait démarrer entre {minTime:F2} et {maxTime:F2} secondes. Temps choisi : {eventTime:F2} secondes");
+                //Debug.Log($"L'événement {i + 1} devrait démarrer entre {minTime:F2} et {maxTime:F2} secondes. Temps choisi : {eventTime:F2} secondes");
 
                 // Mettre à jour le maxTime précédent
                 previousMaxTime = maxTime;

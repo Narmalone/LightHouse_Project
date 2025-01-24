@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 
 public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
@@ -301,7 +302,7 @@ public class WeatherForDaysManager : Singleton<WeatherForDaysManager>
     //Start + (end - start) * (time / duration)
     private float GetLerpedFloatAtTime(float timeRemaining, float startValue, float endValue, float totalDuration)
     {
-        return startValue + (endValue - startValue) * (1 - (timeRemaining / totalDuration));
+        return (float)Math.Round(startValue + (endValue - startValue) * (1 - (timeRemaining / totalDuration)), 2);
     }
 
     #endregion

@@ -1,3 +1,5 @@
+using Mono.Cecil.Cil;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -49,6 +51,11 @@ public class ElectricityManager : Singleton<ElectricityManager>
         _onAllSwitchesShutdown.handle += _onAllSwitchesShutdown_handle;
     }
 
+    private void Start()
+    {
+        ForceElectricityOnStart();
+    }
+
     private void OnDestroy()
     {
         _onGeneratorFuelEmpty.handle -= GeneratorController_OnGeneratorFuelEmpty;
@@ -62,6 +69,17 @@ public class ElectricityManager : Singleton<ElectricityManager>
     }
 
     #endregion
+
+    public void ForceElectricityOnStart()
+    {
+        for(int i = 0; i < Enum.GetValues(typeof(GameZone)).Length; i++)
+        {
+            GameZone currZone = (GameZone)Enum.GetValues(typeof(GameZone)).GetValue(i);
+            _currentEnabledZones.Add(currZone);
+            _generatorController.IsOn = true;
+            _onElectricityZoneEnabled?.Raise(currZone);
+        }
+    }
 
     #region DELEGATES
 

@@ -5,28 +5,16 @@ using UnityEngine;
 
 public class DialogWindowController : MonoBehaviour
 {
-    [SerializeField] public TextMeshProUGUI _expeditorText;
-    [SerializeField] public TextMeshProUGUI _mailObjectText;
-    [SerializeField] public TextMeshProUGUI _mailBodyText;
+    public TextMeshProUGUI ExpeditorNameText;
+    public TextMeshProUGUI MailObjectText;
+    public TextMeshProUGUI MailBodyText;
     [SerializeField] private AutoSizeText _autoSizeText;
 
-    [SerializeField] private CustomEvent_Mail _onMailSelectedChanged;
-
-    private void Awake()
+    public void UpdateMail(Mail obj)
     {
-        _onMailSelectedChanged.handle += _onMailSelectedChanged_handle;
-    }
-
-    private void OnDestroy()
-    {
-        _onMailSelectedChanged.handle -= _onMailSelectedChanged_handle;
-    }
-
-    private void _onMailSelectedChanged_handle(Mail obj)
-    {
-        _expeditorText.text = "Exp: " + obj.ExpeditorName;
-        _mailObjectText.text = "Object: " + obj.EmailObject;
-        _mailBodyText.text = obj.EmailContent;
+        ExpeditorNameText.text = "Exp: " + obj.ExpeditorName;
+        MailObjectText.text = "Object: " + obj.EmailObject;
+        MailBodyText.text = obj.EmailContent;
         _autoSizeText.AdjustTextSize();
     }
 }

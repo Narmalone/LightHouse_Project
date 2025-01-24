@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class ShopContent : ContentWindow
 {
@@ -40,7 +41,7 @@ public class ShopContent : ContentWindow
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            playerManagerInstance._data.CurrencyShop += 50f;
+            playerManagerInstance._data.CurrencyShop += 100f;
         }
     }
 
@@ -89,6 +90,11 @@ public class ShopContent : ContentWindow
         //réinitialiser la thune
         playerManagerInstance._data.CurrencyShop -= CartController.TotalPriceInCart;
         CommandsController.MoveCartToCommands(CartController.Controllers);
+        foreach(ShopCartItem itm in CartController.Controllers)
+        {
+            if (DeliverySystem.Instance == null) break;
+            DeliverySystem.Instance.SpawnItem(itm.ItemDataInstance);
+        }
         CartController.ResetCart();
         PlayerValidateCartButtonCheck();
     }

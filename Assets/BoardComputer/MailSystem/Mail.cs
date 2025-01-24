@@ -6,6 +6,11 @@ public class Mail
     public string ArrivalDate;
     public string EmailContent;
 
+    public Mail()
+    {
+
+    }
+
     public Mail(string expeName, string mailObj, string arrivalDate, string emailContent)
     {
         ExpeditorName = expeName;

@@ -66,6 +66,7 @@ public class WeatherManager : Singleton<WeatherManager>
 
     [Header("WEATHER SETTINGS")]
     public float WeatherSpeedMultiplier = 1.0f;
+    public int WeatherRoundsDigits = 2;
     [SerializeField] private List<WeatherPreset> _weatherPresets;
     [SerializeField] private WeatherPattern _weatherPattern;
 
@@ -105,7 +106,7 @@ public class WeatherManager : Singleton<WeatherManager>
     public float CurrentWeatherElapsedTime = 0f;
 
     [Header("Current Datas")]
-    public WeatherData currentWeather;
+    public WeatherData CurrentWeather;
     public WeatherData nextWeather;
 
     public float Humidity;
@@ -218,13 +219,14 @@ public class WeatherManager : Singleton<WeatherManager>
 
             WeatherPreset preset = GetWeatherPresetForType(dayWeather.weatherType);
 
-            dayWeather.windSpeed = Random.Range(preset.minWindSpeed, preset.maxWindSpeed) * difficulty;
-            dayWeather.humidity = Random.Range(preset.minHumidity, preset.maxHumidity);
-            dayWeather.airTemperature = Random.Range(preset.minAirTemperature, preset.maxAirTemperature);
-            dayWeather.waterTemperature = Random.Range(preset.minWaterTemperature, preset.maxWaterTemperature);
-            dayWeather.atmosphericPressure = Random.Range(preset.minAtmosphericPressure, preset.maxAtmosphericPressure);
+            //test d'encadrement de la weather avec un math round
+            dayWeather.windSpeed = (float)Math.Round(Random.Range(preset.minWindSpeed, preset.maxWindSpeed) * difficulty, WeatherRoundsDigits);
+            dayWeather.humidity = (float)Math.Round(Random.Range(preset.minHumidity, preset.maxHumidity), WeatherRoundsDigits);
+            dayWeather.airTemperature = (float)Math.Round(Random.Range(preset.minAirTemperature, preset.maxAirTemperature), WeatherRoundsDigits);
+            dayWeather.waterTemperature = (float)Math.Round(Random.Range(preset.minWaterTemperature, preset.maxWaterTemperature), WeatherRoundsDigits);
+            dayWeather.atmosphericPressure = (float)Math.Round(Random.Range(preset.minAtmosphericPressure, preset.maxAtmosphericPressure), WeatherRoundsDigits);
 
-            dayWeather.windOrientationValue = Random.Range(0f, 360f);
+            dayWeather.windOrientationValue = (float)Math.Round(Random.Range(0f, 360f), WeatherRoundsDigits);
             dayWeather.windDirection = DetermineWindDirection(dayWeather.windOrientationValue);
 
             weatherForecast.Add(dayWeather);
@@ -334,11 +336,11 @@ public class WeatherManager : Singleton<WeatherManager>
     {
         if (CurrentWeatherIndex < weatherForecast.Count)
         {
-            currentWeather = weatherForecast[CurrentWeatherIndex];
+            CurrentWeather = weatherForecast[CurrentWeatherIndex];
             if (CurrentWeatherIndex + 1 < weatherForecast.Count)
                 nextWeather = weatherForecast[CurrentWeatherIndex + 1];
             else
-                nextWeather = currentWeather; // Si nous sommes au dernier jour, demain sera identique à aujourd'hui
+                nextWeather = CurrentWeather; // Si nous sommes au dernier jour, demain sera identique à aujourd'hui
             ApplyWeatherEffects();
         }
     }
@@ -364,13 +366,17 @@ public class WeatherManager : Singleton<WeatherManager>
     private void InterpolateWeatherConditions()
     {
         float lerpFactor = CurrentWeatherElapsedTime / weatherChangeDuration;
+        Humidity = LerpFloat(CurrentWeather.humidity, nextWeather.humidity, lerpFactor);
+        WindSpeed = LerpFloat(CurrentWeather.windSpeed, nextWeather.windSpeed, lerpFactor);
+        WindOrientationValue = LerpFloat(CurrentWeather.windOrientationValue, nextWeather.windOrientationValue, lerpFactor);
+        AirTemperature = LerpFloat(CurrentWeather.airTemperature, nextWeather.airTemperature, lerpFactor);
+        WaterTemperature = LerpFloat(CurrentWeather.waterTemperature, nextWeather.waterTemperature, lerpFactor);
+        AtmosphericPressure = LerpFloat(CurrentWeather.atmosphericPressure, nextWeather.atmosphericPressure, lerpFactor);
+    }
 
-        Humidity = Mathf.Lerp(currentWeather.humidity, nextWeather.humidity, lerpFactor);
-        WindSpeed = Mathf.Lerp(currentWeather.windSpeed, nextWeather.windSpeed, lerpFactor);
-        WindOrientationValue = Mathf.Lerp(currentWeather.windOrientationValue, nextWeather.windOrientationValue, lerpFactor);
-        AirTemperature = Mathf.Lerp(currentWeather.airTemperature, nextWeather.airTemperature, lerpFactor);
-        WaterTemperature = Mathf.Lerp(currentWeather.waterTemperature, nextWeather.waterTemperature, lerpFactor);
-        AtmosphericPressure = Mathf.Lerp(currentWeather.atmosphericPressure, nextWeather.atmosphericPressure, lerpFactor);
+    private float LerpFloat(float current, float next, float factor)
+    {
+        return (float)Math.Round(Mathf.Lerp(current, next, factor), WeatherRoundsDigits);
     }
 
     #endregion
@@ -379,7 +385,7 @@ public class WeatherManager : Singleton<WeatherManager>
     // Appliquer les effets de la météo en fonction du type de météo actuel
     private void ApplyWeatherEffects()
     {
-        _currentWeatherType = currentWeather.weatherType;
+        _currentWeatherType = CurrentWeather.weatherType;
 
         // Vous pouvez ajouter des effets visuels/sonores ici en fonction du type de météo
         switch (_currentWeatherType)
