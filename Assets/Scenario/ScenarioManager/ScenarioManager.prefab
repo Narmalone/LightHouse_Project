@@ -45,21 +45,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scenarioSpeedMultiplier: 1
-  themes:
+  _availableThemes:
   - {fileID: 11400000, guid: 14ac9b3c354be05408e96eec9a14164f, type: 2}
   _gameSettings: {fileID: 11400000, guid: f4798f3eb11afa24198a7c6ee10d297b, type: 2}
   _scenarioSettings: {fileID: 11400000, guid: 661c253a0f544a54db2ffa09d353f172, type: 2}
-  currentFollowedTheme: {fileID: 0}
-  actScenarios: []
-  scenariosFromAct: []
-  currentActIndex: -1
-  currentAct: {fileID: 0}
-  nextEvent: {fileID: 0}
+  _currentFollowedTheme: {fileID: 0}
+  _actsFromTheme: []
+  _scenarioEventsFromAct: []
+  _currentActIndex: 0
+  _currentAct: {fileID: 0}
+  _nextEvent: {fileID: 0}
   _onGameZoneChanged: {fileID: 11400000, guid: 10b50769c6319954a83c9900f0180d8f, type: 2}
   _gameZoneTypeInfo: {fileID: 11400000, guid: c63c99623719007459fc7b4c52e795de, type: 2}
   _onGlobalDayStateChanged: {fileID: 11400000, guid: d9b646f5f7ba92d4faae26dc4e4a7d73,
     type: 2}
   _targetSeconds: []
+  _actsTargetSeconds: []
+  _currentChronoToNextAct: 0
+  _currentActTimeIndex: 0
   _currentChronoToNextEvent: 0
   _currentEventTimeIndex: 0
   _numberOfEventsPlayedInAct: 0
