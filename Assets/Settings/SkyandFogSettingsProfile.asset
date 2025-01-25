@@ -18,13 +18,13 @@ MonoBehaviour:
     m_Value: 0
   skyIntensityMode:
     m_OverrideState: 0
-    m_Value: 0
+    m_Value: 2
   exposure:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   multiplier:
     m_OverrideState: 0
-    m_Value: 1
+    m_Value: 2.47
   upperHemisphereLuxValue:
     m_OverrideState: 0
     m_Value: 1
@@ -44,8 +44,15 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   type:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
+  renderingMode:
+    m_OverrideState: 0
+    m_Value: 0
+  material:
+    m_OverrideState: 0
+    m_Value: {fileID: -876546973899608171, guid: 02532cbb810fb404db49da84f1efe41e,
+      type: 3}
   sphericalMode:
     m_OverrideState: 0
     m_Value: 1
@@ -235,11 +242,11 @@ MonoBehaviour:
   m_Name: SkyandFogSettingsProfile
   m_EditorClassIdentifier: 
   components:
-  - {fileID: 1142777632297148762}
   - {fileID: -7724654706381055090}
   - {fileID: -4151792930034644520}
   - {fileID: 7642060734654139733}
---- !u!114 &1142777632297148762
+  - {fileID: 4608570854651881019}
+--- !u!114 &4608570854651881019
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -248,26 +255,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d7593b3a9277ac4696b20006c21dde2, type: 3}
-  m_Name: 
+  m_Script: {fileID: 11500000, guid: d819996bf9e06394ab83df5e099976fe, type: 3}
+  m_Name: Pixel
   m_EditorClassIdentifier: 
   active: 1
-  skyType:
-    m_OverrideState: 1
-    m_Value: 4
-  cloudType:
-    m_OverrideState: 0
-    m_Value: 0
-  skyAmbientMode:
-    m_OverrideState: 1
-    m_Value: 0
-  windOrientation:
-    m_OverrideState: 0
-    m_Value: 0
-  windSpeed:
-    m_OverrideState: 0
-    m_Value: 0
-  fogType:
+  intensity:
     m_OverrideState: 1
     m_Value: 0
 --- !u!114 &7642060734654139733
@@ -288,7 +280,7 @@ MonoBehaviour:
     m_Value: 4
   meteringMode:
     m_OverrideState: 0
-    m_Value: 2
+    m_Value: 0
   luminanceSource:
     m_OverrideState: 0
     m_Value: 1
@@ -300,10 +292,10 @@ MonoBehaviour:
     m_Value: 0
   limitMin:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 10
   limitMax:
     m_OverrideState: 1
-    m_Value: 14
+    m_Value: 13.5
   curveMap:
     m_OverrideState: 0
     m_Value:

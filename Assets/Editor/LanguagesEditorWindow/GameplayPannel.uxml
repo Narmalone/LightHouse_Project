@@ -1,0 +1,22 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <engine:VisualElement name="GameplayPannel" class="Gameplay" style="flex-grow: 1; opacity: 1; display: flex; visibility: visible; -unity-font-definition: url(&quot;project://database/Assets/BoardComputer/UI/VT323-Regular.ttf?fileID=12800000&amp;guid=561820eafe12db64ea046b91eca27473&amp;type=3#VT323-Regular&quot;);">
+        <engine:GroupBox name="GroupBox" style="height: 54px; align-items: flex-start; flex-direction: row;">
+            <engine:Button text="Computer" name="Computer" style="font-size: 16px;" />
+            <engine:Button text="Usable Objects" name="UsableObjects" style="font-size: 16px;" />
+        </engine:GroupBox>
+        <engine:GroupBox>
+            <editor:ObjectField label="Object Field" value="project://database/Assets/BoardComputer/3D/SM_Computer.prefab?fileID=1696037683023708227&amp;guid=188f33ff6d7cdf440a98a193b73ace3f&amp;type=3#SM_Computer" name="ComputerObjectField" style="visibility: visible; display: none;" />
+        </engine:GroupBox>
+        <engine:VisualElement name="ComputerContainer" style="flex-grow: 1; display: none;">
+            <engine:GroupBox name="GroupBox">
+                <engine:DropdownField label="Pages de l&apos;ordinateur: " name="DropdownComputer" choices="MailBox,Meteo,NightVeil,Maintenance,Supply" index="-1" style="font-size: 18px;" />
+            </engine:GroupBox>
+            <engine:GroupBox name="MailBox" style="height: auto; display: none;" />
+            <engine:GroupBox name="Meteo" style="height: auto; display: none;" />
+            <engine:GroupBox name="NightVeil" style="height: auto; display: none;" />
+            <engine:GroupBox name="Maintenance" style="height: auto; display: none;" />
+            <engine:GroupBox name="Supply" style="height: auto; display: none;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="UsableObjectsContainer" style="flex-grow: 1; display: none;" />
+    </engine:VisualElement>
+</engine:UXML>

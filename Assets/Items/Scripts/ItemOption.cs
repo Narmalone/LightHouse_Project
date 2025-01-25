@@ -1,0 +1,56 @@
+using System;
+using UnityEngine;
+
+public interface IItem
+{
+    public abstract string Name { get; set; }
+    GameObject go { get; }
+    ItemDatas ItemDatas { get; }
+    ItemBase Item { get; }
+    public bool IsInventoryItem { get;}
+    public bool IsUsable { get; }
+}
+
+public abstract class ItemBase : MonoBehaviour, IItem
+{
+    public virtual string Name { get; set; } = "Object ?";
+    public GameObject go => this.gameObject;
+    public ItemBase Item => this;
+
+    [Header("ITEM BASE")]
+    [SerializeField]
+    private ItemDatas itemData;
+
+    public ItemDatas ItemDatas => itemData;
+
+    public bool IsInventoryItem => isInventoryItem;
+    public bool IsUsable => isUsable;
+
+    public bool isInventoryItem = true;
+    public bool isUsable = true;
+
+    public Action OnUse;
+
+    [HideInInspector] public Collider _collider;
+    private void Awake()
+    {
+        _collider = GetComponent<Collider>();
+    }
+
+    /// <summary>
+    /// Use the object
+    /// </summary>
+    /// <returns> true if is destroy when used</returns>
+    public virtual bool Use()
+    {
+        OnUse?.Invoke();
+        return false;
+    }
+
+    public virtual void SetStateObject(ItemBase item)
+    {
+
+    }
+
+    public virtual int GetItemPrice() { return -1; }
+}

@@ -37,16 +37,6 @@ public class WorldStatsWindow : MonoBehaviour
         SouthWest
     }
 
-    public enum Zone
-    {
-        None,
-        Kitchen,
-        Bedroom,
-        Control,
-        Service,
-        Lantern
-    }
-
     public CardinalPoint GetFacingDirection(Transform target)
     {
         // Get the player's forward direction
@@ -112,14 +102,14 @@ public class WorldStatsWindow : MonoBehaviour
         return direction;
     }
 
-    private Zone m_currentZone;
+    private GameZone m_currentZone;
 
     private void Awake()
     {
-        WorldZoneTrigger.OnZoneChange += (s) =>
+       /* WorldZoneTrigger.OnZoneChange += (s) =>
         {
             m_currentZone = s;
-        };
+        };*/
 
         if (canvasGroup.alpha == 0f)
             Disable();
@@ -135,15 +125,15 @@ public class WorldStatsWindow : MonoBehaviour
         {
             m_totalDays.text = "Current Day: " + newDay;
         };
-        m_player = FindObjectOfType<PlayerController>().transform;
+        m_player = FindFirstObjectByType<PlayerController>()?.transform;
         m_targetToCardinalPoint = m_player;
     }
 
     private void Start()
     {
-        if (GameManager.Instance)
+        if (GameManager.Instance != null)
         {
-            m_totalDays.text = "Current Day: " + GameManager.Instance.CurrentDay;
+            m_totalDays.text = "Current Day: " + GameManager.Instance?.CurrentDay;
         }
     }
     public void ResetWindow()
