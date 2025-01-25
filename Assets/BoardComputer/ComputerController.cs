@@ -100,7 +100,7 @@ public class ComputerController : ElectricItem
 
     private void Start()
     {
-        _uiComputerController.SwitchTab(ComputerTabs.Messagerie);
+        
     }
 
     #endregion
@@ -166,7 +166,6 @@ public class ComputerController : ElectricItem
     public override void OnElecEnabled()
     {
         _boxCollider.enabled = false;
-        _isInComputer = true;
         if (_instanceMat == null)
         {
             _screenButton.material = _onMaterial;
@@ -193,7 +192,6 @@ public class ComputerController : ElectricItem
         {
             LeaveComputer();
         }
-        _isInComputer = false;
     }
 
     public void DisableButton()
@@ -208,8 +206,8 @@ public class ComputerController : ElectricItem
     public void OpenComputer()
     {
         _itemCollider.enabled = false;
-        _uiComputerController.Show();
-
+        _uiComputerController.OnComputerEnter();
+        _isInComputer = true;
         _inventoryHide?.Raise();
         _crosshairHide?.Raise();
         _lockPlayerMovement?.Raise();
@@ -220,8 +218,9 @@ public class ComputerController : ElectricItem
 
     public void LeaveComputer()
     {
+        _isInComputer = false;
         _itemCollider.enabled = true;
-        _uiComputerController.Hide();
+        _uiComputerController.OnComputerLeave();
         _inventoryShow?.Raise();
         _crosshairShow?.Raise();
         _unlockPlayerMovement?.Raise();
