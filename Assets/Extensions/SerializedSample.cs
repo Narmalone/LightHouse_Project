@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SerializedSample : MonoBehaviour
 {
-    public SerializableDictionary<string, List<MultiLanguage>> test;
+    //public SerializableDictionary<string, List<MultiLanguage>> test;
 
     private void Start()
     {
