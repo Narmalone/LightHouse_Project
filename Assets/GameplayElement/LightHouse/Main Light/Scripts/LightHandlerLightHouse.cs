@@ -51,7 +51,7 @@ public class LightHandlerLightHouse : MonoBehaviour
     // Rotation
     private void OnActiveRotation()
     {
-        ActiveDesactiveRotation(true);
+        ActiveDesactiveRotation(false);
     }
 
     private void OnDesactiveRotation()
