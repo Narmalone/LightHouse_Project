@@ -225,6 +225,7 @@ MonoBehaviour:
   _onLeftButtonCliqued: {fileID: 11400000, guid: ee3fc47280b6e3949842816fadf7eb15,
     type: 2}
   _onTabCliqued: {fileID: 11400000, guid: d6cc695233da83640976d05a1dc4845a, type: 2}
+  LastOpenedTab: 0
 --- !u!1 &4855428819559625045
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,6 +477,7 @@ MonoBehaviour:
   itemData: {fileID: 0}
   isInventoryItem: 0
   isUsable: 0
+  enableRaycastDetection: 1
   _collider: {fileID: 0}
   ObjName: No electricity
 --- !u!114 &7863615705622031938
@@ -951,6 +953,7 @@ MonoBehaviour:
   itemData: {fileID: 0}
   isInventoryItem: 0
   isUsable: 1
+  enableRaycastDetection: 1
   _collider: {fileID: 0}
   HasElectricity: 0
   _uiComputerController: {fileID: 4182323740070029812}
@@ -4262,6 +4265,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 540213006528340159, guid: c43bde1fafe7e1b4b8ffd314a036b9f0,
         type: 3}
+      propertyPath: m_Size
+      value: 0.9999895
+      objectReference: {fileID: 0}
+    - target: {fileID: 540213006528340159, guid: c43bde1fafe7e1b4b8ffd314a036b9f0,
+        type: 3}
       propertyPath: m_Value
       value: 1.3349056
       objectReference: {fileID: 0}
@@ -4827,6 +4835,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6656512078320640364, guid: c43bde1fafe7e1b4b8ffd314a036b9f0,
         type: 3}
+      propertyPath: m_Size
+      value: 0.9788329
+      objectReference: {fileID: 0}
+    - target: {fileID: 6656512078320640364, guid: c43bde1fafe7e1b4b8ffd314a036b9f0,
+        type: 3}
       propertyPath: m_Value
       value: -0.018677507
       objectReference: {fileID: 0}
@@ -5098,7 +5111,7 @@ PrefabInstance:
     - target: {fileID: 8574915576490003476, guid: c43bde1fafe7e1b4b8ffd314a036b9f0,
         type: 3}
       propertyPath: m_Size
-      value: 0.9883594
+      value: 0.9887408
       objectReference: {fileID: 0}
     - target: {fileID: 8650304573148884733, guid: c43bde1fafe7e1b4b8ffd314a036b9f0,
         type: 3}

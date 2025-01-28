@@ -10,6 +10,8 @@ public class LightHouseLightController : MonoBehaviour
 {
     [SerializeField] private CustomEvent _onLightEnable;
     [SerializeField] private CustomEvent _onLightDisable;
+    [SerializeField] private CustomEvent _onRotationStart;
+    [SerializeField] private CustomEvent _onRotationStop;
 
     [SerializeField] private float _fullyTurnInSeconds = 20f;
     [SerializeField] private AnimationCurve _accelerationRotation;
@@ -22,18 +24,27 @@ public class LightHouseLightController : MonoBehaviour
     {
         _onLightEnable.handle += OnLightEnabled;
         _onLightDisable.handle += OnLightDisabled;
-    }
 
-    private void Start()
-    {
-        OnLightEnabled();
-        RotateTransform();
+        _onRotationStart.handle += OnRotationStart;
+        _onRotationStop.handle += OnRotationStop;
     }
 
     private void OnDestroy()
     {
         _onLightEnable.handle -= OnLightEnabled;
         _onLightDisable.handle -= OnLightDisabled;
+        _onRotationStart.handle -= OnRotationStart;
+        _onRotationStop.handle -= OnRotationStop;
+    }
+
+    private void OnRotationStop()
+    {
+        _currentRotateTransform?.Kill();
+    }
+
+    private void OnRotationStart()
+    {
+        _currentRotateTransform = transform.DORotate(Vector3.up * 360, _fullyTurnInSeconds, RotateMode.LocalAxisAdd).SetLoops(-1).SetEase(_accelerationRotation);
     }
 
     private void OnLightDisabled()
@@ -50,14 +61,5 @@ public class LightHouseLightController : MonoBehaviour
         {
             l.enabled = true;
         }
-    }
-
-    private void RotateTransform()
-    {
-        _currentRotateTransform = transform.DORotate(Vector3.up * 360, _fullyTurnInSeconds, RotateMode.LocalAxisAdd).SetLoops(-1).SetEase(_accelerationRotation).OnComplete(() =>
-        {
-            Debug.Log("Active infinite");
-        });
-
     }
 }
