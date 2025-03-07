@@ -12,8 +12,8 @@ public class PlayerManager : MonoBehaviour
 
     protected void Awake()
     {
-        _data._eventFreeze.handle += OnFreeze;
-        _data._eventUnfreeze.handle += OnUnfreeze;
+        _data._eventFreeze += OnFreeze;
+        _data._eventUnfreeze += OnUnfreeze;
 
         _controller?.Initialize(this);
         _data?.Initialize(this);
@@ -27,8 +27,8 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        _data._eventFreeze.handle -= OnFreeze;
-        _data._eventUnfreeze.handle -= OnUnfreeze;
+        _data._eventFreeze -= OnFreeze;
+        _data._eventUnfreeze -= OnUnfreeze;
     }
     internal void SetSpeedWhenIsGrabbing(float ratio)
     {

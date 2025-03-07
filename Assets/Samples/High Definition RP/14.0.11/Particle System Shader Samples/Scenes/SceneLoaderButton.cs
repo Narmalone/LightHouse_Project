@@ -21,7 +21,7 @@ public class SceneLoaderButton : MonoBehaviour
         {
             button.onClick.AddListener(() =>
             {
-                LightHouseSceneManager.Instance.LoadAsync(_sceneName);
+                //LightHouseSceneManager.Instance.LoadAsync(_sceneName);
             });
         }   
     }

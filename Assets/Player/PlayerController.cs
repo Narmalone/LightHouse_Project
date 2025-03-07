@@ -41,7 +41,6 @@ public class PlayerController : MonoBehaviour
 
     public PlayerManager _manager;
     private CharacterController controller;
-    private PlayerInventory playerInventory;
     private Transform playerCamera;
     private Vector3 velocity;
     private Vector3 _initialCameraPosition;
@@ -57,7 +56,6 @@ public class PlayerController : MonoBehaviour
 
     private PIA playerInputs;
 
-    private IItem currentHitItem;
 
     private Coroutine _coroutineUncrouch;
 
@@ -79,10 +77,10 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        _manager._data._eventLockCameraMovement.handle += OnLockCamera;
-        _manager._data._eventUnlockCameraMovement.handle += OnUnlockCamera;
-        _manager._data._eventLockMovement.handle += OnLockMovement;
-        _manager._data._eventUnlockMovement.handle += OnUnlockMovement;
+        _manager._data._eventLockCameraMovement += OnLockCamera;
+        _manager._data._eventUnlockCameraMovement += OnUnlockCamera;
+        _manager._data._eventLockMovement += OnLockMovement;
+        _manager._data._eventUnlockMovement += OnUnlockMovement;
 
         _manager._eventUpdate += OnUpdate;
     }
@@ -101,10 +99,10 @@ public class PlayerController : MonoBehaviour
         playerInputs.Game.Look.performed -= OnLook;
         playerInputs.Game.Look.canceled -= OnLook;
 
-        _manager._data._eventLockCameraMovement.handle -= OnLockCamera;
-        _manager._data._eventUnlockCameraMovement.handle -= OnUnlockCamera;
-        _manager._data._eventLockMovement.handle -= OnLockMovement;
-        _manager._data._eventUnlockMovement.handle -= OnUnlockMovement;
+        _manager._data._eventLockCameraMovement -= OnLockCamera;
+        _manager._data._eventUnlockCameraMovement -= OnUnlockCamera;
+        _manager._data._eventLockMovement -= OnLockMovement;
+        _manager._data._eventUnlockMovement -= OnUnlockMovement;
 
         _manager._eventUpdate -= OnUpdate;
     }
@@ -124,7 +122,6 @@ public class PlayerController : MonoBehaviour
 
         controller = manager._data.controller;
         //optionController = manager._data.optionController;
-        playerInventory = manager._data.playerInventory;
         playerCamera = manager._data.playerCamera;
 
         _initialSpeed = speed;

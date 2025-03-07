@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerData : MonoBehaviour
@@ -5,17 +6,16 @@ public class PlayerData : MonoBehaviour
     [HideInInspector] public PlayerManager _manager;
 
     [Header("Events")]
-    public CustomEvent _eventLockMovement;
-    public CustomEvent _eventLockCameraMovement;
-    public CustomEvent _eventUnlockMovement;
-    public CustomEvent _eventUnlockCameraMovement;
-    public CustomEvent _eventFreeze;
-    public CustomEvent _eventUnfreeze;
+    public Action _eventLockMovement;
+    public Action _eventLockCameraMovement;
+    public Action _eventUnlockMovement;
+    public Action _eventUnlockCameraMovement;
+    public Action _eventFreeze;
+    public Action _eventUnfreeze;
 
     [Header("Components")]
     public CharacterController controller;
     public Rigidbody _rb;
-    public PlayerInventory playerInventory;
     public Transform playerCamera;
 
     [Header("Drop Item")]
@@ -25,12 +25,12 @@ public class PlayerData : MonoBehaviour
 
     [Header("Drop Item")]
     [SerializeField] private float _currencyShop = 0;
-    [SerializeField] private CustomEvent_Float _onCurrencyShopChanged;
+    [SerializeField] private Action<float> _onCurrencyShopChanged;
 
     public float CurrencyShop { get { return _currencyShop; } set
         {
             _currencyShop = value;
-            _onCurrencyShopChanged?.Raise(value);
+            _onCurrencyShopChanged?.Invoke(value);
         }
     }
 
