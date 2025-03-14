@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Narmalone.AdvancedController.V4
+namespace LightHouse.AdvancedController
 {
     public class CameraLean : MonoBehaviour
     {

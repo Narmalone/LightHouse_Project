@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Narmalone.AdvancedController.V4
+namespace LightHouse.AdvancedController
 {
     [System.Serializable]
     public struct CameraInput

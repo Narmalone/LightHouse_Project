@@ -1,6 +1,7 @@
 using UnityEngine;
+using LightHouse.Inputs;
 
-namespace Narmalone.AdvancedController.V4
+namespace LightHouse.AdvancedController
 {
     public class Player : MonoBehaviour
     {
@@ -11,15 +12,20 @@ namespace Narmalone.AdvancedController.V4
         [SerializeField] private CameraLean cameraLean;
 
         private PlayerInputActions _inputActions;
-        private PlayerInputActions.PlayerActions input;
+        private PlayerInputActions.PlayerActions playerActions;
+
+        private void Awake()
+        {
+            _inputActions = new PlayerInputActions();
+            _inputActions.Enable();
+
+            InputUtility.SetPlayerInputActions(_inputActions);
+            playerActions = _inputActions.Player;
+        }
 
         private void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            _inputActions = new PlayerInputActions();
-            _inputActions.Enable();
-            input = _inputActions.Player;
-
             playerCharacter.Initialize();
             playerCamera.Initialize(playerCharacter.GetCameraTarget());
             cameraSpring.Initialize();
@@ -28,13 +34,14 @@ namespace Narmalone.AdvancedController.V4
 
         private void OnDestroy()
         {
+            InputUtility.DisposePlayerInputActions();
             _inputActions.Dispose();
         }
 
         private void Update()
         {
             //Get Cam input and update it's rotation
-            var cameraInput = new CameraInput { Look = input.Look.ReadValue<Vector2>() };
+            var cameraInput = new CameraInput { Look = playerActions.Look.ReadValue<Vector2>() };
             playerCamera.UpdateRotation(cameraInput);
 
             //une fois que le chara avec le motor ont été mis à jour on fait match la pos de la cam avec
@@ -45,12 +52,12 @@ namespace Narmalone.AdvancedController.V4
             var characterInput = new CharacterInput
             {
                 Rotation = playerCamera.transform.rotation,
-                Move = input.Move.ReadValue<Vector2>(),
-                Jump = input.Jump.WasPressedThisFrame(),
-                Sprint = input.Sprint.IsPressed()
+                Move = playerActions.Move.ReadValue<Vector2>(),
+                Jump = playerActions.Jump.WasPressedThisFrame(),
+                Sprint = playerActions.Sprint.IsPressed()
                     ? SprintInput.Sprinting
                     : SprintInput.StopSprint,
-                Crouch = input.Crouch.WasPressedThisFrame()
+                Crouch = playerActions.Crouch.WasPressedThisFrame()
                     ? CrouchInput.Toggle
                     : CrouchInput.None
             };
