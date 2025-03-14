@@ -11,6 +11,8 @@ public class SwitchLightHouse: ItemBase
     [Header("Components")]
     [SerializeField] Animator _animatorSwitch;
 
+    [SerializeField] private bool _isActive = false;
+
     private int _hashSwitch = Animator.StringToHash("Switch");
 
     private void Awake()
@@ -22,6 +24,7 @@ public class SwitchLightHouse: ItemBase
     private void Start()
     {
         Name = name;
+        ActiveDesactiveLigh(false);
     }
 
     private void OnDestroy()
@@ -32,28 +35,29 @@ public class SwitchLightHouse: ItemBase
 
     public override bool Use()
     {
-        ActiveDesactiveLigh(true);
-        gameObject.layer = LayerMask.NameToLayer("Default");
-
-        return base.Use();
+        _isActive = !_isActive;
+        ActiveDesactiveLigh(_isActive);
+        return _isActive;
     }
 
     private void OnStopLight()
     {
         ActiveDesactiveLigh(false);
-        gameObject.layer = LayerMask.NameToLayer("Default");
+        EnableRaycastDetection = false;
     }
 
     private void ActiveDesactiveLigh(bool active)
     {
-        if(active) _eventLightOn.Raise();
+        if (active) _eventLightOn.Raise();
         else _eventLightOff.Raise();
 
-        _animatorSwitch.SetBool(_hashSwitch, active);
-    }
 
+        //_animatorSwitch.SetBool(_hashSwitch, active);
+
+
+    }
     private void OnAllowLightOn()
     {
-        gameObject.layer = LayerMask.NameToLayer("Items");
+        EnableRaycastDetection = true;
     }
 }

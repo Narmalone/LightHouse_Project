@@ -2,45 +2,54 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class SerializableDictionnaryElement<TKey, TValue>
+namespace LightHouse.Collections
 {
-    public TKey key;
-    public TValue value;
 
-    public SerializableDictionnaryElement(TKey key, TValue value)
+    [Serializable]
+    public class SerializableDictionnaryElement<TKey, TValue>
     {
-        this.key = key;
-        this.value = value;
-    }
-}
+        public TKey key;
+        public TValue value;
 
-
-[System.Serializable]
-public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
-{
-    [SerializeField]
-    public List<SerializableDictionnaryElement<TKey, TValue>> elements;
-
-
-    public void OnBeforeSerialize()
-    {
-        elements.Clear();
-
-        foreach(var pair in this)
+        public SerializableDictionnaryElement(TKey key, TValue value)
         {
-            elements.Add(new SerializableDictionnaryElement<TKey, TValue>(pair.Key, pair.Value));
+            this.key = key;
+            this.value = value;
         }
     }
 
-    public void OnAfterDeserialize()
+    [System.Serializable]
+    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
-        Clear();
+        [SerializeField]
+        public List<SerializableDictionnaryElement<TKey, TValue>> elements = new List<SerializableDictionnaryElement<TKey, TValue>>();
 
-        foreach(var element in elements)
+        public void OnBeforeSerialize()
         {
-            this[element.key] = element.value;
+            // Vérification et initialisation de la liste si nécessaire
+            if (elements == null)
+                elements = new List<SerializableDictionnaryElement<TKey, TValue>>();
+
+            elements.Clear();
+
+            foreach (var pair in this)
+            {
+                elements.Add(new SerializableDictionnaryElement<TKey, TValue>(pair.Key, pair.Value));
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+            // Vérification et initialisation du dictionnaire
+            Clear();
+
+            if (elements == null) return;
+
+            foreach (var element in elements)
+            {
+                this[element.key] = element.value;
+            }
         }
     }
-
 }
+

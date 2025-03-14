@@ -41,8 +41,8 @@ public class SpottingBoatView : ItemBase
     private float rotationX;
     private float lookSpeed;
     private float initialFOV;
-    private bool enableInteractInput;
-    private bool _isActive;
+    [SerializeField] private bool enableInteractInput;
+    [SerializeField] private bool _isActive;
     private bool IsActive
     {
         get { return _isActive; }
@@ -205,7 +205,6 @@ public class SpottingBoatView : ItemBase
         var targetFOV = FOV == initialFOV ? zoomFOV : initialFOV;
         currentLookSpeedMultiplier = targetFOV == initialFOV ? 1 : lookZoomMultiplier;
         var time = 0f;
-
         while (time < timeSwitchFOV)
         {
             time += Time.deltaTime;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using AYellowpaper.SerializedCollections;
 
 public class ScenarioManager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class ScenarioManager : MonoBehaviour
     [SerializeField] private ThemeScenario _currentFollowedTheme;
     [SerializeField] private List<ActEvents> _actsFromTheme = new List<ActEvents>();    
     [SerializeField] public List<ScenarioEvent> _scenarioEventsFromAct = new List<ScenarioEvent>();
+    public SerializedDictionary<int, List<ScenarioEvent>> _playedEvents = new();
 
     [Header("ACT INFOS")]
     [SerializeField] private int _currentActIndex = -1;
@@ -56,6 +58,10 @@ public class ScenarioManager : MonoBehaviour
         _actsFromTheme = GetActsByTheme(_currentFollowedTheme);
         _targetSeconds = DivideEvents(_gameSettings, _actsFromTheme, _scenarioSettings.MinForkEventTime, _scenarioSettings.MaxForkEventTime, _scenarioSettings.LastEventMaxTimePercent);
         _actsTargetSeconds = DivideActsByEvents(_gameSettings, _actsFromTheme, _targetSeconds);
+        for (int i = 0; i < _actsFromTheme.Count; i++) 
+        {
+            _playedEvents.Add(i, new List<ScenarioEvent>());
+        }
     }
 
     private void Update()
@@ -267,7 +273,7 @@ public class ScenarioManager : MonoBehaviour
         }
 
         // Filtrer les événements selon les conditions
-        List<ScenarioEvent> eligibleEvents = _scenarioEventsFromAct.FindAll(e => e.AreConditionsValid(conditionToCompare));
+        List<ScenarioEvent> eligibleEvents = _scenarioEventsFromAct.FindAll(e => e.CanBeSelectedForScenario(conditionToCompare));
         ScenarioEvent nextEvent = null;
 
         Debug.Log("Nombre d'évènements éligibles " + eligibleEvents.Count);
@@ -312,6 +318,7 @@ public class ScenarioManager : MonoBehaviour
     {
         _nextEvent = SelectNextEvent(_currentAct, CurrentConditions);
         _nextEvent?.Play();
+        _playedEvents[_currentActIndex].Add(_nextEvent);
         _numberOfEventsPlayedInAct++;
     }
 

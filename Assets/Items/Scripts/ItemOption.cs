@@ -9,6 +9,8 @@ public interface IItem
     ItemBase Item { get; }
     public bool IsInventoryItem { get;}
     public bool IsUsable { get; }
+
+    public bool EnableRaycastDetection { get; set; }
 }
 
 public abstract class ItemBase : MonoBehaviour, IItem
@@ -28,6 +30,9 @@ public abstract class ItemBase : MonoBehaviour, IItem
 
     public bool isInventoryItem = true;
     public bool isUsable = true;
+
+    public bool enableRaycastDetection = true;
+    public bool EnableRaycastDetection { get => enableRaycastDetection; set => enableRaycastDetection = value; }
 
     public Action OnUse;
 

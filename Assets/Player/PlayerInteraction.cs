@@ -56,6 +56,9 @@ public class PlayerInteraction : MonoBehaviour
         {
             Debug.DrawRay(playerCamera.position, hit.point - playerCamera.position);
             hit.collider.gameObject.TryGetComponent(out IItem item);
+
+            if (item != null && !item.EnableRaycastDetection) return;
+
             if (item != null)
             {
                 Select(item);

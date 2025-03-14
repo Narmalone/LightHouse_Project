@@ -93,7 +93,7 @@ public class ShopContent : ContentWindow
         foreach(ShopCartItem itm in CartController.Controllers)
         {
             if (DeliverySystem.Instance == null) break;
-            DeliverySystem.Instance.SpawnItem(itm.ItemDataInstance);
+            DeliverySystem.Instance.SpawnItemFromShop(itm.ItemDataInstance);
         }
         CartController.ResetCart();
         PlayerValidateCartButtonCheck();

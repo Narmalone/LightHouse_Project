@@ -186,7 +186,8 @@ public class PlayerInventory : MonoBehaviour
         if (respawnObject)
         {
             // Drop prefab
-            var go = Instantiate(slot.item.ItemDatas.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
+            //var go = Instantiate(slot.item.ItemDatas.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward * 2, Quaternion.identity);
+            var go = Instantiate(slot.item.ItemDatas.prefab, _manager.transform.position + _manager._data.playerCamera.transform.forward, Quaternion.identity);
             itm = go.GetComponent<ItemBase>();
             itm?.SetStateObject(slot.previewItem);
             // Propulse Object

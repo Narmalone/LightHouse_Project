@@ -41,6 +41,7 @@ public class DayNightManager : MonoBehaviour
     [SerializeField] private CustomEvent_Int _onGlobalDayStateChanged;
     [SerializeField] private CustomEvent_Float _eventSetTime;
     [SerializeField] private CustomEvent _onWeatherLoaded;
+    public static event Action<int> OnDayChanged;
 
     [Header("Color")]
     [SerializeField] private Gradient _colorSunOverTime;
@@ -60,7 +61,7 @@ public class DayNightManager : MonoBehaviour
     [Header("Time")]
     [SerializeField, Range(0, 24)] public float _startAtHour;
     [SerializeField] private DayNightSettings _dayNightSettings;
-    [SerializeField] private float currentDay = 0;
+    [SerializeField] private int currentDay = 0;
 
     [Header("Stats")]
     [SerializeField] private Vector3 _startOrientation;
@@ -193,6 +194,7 @@ public class DayNightManager : MonoBehaviour
             _eventMidNight.Raise();
             State = DayState.MID_NIGHT;
             AddDay();
+            OnDayChanged?.Invoke(currentDay);
         }
     }
 
