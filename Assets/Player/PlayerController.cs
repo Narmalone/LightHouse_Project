@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     public PlayerManager _manager;
     private CharacterController controller;
     private Transform playerCamera;
-    private Vector3 velocity;
+    [SerializeField] private Vector3 velocity;
     private Vector3 _initialCameraPosition;
     private Vector2 moveInput;
     private Vector2 lookInput;
