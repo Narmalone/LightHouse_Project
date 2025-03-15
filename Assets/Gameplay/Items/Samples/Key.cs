@@ -2,6 +2,8 @@ using UnityEngine;
 using LightHouse.Interactions;
 using LightHouse.Inputs;
 using System;
+using LightHouse.Inventory;
+using UnityEngine.InputSystem;
 
 namespace LightHouse.Items.Samples
 {
@@ -25,6 +27,7 @@ namespace LightHouse.Items.Samples
         public void Interact()
         {
             Debug.Log("Le joueur interagit avec la clé: " + gameObject.name);
+            //le joueur récupère la clée
         }
     }
 

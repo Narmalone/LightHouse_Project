@@ -41,7 +41,7 @@ namespace LightHouse.AdvancedController
         private void Update()
         {
             //Get Cam input and update it's rotation
-            var cameraInput = new CameraInput { Look = playerActions.Look.ReadValue<Vector2>() };
+            CameraInput cameraInput = new CameraInput { Look = playerActions.Look.ReadValue<Vector2>() };
             playerCamera.UpdateRotation(cameraInput);
 
             //une fois que le chara avec le motor ont été mis à jour on fait match la pos de la cam avec
@@ -49,7 +49,7 @@ namespace LightHouse.AdvancedController
             playerCamera.UpdatePosition(playerCharacter.GetCameraTarget());
 
             //Get character input and update it
-            var characterInput = new CharacterInput
+            CharacterInput characterInput = new CharacterInput
             {
                 Rotation = playerCamera.transform.rotation,
                 Move = playerActions.Move.ReadValue<Vector2>(),
