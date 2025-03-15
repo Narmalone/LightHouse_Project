@@ -1,12 +1,11 @@
 using LightHouse.Inventory;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using LightHouse.Items;
 using LightHouse.Interactions;
 using System;
+using LightHouse.Inputs;
 
-public class JerricanEssence : MonoBehaviour, IInteractable, IDescribable, IItem
+public class JerricanEssence : ItemBase, IInteractable, IDescribable, IInventoryItem
 {
     [SerializeField] private string _name;
     [SerializeField] private Collider _collider;
@@ -26,16 +25,20 @@ public class JerricanEssence : MonoBehaviour, IInteractable, IDescribable, IItem
         return _name;
     }
 
+    /// <summary>
+    /// Fonction qui est lancée quand le joueur regarde l'objet et appuie sur
+    /// la touche d'interaction
+    /// </summary>
     public void Interact()
     {
         essenceValue -= 10;
         //récupérer dans l'inventaire
-        PlayerInventory.Instance.AddItem(this);
+        
     }
 
-    public GameObject GetGameObject()
+    public ItemBase GetItem()
     {
-        return this.gameObject;
+        return this;
     }
 
     public Collider GetCollider()
@@ -46,5 +49,21 @@ public class JerricanEssence : MonoBehaviour, IInteractable, IDescribable, IItem
     public Rigidbody HasRigidBody()
     {
         return _rb;
+    }
+
+    public string GetPickupName()
+    {
+        return $"Press {InputManager.GetBindingName(InputManager.PLAYER_INPUTS_ACTIONS.Player.Pickup)} to pickup";
+    }
+
+    public void OnItemAddedToInventory()
+    {
+        Debug.Log("Cet objet à été ajouté à l'inventaire " + gameObject.name);
+    }
+
+    public void OnItemRemovedFromInventory()
+    {
+        Debug.Log("Cet objet à été retiré de l'inventaire " + gameObject.name);
+
     }
 }
