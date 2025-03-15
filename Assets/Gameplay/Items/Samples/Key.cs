@@ -1,12 +1,16 @@
 using UnityEngine;
 using LightHouse.Interactions;
 using LightHouse.Inputs;
+using System;
 
-namespace LightHouse.Items
+namespace LightHouse.Items.Samples
 {
     public class Key : MonoBehaviour, IInteractable, IDescribable
     {
         [SerializeField] private string _keyName;
+
+        public event Action OnDescriptionUpdated;
+        public event Action OnNameUpdated;
 
         public string GetName()
         {
@@ -15,7 +19,7 @@ namespace LightHouse.Items
 
         public string GetDescription()
         {
-            return $"Press {InputUtility.GetBindingName(InputUtility.Interact)} to pick";
+            return $"Press {InputManager.GetBindingName(InputManager.Interact)} to pick";
         }
 
         public void Interact()

@@ -19,7 +19,7 @@ namespace LightHouse.AdvancedController
             _inputActions = new PlayerInputActions();
             _inputActions.Enable();
 
-            InputUtility.SetPlayerInputActions(_inputActions);
+            InputManager.SetPlayerInputActions(_inputActions);
             playerActions = _inputActions.Player;
         }
 
@@ -34,7 +34,7 @@ namespace LightHouse.AdvancedController
 
         private void OnDestroy()
         {
-            InputUtility.DisposePlayerInputActions();
+            InputManager.DisposePlayerInputActions();
             _inputActions.Dispose();
         }
 

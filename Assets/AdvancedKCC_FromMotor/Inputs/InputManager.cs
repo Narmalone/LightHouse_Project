@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace LightHouse.Inputs
 {
-    public static class InputUtility
+    public static class InputManager
     {
         private static PlayerInputActions _player_Input_Actions;
         public static PlayerInputActions PLAYER_INPUTS_ACTIONS => _player_Input_Actions;

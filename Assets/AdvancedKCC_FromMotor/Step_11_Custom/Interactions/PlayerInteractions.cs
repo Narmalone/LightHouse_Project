@@ -62,37 +62,12 @@ namespace LightHouse.AdvancedController
                     if (_lastDescribable != null)
                     {
                         OnDescribableItemDetected?.Invoke(_lastDescribable);
-                        Debug.Log($"Info : {_lastDescribable.GetName()} - {_lastDescribable.GetDescription()}");
-                        string itemName = _lastDescribable.GetName();
-
-                        if (_canvasInteraction.IsHided)
-                            _canvasInteraction.Show();
-
-                        if (string.IsNullOrEmpty(itemName))
-                        {
-                            _canvasInteraction.HideItemName();
-                        }
-                        else
-                        {
-                            _canvasInteraction.ItemName_TMP.text = _lastDescribable.GetName();
-                            _canvasInteraction.ShowItemName();
-                        }
-
-                        string itemDescription = _lastDescribable.GetDescription();
-                        if (string.IsNullOrEmpty(itemDescription))
-                        {
-                            _canvasInteraction.HideItemDescription();
-                        }
-                        else
-                        {
-                            _canvasInteraction.ItemDescription_TMP.text = _lastDescribable.GetDescription();
-                            _canvasInteraction.ShowItemDescription();
-                        }
+                        UpdateDescriptionUI();
                     }
                 }
 
                 //If we are seing an object and performing our interact key we interacted with the item
-                if (_lastInteractable != null && InputUtility.Interact.WasPerformedThisFrame())
+                if (_lastInteractable != null && InputManager.Interact.WasPerformedThisFrame())
                 {
                     _lastInteractable.Interact();
                 }
@@ -102,6 +77,12 @@ namespace LightHouse.AdvancedController
                 //Reset if we don't see anything
                 if (_lastObjectSeen != null)
                 {
+                    if(_lastDescribable != null)
+                    {
+                        _lastDescribable.OnNameUpdated -= OnCurrentSeingObjectNameUpdate;
+                        _lastDescribable.OnDescriptionUpdated -= OnCurrentSeingObjectDescriptionUpdate;
+                    }
+
                     Debug.Log("Plus aucun objet interactif en vue.");
                     _lastObjectSeen = null;
                     _lastInteractable = null;
@@ -114,5 +95,56 @@ namespace LightHouse.AdvancedController
 
             Debug.DrawRay(_playerCamera.transform.position, ray.direction * _interactionDistance, Color.magenta);
         }
+
+        /// <summary>
+        /// Called only once when we detect a new IDesribable
+        /// </summary>
+        private void UpdateDescriptionUI()
+        {
+            if (_lastDescribable != null)
+            {
+                string itemName = _lastDescribable.GetName();
+                string itemDescription = _lastDescribable.GetDescription();
+
+                _lastDescribable.OnNameUpdated += OnCurrentSeingObjectNameUpdate;
+                _lastDescribable.OnDescriptionUpdated += OnCurrentSeingObjectDescriptionUpdate;
+
+                if (_canvasInteraction.IsHided)
+                    _canvasInteraction.Show();
+
+                if (string.IsNullOrEmpty(itemName))
+                {
+                    _canvasInteraction.HideItemName();
+                }
+                else
+                {
+                    _canvasInteraction.ItemName_TMP.text = itemName;
+                    _canvasInteraction.ShowItemName();
+                }
+
+                if (string.IsNullOrEmpty(itemDescription)) 
+                {
+                    _canvasInteraction.HideItemDescription();
+                }
+                else
+                {
+                    _canvasInteraction.ItemDescription_TMP.text = itemDescription;
+                    _canvasInteraction.ShowItemDescription();
+                }
+            }
+        }
+
+        private void OnCurrentSeingObjectNameUpdate()
+        {
+            string itemName = _lastDescribable.GetName();
+            _canvasInteraction.ItemName_TMP.text = string.IsNullOrEmpty(itemName) ? "" : itemName;
+        }
+
+        private void OnCurrentSeingObjectDescriptionUpdate()
+        {
+            string itemDescription = _lastDescribable.GetDescription();
+            _canvasInteraction.ItemDescription_TMP.text = string.IsNullOrEmpty(itemDescription) ? "" : itemDescription;
+        }
     }
+
 }
