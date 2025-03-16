@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Narmalone.AdvancedController.V3.StepEleven
+namespace LightHouse.KinematicCharacterController
 {
     [System.Serializable]
     public struct CameraInput
@@ -27,7 +27,7 @@ namespace Narmalone.AdvancedController.V3.StepEleven
         /// <summary>
         /// Rotation bas�e sur l'entr�e de la souris
         /// </summary>
-        public void UpdateRotation(CameraInput input)
+        public void UpdateRotation(ref CameraInput input)
         {
             _eulerAngles.x += !_invertYAxis ? -input.Look.y * _sensiY : input.Look.y * _sensiY;
             _eulerAngles.y += !_invertXAxis ? input.Look.x * _sensiX : -input.Look.x * _sensiX;
@@ -48,3 +48,5 @@ namespace Narmalone.AdvancedController.V3.StepEleven
     }
 
 }
+
+

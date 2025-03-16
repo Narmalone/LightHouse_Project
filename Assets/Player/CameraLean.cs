@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace Narmalone.AdvancedController.V3.StepEleven
+namespace LightHouse.KinematicCharacterController
 {
     public class CameraLean : MonoBehaviour
     {

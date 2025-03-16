@@ -1,7 +1,7 @@
 using UnityEngine;
 using KinematicCharacterController;
 
-namespace LightHouse.AdvancedController
+namespace Narmalone.AdvancedController.V3.StepEleven
 {
     //enum and not a bool if we want to press or hold...
     public enum CrouchInput

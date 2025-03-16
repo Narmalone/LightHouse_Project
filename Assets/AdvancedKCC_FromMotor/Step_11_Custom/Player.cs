@@ -1,7 +1,7 @@
 using UnityEngine;
 using LightHouse.Inputs;
 
-namespace LightHouse.AdvancedController
+namespace Narmalone.AdvancedController.V3.StepEleven
 {
     public class Player : MonoBehaviour
     {
