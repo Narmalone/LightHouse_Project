@@ -1,7 +1,6 @@
 using KinematicCharacterController;
 using System;
 using UnityEngine;
-using static UnityEditorInternal.VersionControl.ListControl;
 
 namespace LightHouse.KinematicCharacterController
 {
