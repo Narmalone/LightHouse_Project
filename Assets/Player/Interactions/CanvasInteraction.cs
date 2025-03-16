@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace Narmalone.Interactions
+namespace LightHouse.Interactions
 {
     public class CanvasInteraction : MonoBehaviour
     {

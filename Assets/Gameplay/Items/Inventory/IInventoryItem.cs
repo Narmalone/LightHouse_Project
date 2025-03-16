@@ -7,7 +7,7 @@ public interface IInventoryItem
     string GetPickupName();
     ItemBase GetItem();
     Collider GetCollider();
-    Rigidbody HasRigidBody();
+    Rigidbody GetRigidBody();
     void OnItemAddedToInventory();
     void OnItemRemovedFromInventory();
 }

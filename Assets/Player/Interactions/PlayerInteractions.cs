@@ -3,7 +3,7 @@ using UnityEngine;
 using LightHouse.Interactions;
 using LightHouse.Inputs;
 
-namespace Narmalone.AdvancedController
+namespace LightHouse.AdvancedController
 {
     public class PlayerInteractions : MonoBehaviour
     {
@@ -77,16 +77,17 @@ namespace Narmalone.AdvancedController
                 //Reset if we don't see anything
                 if (_lastObjectSeen != null)
                 {
-                    if(_lastDescribable != null)
+                    _lastObjectSeen = null;
+
+                    if (_lastDescribable != null)
                     {
                         _lastDescribable.OnNameUpdated -= OnCurrentSeingObjectNameUpdate;
                         _lastDescribable.OnDescriptionUpdated -= OnCurrentSeingObjectDescriptionUpdate;
+                        _lastDescribable = null;
                     }
 
-                    Debug.Log("Plus aucun objet interactif en vue.");
-                    _lastObjectSeen = null;
-                    _lastInteractable = null;
-                    _lastDescribable = null;
+                    if (_lastInteractable != null)
+                        _lastInteractable = null;
 
                     if(!_canvasInteraction.IsHided)
                         _canvasInteraction.Hide();

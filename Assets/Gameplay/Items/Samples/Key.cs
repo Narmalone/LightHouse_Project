@@ -3,13 +3,14 @@ using LightHouse.Interactions;
 using LightHouse.Inputs;
 using System;
 using LightHouse.Inventory;
-using UnityEngine.InputSystem;
 
 namespace LightHouse.Items.Samples
 {
-    public class Key : MonoBehaviour, IInteractable, IDescribable
+    public class Key : ItemBase, IInteractable, IDescribable, IInventoryItem
     {
         [SerializeField] private string _keyName;
+        [SerializeField] private Collider _keyCollider;
+        [SerializeField] private Rigidbody _keyRigidbody;
 
         public event Action OnDescriptionUpdated;
         public event Action OnNameUpdated;
@@ -21,13 +22,34 @@ namespace LightHouse.Items.Samples
 
         public string GetDescription()
         {
-            return $"Press {InputManager.GetBindingName(InputManager.Interact)} to pick";
+            return $"";
         }
 
         public void Interact()
         {
             Debug.Log("Le joueur interagit avec la clé: " + gameObject.name);
             //le joueur récupère la clée
+        }
+
+        public string GetPickupName()
+        {
+            return $"Press {InputManager.GetBindingName(InputManager.PickUp)} to pick";
+        }
+
+        public ItemBase GetItem() => this;
+
+        public Collider GetCollider() => _keyCollider;
+
+        public Rigidbody GetRigidBody() => _keyRigidbody;
+
+        public void OnItemAddedToInventory()
+        {
+            
+        }
+
+        public void OnItemRemovedFromInventory()
+        {
+            
         }
     }
 

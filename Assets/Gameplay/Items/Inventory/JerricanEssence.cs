@@ -46,7 +46,7 @@ public class JerricanEssence : ItemBase, IInteractable, IDescribable, IInventory
         return _collider;
     }
 
-    public Rigidbody HasRigidBody()
+    public Rigidbody GetRigidBody()
     {
         return _rb;
     }

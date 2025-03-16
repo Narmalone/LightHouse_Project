@@ -13,14 +13,11 @@ namespace LightHouse.Inventory
         public List<IInventoryItem> Inventory = new(); // Associe un IItem à son GameObject
         [SerializeField] private Transform _inventoryParent = null;
         [SerializeField] private Transform _inventoryTarget = null;
-        public static PlayerInventory Instance;
-        public LayerMask mask = 1 << -1;
-        public Camera _playerCamera;
+        [SerializeField] private LayerMask mask = 1 << -1;
+        [SerializeField] private Camera _playerCamera;
 
-        private void Awake()
-        {
-            Instance = this;
-        }
+        private GameObject _lastObjectSeen;
+        private IInventoryItem _inventoryItem;
 
         public bool AddItem(IInventoryItem item)
         {
@@ -37,7 +34,7 @@ namespace LightHouse.Inventory
             obj.transform.localRotation = Quaternion.identity;
 
             item.GetCollider().enabled = false;
-            item.HasRigidBody().isKinematic = true;
+            item.GetRigidBody().isKinematic = true;
 
             Inventory.Add(item);
             item.OnItemAddedToInventory();
@@ -64,8 +61,6 @@ namespace LightHouse.Inventory
             }
         }
 
-        private GameObject _lastObjectSeen;
-        private IInventoryItem _inventoryItem;
         private void TryInteratableItem(Ray ray, float interactionDistance, int interactableLayer, QueryTriggerInteraction qti)
         {
             RaycastHit hit;
@@ -133,7 +128,7 @@ namespace LightHouse.Inventory
                 obj.transform.position = dropPosition;
                 obj.transform.rotation = Quaternion.identity;
                 item.GetCollider().enabled = true;
-                item.HasRigidBody().isKinematic = false;
+                item.GetRigidBody().isKinematic = false;
                 obj.SetActive(true); // Réactive l’objet
 
                 RemoveItem(item); // Supprime du dictionnaire mais garde l'objet dans la scène
