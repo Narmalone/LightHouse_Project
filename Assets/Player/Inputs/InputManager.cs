@@ -13,11 +13,13 @@ namespace LightHouse.Inputs
         public static PlayerInputActions.UIActions UI => _player_Input_Actions.UI;
 
         public static InputAction Interact => Player.Interact;
+        public static InputAction InteractInInventory => Player.InteractInInventory;
         public static InputAction Move => Player.Move;
         public static InputAction Jump => Player.Jump;
         public static InputAction Crouch => Player.Crouch;
         public static InputAction PickUp => Player.Pickup;
         public static InputAction Drop => Player.Drop;
+        public static InputAction Scroll => Player.Scroll;
 
         public static void SetPlayerInputActions(PlayerInputActions pia)
         {

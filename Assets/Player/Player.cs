@@ -5,12 +5,19 @@ namespace LightHouse.KinematicCharacterController
 {
     public class Player : MonoBehaviour
     {
-        [Header("Main References")]
+        [Header("Character")]
         [SerializeField] private PlayerCharacter _playerCharacter;
+
+        [Header("Camera")]
         [SerializeField] private PlayerCamera _playerCamera;
-        [Space]
         [SerializeField] private CameraSpring _cameraSpring;
         [SerializeField] private CameraLean _cameraLean;
+
+        [Header("Inventory")]
+        [SerializeField] private PlayerInventory _inventory;
+
+        [Header("Interactions")]
+        [SerializeField] private PlayerInteractions _interactions;
 
         [Header("Character Input Control")]
         [SerializeField] private bool _enableAllCharacterInputs = true;
@@ -33,13 +40,14 @@ namespace LightHouse.KinematicCharacterController
         {
             _inputActions = new PlayerInputActions();
             _inputActions.Enable();
-
             InputManager.SetPlayerInputActions(_inputActions);
         }
 
         private void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
+            _inventory.RegisterInput();
+
             _playerCharacter.Initialize();
             _playerCamera.Initialize(_playerCharacter.GetCameraTarget());
             _cameraSpring.Initialize();
@@ -56,15 +64,18 @@ namespace LightHouse.KinematicCharacterController
         {
             HandleCameraInput();
 
-            var camTarget = _playerCharacter.GetCameraTarget();
-            var state = _playerCharacter.GetState();
+            Transform camTarget = _playerCharacter.GetCameraTarget();
+            CharacterState state = _playerCharacter.GetState();
 
             HandleSpring(Time.deltaTime, camTarget.up);
             HandleLean(Time.deltaTime, state.AccelerationVelocity, camTarget.up);
+
+            HandleInventory();
         }
 
         private void OnDestroy()
         {
+            _inventory.UnregisterInput();
             InputManager.DisposePlayerInputActions();
             _inputActions.Dispose();
         }
@@ -125,6 +136,12 @@ namespace LightHouse.KinematicCharacterController
         private void HandleSpring(float deltaTime, Vector3 up)
         {
             _cameraSpring.UpdateSpring(deltaTime, up);
+        }
+
+        private void HandleInventory()
+        {
+            _inventory.HandleInventoryPosition();
+            _inventory.HandleInventoryRotation();
         }
     }
 

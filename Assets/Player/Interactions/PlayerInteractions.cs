@@ -2,24 +2,39 @@
 using UnityEngine;
 using LightHouse.Interactions;
 using LightHouse.Inputs;
+using LightHouse.Utilities;
 
-namespace LightHouse.AdvancedController
+namespace LightHouse.KinematicCharacterController
 {
     public class PlayerInteractions : MonoBehaviour
     {
+        #region SERIALIZED FIELDS
+        [Header("Interaction Settings")]
+        [SerializeField] private bool _enableInteraction = true;
+
+        [Header("UI")]
+        [SerializeField] private CanvasInteraction _canvasInteraction;
+
+        [Header("Raycast")]
+        [SerializeField] private Camera _playerCamera;
         [SerializeField] private float _interactionDistance = 3.0f;
         [SerializeField] private LayerMask _interactableLayer = 1 << 0;
         [SerializeField] private QueryTriggerInteraction _queryTriggerInteraction = QueryTriggerInteraction.Ignore;
-        [SerializeField] private Camera _playerCamera;
-        [SerializeField] private bool _enableInteraction = true;
-        [SerializeField] private CanvasInteraction _canvasInteraction;
 
+        #endregion
+
+        #region PRIVATE FIELDS
         private GameObject _lastObjectSeen = null;  //Store last object seen
-        private IInteractable _lastInteractable = null;
-        private IDescribable _lastDescribable = null;
+        private IInteractable _raycastedIInteractable = null;
+        private IItemName _raycastedIItemName = null;
 
+        #endregion
+
+        #region EVENTS AND PROPERTIES
         public event Action<IInteractable> OnInteractableItemDetected;
-        public event Action<IDescribable> OnDescribableItemDetected;
+        #endregion
+
+        #region MONO'S CALLBACK
 
         private void Start()
         {
@@ -31,121 +46,162 @@ namespace LightHouse.AdvancedController
             if (!_enableInteraction) return;
 
             Ray cameraRay = _playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0f));
-            TryInteratableItem(cameraRay, _interactionDistance, _interactableLayer, _queryTriggerInteraction);
-        }
-
-        private void TryInteratableItem(Ray ray, float interactionDistance, int interactableLayer, QueryTriggerInteraction qti)
-        {
-            RaycastHit hit;
-            bool hasHit = Physics.Raycast(ray, out hit, interactionDistance, interactableLayer, qti);
-
-            if (hasHit)
+            if (RaycastUtility.TryRaycast(cameraRay, _interactionDistance, _interactableLayer, _queryTriggerInteraction, out RaycastHit hit))
             {
-                GameObject hitObject = hit.collider.gameObject;
-
-                //check if current hited object is different and apply it once
-                if (hitObject != _lastObjectSeen)
-                {
-                    _lastObjectSeen = hitObject;
-
-                    //Get and READS the components only once to avoid bad performances
-                    _lastInteractable = hitObject.TryGetComponent(out IInteractable interactable) ? interactable : null;
-                    _lastDescribable = hitObject.TryGetComponent(out IDescribable describable) ? describable : null;
-
-                    //Start events and everything else
-                    if (_lastInteractable != null)
-                    {
-                        OnInteractableItemDetected?.Invoke(_lastInteractable);
-                        Debug.Log($"Nouveau Item détecté : {_lastObjectSeen.name}");
-                    }
-
-                    if (_lastDescribable != null)
-                    {
-                        OnDescribableItemDetected?.Invoke(_lastDescribable);
-                        UpdateDescriptionUI();
-                    }
-                }
-
-                //If we are seing an object and performing our interact key we interacted with the item
-                if (_lastInteractable != null && InputManager.Interact.WasPerformedThisFrame())
-                {
-                    _lastInteractable.Interact();
-                }
+                HandleNewObject(hit.collider.gameObject);
+                HandleInteraction();
             }
             else
             {
-                //Reset if we don't see anything
-                if (_lastObjectSeen != null)
-                {
-                    _lastObjectSeen = null;
-
-                    if (_lastDescribable != null)
-                    {
-                        _lastDescribable.OnNameUpdated -= OnCurrentSeingObjectNameUpdate;
-                        _lastDescribable.OnDescriptionUpdated -= OnCurrentSeingObjectDescriptionUpdate;
-                        _lastDescribable = null;
-                    }
-
-                    if (_lastInteractable != null)
-                        _lastInteractable = null;
-
-                    if(!_canvasInteraction.IsHided)
-                        _canvasInteraction.Hide();
-                }
+                ResetSeenObject();
             }
 
-            Debug.DrawRay(_playerCamera.transform.position, ray.direction * _interactionDistance, Color.magenta);
+            Debug.DrawRay(_playerCamera.transform.position, cameraRay.direction * _interactionDistance, Color.magenta);
         }
 
-        /// <summary>
-        /// Called only once when we detect a new IDesribable
-        /// </summary>
-        private void UpdateDescriptionUI()
+        #endregion
+
+        #region RAYCAST HANDLER
+
+        private void HandleNewObject(GameObject hitObject)
         {
-            if (_lastDescribable != null)
+            if (hitObject != _lastObjectSeen)
             {
-                string itemName = _lastDescribable.GetName();
-                string itemDescription = _lastDescribable.GetDescription();
+                _lastObjectSeen = hitObject;
+                _raycastedIInteractable = hitObject.GetComponent<IInteractable>();
+                _raycastedIItemName = hitObject.GetComponent<IItemName>();
 
-                _lastDescribable.OnNameUpdated += OnCurrentSeingObjectNameUpdate;
-                _lastDescribable.OnDescriptionUpdated += OnCurrentSeingObjectDescriptionUpdate;
+                if (_raycastedIInteractable != null)
+                {
+                    OnInteractableItemDetected?.Invoke(_raycastedIInteractable);
+                    UpdateInteractionName();
+                }
+                else
+                {
+                    _canvasInteraction.HideItemInteractionName();
+                }
 
-                if (_canvasInteraction.IsHided)
-                    _canvasInteraction.Show();
-
-                if (string.IsNullOrEmpty(itemName))
+                if (_raycastedIItemName != null)
+                {
+                    UpdateName();
+                }
+                else
                 {
                     _canvasInteraction.HideItemName();
                 }
-                else
-                {
-                    _canvasInteraction.ItemName_TMP.text = itemName;
-                    _canvasInteraction.ShowItemName();
-                }
-
-                if (string.IsNullOrEmpty(itemDescription)) 
-                {
-                    _canvasInteraction.HideItemDescription();
-                }
-                else
-                {
-                    _canvasInteraction.ItemDescription_TMP.text = itemDescription;
-                    _canvasInteraction.ShowItemDescription();
-                }
             }
         }
 
+        
+
+        private void ResetSeenObject()
+        {
+            if (_lastObjectSeen != null)
+                _lastObjectSeen = null;
+
+            if (_raycastedIItemName != null)
+            {
+                _raycastedIItemName.OnNameUpdated -= OnCurrentSeingObjectNameUpdate;
+                _raycastedIItemName = null;
+            }
+
+            if (_canvasInteraction.ItemName_TMP.isActiveAndEnabled)
+                _canvasInteraction.HideItemName();
+
+            if (_raycastedIInteractable != null)
+            {
+                _raycastedIInteractable.OnInteractionNameChanged -= OnCurrentSeingObjectNameUpdate;
+                _raycastedIInteractable = null;
+            }
+
+            if(_canvasInteraction.ItemDescription_TMP.isActiveAndEnabled)
+                _canvasInteraction.HideItemInteractionName();
+        }
+        #endregion
+
+        #region HANDLE INPUTS
+        private void HandleInteraction()
+        {
+            if (InputManager.Interact.WasPerformedThisFrame() && _raycastedIInteractable != null)
+            {
+                if(_raycastedIInteractable.CanBeInteracted)
+                    _raycastedIInteractable.Interact();
+            }
+        }
+        #endregion
+
+        #region Update Interactions and Name Texts
+        public void UpdateInteractionName()
+        {
+            string itemInteractionName = _raycastedIInteractable?.GetInteractionName();
+            _raycastedIInteractable.OnInteractionNameChanged += OnCurrentSeingObjectDescriptionUpdate;
+
+            if (_canvasInteraction.IsHided)
+                _canvasInteraction.Show();
+
+            if (string.IsNullOrEmpty(itemInteractionName))
+            {
+                _canvasInteraction.HideItemInteractionName();
+            }
+            else
+            {
+                _canvasInteraction.ItemDescription_TMP.text = itemInteractionName;
+                _canvasInteraction.ShowItemInteractionName();
+            }
+        }
+
+        public void UpdateName()
+        {
+            string itemName = _raycastedIItemName.GetName();
+            _raycastedIItemName.OnNameUpdated += OnCurrentSeingObjectNameUpdate;
+
+            if (_canvasInteraction.IsHided)
+                _canvasInteraction.Show();
+
+            if (string.IsNullOrEmpty(itemName))
+            {
+                _canvasInteraction.HideItemName();
+            }
+            else
+            {
+                _canvasInteraction.ItemName_TMP.text = itemName;
+                _canvasInteraction.ShowItemName();
+            }
+        }
+
+        #endregion
+
+        #region Object Callbacks
+
         private void OnCurrentSeingObjectNameUpdate()
         {
-            string itemName = _lastDescribable.GetName();
-            _canvasInteraction.ItemName_TMP.text = string.IsNullOrEmpty(itemName) ? "" : itemName;
+            string itemName = _raycastedIInteractable.GetName();
+            if (string.IsNullOrEmpty(itemName))
+            {
+                _canvasInteraction.HideItemName();
+            }
+            else
+            {
+                _canvasInteraction.ItemName_TMP.text = itemName;
+                _canvasInteraction.ShowItemName();
+            }
         }
 
         private void OnCurrentSeingObjectDescriptionUpdate()
         {
-            string itemDescription = _lastDescribable.GetDescription();
-            _canvasInteraction.ItemDescription_TMP.text = string.IsNullOrEmpty(itemDescription) ? "" : itemDescription;
+            string itemDescription = _raycastedIInteractable.GetInteractionName();
+            if (string.IsNullOrEmpty(itemDescription))
+            {
+                _canvasInteraction.HideItemInteractionName();
+            }
+            else
+            {
+                _canvasInteraction.ItemDescription_TMP.text = itemDescription;
+                _canvasInteraction.ShowItemInteractionName();
+            }
         }
+
+        #endregion
     }
 
 }

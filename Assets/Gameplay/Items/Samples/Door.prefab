@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2629196592336163693}
   - component: {fileID: 3257248284275988232}
   - component: {fileID: 6014912849866339431}
+  - component: {fileID: 2773966567434714135}
   m_Layer: 6
   m_Name: Pivot
   m_TagString: Untagged
@@ -67,10 +68,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86463bf272eb2cb4487fee73136bf733, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isOpen: 0
-  _openRotationAngles: {x: 0, y: 90, z: 0}
   _pivot: {fileID: 2629196592336163693}
+  _openRotationAngles: {x: 0, y: 90, z: 0}
   _rotationSpeed: 2
+  <CanBeInteracted>k__BackingField: 1
+  _key: {fileID: 11400000, guid: 4382ac64115f8994cb97f2788ff982d2, type: 2}
+  _hasKey: 0
+  _isOpen: 0
+  _isUnLocked: 0
+--- !u!54 &2773966567434714135
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628502574896919933}
+  serializedVersion: 4
+  m_Mass: 200
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 94
+  m_CollisionDetection: 0
 --- !u!1 &6241700384106666401
 GameObject:
   m_ObjectHideFlags: 0

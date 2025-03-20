@@ -16,10 +16,8 @@ namespace Narmalone.AdvancedController
 
         private GameObject _lastObjectSeen = null;  //Store last object seen
         private IInteractable _lastInteractable = null;
-        private IDescribable _lastDescribable = null;
 
         public event Action<IInteractable> OnInteractableItemDetected;
-        public event Action<IDescribable> OnDescribableItemDetected;
 
         private void Start()
         {
@@ -50,19 +48,12 @@ namespace Narmalone.AdvancedController
 
                     //Get and READS the components only once to avoid bad performances
                     _lastInteractable = hitObject.TryGetComponent(out IInteractable interactable) ? interactable : null;
-                    _lastDescribable = hitObject.TryGetComponent(out IDescribable describable) ? describable : null;
 
                     //Start events and everything else
                     if (_lastInteractable != null)
                     {
                         OnInteractableItemDetected?.Invoke(_lastInteractable);
                         Debug.Log($"Nouveau Item détecté : {_lastObjectSeen.name}");
-                    }
-
-                    if (_lastDescribable != null)
-                    {
-                        OnDescribableItemDetected?.Invoke(_lastDescribable);
-                        UpdateDescriptionUI();
                     }
                 }
 
@@ -77,16 +68,11 @@ namespace Narmalone.AdvancedController
                 //Reset if we don't see anything
                 if (_lastObjectSeen != null)
                 {
-                    if(_lastDescribable != null)
-                    {
-                        _lastDescribable.OnNameUpdated -= OnCurrentSeingObjectNameUpdate;
-                        _lastDescribable.OnDescriptionUpdated -= OnCurrentSeingObjectDescriptionUpdate;
-                    }
+                   
 
                     Debug.Log("Plus aucun objet interactif en vue.");
                     _lastObjectSeen = null;
                     _lastInteractable = null;
-                    _lastDescribable = null;
 
                     if(!_canvasInteraction.IsHided)
                         _canvasInteraction.Hide();
@@ -101,50 +87,9 @@ namespace Narmalone.AdvancedController
         /// </summary>
         private void UpdateDescriptionUI()
         {
-            if (_lastDescribable != null)
-            {
-                string itemName = _lastDescribable.GetName();
-                string itemDescription = _lastDescribable.GetDescription();
-
-                _lastDescribable.OnNameUpdated += OnCurrentSeingObjectNameUpdate;
-                _lastDescribable.OnDescriptionUpdated += OnCurrentSeingObjectDescriptionUpdate;
-
-                if (_canvasInteraction.IsHided)
-                    _canvasInteraction.Show();
-
-                if (string.IsNullOrEmpty(itemName))
-                {
-                    _canvasInteraction.HideItemName();
-                }
-                else
-                {
-                    _canvasInteraction.ItemName_TMP.text = itemName;
-                    _canvasInteraction.ShowItemName();
-                }
-
-                if (string.IsNullOrEmpty(itemDescription)) 
-                {
-                    _canvasInteraction.HideItemDescription();
-                }
-                else
-                {
-                    _canvasInteraction.ItemDescription_TMP.text = itemDescription;
-                    _canvasInteraction.ShowItemDescription();
-                }
-            }
+           
         }
 
-        private void OnCurrentSeingObjectNameUpdate()
-        {
-            string itemName = _lastDescribable.GetName();
-            _canvasInteraction.ItemName_TMP.text = string.IsNullOrEmpty(itemName) ? "" : itemName;
-        }
-
-        private void OnCurrentSeingObjectDescriptionUpdate()
-        {
-            string itemDescription = _lastDescribable.GetDescription();
-            _canvasInteraction.ItemDescription_TMP.text = string.IsNullOrEmpty(itemDescription) ? "" : itemDescription;
-        }
     }
 
 }
