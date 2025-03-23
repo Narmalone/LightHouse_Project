@@ -90,27 +90,37 @@ namespace LightHouse.Items.Samples
         {
             _hasKey = _playerInventory.HasItem(_hammerKey);
 
-            if(_playerInventory.CurrentSelectedSlot == null)
+            var currentSelectedSlot = _playerInventory.CurrentSelectedSlot;
+            if(currentSelectedSlot != null)
             {
-                _isKeyItemOnHandsSelected = false;
-                CanBeInteracted = false;
-            }
-            else
-            {
-                if(_playerInventory.CurrentSelectedSlot.InventoryItem != null)
+                if (currentSelectedSlot.InventoryItem != null)
                 {
-                    if(_playerInventory.CurrentSelectedSlot.InventoryItem is Key)
+                    if (currentSelectedSlot.InventoryItem is Key)
                     {
                         Key key = (Key)_playerInventory.CurrentSelectedSlot.InventoryItem;
                         _isKeyItemOnHandsSelected = key.ItemKeyType == this._hammerKey ? true : false;
+                    }
+                    else
+                    {
+                        _isKeyItemOnHandsSelected = false;
+                        CanBeInteracted = false;
+                        OnInteractionNameChanged?.Invoke();
+                        return;
                     }
                 }
                 else
                 {
                     _isKeyItemOnHandsSelected = false;
                     CanBeInteracted = false;
+                    OnInteractionNameChanged?.Invoke();
                     return;
                 }
+                
+            }
+            else
+            {
+                _isKeyItemOnHandsSelected = false;
+                CanBeInteracted = false;
             }
 
             CanBeInteracted = _hasKey && _isKeyItemOnHandsSelected;
@@ -120,35 +130,8 @@ namespace LightHouse.Items.Samples
         private void PlayerInventory_OnHandsItemSelectedChanged(IInventoryItem obj)
         {
             if (!IsItemRaycasted) return; //avoid to be called each time when we don't neet to know
-            //CheckConditions(obj);
             CheckConditionsForReal();
         }
-
-        private void CheckConditions(IInventoryItem obj)
-        {
-            _hasKey = _playerInventory.HasItem(_hammerKey);
-            if (obj == null)
-            {
-                _isKeyItemOnHandsSelected = false;
-                CanBeInteracted = false;
-                OnInteractionNameChanged?.Invoke();
-                return;
-            }
-
-            if (obj is Key && _hasKey)
-            {
-                Key key = (Key)obj;
-                _isKeyItemOnHandsSelected = key.ItemKeyType == this._hammerKey ? true : false;
-            }
-            else
-            {
-                _isKeyItemOnHandsSelected = false;
-            }
-
-            CanBeInteracted = _hasKey && _isKeyItemOnHandsSelected;
-            OnInteractionNameChanged?.Invoke();
-        }
-
     }
 
 }

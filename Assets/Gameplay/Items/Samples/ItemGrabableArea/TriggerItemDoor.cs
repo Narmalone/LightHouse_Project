@@ -24,12 +24,14 @@ namespace LightHouse.Interactions.Samples
 
         private void TriggerEvent_OnTriggeredEnter(GameObject @object)
         {
-            _door.Interact();
+            if (@object == _targetObj)
+                _door.Interact();
         }
 
         private void TriggerEvent_OnTriggerExited(GameObject @object)
         {
-            _door.Interact();
+            if (@object == _targetObj)
+                _door.Interact();
         }
     }
 

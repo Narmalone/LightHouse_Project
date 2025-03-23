@@ -132,6 +132,7 @@ namespace LightHouse.KinematicCharacterController
         #region Update Interactions and Name Texts
         public void UpdateInteractionName()
         {
+            if (_raycastedIInteractable == null) return;
             string itemInteractionName = _raycastedIInteractable?.GetInteractionName();
             _raycastedIInteractable.OnInteractionNameChanged += OnCurrentSeingObjectDescriptionUpdate;
 
@@ -156,6 +157,7 @@ namespace LightHouse.KinematicCharacterController
 
         public void UpdateName()
         {
+            if (_raycastedIItemName == null) return;
             string itemName = _raycastedIItemName.GetName();
             _raycastedIItemName.OnNameUpdated += OnCurrentSeingObjectNameUpdate;
 
@@ -184,6 +186,7 @@ namespace LightHouse.KinematicCharacterController
 
         private void OnCurrentSeingObjectNameUpdate()
         {
+            if (_raycastedIItemName == null) return;
             string itemName = _raycastedIItemName?.GetName();
             if (string.IsNullOrEmpty(itemName))
             {
@@ -203,6 +206,7 @@ namespace LightHouse.KinematicCharacterController
 
         private void OnCurrentSeingObjectDescriptionUpdate()
         {
+            if (_raycastedIInteractable == null) return;
             string itemDescription = _raycastedIInteractable?.GetInteractionName();
             if (string.IsNullOrEmpty(itemDescription))
             {
