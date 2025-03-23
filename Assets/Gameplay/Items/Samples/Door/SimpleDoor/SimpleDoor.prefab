@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 628502574896919933}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.0000004768371, z: -0, w: 1}
-  m_LocalPosition: {x: -0.03432846, y: -1.1580294, z: 0.5040016}
+  m_LocalPosition: {x: -0.034, y: -1.209, z: 0.791}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -54,8 +54,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.17739105, y: 2.578186, z: 1}
-  m_Center: {x: 0, y: 1.25, z: -0.46}
+  m_Size: {x: 0.17739105, y: 2.6206317, z: 1.5048424}
+  m_Center: {x: -0.0000000144256616, y: 1.3078673, z: -0.742021}
 --- !u!114 &6014912849866339431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,11 +71,10 @@ MonoBehaviour:
   _pivot: {fileID: 2629196592336163693}
   _openRotationAngles: {x: 0, y: 90, z: 0}
   _rotationSpeed: 2
+  _doorCollider: {fileID: 3257248284275988232}
   <CanBeInteracted>k__BackingField: 1
-  _key: {fileID: 11400000, guid: 4382ac64115f8994cb97f2788ff982d2, type: 2}
-  _hasKey: 0
+  <IsItemRaycasted>k__BackingField: 0
   _isOpen: 0
-  _isUnLocked: 0
 --- !u!54 &2773966567434714135
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -99,7 +98,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 94
   m_CollisionDetection: 0
@@ -129,9 +128,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6241700384106666401}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.00762558, y: 1.2858294, z: -0.45700073}
-  m_LocalScale: {x: 0.1455, y: 2.5737424, z: 1}
+  m_LocalRotation: {x: -0, y: 0.0000000596047, z: -0, w: 1}
+  m_LocalPosition: {x: 0.0072978344, y: 1.3153706, z: -0.7439984}
+  m_LocalScale: {x: 0.1455, y: 2.616724, z: 1.4911}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2629196592336163693}
@@ -198,7 +197,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8578177552427112516}
   m_Layer: 0
-  m_Name: Door
+  m_Name: SimpleDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

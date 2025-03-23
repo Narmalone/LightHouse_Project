@@ -44,7 +44,6 @@ namespace LightHouse.KinematicCharacterController
         private void Update()
         {
             if (!_enableInteraction) return;
-
             Ray cameraRay = _playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0f));
             if (RaycastUtility.TryRaycast(cameraRay, _interactionDistance, _interactableLayer, _queryTriggerInteraction, out RaycastHit hit))
             {
@@ -84,6 +83,7 @@ namespace LightHouse.KinematicCharacterController
                 if (_raycastedIItemName != null)
                 {
                     UpdateName();
+                    _raycastedIItemName.IsItemRaycasted = true;
                 }
                 else
                 {
@@ -91,8 +91,6 @@ namespace LightHouse.KinematicCharacterController
                 }
             }
         }
-
-        
 
         private void ResetSeenObject()
         {
@@ -102,6 +100,7 @@ namespace LightHouse.KinematicCharacterController
             if (_raycastedIItemName != null)
             {
                 _raycastedIItemName.OnNameUpdated -= OnCurrentSeingObjectNameUpdate;
+                _raycastedIItemName.IsItemRaycasted = false;
                 _raycastedIItemName = null;
             }
 
@@ -110,11 +109,11 @@ namespace LightHouse.KinematicCharacterController
 
             if (_raycastedIInteractable != null)
             {
-                _raycastedIInteractable.OnInteractionNameChanged -= OnCurrentSeingObjectNameUpdate;
+                _raycastedIInteractable.OnInteractionNameChanged -= OnCurrentSeingObjectDescriptionUpdate;
                 _raycastedIInteractable = null;
             }
 
-            if(_canvasInteraction.ItemDescription_TMP.isActiveAndEnabled)
+            if(_canvasInteraction.ItemInteractionName_TMP.isActiveAndEnabled)
                 _canvasInteraction.HideItemInteractionName();
         }
         #endregion
@@ -145,8 +144,13 @@ namespace LightHouse.KinematicCharacterController
             }
             else
             {
-                _canvasInteraction.ItemDescription_TMP.text = itemInteractionName;
+                _canvasInteraction.ItemInteractionName_TMP.text = itemInteractionName;
                 _canvasInteraction.ShowItemInteractionName();
+            }
+
+            if (!_raycastedIInteractable.CanBeRaycasted)
+            {
+                _canvasInteraction.HideItemInteractionName();
             }
         }
 
@@ -167,6 +171,11 @@ namespace LightHouse.KinematicCharacterController
                 _canvasInteraction.ItemName_TMP.text = itemName;
                 _canvasInteraction.ShowItemName();
             }
+
+            if (!_raycastedIItemName.CanBeRaycasted)
+            {
+                _canvasInteraction.HideItemName();
+            }
         }
 
         #endregion
@@ -175,7 +184,7 @@ namespace LightHouse.KinematicCharacterController
 
         private void OnCurrentSeingObjectNameUpdate()
         {
-            string itemName = _raycastedIInteractable.GetName();
+            string itemName = _raycastedIItemName?.GetName();
             if (string.IsNullOrEmpty(itemName))
             {
                 _canvasInteraction.HideItemName();
@@ -185,19 +194,28 @@ namespace LightHouse.KinematicCharacterController
                 _canvasInteraction.ItemName_TMP.text = itemName;
                 _canvasInteraction.ShowItemName();
             }
+
+            if (!_raycastedIItemName.CanBeRaycasted)
+            {
+                _canvasInteraction.HideItemName();
+            }
         }
 
         private void OnCurrentSeingObjectDescriptionUpdate()
         {
-            string itemDescription = _raycastedIInteractable.GetInteractionName();
+            string itemDescription = _raycastedIInteractable?.GetInteractionName();
             if (string.IsNullOrEmpty(itemDescription))
             {
                 _canvasInteraction.HideItemInteractionName();
             }
             else
             {
-                _canvasInteraction.ItemDescription_TMP.text = itemDescription;
+                _canvasInteraction.ItemInteractionName_TMP.text = itemDescription;
                 _canvasInteraction.ShowItemInteractionName();
+            }
+            if (!_raycastedIInteractable.CanBeRaycasted)
+            {
+                _canvasInteraction.HideItemInteractionName();
             }
         }
 

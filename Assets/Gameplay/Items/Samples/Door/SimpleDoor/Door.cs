@@ -1,5 +1,5 @@
 ﻿using LightHouse.Inputs;
-using LightHouse.KinematicCharacterController;
+using LightHouse.Inventory;
 using System;
 using UnityEngine;
 
@@ -9,29 +9,32 @@ namespace LightHouse.Interactions.Samples
     {
         #region SERIALIZED FIELDS
         [Header("Door Control")]
-        [SerializeField] private Transform _pivot; // Le pivot de la porte
-        [SerializeField] private Vector3 _openRotationAngles = new Vector3(0, 90f, 0f);
-        [SerializeField] private float _rotationSpeed = 2f;
+        [SerializeField] protected Transform _pivot; // Le pivot de la porte
+        [SerializeField] protected Vector3 _openRotationAngles = new Vector3(0, 90f, 0f);
+        [SerializeField] protected float _rotationSpeed = 2f;
+        [SerializeField] protected Collider _doorCollider;
 
         [Header("Inventory")]
-        private PlayerInventory _inventory;
+        protected PlayerInventory _inventory;
         [field: SerializeField] public bool CanBeInteracted { get; set; } = true;
-        [SerializeField] private KeyType _key;
+        [field: SerializeField] public bool IsItemRaycasted { get; set; }
 
         [Header("Debug")]
-        [SerializeField] private bool _hasKey = false;
-        [SerializeField] private bool _isOpen = false;
-        [SerializeField] private bool _isUnLocked = false;
+        [SerializeField] protected bool _isOpen = false;
 
         #endregion
 
         #region PRIVATE FIELDS
-        private Quaternion _closedRotation;
-        private Quaternion _openRotation;
-        private float _lerpTime = 0f;
-        private bool _isMoving = false;
+        protected Quaternion _closedRotation;
+        protected Quaternion _openRotation;
+        protected float _lerpTime = 0f;
+        protected bool _isMoving = false;
 
         #endregion
+
+        public bool IsOpen => _isOpen;
+
+        [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
 
         #region IINTERACTABLE EVENTS
         public event Action OnInteractionNameChanged;
@@ -40,7 +43,7 @@ namespace LightHouse.Interactions.Samples
         #endregion
 
         #region MONO'S CALLBACK
-        private void Awake()
+        protected virtual void Awake()
         {
             // Store local rotations
             _closedRotation = _pivot.localRotation;
@@ -48,7 +51,7 @@ namespace LightHouse.Interactions.Samples
             PlayerInventory.OnInventoryInitialized += PlayerInventory_OnInventoryInitialized;
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (_isMoving)
             {
@@ -63,7 +66,7 @@ namespace LightHouse.Interactions.Samples
             }
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             PlayerInventory.OnInventoryInitialized -= PlayerInventory_OnInventoryInitialized;
         }
@@ -71,50 +74,57 @@ namespace LightHouse.Interactions.Samples
         #endregion
 
         #region Register Callbacks
-        private void PlayerInventory_OnInventoryInitialized(PlayerInventory obj)
+        protected virtual void PlayerInventory_OnInventoryInitialized(PlayerInventory obj)
         {
             _inventory = obj;
         }
         #endregion
 
+        #region IItemName
+        public GameObject GetGameObject() => this.gameObject;
+
+        public Collider GetCollider() => this._doorCollider;
+
+        #endregion
+
         #region IInteractable
-        public string GetInteractionName()
+        public virtual string GetInteractionName()
         {
-            _hasKey = _inventory.HasItem(_key);
-            if (_hasKey && !_isUnLocked)
-            {
-                return $"Unlock door with {InputManager.GetBindingName(InputManager.Interact)}";
-            }
-            else if (!_isUnLocked)
-            {
-                return "The Door is locked you have to find the key.";
-            }
             return _isOpen ? $"Press {InputManager.GetBindingName(InputManager.Interact)} to Close"
                            : $"Press {InputManager.GetBindingName(InputManager.Interact)} to Open";
         }
 
-        public string GetName()
+        public virtual string GetName()
         {
             return string.Empty;
         }
 
-        public void Interact()
+        public virtual void Interact()
         {
-            if (_hasKey && !_isUnLocked)
+            OnDoorInteracted();
+        }
+
+        public virtual void OnDoorInteracted()
+        {
+            if (_isMoving)
             {
-                _isUnLocked = true;
-                OnInteractionNameChanged?.Invoke(); //force update the GetInteractionName
-                return;
+                _pivot.localRotation = _isOpen ? _openRotation : _closedRotation;
             }
-            if (!_isUnLocked) return;
-            if (_isMoving) return; //Avoir multiple Interactions
 
             _isOpen = !_isOpen;
             _lerpTime = 0f; // Restart movement
             _isMoving = true; //Start motion
 
-            // Update the Player's Interactions Raycast data
-            OnNameUpdated?.Invoke();
+            if (IsItemRaycasted)
+            {
+                // Update the Player's Interactions Raycast data
+                OnNameUpdated?.Invoke();
+                OnInteractionNameChanged?.Invoke();
+            }
+        }
+
+        protected void InvokeInteractionNameChanged()
+        {
             OnInteractionNameChanged?.Invoke();
         }
 

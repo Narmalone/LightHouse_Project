@@ -2,8 +2,9 @@ using LightHouse.Inputs;
 using LightHouse.Interactions;
 using System;
 using UnityEngine;
+using LightHouse.Inventory;
 
-public class Burger : ItemBase, IInteractable, IInventoryItem
+public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsable
 {
     [SerializeField] private Collider _burgerCollider;
     [SerializeField] private Rigidbody _rb;
@@ -12,6 +13,8 @@ public class Burger : ItemBase, IInteractable, IInventoryItem
     public bool IsItemInInventory { get; set; }
     [field: SerializeField] public bool CanBeUsedFromInventory { get; set; } = true;
     [field: SerializeField] public bool CanBeInteracted { get; set; } = true;
+    public bool IsItemRaycasted { get; set; }
+    public bool CanBeRaycasted { get; set; } = true;
 
     public event Action ForceRemoveItemInInventory;
     public event Action OnNameUpdated;
@@ -21,7 +24,6 @@ public class Burger : ItemBase, IInteractable, IInventoryItem
     #region IInventoryItem Method
 
     public Collider GetCollider() => _burgerCollider;
-    public ItemBase GetItem() => this;
 
     public string GetName() => _burgerName;
 
@@ -31,17 +33,6 @@ public class Burger : ItemBase, IInteractable, IInventoryItem
     }
 
     public Rigidbody GetRigidBody() => _rb;
-
-    public void OnItemAddedToInventory()
-    {
-        
-    }
-
-    public void OnItemRemovedFromInventory()
-    {
-        
-    }
-
     public void UseFromInventory()
     {
         Eat();
@@ -61,10 +52,14 @@ public class Burger : ItemBase, IInteractable, IInventoryItem
 
     public void Eat()
     {
-        Debug.Log("Le burger a été mangé !");
         ForceRemoveItemInInventory?.Invoke();
-        //gameObject.SetActive(false);
         Destroy(this.gameObject);
     }
 
+    public string UseInInventoryText()
+    {
+        return $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to eat.";
+    }
+
+    public GameObject GetGameObject() => this.gameObject;
 }

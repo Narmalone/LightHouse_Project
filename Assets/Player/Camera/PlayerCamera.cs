@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -7,46 +8,93 @@ namespace LightHouse.KinematicCharacterController
     {
         public Vector2 Look;
     }
+
     public class PlayerCamera : MonoBehaviour
     {
-        [SerializeField] private float _sensiX = 0.1f, _sensiY = 0.1f;
-        [SerializeField] private float _maxDownLookAngle = 60f;
-        [SerializeField] private float _maxUpLookAngle = -60f;
-        [SerializeField] private bool _invertYAxis = false;
-        [SerializeField] private bool _invertXAxis = false;
+        [Header("Rotation")]
+        public bool InvertX = false;
+        public bool InvertY = false;
+        [Range(-90f, 90f)]
+        public float DefaultVerticalAngle = 20f;
+        [Range(-90f, 90f)]
+        public float MinVerticalAngle = -90f;
+        [Range(-90f, 90f)]
+        public float MaxVerticalAngle = 90f;
+        public float RotationSpeed = 1f;
+        public float RotationSharpness = 10000f;
+        public bool RotateWithPhysicsMover = false;
 
-        //au lieu de rotate le transform directement on utilise cette variable
-        //et les eulerangles sont un wrapper dans le transform
-        private Vector3 _eulerAngles;
-        public void Initialize(Transform target)
+        public float PositionSharpness = 10000f;
+
+        [Header("Sensitivity")]
+        public float SensiX = 1f;
+        public float SensiY = 1f;
+
+        public Transform Transform { get; private set; }
+        public Transform FollowTransform { get; private set; }
+
+        public Vector3 PlanarDirection { get; set; }
+
+        private float _targetVerticalAngle;
+        private Vector3 _currentFollowPosition;
+
+        void OnValidate()
         {
-            transform.position = target.position;
-            transform.eulerAngles = _eulerAngles = target.eulerAngles;
+            DefaultVerticalAngle = Mathf.Clamp(DefaultVerticalAngle, MinVerticalAngle, MaxVerticalAngle);
         }
 
-        /// <summary>
-        /// Rotation bas�e sur l'entr�e de la souris
-        /// </summary>
-        public void UpdateRotation(ref CameraInput input)
+        void Awake()
         {
-            _eulerAngles.x += !_invertYAxis ? -input.Look.y * _sensiY : input.Look.y * _sensiY;
-            _eulerAngles.y += !_invertXAxis ? input.Look.x * _sensiX : -input.Look.x * _sensiX;
+            Transform = this.transform;
+            _targetVerticalAngle = 0f;
 
-            _eulerAngles.x = Mathf.Clamp(_eulerAngles.x, _maxUpLookAngle, _maxDownLookAngle);
-
-            transform.eulerAngles = _eulerAngles;
+            PlanarDirection = Vector3.forward;
         }
 
-        /// <summary>
-        /// Elle d�passera une cible de cam�ra puis y alignera sa position
-        /// </summary>
-        /// <param name="target"></param>
-        public void UpdatePosition(Transform target)
+        public void SetFollowTransform(Transform t)
         {
-            transform.position = target.position;
+            FollowTransform = t;
+            PlanarDirection = FollowTransform.forward;
+            _currentFollowPosition = FollowTransform.position;
+        }
+
+        public void UpdateWithInput(float deltaTime, Vector3 rotationInput)
+        {
+            if (FollowTransform)
+            {
+                rotationInput.x *= SensiX;
+                rotationInput.y *= SensiY;
+
+                if (InvertX)
+                {
+                    rotationInput.x *= -1f;
+                }
+                if (InvertY)
+                {
+                    rotationInput.y *= -1f;
+                }
+
+                // Rotation input → planar direction
+                Quaternion rotationFromInput = Quaternion.Euler(FollowTransform.up * (rotationInput.x * RotationSpeed));
+                PlanarDirection = rotationFromInput * PlanarDirection;
+                PlanarDirection = Vector3.Cross(FollowTransform.up, Vector3.Cross(PlanarDirection, FollowTransform.up));
+                Quaternion planarRot = Quaternion.LookRotation(PlanarDirection, FollowTransform.up);
+
+                _targetVerticalAngle -= (rotationInput.y * RotationSpeed);
+                _targetVerticalAngle = Mathf.Clamp(_targetVerticalAngle, MinVerticalAngle, MaxVerticalAngle);
+                Quaternion verticalRot = Quaternion.Euler(_targetVerticalAngle, 0, 0);
+                Quaternion targetRotation = Quaternion.Slerp(Transform.rotation, planarRot * verticalRot, 1f - Mathf.Exp(-RotationSharpness * deltaTime));
+
+                // Apply rotation
+                Transform.rotation = targetRotation;
+
+                // Position follow
+                _currentFollowPosition = Vector3.Lerp(_currentFollowPosition, FollowTransform.position, 1f - Mathf.Exp(-PositionSharpness * deltaTime));
+                Vector3 targetPosition = _currentFollowPosition;
+
+                // Apply position
+                Transform.position = targetPosition;
+            }
         }
     }
-
 }
-
-

@@ -45,6 +45,8 @@ namespace LightHouse.KinematicCharacterController
     public class PlayerCharacter : MonoBehaviour, ICharacterController
     {
         [SerializeField] private KinematicCharacterMotor _motor;
+        public KinematicCharacterMotor Motor => _motor;
+
         [SerializeField] private Transform _cameraTarget;
 
         [Header("Stable Movement")]
@@ -203,13 +205,17 @@ namespace LightHouse.KinematicCharacterController
         {
             if (_lookInputVector != Vector3.zero && _orientationSharpness > 0f)
             {
-                // Smoothly interpolate from current to target look direction
-                Vector3 smoothedLookInputDirection = Vector3.Slerp(_motor.CharacterForward, _lookInputVector, 1 - Mathf.Exp(-_orientationSharpness * deltaTime)).normalized;
+                Vector3 gravityUp = -Gravity.normalized;
+                Vector3 lookDirection = Vector3.ProjectOnPlane(_lookInputVector, gravityUp).normalized;
 
-                // Set the current rotation (which will be used by the KinematicCharacterMotor)
-                currentRotation = Quaternion.LookRotation(smoothedLookInputDirection, _motor.CharacterUp);
+                if (lookDirection.sqrMagnitude > 0f)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(lookDirection, gravityUp);
+                    currentRotation = Quaternion.Slerp(currentRotation, targetRotation, 1 - Mathf.Exp(-_orientationSharpness * deltaTime));
+                }
             }
         }
+
 
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
@@ -265,7 +271,7 @@ namespace LightHouse.KinematicCharacterController
                     // Prevent climbing on un - stable slopes with air movement
                     if (_motor.GroundingStatus.FoundAnyGround)
                     {
-                        Vector3 perpenticularObstructionNormal = Vector3.Cross(Vector3.Cross(_motor.CharacterUp, _motor.GroundingStatus.GroundNormal), _motor.CharacterUp).normalized;
+                        Vector3 perpenticularObstructionNormal = Vector3.Cross(Vector3.Cross(-Gravity.normalized, _motor.GroundingStatus.GroundNormal), -Gravity.normalized).normalized;
                         targetMovementVelocity = Vector3.ProjectOnPlane(targetMovementVelocity, perpenticularObstructionNormal);
                     }
 
@@ -289,7 +295,7 @@ namespace LightHouse.KinematicCharacterController
                 if (!_jumpConsumed && _motor.GroundingStatus.FoundAnyGround || _timeSinceLastAbleToJump <= _jumpPostGroundingGraceTime && !_jumpConsumed)
                 {
                     // Calculate jump direction before ungrounding
-                    Vector3 jumpDirection = _motor.CharacterUp;
+                    Vector3 jumpDirection = -Gravity.normalized;
                     if (_motor.GroundingStatus.FoundAnyGround && !_motor.GroundingStatus.IsStableOnGround)
                     {
                         jumpDirection = _motor.GroundingStatus.GroundNormal;
@@ -300,7 +306,7 @@ namespace LightHouse.KinematicCharacterController
                     _motor.ForceUnground(0.1f);
 
                     // Add to the return velocity and reset jump state
-                    currentVelocity += (jumpDirection * _jumpSpeed) - Vector3.Project(currentVelocity, _motor.CharacterUp);
+                    currentVelocity += (jumpDirection * _jumpSpeed) - Vector3.Project(currentVelocity, -Gravity.normalized);
                     _jumpRequested = false;
                     _jumpConsumed = true;
                     _jumpedThisFrame = true;

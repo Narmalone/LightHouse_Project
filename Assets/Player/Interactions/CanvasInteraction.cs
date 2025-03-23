@@ -6,13 +6,13 @@ namespace LightHouse.Interactions
     public class CanvasInteraction : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _itemName_TMP;
-        [SerializeField] private TextMeshProUGUI _itemDescription_TMP;
-        [SerializeField] private TextMeshProUGUI _itemInventory_TMP;
+        [SerializeField] private TextMeshProUGUI _itemInteractionName_TPM;
+        [SerializeField] private TextMeshProUGUI _itemPickup_TPM;
         [SerializeField] private CanvasGroup _group;
 
         public TextMeshProUGUI ItemName_TMP => _itemName_TMP;
-        public TextMeshProUGUI ItemDescription_TMP => _itemDescription_TMP;
-        public TextMeshProUGUI ItemInventory_TMP => _itemInventory_TMP;
+        public TextMeshProUGUI ItemInteractionName_TMP => _itemInteractionName_TPM;
+        public TextMeshProUGUI ItemPickup_TPM => _itemPickup_TPM;
 
         private bool _isHided = false;
         public bool IsHided => _isHided;    
@@ -41,22 +41,22 @@ namespace LightHouse.Interactions
 
         public void HideItemInteractionName()
         {
-            _itemDescription_TMP.gameObject.SetActive(false);
+            _itemInteractionName_TPM.gameObject.SetActive(false);
         }
 
         public void ShowItemInteractionName()
         {
-            _itemDescription_TMP.gameObject.SetActive(true);
+            _itemInteractionName_TPM.gameObject.SetActive(true);
         }
 
         public void HideItemPickup()
         {
-            _itemInventory_TMP.gameObject.SetActive(false);
+            _itemPickup_TPM.gameObject.SetActive(false);
         }
 
         public void ShowItemPickup()
         {
-            _itemInventory_TMP.gameObject.SetActive(true);
+            _itemPickup_TPM.gameObject.SetActive(true);
         }
     }
 

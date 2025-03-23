@@ -1,6 +1,7 @@
 using UnityEngine;
 using LightHouse.Inputs;
 using System;
+using LightHouse.Inventory;
 
 namespace LightHouse.Items.Samples
 {
@@ -23,16 +24,23 @@ namespace LightHouse.Items.Samples
         #region IInventory Fields
         [field: SerializeField] public bool IsItemInInventory { get; set; }
         public bool CanBeUsedFromInventory { get; set; }
+        [field: SerializeField] public bool IsItemRaycasted { get; set; }
+        [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
+
+        public KeyType ItemKeyType => _key;
 
         public event Action ForceRemoveItemInInventory;
         public event Action OnNameUpdated;
 
         #endregion
 
-        #region IInventoryItem Functions
-        public virtual ItemBase GetItem() => this;
-
+        #region IInventoryItemName
         public virtual Collider GetCollider() => _Collider;
+        public GameObject GetGameObject() => this.gameObject;
+
+        #endregion
+
+        #region IInventoryItem Functions
 
         public virtual Rigidbody GetRigidBody() => _Rigidbody;
         public virtual string GetName() => _Name;
@@ -44,6 +52,9 @@ namespace LightHouse.Items.Samples
         public virtual void OnItemRemovedFromInventory() { }
 
         public virtual void UseFromInventory() { }
+
+        public virtual string UseInInventoryText() => string.Empty;
+
 
         #endregion
     }

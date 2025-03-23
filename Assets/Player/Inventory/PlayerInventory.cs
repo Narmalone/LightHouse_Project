@@ -7,24 +7,23 @@ using System.Linq;
 using System;
 using LightHouse.Items.Samples;
 
-namespace LightHouse.KinematicCharacterController
+namespace LightHouse.Inventory
 {
     public class PlayerInventory : MonoBehaviour
     {
         #region SERILIAZED FIELDS
         [Header("Inventory Settings")]
-        [SerializeField] private bool _enableInventoryRaycast = true;
         [SerializeField] private byte _inventoryCapacity = 4;
         [SerializeField] private int _currentSlotIndex = -1;
-        [SerializeField] private byte _currentNumberOfItemsInInventory = 0;
+        [SerializeField] private byte _currentSlotTakenInventory = 0;
         [SerializeField] private Vector3 _inventoryOffset = new Vector3(0.5f, -0.5f, 0.8f); // (X = décalage horizontal, Y = vertical, Z = profondeur)
 
         [Header("Inventory References")]
         [SerializeField] private Transform _inventoryParent = null;
         [SerializeField] private Transform _inventoryTarget = null;
-        [SerializeField] private Transform _playerCameraTransform = null;
 
         [Header("Raycast")]
+        [SerializeField] private bool _enableInventoryRaycast = true;
         [SerializeField] private Camera _playerCamera;
         [SerializeField] private float _raycastDistance = 3.0f;
         [SerializeField] private LayerMask _targetMask = 1 << -1;
@@ -48,22 +47,28 @@ namespace LightHouse.KinematicCharacterController
         [Header("DEBUG")]
         //Slots Infos
         private List<ItemSlot> _itemSlots = new();
-        private Collider[] _dropOverlappingCollider = new Collider[0];
+        [SerializeField] private Collider[] _dropOverlappingCollider = new Collider[0];
 
         private ItemSlot _lastSelectedSlot = null;
-        public ItemSlot _currentSelectedSlot = null;
+        private ItemSlot _currentSelectedSlot = null;
+
+        public ItemSlot CurrentSelectedSlot => _currentSelectedSlot;
 
         //Raycast Info
         private bool _isRaycastingSomething = false;
         private GameObject _lastObjectSeen;
         private IInventoryItem _raycastedInventoryItem;
-        //private IInteractable _raycastedInteractableItem;
+        private IInventoryItemCallback _raycastedInventoryItemCallback;
+        private IInventoryItemUsable _raycastedInventoryItemUsable;
 
         //Drops Info
         private float _dropPower = 0f;
         private bool _isChargingDrop = false;
 
         public static event Action<PlayerInventory> OnInventoryInitialized;
+        public static event Action<IInventoryItem> OnHandsItemSelectedChanged;
+        public static event Action<IInventoryItem> OnItemAdded;
+        public static event Action<IInventoryItem> OnItemDropped;
 
         #endregion
 
@@ -156,9 +161,9 @@ namespace LightHouse.KinematicCharacterController
         {
             if (InputManager.InteractInInventory.WasPressedThisFrame() )
             {
-                if (_currentSelectedSlot != null && _currentSelectedSlot.InventoryItem != null)
+                if (_currentSelectedSlot != null && _currentSelectedSlot.InventoryItemUsable != null)
                 {
-                    _currentSelectedSlot.InventoryItem.UseFromInventory();
+                    _currentSelectedSlot.InventoryItemUsable.UseFromInventory();
                 }
             }
             
@@ -168,7 +173,7 @@ namespace LightHouse.KinematicCharacterController
         {
             if (_raycastedInventoryItem != null && InputManager.PickUp.WasPerformedThisFrame())
             {
-                AddItem(_raycastedInventoryItem);
+                AddItem(_raycastedInventoryItem, _raycastedInventoryItemCallback, _raycastedInventoryItemUsable);
             }
         }
 
@@ -224,13 +229,17 @@ namespace LightHouse.KinematicCharacterController
                     _lastSelectedSlot.ItemName_TMP.gameObject.SetActive(false);
 
                     if(_lastSelectedSlot.InventoryItem != null)
-                        _lastSelectedSlot.InventoryItem.GetItem().gameObject.SetActive(false);
+                        _lastSelectedSlot.InventoryItem.GetGameObject().SetActive(false);
                 }
                 SetInteractableItemUseKeyUI(_lastSelectedSlot, false);
             }
 
             //Handle case where we have nothing on hands
-            if (_currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity) return;
+            if (_currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity)
+            {
+                OnHandsItemSelectedChanged?.Invoke(null);
+                return;
+            }
 
             _currentSelectedSlot = _itemSlots[_currentSlotIndex];
             _lastSelectedSlot = _currentSelectedSlot;
@@ -238,11 +247,15 @@ namespace LightHouse.KinematicCharacterController
             if(_currentSelectedSlot.InventoryItem != null)
             {
                 UpdateInventorySlotUI(_currentSelectedSlot, _currentSelectedSlot.InventoryItem.GetName());
-                IsInventoryUsableUI(_currentSelectedSlot, _currentSelectedSlot.InventoryItem);
-                _currentSelectedSlot.InventoryItem.GetItem().gameObject.SetActive(true);
+                if (_currentSelectedSlot.InventoryItemUsable != null) IsInventoryUsableUI(_currentSelectedSlot, _currentSelectedSlot.InventoryItemUsable);
+
+                _currentSelectedSlot.InventoryItem.GetGameObject().SetActive(true);
+
                 if (!_currentSelectedSlot.ItemName_TMP.isActiveAndEnabled)
                     _currentSelectedSlot.ItemName_TMP.gameObject.SetActive(true);
+
             }
+            OnHandsItemSelectedChanged?.Invoke(_currentSelectedSlot.InventoryItem);
         }
         #endregion
 
@@ -258,6 +271,8 @@ namespace LightHouse.KinematicCharacterController
             {
                 _lastObjectSeen = hitObject;
                 _raycastedInventoryItem = hitObject.GetComponent<IInventoryItem>();
+                _raycastedInventoryItemCallback = hitObject.GetComponent<IInventoryItemCallback>();
+                _raycastedInventoryItemUsable = hitObject.GetComponent<IInventoryItemUsable>();
 
                 if (_raycastedInventoryItem != null)
                 {
@@ -283,7 +298,7 @@ namespace LightHouse.KinematicCharacterController
             if (_raycastedInventoryItem != null)
                 _raycastedInventoryItem = null;
 
-            if (_interactionCanvas.ItemInventory_TMP.isActiveAndEnabled)
+            if (_interactionCanvas.ItemPickup_TPM.isActiveAndEnabled)
                 _interactionCanvas.HideItemPickup();
         }
 
@@ -296,9 +311,9 @@ namespace LightHouse.KinematicCharacterController
         /// </summary>
         /// <param name="item"> the item we are trying to add in the inventory </param>
         /// <returns> if the items sucessfully been added to inventory</returns>
-        public bool AddItem(IInventoryItem item)
+        public bool AddItem(IInventoryItem item, IInventoryItemCallback itemCallback, IInventoryItemUsable itemUsable)
         {
-            if (_currentNumberOfItemsInInventory >= _inventoryCapacity)
+            if (_currentSlotTakenInventory >= _inventoryCapacity)
             {
                 Debug.LogWarning("Inventaire plein !");
                 return false;
@@ -310,8 +325,8 @@ namespace LightHouse.KinematicCharacterController
                 _keyTypesInInventory.Add(key.KeyType);
             }
 
-            _interactionCanvas.ItemInventory_TMP.text = "";
-            GameObject obj = item.GetItem().gameObject;
+            _interactionCanvas.ItemPickup_TPM.text = "";
+            GameObject obj = item.GetGameObject();
             obj.transform.SetParent(_inventoryParent);
             obj.transform.position = _inventoryTarget.position;
             obj.transform.rotation = _inventoryTarget.rotation;
@@ -320,75 +335,72 @@ namespace LightHouse.KinematicCharacterController
             item.GetRigidBody().isKinematic = true;
 
             item.IsItemInInventory = true;
-            _currentNumberOfItemsInInventory++;
-            item.OnItemAddedToInventory();
+            _currentSlotTakenInventory++;
+
+            itemCallback?.OnItemAddedToInventory();
 
             //Handle in case we had an item, or out of range
             if (_currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity || _currentSelectedSlot.InventoryItem != null)
             {
                 ItemSlot targetSlot = GetEmptyPlaceInInventory();
                 targetSlot.SetInventoryItem(item);
+                if(itemCallback != null)
+                    targetSlot.SetItemCallback(itemCallback);
+                if(itemUsable != null)
+                    targetSlot.SetItemUsable(itemUsable);
                 obj.SetActive(false);
             }
             //else we presume that the item can be store on our hands bcs it's the current selected slot
             else if (_currentSelectedSlot == _itemSlots[_currentSlotIndex])
             {
                 _currentSelectedSlot.SetInventoryItem(item);
+                if (itemCallback != null)
+                    _currentSelectedSlot.SetItemCallback(itemCallback);
+                if (itemUsable != null)
+                    _currentSelectedSlot.SetItemUsable(itemUsable);
                 UpdateInventorySlotUI(_currentSelectedSlot, item.GetName());
                 _currentSelectedSlot.ItemName_TMP.gameObject.SetActive(true);
-                IsInventoryUsableUI(_currentSelectedSlot, item);
+
+                if(itemUsable != null) IsInventoryUsableUI(_currentSelectedSlot, itemUsable);
+                OnHandsItemSelectedChanged?.Invoke(item);
             }
 
-            item.ForceRemoveItemInInventory += () => Item_ForceItemRemove(item);
+            item.ForceRemoveItemInInventory += () => Item_ForceItemRemove(item, itemCallback);
+            OnItemAdded?.Invoke(item);
             return true;
         }
 
-        private void Item_ForceItemRemove(IInventoryItem item)
+        private void Item_ForceItemRemove(IInventoryItem item, IInventoryItemCallback itemCallback)
         {
             Debug.Log($"Suppression forcée de l'objet : {item.GetName()}");
 
             if (item == null) return;
 
-            RemoveItem(item);
+            RemoveItem(TryFindItemInItemSlot(item), item, itemCallback);
         }
 
         /// <summary>
         /// Try to see if a specific item is inside a slot, and if so we remove it
         /// </summary>
         /// <param name="item"> the item you try to remove </param>
-        public void RemoveItem(IInventoryItem item)
+        public void RemoveItem(ItemSlot slot, IInventoryItem item, IInventoryItemCallback itemCallback)
         {
-            ItemSlot slot = TryFindItemInItemSlot(item);
             if (slot == null) return;
 
-            Debug.Log($"Objet supprimé : {item.GetName()}");
-
-            _currentSelectedSlot.ItemName_TMP.gameObject.SetActive(false);
-            _currentSelectedSlot.ItemUseKey_TPM.gameObject.SetActive(false);
+            slot.ItemName_TMP.gameObject.SetActive(false);
+            slot.ItemUseKey_TPM.gameObject.SetActive(false);
 
             RemoveKeyType(item);
             item.IsItemInInventory = false;
-            _currentNumberOfItemsInInventory--;
-            item.OnItemRemovedFromInventory();
+            _currentSlotTakenInventory--;
+            itemCallback?.OnItemRemovedFromInventory();
             slot.ResetSlot();
-            
+
             //Se désinscrire de l’événement après suppression
-            item.ForceRemoveItemInInventory -= () => Item_ForceItemRemove(item);
-        }
-
-
-        /// <summary>
-        /// Remove the item of the current selected slot
-        /// </summary>
-        public void RemoveCurrentSelectedItem()
-        {
-            RemoveKeyType(_currentSelectedSlot.InventoryItem);
-            _currentSelectedSlot.ItemName_TMP.gameObject.SetActive(false);
-            _currentSelectedSlot.ItemUseKey_TPM.gameObject.SetActive(false);
-            _currentNumberOfItemsInInventory--;
-            _currentSelectedSlot.InventoryItem.IsItemInInventory = false;
-            _currentSelectedSlot.InventoryItem.OnItemRemovedFromInventory();
-            _currentSelectedSlot.ResetSlot();
+            if(item != null)
+                item.ForceRemoveItemInInventory -= () => Item_ForceItemRemove(item, itemCallback);
+            OnItemDropped?.Invoke(item);
+            OnHandsItemSelectedChanged?.Invoke(null);
         }
 
         public void RemoveKeyType(IInventoryItem item)
@@ -410,8 +422,9 @@ namespace LightHouse.KinematicCharacterController
         {
             if (_itemSlots[_currentSlotIndex].InventoryItem == null) return;
 
-            IInventoryItem item = _itemSlots[_currentSlotIndex].InventoryItem;
-            GameObject obj = item.GetItem().gameObject;
+            IInventoryItem item = _currentSelectedSlot.InventoryItem;
+            if (item == null) return;
+            GameObject obj = item.GetGameObject();
 
             obj.transform.SetParent(null);
 
@@ -428,7 +441,7 @@ namespace LightHouse.KinematicCharacterController
                 rb.AddForce(_inventoryTarget.forward * force, ForceMode.Impulse);
             }
 
-            RemoveCurrentSelectedItem();
+            RemoveItem(_currentSelectedSlot, _currentSelectedSlot.InventoryItem, _currentSelectedSlot.InventoryItemCallback);
         }
 
         private Vector3 GetAdjustedDropPosition(Vector3 intendedDropPosition)
@@ -504,13 +517,21 @@ namespace LightHouse.KinematicCharacterController
             return requiredItem.All(item => HasItem(item));
         }
 
+        public List<T> GetItemsOfType<T>() where T : class, IInventoryItem
+        {
+            return _itemSlots
+                .Where(slot => slot.InventoryItem is T)
+                .Select(slot => slot.InventoryItem as T)
+                .ToList();
+        }
+
         #endregion
 
         #region UI
         public void ShowInventoryPickupUI(IInventoryItem inventoryItem)
         {
             _interactionCanvas.ShowItemPickup();
-            _interactionCanvas.ItemInventory_TMP.text = inventoryItem.GetPickupName();
+            _interactionCanvas.ItemPickup_TPM.text = inventoryItem.GetPickupName();
         }
 
         public void UpdateInventorySlotUI(ItemSlot item, string name)
@@ -518,11 +539,12 @@ namespace LightHouse.KinematicCharacterController
             item.ItemName_TMP.text = name;
         }
 
-        public void IsInventoryUsableUI(ItemSlot targetSlot, IInventoryItem item)
+        public void IsInventoryUsableUI(ItemSlot targetSlot, IInventoryItemUsable itemUsable)
         {
-            if (item.CanBeUsedFromInventory)
+            if (itemUsable.CanBeUsedFromInventory)
             {
                 targetSlot.ItemUseKey_TPM.gameObject.SetActive(true);
+                targetSlot.ItemUseKey_TPM.text = itemUsable.UseInInventoryText();
                 
             }
             else

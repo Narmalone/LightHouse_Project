@@ -1,5 +1,6 @@
 using LightHouse.Inputs;
 using UnityEngine;
+using LightHouse.Inventory;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -49,7 +50,7 @@ namespace LightHouse.KinematicCharacterController
             _inventory.RegisterInput();
 
             _playerCharacter.Initialize();
-            _playerCamera.Initialize(_playerCharacter.GetCameraTarget());
+            _playerCamera.SetFollowTransform(_playerCharacter.GetCameraTarget());
             _cameraSpring.Initialize();
             _cameraLean.Initialize();
         }
@@ -122,10 +123,9 @@ namespace LightHouse.KinematicCharacterController
             if (_enableCameraRotationInput)
             {
                 CameraInput cameraInput = new CameraInput() { Look = _inputActions.Player.Look.ReadValue<Vector2>() };
-                _playerCamera.UpdateRotation(ref cameraInput);
+                _playerCamera.UpdateWithInput(Time.deltaTime, cameraInput.Look);
             }
             
-            _playerCamera.UpdatePosition(_playerCharacter.GetCameraTarget());
         }
 
         private void HandleLean(float deltaTime, Vector3 acceleration, Vector3 up)
