@@ -2,6 +2,7 @@
 using LightHouse.Interactions;
 using System;
 using LightHouse.GrabableItems;
+using LightHouse.Inputs;
 
 [RequireComponent(typeof(Rigidbody), typeof(SpringJoint))]
 public class GrabableItemSpring : MonoBehaviour, IInteractable
@@ -128,7 +129,7 @@ public class GrabableItemSpring : MonoBehaviour, IInteractable
         PlayerGrabableItems.OnPlayerGrabableInitialized -= PlayerGrabableItems_OnPlayerGrabableInitialized;
     }
 
-    public string GetInteractionName() => _isDraging ? "Relâcher" : "Tirer";
+    public string GetInteractionName() => _isDraging ? $"{InputManager.GetBindingName(InputManager.Interact)} to hold" : $"{InputManager.GetBindingName(InputManager.Interact)} to stop";
     public string GetName() => "Objet à traîner";
     public GameObject GetGameObject() => gameObject;
     public Collider GetCollider() => GetComponent<Collider>();
