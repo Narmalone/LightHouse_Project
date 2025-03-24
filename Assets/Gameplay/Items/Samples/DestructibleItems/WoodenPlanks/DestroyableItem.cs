@@ -6,12 +6,13 @@ using LightHouse.Inventory;
 
 namespace LightHouse.Items.Samples
 {
-    public class WoodenPlank : MonoBehaviour, IInteractable
+    public class DestroyableItem : MonoBehaviour, IInteractable
     {
+        #region FIELDS
         [SerializeField] private string _itemName = "Wooden Plank";
         [SerializeField] private Collider _col;
 
-        [SerializeField] private KeyType _hammerKey;
+        [SerializeField] private KeyType _neededKey;
         [field: SerializeField] public bool CanBeInteracted { get; set; }
         [field: SerializeField] public bool CanBeRaycasted { get; set; }
         [field: SerializeField] public bool IsItemRaycasted { get; set; }
@@ -23,13 +24,16 @@ namespace LightHouse.Items.Samples
         [SerializeField] private bool _hasKey = false;
         [SerializeField] private bool _isKeyItemOnHandsSelected = false;
         private PlayerInventory _playerInventory;
-
-        public Collider GetCollider() => _col;
-
-        public GameObject GetGameObject() => this.gameObject;
-
         private bool _wasRaycasted = false;
-        public string GetInteractionName()
+
+        private Key _keyObjSpotted;
+
+        #endregion
+        public virtual Collider GetCollider() => _col;
+
+        public virtual GameObject GetGameObject() => this.gameObject;
+
+        public virtual string GetInteractionName()
         {
             if (_hasKey && _isKeyItemOnHandsSelected)
             {
@@ -47,90 +51,89 @@ namespace LightHouse.Items.Samples
             return string.Empty;
         }
 
-        public string GetName()
+        public virtual string GetName()
         {
             return _itemName;
         }
-        public void Interact()
+        public virtual void Interact()
         {
             if (!CanBeInteracted) return;
             Destroy(this.gameObject);
         }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             PlayerInventory.OnInventoryInitialized += PlayerInventory_OnInventoryInitialized;
             PlayerInventory.OnHandsItemSelectedChanged += PlayerInventory_OnHandsItemSelectedChanged;
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (_playerInventory == null) return;
+
+            //bool to check the frame we start to raycast the item
             if(_wasRaycasted != IsItemRaycasted)
             {
                 _wasRaycasted = IsItemRaycasted;
 
                 if(IsItemRaycasted)
-                    CheckConditionsForReal();
+                    CanBeInteracted = HasKeyOnHands();
             }
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             PlayerInventory.OnInventoryInitialized -= PlayerInventory_OnInventoryInitialized;
             PlayerInventory.OnHandsItemSelectedChanged -= PlayerInventory_OnHandsItemSelectedChanged;
         }
 
-        private void PlayerInventory_OnInventoryInitialized(PlayerInventory obj)
+        protected virtual void PlayerInventory_OnInventoryInitialized(PlayerInventory obj)
         {
             _playerInventory = obj;
         }
 
-        private void CheckConditionsForReal()
+        protected virtual bool HasKeyInInventory()
         {
-            _hasKey = _playerInventory.HasItem(_hammerKey);
-
-            var currentSelectedSlot = _playerInventory.CurrentSelectedSlot;
-            if(currentSelectedSlot != null)
-            {
-                if (currentSelectedSlot.InventoryItem != null)
-                {
-                    if (currentSelectedSlot.InventoryItem is Key)
-                    {
-                        Key key = (Key)_playerInventory.CurrentSelectedSlot.InventoryItem;
-                        _isKeyItemOnHandsSelected = key.ItemKeyType == this._hammerKey ? true : false;
-                    }
-                    else
-                    {
-                        _isKeyItemOnHandsSelected = false;
-                        CanBeInteracted = false;
-                        OnInteractionNameChanged?.Invoke();
-                        return;
-                    }
-                }
-                else
-                {
-                    _isKeyItemOnHandsSelected = false;
-                    CanBeInteracted = false;
-                    OnInteractionNameChanged?.Invoke();
-                    return;
-                }
-                
-            }
-            else
-            {
-                _isKeyItemOnHandsSelected = false;
-                CanBeInteracted = false;
-            }
-
-            CanBeInteracted = _hasKey && _isKeyItemOnHandsSelected;
-            OnInteractionNameChanged?.Invoke();
+            return _playerInventory.HasItem(_neededKey);
         }
 
-        private void PlayerInventory_OnHandsItemSelectedChanged(IInventoryItem obj)
+        /// <summary>
+        /// Check all possibilities to see what should we show to the player
+        /// </summary>
+        protected bool HasKeyOnHands()
+        {
+            _hasKey = HasKeyInInventory();
+            if (_playerInventory.CurrentSelectedSlot == null || _playerInventory.CurrentSelectedSlot.InventoryItem == null)
+            {
+                _isKeyItemOnHandsSelected = false;
+                _keyObjSpotted = null;
+                OnInteractionNameChanged?.Invoke();
+                return false;
+            }
+            if (_playerInventory.CurrentSelectedItem is not Key)
+            {
+                _isKeyItemOnHandsSelected = false;
+                _keyObjSpotted = null;
+                OnInteractionNameChanged?.Invoke();
+                return false;
+            }
+
+            Key keyObj = _playerInventory.CurrentSelectedItem as Key;
+            _keyObjSpotted = keyObj;
+            bool lastStoredResult = _isKeyItemOnHandsSelected;
+            _isKeyItemOnHandsSelected = _hasKey && keyObj.KeyType == _neededKey && keyObj.IsItemOnHands;
+            if (lastStoredResult != _isKeyItemOnHandsSelected)
+            {
+                OnInteractionNameChanged?.Invoke();
+            }
+            CanBeInteracted = _isKeyItemOnHandsSelected;
+            return _isKeyItemOnHandsSelected;
+        }
+
+        protected virtual void PlayerInventory_OnHandsItemSelectedChanged(IInventoryItem obj)
         {
             if (!IsItemRaycasted) return; //avoid to be called each time when we don't neet to know
-            CheckConditionsForReal();
+            CanBeInteracted = HasKeyOnHands();
         }
     }
 

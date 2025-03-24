@@ -9,11 +9,14 @@ namespace LightHouse.Items.Samples
     {
         #region SERIALIZED FIELDS
         [Header("Inventory")]
-        [SerializeField] private KeyType _key;
+        [SerializeField] protected KeyType _key;
 
         [Header("Debug")]
-        [SerializeField] private bool _hasKey = false;
-        [SerializeField] private bool _isUnLocked = false;
+        [SerializeField] protected bool _hasKey = false;
+        [SerializeField] protected bool _isUnLocked = false;
+
+        public bool HasKey => _hasKey;
+        public bool IsUnLocked => _isUnLocked;
 
         #endregion
 
@@ -46,6 +49,10 @@ namespace LightHouse.Items.Samples
             if (_key != null)
             {
                 _hasKey = _inventory.HasItem(_key);
+            }
+            else
+            {
+                _hasKey = true;
             }
         }
 
@@ -105,5 +112,7 @@ namespace LightHouse.Items.Samples
         }
 
         #endregion
+
+        public void SetIsUnlocked(bool value) => _isUnLocked = value;
     }
 }

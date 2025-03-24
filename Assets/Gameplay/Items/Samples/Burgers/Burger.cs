@@ -15,6 +15,7 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     [field: SerializeField] public bool CanBeInteracted { get; set; } = true;
     public bool IsItemRaycasted { get; set; }
     public bool CanBeRaycasted { get; set; } = true;
+    [field: SerializeField] public bool IsItemOnHands { get; set; }
 
     public event Action ForceRemoveItemInInventory;
     public event Action OnNameUpdated;

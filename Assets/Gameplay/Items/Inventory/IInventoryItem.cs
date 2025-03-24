@@ -8,6 +8,7 @@ namespace LightHouse.Inventory
     {
         public event Action ForceRemoveItemInInventory;
         public bool IsItemInInventory { get; set; }
+        public bool IsItemOnHands { get; set; }
         string GetPickupName();
         Rigidbody GetRigidBody();
     }

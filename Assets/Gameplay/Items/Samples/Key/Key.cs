@@ -6,7 +6,7 @@ using LightHouse.Inventory;
 namespace LightHouse.Items.Samples
 {
     //You should use this class to make inventory with key for other objects
-    public class Key : ItemBase, IInventoryItem
+    public class Key : MonoBehaviour, IInventoryItem
     {
         #region SERIALIZED FIELDS
         [Header("Fields")]
@@ -14,6 +14,10 @@ namespace LightHouse.Items.Samples
         [SerializeField] protected Collider _Collider;
         [SerializeField] protected Rigidbody _Rigidbody;
         [SerializeField] protected KeyType _key;
+
+        private bool _hasKey = false;
+
+        public bool HasKeyInInventory => _hasKey;
 
         #endregion
 
@@ -28,6 +32,8 @@ namespace LightHouse.Items.Samples
         [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
 
         public KeyType ItemKeyType => _key;
+
+        [field: SerializeField] public bool IsItemOnHands { get; set; }
 
         public event Action ForceRemoveItemInInventory;
         public event Action OnNameUpdated;
@@ -54,6 +60,11 @@ namespace LightHouse.Items.Samples
         public virtual void UseFromInventory() { }
 
         public virtual string UseInInventoryText() => string.Empty;
+
+        public virtual void ForceRemoveItemFromInventory()
+        {
+            ForceRemoveItemInInventory?.Invoke();
+        }
 
 
         #endregion

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4676798474521988154
+--- !u!1 &7270476323608313118
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7617126924229492944}
-  - component: {fileID: 8486196134792240626}
-  - component: {fileID: 9126037962943248872}
-  - component: {fileID: 3953514632797734328}
-  - component: {fileID: 3132491197273472377}
+  - component: {fileID: 3445788603234161200}
+  - component: {fileID: 3003722430279410372}
+  - component: {fileID: 7813656419389205938}
+  - component: {fileID: 4122463856367305129}
+  - component: {fileID: 1130212426632656652}
   m_Layer: 6
-  m_Name: Cube
+  m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7617126924229492944
+--- !u!4 &3445788603234161200
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4676798474521988154}
+  m_GameObject: {fileID: 7270476323608313118}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.5035913, y: 0.30044866, z: 0.048244}
+  m_LocalPosition: {x: 0.1150025, y: 0.34, z: -0.6640005}
+  m_LocalScale: {x: 0.08844088, y: 0.08844088, z: 0.08844088}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3285769895693389127}
+  m_Father: {fileID: 821785730375756049}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8486196134792240626
+--- !u!33 &3003722430279410372
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4676798474521988154}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &9126037962943248872
+  m_GameObject: {fileID: 7270476323608313118}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &7813656419389205938
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4676798474521988154}
+  m_GameObject: {fileID: 7270476323608313118}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
+  - {fileID: 2100000, guid: b915c6b96081af44dabfbbc514861d26, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -87,13 +87,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3953514632797734328
-BoxCollider:
+--- !u!135 &4122463856367305129
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4676798474521988154}
+  m_GameObject: {fileID: 7270476323608313118}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -106,29 +106,33 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3132491197273472377
+--- !u!114 &1130212426632656652
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4676798474521988154}
+  m_GameObject: {fileID: 7270476323608313118}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d5f5a089ac56d346bb29b10d8d9a21a, type: 3}
+  m_Script: {fileID: 11500000, guid: 9125345e04cca5543807c25ffe9b17f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _itemName: Wooden Plank
-  _col: {fileID: 3953514632797734328}
-  _neededKey: {fileID: 11400000, guid: 89d385cdee8e5954d967decb16a70bc6, type: 2}
-  <CanBeInteracted>k__BackingField: 0
+  _placeHolderName: Need Vis
+  _col: {fileID: 4122463856367305129}
+  _keyNeeded: {fileID: 11400000, guid: 7210d9d136cdc76438dcbe62b00e8809, type: 2}
+  <CanBeInteracted>k__BackingField: 1
   <CanBeRaycasted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
   _hasKey: 0
-  _isKeyItemOnHandsSelected: 0
---- !u!1 &6806350552909002638
+  _canCheck: 1
+  _hasKeyAndItemOnHand: 0
+  _keyObjSpotted: {fileID: 0}
+  SharpnessPosition: 25
+  SharpnessRotation: 25
+--- !u!1 &9201688449687600364
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -136,27 +140,27 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3285769895693389127}
+  - component: {fileID: 821785730375756049}
   m_Layer: 0
-  m_Name: WoodenPlank
+  m_Name: PlaceHolder_Vis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3285769895693389127
+--- !u!4 &821785730375756049
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6806350552909002638}
+  m_GameObject: {fileID: 9201688449687600364}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2.2699733, y: 1.302, z: 7.788987}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7617126924229492944}
+  - {fileID: 3445788603234161200}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

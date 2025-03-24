@@ -16,6 +16,7 @@ namespace LightHouse.Items.Samples
         public bool IsItemInInventory { get; set; }
         public bool IsItemRaycasted { get; set; }
         [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
+        [field: SerializeField] public bool IsItemOnHands { get; set; }
 
         public event Action ForceRemoveItemInInventory;
         public event Action OnNameUpdated;

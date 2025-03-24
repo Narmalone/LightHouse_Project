@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using System;
 using LightHouse.Interactions;
 using LightHouse.Inputs;
 using LightHouse.Utilities;
-using System.Linq;
-using System;
 using LightHouse.Items.Samples;
 
 namespace LightHouse.Inventory
@@ -16,7 +16,7 @@ namespace LightHouse.Inventory
         [SerializeField] private byte _inventoryCapacity = 4;
         [SerializeField] private int _currentSlotIndex = -1;
         [SerializeField] private byte _currentSlotTakenInventory = 0;
-        [SerializeField] private Vector3 _inventoryOffset = new Vector3(0.5f, -0.5f, 0.8f); // (X = décalage horizontal, Y = vertical, Z = profondeur)
+        [SerializeField] private Vector3 _inventoryOffset = new Vector3(0.5f, -0.5f, 0.8f); // (X = dÃ©calage horizontal, Y = vertical, Z = profondeur)
 
         [Header("Inventory References")]
         [SerializeField] private Transform _inventoryParent = null;
@@ -50,9 +50,10 @@ namespace LightHouse.Inventory
         [SerializeField] private Collider[] _dropOverlappingCollider = new Collider[0];
 
         private ItemSlot _lastSelectedSlot = null;
-        private ItemSlot _currentSelectedSlot = null;
+        [SerializeField] private ItemSlot _currentSelectedSlot = null;
 
         public ItemSlot CurrentSelectedSlot => _currentSelectedSlot;
+        public IInventoryItem CurrentSelectedItem => _currentSelectedSlot.InventoryItem;
 
         //Raycast Info
         private bool _isRaycastingSomething = false;
@@ -60,6 +61,9 @@ namespace LightHouse.Inventory
         private IInventoryItem _raycastedInventoryItem;
         private IInventoryItemCallback _raycastedInventoryItemCallback;
         private IInventoryItemUsable _raycastedInventoryItemUsable;
+
+        public Transform InventoryParent => _inventoryParent;
+        public Transform InventoryTarget => _inventoryTarget;
 
         //Drops Info
         private float _dropPower = 0f;
@@ -69,6 +73,7 @@ namespace LightHouse.Inventory
         public static event Action<IInventoryItem> OnHandsItemSelectedChanged;
         public static event Action<IInventoryItem> OnItemAdded;
         public static event Action<IInventoryItem> OnItemDropped;
+        public static event Action<IInventoryItem> OnItemStackDropped;
 
         #endregion
 
@@ -85,11 +90,14 @@ namespace LightHouse.Inventory
         #endregion
 
         #region MONO'S CALLBACK
-
-        private void Start()
+        private void Awake()
         {
             _itemSlots = _inventoryCanvas.GenerateItemSlot(_inventoryCapacity).ToList();
             _interactionCanvas.HideItemPickup();
+        }
+
+        private void Start()
+        {
             OnInventoryInitialized?.Invoke(this);
         }
         
@@ -105,14 +113,22 @@ namespace LightHouse.Inventory
                     HandlePickupInput();
                 }
                 else
-                {
                     ResetSeenObject();
-                }
 
                 HandleInteractItemInInventory();
                 HandleDropInput();
                 Debug.DrawRay(_playerCamera.transform.position, cameraRay.direction * _raycastDistance, Color.cyan);
             }
+        }
+
+        private void OnDrawGizmos()
+        {
+            Vector3 start = _inventoryTarget.position;
+            float sphereRadius = _securityOverlapSphereRadius;
+            Collider[] colliders = Physics.OverlapSphere(start, sphereRadius, _securityObstacleMasks);
+            _dropOverlappingCollider = colliders;
+            Gizmos.color = _dropOverlappingCollider.Length > 0 ? Color.red : Color.green;
+            Gizmos.DrawSphere(_inventoryTarget.position, 0.3f);
         }
 
         #endregion
@@ -135,7 +151,7 @@ namespace LightHouse.Inventory
         /// </summary>
         public void HandleInventoryPosition()
         {
-            // Appliquer l'offset dans l'espace local de la caméra
+            // Appliquer l'offset dans l'espace local de la camÃ©ra
             Vector3 adjustedPosition = _playerCamera.transform.TransformPoint(_inventoryOffset);
 
             // Appliquer la nouvelle position sans affecter la rotation
@@ -148,33 +164,31 @@ namespace LightHouse.Inventory
         private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
             int scrollDirection = Mathf.RoundToInt(obj.ReadValue<Vector2>().y);
-            int inversedScroll = -scrollDirection; //inver scroll direction (scroll up to left, scroll down to right)
+            int inversedScroll = -scrollDirection; //invert scroll direction (scroll up to left, scroll down to right)
 
             if (inversedScroll == 0) return; 
 
             _currentSlotIndex += inversedScroll;
+            // Cyclic scrolling, -1 is for nothing selected
+            if (_currentSlotIndex < -1)
+                _currentSlotIndex = _inventoryCapacity - 1;
+            else if (_currentSlotIndex >= _inventoryCapacity)
+                _currentSlotIndex = -1;
 
             ChangeSelectedSlot(_currentSlotIndex);
         }
 
         private void HandleInteractItemInInventory()
         {
-            if (InputManager.InteractInInventory.WasPressedThisFrame() )
-            {
-                if (_currentSelectedSlot != null && _currentSelectedSlot.InventoryItemUsable != null)
-                {
-                    _currentSelectedSlot.InventoryItemUsable.UseFromInventory();
-                }
-            }
-            
+            if (!InputManager.InteractInInventory.WasPressedThisFrame() || _currentSelectedSlot == null || _currentSelectedSlot.InventoryItemUsable == null)
+                return;
+            _currentSelectedSlot.InventoryItemUsable.UseFromInventory();
         }
 
         private void HandlePickupInput()
         {
-            if (_raycastedInventoryItem != null && InputManager.PickUp.WasPerformedThisFrame())
-            {
-                AddItem(_raycastedInventoryItem, _raycastedInventoryItemCallback, _raycastedInventoryItemUsable);
-            }
+            if (_raycastedInventoryItem == null || !InputManager.PickUp.WasPerformedThisFrame()) return;
+            AddItem(_raycastedInventoryItem, _raycastedInventoryItemCallback, _raycastedInventoryItemUsable);
         }
 
         private void HandleDropInput()
@@ -200,65 +214,6 @@ namespace LightHouse.Inventory
 
         #endregion
 
-        #region Change Current Selected Slot
-        /// <summary>
-        /// Change the current selected slot based on somme index
-        /// <cf _currentSlotIndex> </cf>
-        /// </summary>
-        public void ChangeSelectedSlot(int index)
-        {
-            // Cyclic scrolling, -1 is for nothing selected
-            if (_currentSlotIndex < -1)
-            {
-                _currentSlotIndex = _inventoryCapacity - 1;
-            }
-            else if (_currentSlotIndex >= _inventoryCapacity)
-            {
-                _currentSlotIndex = -1;
-            }
-
-            if(_currentSlotIndex < 0)
-            {
-                _currentSelectedSlot = null;
-            }
-
-            if (_lastSelectedSlot != null)
-            {
-                if (_lastSelectedSlot.ItemName_TMP.isActiveAndEnabled)
-                {
-                    _lastSelectedSlot.ItemName_TMP.gameObject.SetActive(false);
-
-                    if(_lastSelectedSlot.InventoryItem != null)
-                        _lastSelectedSlot.InventoryItem.GetGameObject().SetActive(false);
-                }
-                SetInteractableItemUseKeyUI(_lastSelectedSlot, false);
-            }
-
-            //Handle case where we have nothing on hands
-            if (_currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity)
-            {
-                OnHandsItemSelectedChanged?.Invoke(null);
-                return;
-            }
-
-            _currentSelectedSlot = _itemSlots[_currentSlotIndex];
-            _lastSelectedSlot = _currentSelectedSlot;
-
-            if(_currentSelectedSlot.InventoryItem != null)
-            {
-                UpdateInventorySlotUI(_currentSelectedSlot, _currentSelectedSlot.InventoryItem.GetName());
-                if (_currentSelectedSlot.InventoryItemUsable != null) IsInventoryUsableUI(_currentSelectedSlot, _currentSelectedSlot.InventoryItemUsable);
-
-                _currentSelectedSlot.InventoryItem.GetGameObject().SetActive(true);
-
-                if (!_currentSelectedSlot.ItemName_TMP.isActiveAndEnabled)
-                    _currentSelectedSlot.ItemName_TMP.gameObject.SetActive(true);
-
-            }
-            OnHandsItemSelectedChanged?.Invoke(_currentSelectedSlot.InventoryItem);
-        }
-        #endregion
-
         #region RAYCAST HANDLE
 
         /// <summary>
@@ -273,16 +228,14 @@ namespace LightHouse.Inventory
                 _raycastedInventoryItem = hitObject.GetComponent<IInventoryItem>();
                 _raycastedInventoryItemCallback = hitObject.GetComponent<IInventoryItemCallback>();
                 _raycastedInventoryItemUsable = hitObject.GetComponent<IInventoryItemUsable>();
-
+                
                 if (_raycastedInventoryItem != null)
-                {
-                    ShowInventoryPickupUI(_raycastedInventoryItem);
-                }
+                    ShowPickupItemInteractionUI(_raycastedInventoryItem);
                 //in case we are looking an item and looking an other item whithout seeing nothing (without the ResetSeenObjectMethod())
                 else
                 {
                     if (!_interactionCanvas.IsHided)
-                        _interactionCanvas.HideItemPickup();
+                        SetEnablePickupInteractionTextUI(false);
                 }
             }
         }
@@ -299,12 +252,73 @@ namespace LightHouse.Inventory
                 _raycastedInventoryItem = null;
 
             if (_interactionCanvas.ItemPickup_TPM.isActiveAndEnabled)
-                _interactionCanvas.HideItemPickup();
+                SetEnablePickupInteractionTextUI(false);
         }
 
         #endregion
 
-        #region ADD / DROP / REMOVE ITEMS
+        #region Change Current Selected Slot
+        /// <summary>
+        /// Change the current selected slot based on somme index
+        /// <cf _currentSlotIndex> </cf>
+        /// </summary>
+        public void ChangeSelectedSlot(int index)
+        {
+            if (_lastSelectedSlot != null)
+            {
+                if (_lastSelectedSlot.ItemName_TMP.isActiveAndEnabled)
+                    SetEnableItemNameTextUI(_lastSelectedSlot, false);
+
+                if (_lastSelectedSlot.InventoryItem != null)
+                {
+                    _lastSelectedSlot.InventoryItem.GetGameObject().SetActive(false);
+                    if (_lastSelectedSlot.InventoryItem.IsItemOnHands) _lastSelectedSlot.InventoryItem.IsItemOnHands = false;
+                }
+                SetEnableItemUseKeyUI(_lastSelectedSlot, false);
+            }
+
+            //Handle case where we have no one slot selected
+            if (_currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity)
+            {
+                _currentSelectedSlot = null;
+                OnHandsItemSelectedChanged?.Invoke(null);
+                return;
+            }
+
+            _currentSelectedSlot = _itemSlots[_currentSlotIndex];
+            _lastSelectedSlot = _currentSelectedSlot;
+
+            IInventoryItem currentSelectedItem = _currentSelectedSlot.InventoryItem;
+            if (currentSelectedItem != null)
+            {
+                SetItemNameTextUI(_currentSelectedSlot, currentSelectedItem.GetName());
+                IsInventoryUsableUI(_currentSelectedSlot, _currentSelectedSlot.InventoryItemUsable);
+                currentSelectedItem.GetGameObject().SetActive(true);
+
+                if (!_currentSelectedSlot.ItemName_TMP.isActiveAndEnabled)
+                    SetEnableItemNameTextUI(_currentSelectedSlot, true);
+
+                currentSelectedItem.IsItemOnHands = true;
+            }
+            OnHandsItemSelectedChanged?.Invoke(currentSelectedItem);
+        }
+        #endregion
+
+        #region Main Inventory Items and Slots Management
+
+        public bool IsCurrentSlotAlreadyTaken()
+        {
+            return _currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity || _currentSelectedSlot.InventoryItem != null;
+        }
+
+        private void SetItemToSlot(ItemSlot slot, IInventoryItem item, IInventoryItemCallback callback, IInventoryItemUsable usable)
+        {
+            slot.SetInventoryItem(item);
+            slot.SetItemCallback(callback);
+            slot.SetItemUsable(usable);
+            SetItemNameTextUI(slot, item.GetName());
+            IsInventoryUsableUI(slot, usable);
+        }
 
         /// <summary>
         /// Called when the player press the pickup key while looking an item
@@ -313,19 +327,63 @@ namespace LightHouse.Inventory
         /// <returns> if the items sucessfully been added to inventory</returns>
         public bool AddItem(IInventoryItem item, IInventoryItemCallback itemCallback, IInventoryItemUsable itemUsable)
         {
-            if (_currentSlotTakenInventory >= _inventoryCapacity)
-            {
-                Debug.LogWarning("Inventaire plein !");
-                return false;
-            }
+            if (TryStackItem(_raycastedInventoryItem)) return true;
 
-            if(item is Key)
+            if (_currentSlotTakenInventory >= _inventoryCapacity)
+                return false;
+
+            if (item is Key)
             {
                 Key key = (Key)item;
                 _keyTypesInInventory.Add(key.KeyType);
             }
 
-            _interactionCanvas.ItemPickup_TPM.text = "";
+            SetEnablePickupInteractionTextUI(false);
+            GameObject obj = PrepareItemForInventory(item);
+
+            if (IsCurrentSlotAlreadyTaken())
+            {
+                ItemSlot targetSlot = GetEmptyPlaceInInventory();
+
+                //In case this item is still not stacked
+                if (item is IInventoryStackable)
+                {
+                    if (!targetSlot.ItemStack_TMP.isActiveAndEnabled) SetEnableStackCountText(targetSlot, true);
+                    UpdateStackItemCountUI(targetSlot);
+                }
+                SetItemToSlot(targetSlot, item, itemCallback, itemUsable);
+                obj.SetActive(false);
+            }
+            //else we presume that the item can be store on our hands bcs it's the current selected slot
+            else if (_currentSelectedSlot == _itemSlots[_currentSlotIndex])
+            {
+                SetItemToSlot(_currentSelectedSlot, item, itemCallback, itemUsable);
+                //In case this item is still not stacked
+                if (item is IInventoryStackable)
+                {
+                    if (!_currentSelectedSlot.ItemStack_TMP.isActiveAndEnabled) SetEnableStackCountText(_currentSelectedSlot, true);
+                    UpdateStackItemCountUI(_currentSelectedSlot);
+                }
+                SetEnableItemNameTextUI(_currentSelectedSlot, true);
+                item.IsItemOnHands = true;
+                OnHandsItemSelectedChanged?.Invoke(item);
+            }
+
+            _currentSlotTakenInventory++;
+            itemCallback?.OnItemAddedToInventory();
+            OnItemAdded?.Invoke(item);
+            item.ForceRemoveItemInInventory += () => Item_ForceItemRemove(item, itemCallback);
+            return true;
+        }
+        private void Item_ForceItemRemove(IInventoryItem item, IInventoryItemCallback itemCallback)
+        {
+            if (item == null) return;
+            PrepareItemToDropFromInventory(item, false);
+            RemoveItemFromInventory(TryFindItemInSlots(item), item, itemCallback);
+        }
+
+        private GameObject PrepareItemForInventory(IInventoryItem item)
+        {
             GameObject obj = item.GetGameObject();
             obj.transform.SetParent(_inventoryParent);
             obj.transform.position = _inventoryTarget.position;
@@ -333,84 +391,8 @@ namespace LightHouse.Inventory
 
             item.GetCollider().enabled = false;
             item.GetRigidBody().isKinematic = true;
-
             item.IsItemInInventory = true;
-            _currentSlotTakenInventory++;
-
-            itemCallback?.OnItemAddedToInventory();
-
-            //Handle in case we had an item, or out of range
-            if (_currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity || _currentSelectedSlot.InventoryItem != null)
-            {
-                ItemSlot targetSlot = GetEmptyPlaceInInventory();
-                targetSlot.SetInventoryItem(item);
-                if(itemCallback != null)
-                    targetSlot.SetItemCallback(itemCallback);
-                if(itemUsable != null)
-                    targetSlot.SetItemUsable(itemUsable);
-                obj.SetActive(false);
-            }
-            //else we presume that the item can be store on our hands bcs it's the current selected slot
-            else if (_currentSelectedSlot == _itemSlots[_currentSlotIndex])
-            {
-                _currentSelectedSlot.SetInventoryItem(item);
-                if (itemCallback != null)
-                    _currentSelectedSlot.SetItemCallback(itemCallback);
-                if (itemUsable != null)
-                    _currentSelectedSlot.SetItemUsable(itemUsable);
-                UpdateInventorySlotUI(_currentSelectedSlot, item.GetName());
-                _currentSelectedSlot.ItemName_TMP.gameObject.SetActive(true);
-
-                if(itemUsable != null) IsInventoryUsableUI(_currentSelectedSlot, itemUsable);
-                OnHandsItemSelectedChanged?.Invoke(item);
-            }
-
-            item.ForceRemoveItemInInventory += () => Item_ForceItemRemove(item, itemCallback);
-            OnItemAdded?.Invoke(item);
-            return true;
-        }
-
-        private void Item_ForceItemRemove(IInventoryItem item, IInventoryItemCallback itemCallback)
-        {
-            Debug.Log($"Suppression forcée de l'objet : {item.GetName()}");
-
-            if (item == null) return;
-
-            RemoveItem(TryFindItemInItemSlot(item), item, itemCallback);
-        }
-
-        /// <summary>
-        /// Try to see if a specific item is inside a slot, and if so we remove it
-        /// </summary>
-        /// <param name="item"> the item you try to remove </param>
-        public void RemoveItem(ItemSlot slot, IInventoryItem item, IInventoryItemCallback itemCallback)
-        {
-            if (slot == null) return;
-
-            slot.ItemName_TMP.gameObject.SetActive(false);
-            slot.ItemUseKey_TPM.gameObject.SetActive(false);
-
-            RemoveKeyType(item);
-            item.IsItemInInventory = false;
-            _currentSlotTakenInventory--;
-            itemCallback?.OnItemRemovedFromInventory();
-            slot.ResetSlot();
-
-            //Se désinscrire de l’événement après suppression
-            if(item != null)
-                item.ForceRemoveItemInInventory -= () => Item_ForceItemRemove(item, itemCallback);
-            OnItemDropped?.Invoke(item);
-            OnHandsItemSelectedChanged?.Invoke(null);
-        }
-
-        public void RemoveKeyType(IInventoryItem item)
-        {
-            if (item is not Key) return;
-            Key key = (Key)item;
-            if (_keyTypesInInventory.Contains(key.KeyType))
-            {
-                _keyTypesInInventory.Remove(key.KeyType);  
-            }
+            return obj;
         }
 
         /// <summary>
@@ -418,44 +400,58 @@ namespace LightHouse.Inventory
         /// </summary>
         /// <param name="dropPosition"> the position where you want to drop the item </param>
         /// <param name="force"> the force added to the forward of the position if a rigibody is attached to it </param>
-        public void DropCurrentSelectedItem(Vector3 dropPosition, float force)
+        public void DropCurrentSelectedItem(Vector3 dropPosition, float force, bool enableRigidbodyOnDrop = true)
         {
-            if (_itemSlots[_currentSlotIndex].InventoryItem == null) return;
-
-            IInventoryItem item = _currentSelectedSlot.InventoryItem;
-            if (item == null) return;
-            GameObject obj = item.GetGameObject();
-
-            obj.transform.SetParent(null);
-
-            Vector3 safeDropPosition = GetAdjustedDropPosition(dropPosition);
-            obj.transform.position = safeDropPosition;
-            obj.transform.rotation = Quaternion.Euler(0f, _playerCamera.transform.eulerAngles.y, 0f);
-            item.GetCollider().enabled = true;
-            item.GetRigidBody().isKinematic = false;
-            obj.SetActive(true);
-
-            Rigidbody rb = item.GetRigidBody();
-            if (rb != null && safeDropPosition == dropPosition)
+            if (_currentSelectedSlot.InventoryItem == null) return;
+            IInventoryItem itemToDrop;
+            Vector3 safeDropPos = Vector3.zero;
+            if (IsCurrentSelectedItemStackable())
             {
-                rb.AddForce(_inventoryTarget.forward * force, ForceMode.Impulse);
+                IInventoryStackable stackable = _currentSelectedSlot.InventoryItem as IInventoryStackable;
+                itemToDrop = _currentSelectedSlot.RemoveStackedItem();
+                safeDropPos = GetAdjustedDropPosition(dropPosition, 1);
+                stackable.RemoveFromStack(1);
+                UpdateStackItemCountUI(_currentSelectedSlot);
+            }
+            else
+            {
+                safeDropPos = GetAdjustedDropPosition(dropPosition);
+                itemToDrop = _currentSelectedSlot.InventoryItem;
+                RemoveItemFromInventory(_currentSelectedSlot, itemToDrop, _currentSelectedSlot.InventoryItemCallback);
             }
 
-            RemoveItem(_currentSelectedSlot, _currentSelectedSlot.InventoryItem, _currentSelectedSlot.InventoryItemCallback);
+            GameObject obj = PrepareItemToDropFromInventory(itemToDrop, enableRigidbodyOnDrop);
+            obj.transform.position = safeDropPos;
+            obj.transform.rotation = Quaternion.Euler(0f, _playerCamera.transform.eulerAngles.y, 0f);
+            Rigidbody rb = itemToDrop.GetRigidBody();
+            if (rb != null && safeDropPos == dropPosition)
+                rb.AddForce(_inventoryTarget.forward * force, ForceMode.Impulse);
+        }
+        private GameObject PrepareItemToDropFromInventory(IInventoryItem item, bool enablePhysicsOnDrop = true)
+        {
+            GameObject obj = item.GetGameObject();
+            obj.transform.SetParent(null);
+            obj.SetActive(true);
+            if (enablePhysicsOnDrop)
+            {
+                item.GetCollider().enabled = true;
+                item.GetRigidBody().isKinematic = false;
+            }
+            return obj;
         }
 
-        private Vector3 GetAdjustedDropPosition(Vector3 intendedDropPosition)
+        private Vector3 GetAdjustedDropPosition(Vector3 intendedDropPosition, int lengthToSafePos = 0)
         {
             Vector3 start = _inventoryTarget.position;
             float sphereRadius = _securityOverlapSphereRadius; // Ajuste la taille en fonction des objets
 
-            // 1. Vérifier si un obstacle est proche avec un OverlapSphere
+            // 1. VÃ©rifier si un obstacle est proche avec un OverlapSphere
             Collider[] colliders = Physics.OverlapSphere(start, sphereRadius, _securityObstacleMasks);
             _dropOverlappingCollider = colliders;
-            if (colliders.Length > 0)
+            if (colliders.Length > lengthToSafePos)
             {
-                Debug.Log("Obstacle trop proche ! Dépose l'objet juste devant le joueur.");
-                Vector3 adjustedPosition = start - _inventoryTarget.forward * 0.5f; // Reculer légèrement pour ne pas être dans l'obstacle
+                Debug.Log("Obstacle trop proche ! DÃ©pose l'objet juste devant le joueur.");
+                Vector3 adjustedPosition = start - _inventoryTarget.forward * 0.5f; // Reculer lÃ©gÃ¨rement pour ne pas Ãªtre dans l'obstacle
                 Debug.DrawRay(start, -_inventoryTarget.forward * 0.5f, Color.yellow, 5.0f);
                 return adjustedPosition;
             }
@@ -463,22 +459,44 @@ namespace LightHouse.Inventory
             return intendedDropPosition;
         }
 
-        private void OnDrawGizmos()
+        /// <summary>
+        /// Try to see if a specific item is inside a slot, and if so we remove it
+        /// </summary>
+        /// <param name="item"> the item you try to remove </param>
+        public GameObject RemoveItemFromInventory(ItemSlot slot, IInventoryItem item, IInventoryItemCallback itemCallback)
         {
-            Vector3 start = _inventoryTarget.position;
-            float sphereRadius = _securityOverlapSphereRadius; // Ajuste la taille en fonction des objets
+            if (slot == null) return null;
+            if (item is IInventoryStackable stack)
+            {
+                if (slot.ItemStack_TMP.isActiveAndEnabled)
+                    SetEnableStackCountText(slot, false);
+            }
+            SetEnableItemNameTextUI(slot, false);
+            SetEnableItemUseKeyUI(slot, false);
+            TryRemoveKeyType(item);
+            if (item.IsItemInInventory) item.IsItemInInventory = false;
+            if (item.IsItemOnHands) item.IsItemOnHands = false;
+            itemCallback?.OnItemRemovedFromInventory();
+            item.ForceRemoveItemInInventory -= () => Item_ForceItemRemove(item, itemCallback);
+            _currentSlotTakenInventory--;
+            OnItemDropped?.Invoke(item);
+            //slot is setting the item to null for the callbacks
+            slot.ResetSlot();
+            OnHandsItemSelectedChanged?.Invoke(null); //once it's null we say it to this delegate
+            return item.GetGameObject();
+        }
 
-            // 1. Vérifier si un obstacle est proche avec un OverlapSphere
-            Collider[] colliders = Physics.OverlapSphere(start, sphereRadius, _securityObstacleMasks);
-            _dropOverlappingCollider = colliders;
-
-            Gizmos.color = _dropOverlappingCollider.Length > 0 ? Color.red : Color.green; 
-            Gizmos.DrawSphere(_inventoryTarget.position, 0.3f);
+        public void TryRemoveKeyType(IInventoryItem item)
+        {
+            if (item is not Key) return;
+            Key key = (Key)item;
+            if (_keyTypesInInventory.Contains(key.KeyType))
+                _keyTypesInInventory.Remove(key.KeyType);
         }
 
         #endregion
 
-        #region Get / Find / Organisation
+        #region Get / Find / Conditions
         /// <summary>
         /// Try to get the first empty slot in the inventory, if not we return null
         /// </summary>
@@ -497,7 +515,7 @@ namespace LightHouse.Inventory
         /// </summary>
         /// <param name="item"> the item we want to see</param>
         /// <returns></returns>
-        public ItemSlot TryFindItemInItemSlot(IInventoryItem item)
+        public ItemSlot TryFindItemInSlots(IInventoryItem item)
         {
             foreach (ItemSlot slot in _itemSlots)
             {
@@ -527,35 +545,95 @@ namespace LightHouse.Inventory
 
         #endregion
 
+        #region STACKABLE ITEMS
+
+        private bool IsCurrentSelectedItemStackable()
+        {
+            return _currentSelectedSlot.InventoryItem is IInventoryStackable && _currentSelectedSlot.StackCount > 0;
+        }
+
+        public bool TryStackItem(IInventoryItem item)
+        {
+            if (item is not IInventoryStackable newStack) return false;
+
+            foreach (ItemSlot slot in _itemSlots)
+            {
+                if (slot.InventoryItem is IInventoryStackable existingStack &&
+                    existingStack.CanStackWith(item) &&
+                    existingStack.CurrentStack < existingStack.MaxStack)
+                {
+                    int amount = newStack.CurrentStack;
+                    existingStack.AddToStack(amount);
+                    var slotobj = item.GetGameObject();
+                    slotobj.transform.SetParent(InventoryParent);
+                    slotobj.transform.position = InventoryParent.transform.position;
+                    slotobj.transform.rotation = InventoryParent.transform.rotation;
+                    slot.AddStackedItem(item); 
+                    UpdateStackItemCountUI(slot);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public T TryRemoveStackedItem<T>(IInventoryItem obj, IInventoryStackable stack, IInventoryItemCallback itemCallback) where T : class, IInventoryItem
+        {
+            ItemSlot slot = TryFindItemInSlots(obj);
+
+            if (slot != null && slot.StackCount > 0)
+            {
+                IInventoryItem stackItemSelected = slot.RemoveStackedItem();
+                PrepareItemToDropFromInventory(stackItemSelected, false);
+                stack.RemoveFromStack(1);
+                slot.UpdateItemStackCount();
+                OnItemStackDropped?.Invoke(stackItemSelected);
+                return stackItemSelected as T;
+            }
+            return null;
+        }
+
+        #endregion
+
         #region UI
-        public void ShowInventoryPickupUI(IInventoryItem inventoryItem)
+        public void ShowPickupItemInteractionUI(IInventoryItem inventoryItem)
         {
             _interactionCanvas.ShowItemPickup();
             _interactionCanvas.ItemPickup_TPM.text = inventoryItem.GetPickupName();
         }
 
-        public void UpdateInventorySlotUI(ItemSlot item, string name)
+        public void SetEnableStackCountText(ItemSlot target, bool value)
         {
-            item.ItemName_TMP.text = name;
+            target.SetEnableItemStackCountText(value);
+        }
+
+        public void UpdateStackItemCountUI(ItemSlot target)
+        {
+            target.UpdateItemStackCount();
+        }
+
+        public void SetEnablePickupInteractionTextUI(bool value)
+        {
+            _interactionCanvas.HideItemPickup();
         }
 
         public void IsInventoryUsableUI(ItemSlot targetSlot, IInventoryItemUsable itemUsable)
         {
-            if (itemUsable.CanBeUsedFromInventory)
-            {
-                targetSlot.ItemUseKey_TPM.gameObject.SetActive(true);
-                targetSlot.ItemUseKey_TPM.text = itemUsable.UseInInventoryText();
-                
-            }
-            else
-            {
-                targetSlot.ItemUseKey_TPM.gameObject.SetActive(false);
-            }
+            targetSlot.IsInventoryItemUsable(itemUsable);
         }
 
-        public void SetInteractableItemUseKeyUI(ItemSlot target, bool value)
+        public void SetEnableItemNameTextUI(ItemSlot target, bool value)
         {
-            target.ItemUseKey_TPM.gameObject.SetActive(value);
+            target.SetEnableItemNameText(value);
+        }
+
+        public void SetItemNameTextUI(ItemSlot target, string text)
+        {
+            target.SetItemNameText(text);
+        }
+
+        public void SetEnableItemUseKeyUI(ItemSlot target, bool value)
+        {
+            target.ItemUseKey_TMP.gameObject.SetActive(value);
         }
 
         #endregion
