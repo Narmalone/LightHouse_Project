@@ -21,6 +21,8 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     public event Action OnNameUpdated;
     public event Action OnInteractionNameChanged;
     public event Action OnObjectInteracted;
+    public event Action OnItemUsed;
+    public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
 
     #region IInventoryItem Method
 
@@ -37,6 +39,7 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     public void UseFromInventory()
     {
         Eat();
+        OnItemUsed?.Invoke();
     }
     #endregion
 
@@ -63,4 +66,9 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     }
 
     public GameObject GetGameObject() => this.gameObject;
+
+    public void InvokeOnCanBeUsedFromInventoryChanged()
+    {
+        throw new NotImplementedException();
+    }
 }

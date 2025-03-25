@@ -64,7 +64,7 @@ namespace LightHouse.Inventory
 
         public void SetEnableUseKeyText(bool value)
         {
-            ItemName_TMP.gameObject.SetActive(value);
+            ItemUseKey_TMP.gameObject.SetActive(value);
         }
 
         public void IsInventoryItemUsable(IInventoryItemUsable itemUsable)

@@ -28,10 +28,17 @@ namespace LightHouse.KinematicCharacterController
         private IInteractable _raycastedIInteractable = null;
         private IItemName _raycastedIItemName = null;
 
+        private IItemName _lastRaycastedItemName = null;
+        private IItemName _lastRaycastedIInteractable = null;
+
+        public IItemName CurrentRaycastedIItemName => _raycastedIItemName;
+        public GameObject LastObjectSeen => _lastObjectSeen;
+
         #endregion
 
         #region EVENTS AND PROPERTIES
         public event Action<IInteractable> OnInteractableItemDetected;
+        public static event Action<PlayerInteractions> OnPlayerInteractionInitialized;
         #endregion
 
         #region MONO'S CALLBACK
@@ -39,6 +46,7 @@ namespace LightHouse.KinematicCharacterController
         private void Start()
         {
             _canvasInteraction.Hide();
+            OnPlayerInteractionInitialized?.Invoke(this);
         }
 
         private void Update()
@@ -67,6 +75,13 @@ namespace LightHouse.KinematicCharacterController
             if (hitObject != _lastObjectSeen)
             {
                 _lastObjectSeen = hitObject;
+                _lastRaycastedItemName = _raycastedIItemName;
+
+                if (_lastRaycastedItemName != null)
+                    _lastRaycastedItemName.IsItemRaycasted = false;
+
+                _lastRaycastedIInteractable = _raycastedIInteractable;
+
                 _raycastedIInteractable = hitObject.GetComponent<IInteractable>();
                 _raycastedIItemName = hitObject.GetComponent<IItemName>();
 
@@ -84,10 +99,6 @@ namespace LightHouse.KinematicCharacterController
                 {
                     UpdateName();
                     _raycastedIItemName.IsItemRaycasted = true;
-                }
-                else
-                {
-                    _canvasInteraction.HideItemName();
                 }
             }
         }

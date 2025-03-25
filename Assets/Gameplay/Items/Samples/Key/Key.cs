@@ -14,7 +14,6 @@ namespace LightHouse.Items.Samples
         [SerializeField] protected Collider _Collider;
         [SerializeField] protected Rigidbody _Rigidbody;
         [SerializeField] protected KeyType _key;
-
         private bool _hasKey = false;
 
         public bool HasKeyInInventory => _hasKey;
@@ -27,7 +26,6 @@ namespace LightHouse.Items.Samples
 
         #region IInventory Fields
         [field: SerializeField] public bool IsItemInInventory { get; set; }
-        public bool CanBeUsedFromInventory { get; set; }
         [field: SerializeField] public bool IsItemRaycasted { get; set; }
         [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
 
@@ -59,7 +57,7 @@ namespace LightHouse.Items.Samples
 
         public virtual void UseFromInventory() { }
 
-        public virtual string UseInInventoryText() => string.Empty;
+        public virtual string UseInInventoryText() => $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to use";
 
         public virtual void ForceRemoveItemFromInventory()
         {

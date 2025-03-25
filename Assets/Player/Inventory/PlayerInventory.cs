@@ -65,6 +65,8 @@ namespace LightHouse.Inventory
         public Transform InventoryParent => _inventoryParent;
         public Transform InventoryTarget => _inventoryTarget;
 
+        public IInventoryItem CurrentRaycastedInventoryItem;
+
         //Drops Info
         private float _dropPower = 0f;
         private bool _isChargingDrop = false;
@@ -251,6 +253,12 @@ namespace LightHouse.Inventory
             if (_raycastedInventoryItem != null)
                 _raycastedInventoryItem = null;
 
+            if (_raycastedInventoryItemCallback != null)
+                _raycastedInventoryItemCallback = null;
+
+            if (_raycastedInventoryItemUsable != null)
+                _raycastedInventoryItemUsable = null;
+
             if (_interactionCanvas.ItemPickup_TPM.isActiveAndEnabled)
                 SetEnablePickupInteractionTextUI(false);
         }
@@ -317,7 +325,6 @@ namespace LightHouse.Inventory
             slot.SetItemCallback(callback);
             slot.SetItemUsable(usable);
             SetItemNameTextUI(slot, item.GetName());
-            IsInventoryUsableUI(slot, usable);
         }
 
         /// <summary>
@@ -364,22 +371,20 @@ namespace LightHouse.Inventory
                     if (!_currentSelectedSlot.ItemStack_TMP.isActiveAndEnabled) SetEnableStackCountText(_currentSelectedSlot, true);
                     UpdateStackItemCountUI(_currentSelectedSlot);
                 }
+
                 SetEnableItemNameTextUI(_currentSelectedSlot, true);
+                IsInventoryUsableUI(_currentSelectedSlot, itemUsable);
                 item.IsItemOnHands = true;
                 OnHandsItemSelectedChanged?.Invoke(item);
             }
+
+            if (item is IInventoryItemUsable inventoryUsableItem) inventoryUsableItem.CanBeUsedFromInventoryChanged += InventoryUsableItem_CanBeUsedFromInventoryChanged;
 
             _currentSlotTakenInventory++;
             itemCallback?.OnItemAddedToInventory();
             OnItemAdded?.Invoke(item);
             item.ForceRemoveItemInInventory += () => Item_ForceItemRemove(item, itemCallback);
             return true;
-        }
-        private void Item_ForceItemRemove(IInventoryItem item, IInventoryItemCallback itemCallback)
-        {
-            if (item == null) return;
-            PrepareItemToDropFromInventory(item, false);
-            RemoveItemFromInventory(TryFindItemInSlots(item), item, itemCallback);
         }
 
         private GameObject PrepareItemForInventory(IInventoryItem item)
@@ -471,6 +476,8 @@ namespace LightHouse.Inventory
                 if (slot.ItemStack_TMP.isActiveAndEnabled)
                     SetEnableStackCountText(slot, false);
             }
+            if (item is IInventoryItemUsable inventoryUsableItem) inventoryUsableItem.CanBeUsedFromInventoryChanged -= InventoryUsableItem_CanBeUsedFromInventoryChanged;
+
             SetEnableItemNameTextUI(slot, false);
             SetEnableItemUseKeyUI(slot, false);
             TryRemoveKeyType(item);
@@ -590,6 +597,31 @@ namespace LightHouse.Inventory
                 return stackItemSelected as T;
             }
             return null;
+        }
+
+        #endregion
+
+        #region INTERFACES CALLBACKS
+
+        /// <summary>
+        /// From IInventoryItem
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="itemCallback"></param>
+        private void Item_ForceItemRemove(IInventoryItem item, IInventoryItemCallback itemCallback)
+        {
+            if (item == null) return;
+            PrepareItemToDropFromInventory(item, false);
+            RemoveItemFromInventory(TryFindItemInSlots(item), item, itemCallback);
+        }
+
+        /// <summary>
+        /// From IInventoryUsable interface
+        /// </summary>
+        /// <param name="item"></param>
+        private void InventoryUsableItem_CanBeUsedFromInventoryChanged(IInventoryItem item)
+        {
+            IsInventoryUsableUI(TryFindItemInSlots(item), item as IInventoryItemUsable);
         }
 
         #endregion
