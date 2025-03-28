@@ -321,6 +321,7 @@ namespace LightHouse.Inventory
         private void SetItemToSlot(ItemSlot slot, IInventoryItem item, IInventoryItemCallback callback, IInventoryItemUsable usable)
         {
             slot.SetInventoryItem(item);
+            slot.SetSpriteItem(item);
             slot.SetItemCallback(callback);
             slot.SetItemUsable(usable);
             SetItemNameTextUI(slot, item.GetName());

@@ -34,6 +34,9 @@ namespace LightHouse.Items.Samples
         [field: SerializeField] public bool IsItemOnHands { get; set; }
         [field: SerializeField] public bool CanBeUsedFromInventory { get; set; }
 
+        [SerializeField] private Sprite _keySprite;
+        public Sprite ItemSprite => _keySprite;
+
         public event Action ForceRemoveItemInInventory;
         public event Action OnNameUpdated;
         public event Action OnItemUsed;

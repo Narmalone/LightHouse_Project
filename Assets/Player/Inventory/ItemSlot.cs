@@ -2,6 +2,7 @@ using LightHouse.Inventory;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LightHouse.Inventory
 {
@@ -11,6 +12,11 @@ namespace LightHouse.Inventory
         [SerializeField] private TextMeshProUGUI _itemName_TMP;
         [SerializeField] private TextMeshProUGUI _itemUseKey_TMP;
         [SerializeField] private TextMeshProUGUI _itemStack_TMP;
+        [SerializeField] private Image _spriteItem;
+
+        public Image SpriteItemImage => _spriteItem;
+        public Sprite SpriteItem => _spriteItem.sprite;
+
         public TextMeshProUGUI ItemName_TMP => _itemName_TMP;
         public TextMeshProUGUI ItemUseKey_TMP => _itemUseKey_TMP;
         public TextMeshProUGUI ItemStack_TMP => _itemStack_TMP;
@@ -45,6 +51,12 @@ namespace LightHouse.Inventory
         public void SetInventoryItem(IInventoryItem inventoryItem)
         {
             _inventoryItem = inventoryItem;
+        }
+
+        public void SetSpriteItem(IInventoryItem inventoryItem)
+        {
+            if (inventoryItem.ItemSprite == null) return;
+            _spriteItem.sprite = inventoryItem.ItemSprite;
         }
 
         public void SetItemCallback(IInventoryItemCallback inventoryItemCallback) 
@@ -108,7 +120,10 @@ namespace LightHouse.Inventory
             if(_inventoryItemCallback != null)
                 _inventoryItemCallback = null;
 
-            if(_stackedItems.Count > 0)
+            if(_spriteItem.sprite != null)
+                _spriteItem.sprite = null;
+
+            if (_stackedItems.Count > 0)
             {
                 foreach(var item in _stackedItems)
                 {

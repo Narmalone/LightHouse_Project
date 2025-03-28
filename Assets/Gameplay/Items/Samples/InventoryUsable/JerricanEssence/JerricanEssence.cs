@@ -23,6 +23,9 @@ namespace LightHouse.Items.Samples
         [Header("IInventory Item Usable Field")]
         [field: SerializeField] public bool CanBeUsedFromInventory { get; set; } = false;
 
+        [SerializeField] private Sprite _jerricanSprite;
+        public Sprite ItemSprite => _jerricanSprite;
+
         public event Action OnItemUsed;
         public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
         public event Action ForceRemoveItemInInventory;

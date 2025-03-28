@@ -124,12 +124,15 @@ namespace LightHouse.Items.Samples
 
         public void Open()
         {
-            
+            if (!_isUnLocked) _isUnLocked = true;
+            _isOpen = false;
+            OnDoorInteracted();
         }
 
         public void Close()
         {
-            
+            _isOpen = true;
+            OnDoorInteracted();
         }
     }
 }

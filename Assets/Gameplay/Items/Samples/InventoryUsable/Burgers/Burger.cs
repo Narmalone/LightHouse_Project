@@ -17,6 +17,9 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     public bool CanBeRaycasted { get; set; } = true;
     [field: SerializeField] public bool IsItemOnHands { get; set; }
 
+    [SerializeField] private Sprite _burgerSprite;
+    public Sprite ItemSprite => _burgerSprite;
+
     public event Action ForceRemoveItemInInventory;
     public event Action OnNameUpdated;
     public event Action OnInteractionNameChanged;

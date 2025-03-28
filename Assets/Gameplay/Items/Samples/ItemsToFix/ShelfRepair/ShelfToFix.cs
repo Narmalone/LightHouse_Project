@@ -77,7 +77,7 @@ namespace LightHouse.Items.Samples
             LockedDoor.CanBeInteracted = true;
             LockedDoor.CanBeRaycasted = true;
             LockedDoor.SetIsUnlocked(true);
-            LockedDoor.Interact();
+            LockedDoor.Open();
         }
 
         private void M_OnPlaceHolderComplete(PlaceHolderKey key)
