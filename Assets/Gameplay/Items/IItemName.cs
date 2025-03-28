@@ -13,4 +13,11 @@ namespace LightHouse.Interactions
         GameObject GetGameObject();
         Collider GetCollider();
     }
+
+    public interface IItemCallback
+    {
+        void OnRaycastStart();
+        void OnRaycastEnd();
+    }
 }
+    

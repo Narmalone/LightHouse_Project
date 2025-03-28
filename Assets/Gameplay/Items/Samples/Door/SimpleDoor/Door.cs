@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace LightHouse.Interactions.Samples
 {
-    public class Door : MonoBehaviour, IInteractable
+    public class Door : MonoBehaviour, IDoor
     {
         #region SERIALIZED FIELDS
         [Header("Door Control")]
@@ -15,7 +15,6 @@ namespace LightHouse.Interactions.Samples
         [SerializeField] protected Collider _doorCollider;
 
         [Header("Inventory")]
-        protected PlayerInventory _inventory;
         [field: SerializeField] public bool CanBeInteracted { get; set; } = true;
         [field: SerializeField] public bool IsItemRaycasted { get; set; }
 
@@ -29,7 +28,6 @@ namespace LightHouse.Interactions.Samples
         protected Quaternion _openRotation;
         protected float _lerpTime = 0f;
         protected bool _isMoving = false;
-
         #endregion
 
         public bool IsOpen => _isOpen;
@@ -48,7 +46,6 @@ namespace LightHouse.Interactions.Samples
             // Store local rotations
             _closedRotation = _pivot.localRotation;
             _openRotation = _closedRotation * Quaternion.Euler(_openRotationAngles);
-            PlayerInventory.OnInventoryInitialized += PlayerInventory_OnInventoryInitialized;
         }
 
         protected virtual void Update()
@@ -66,18 +63,6 @@ namespace LightHouse.Interactions.Samples
             }
         }
 
-        protected virtual void OnDestroy()
-        {
-            PlayerInventory.OnInventoryInitialized -= PlayerInventory_OnInventoryInitialized;
-        }
-
-        #endregion
-
-        #region Register Callbacks
-        protected virtual void PlayerInventory_OnInventoryInitialized(PlayerInventory obj)
-        {
-            _inventory = obj;
-        }
         #endregion
 
         #region IItemName
@@ -112,6 +97,7 @@ namespace LightHouse.Interactions.Samples
             }
 
             _isOpen = !_isOpen;
+
             _lerpTime = 0f; // Restart movement
             _isMoving = true; //Start motion
 
@@ -126,6 +112,20 @@ namespace LightHouse.Interactions.Samples
         protected void InvokeInteractionNameChanged()
         {
             OnInteractionNameChanged?.Invoke();
+        }
+
+        public void Open()
+        {
+            _isOpen = false;
+            _pivot.localRotation = _closedRotation;
+            OnDoorInteracted();
+        }
+
+        public void Close()
+        {
+            _isOpen = true;
+            _pivot.localRotation = _openRotation;
+            OnDoorInteracted();
         }
 
         #endregion

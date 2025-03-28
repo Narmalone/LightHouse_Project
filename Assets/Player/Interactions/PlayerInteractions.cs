@@ -3,6 +3,7 @@ using UnityEngine;
 using LightHouse.Interactions;
 using LightHouse.Inputs;
 using LightHouse.Utilities;
+using LightHouse.Locators;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -43,6 +44,11 @@ namespace LightHouse.KinematicCharacterController
 
         #region MONO'S CALLBACK
 
+        private void Awake()
+        {
+            Locator<PlayerInteractions>.Register(this);
+        }
+
         private void Start()
         {
             _canvasInteraction.Hide();
@@ -66,6 +72,11 @@ namespace LightHouse.KinematicCharacterController
             Debug.DrawRay(_playerCamera.transform.position, cameraRay.direction * _interactionDistance, Color.magenta);
         }
 
+        private void OnDestroy()
+        {
+            Locator<PlayerInteractions>.Clear();
+        }
+
         #endregion
 
         #region RAYCAST HANDLER
@@ -75,12 +86,21 @@ namespace LightHouse.KinematicCharacterController
             if (hitObject != _lastObjectSeen)
             {
                 _lastObjectSeen = hitObject;
-                _lastRaycastedItemName = _raycastedIItemName;
+
+               _lastRaycastedItemName = _raycastedIItemName;
 
                 if (_lastRaycastedItemName != null)
+                {
                     _lastRaycastedItemName.IsItemRaycasted = false;
+                    if (_lastRaycastedItemName is IItemCallback)
+                    {
+                        IItemCallback itemCallback = _lastRaycastedItemName as IItemCallback;
+                        itemCallback.OnRaycastEnd();
+                    }
+                }
 
-                _lastRaycastedIInteractable = _raycastedIInteractable;
+                if (_raycastedIInteractable != null)
+                    _lastRaycastedIInteractable = _raycastedIInteractable;
 
                 _raycastedIInteractable = hitObject.GetComponent<IInteractable>();
                 _raycastedIItemName = hitObject.GetComponent<IItemName>();
@@ -99,6 +119,11 @@ namespace LightHouse.KinematicCharacterController
                 {
                     UpdateName();
                     _raycastedIItemName.IsItemRaycasted = true;
+                    if (_raycastedIItemName is IItemCallback)
+                    {
+                        IItemCallback itemCallback = _raycastedIItemName as IItemCallback;
+                        itemCallback.OnRaycastStart();
+                    }
                 }
             }
         }
@@ -112,6 +137,11 @@ namespace LightHouse.KinematicCharacterController
             {
                 _raycastedIItemName.OnNameUpdated -= OnCurrentSeingObjectNameUpdate;
                 _raycastedIItemName.IsItemRaycasted = false;
+                if (_raycastedIItemName is IItemCallback)
+                {
+                    IItemCallback itemCallback = _raycastedIItemName as IItemCallback;
+                    itemCallback.OnRaycastEnd();
+                }
                 _raycastedIItemName = null;
             }
 

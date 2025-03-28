@@ -1,4 +1,6 @@
 using LightHouse.Inventory;
+using LightHouse.KinematicCharacterController;
+using LightHouse.Locators;
 using System;
 using UnityEngine;
 
@@ -17,9 +19,8 @@ namespace LightHouse.Items.Samples
         private bool _hasSettedAllPlanks = false;
         private bool _hasSettedAllVis = false;
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
             _missingHolderPlanksToFill = (short)_placeHolderPlanks.Length;
             _missingHolderVisToFill = (short)_visPlaceHolders.Length;
             Init();
@@ -96,16 +97,15 @@ namespace LightHouse.Items.Samples
         private void M_OnPlaceHolderComplete(PlaceHolderKeyMover mover)
         {
             if (mover.TargetObject is IInventoryStackable stack && stack.CurrentStack > 1)
-                mover.TargetObject = mover.PlayerInventory.TryRemoveStackedItem<Key>(mover.TargetObject, stack, mover.TargetObject as IInventoryItemCallback);
+                mover.TargetObject = Locator<PlayerInventory>.Instance.TryRemoveStackedItem<Key>(mover.TargetObject, stack, mover.TargetObject as IInventoryItemCallback);
             else
                 mover.TargetObject.ForceRemoveItemFromInventory();
 
             mover.CanObjectMoveToPosition = true;
         }
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
-            base.OnDestroy();
             foreach (PlaceHolderKeyMover s in _placeHolderPlanks)
             {
                 s.PlaceHolderKeyInteracted -= S_OnPlaceHolderInteracted;
@@ -119,7 +119,7 @@ namespace LightHouse.Items.Samples
         private void S_OnPlaceHolderInteracted(PlaceHolderKeyMover mover)
         {
             if (mover.TargetObject is IInventoryStackable stack && stack.CurrentStack > 1)
-                mover.TargetObject = mover.PlayerInventory.TryRemoveStackedItem<Key>(mover.TargetObject, stack, mover.TargetObject as IInventoryItemCallback);
+                mover.TargetObject = Locator<PlayerInventory>.Instance.TryRemoveStackedItem<Key>(mover.TargetObject, stack, mover.TargetObject as IInventoryItemCallback);
             else
                 mover.TargetObject.ForceRemoveItemFromInventory();
 

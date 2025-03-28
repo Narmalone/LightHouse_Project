@@ -6,9 +6,11 @@ using LightHouse.Interactions;
 using LightHouse.Inputs;
 using LightHouse.Utilities;
 using LightHouse.Items.Samples;
+using LightHouse.Locators;
 
 namespace LightHouse.Inventory
 {
+    [DefaultExecutionOrder(-1)]
     public class PlayerInventory : MonoBehaviour
     {
         #region SERILIAZED FIELDS
@@ -71,7 +73,6 @@ namespace LightHouse.Inventory
         private float _dropPower = 0f;
         private bool _isChargingDrop = false;
 
-        public static event Action<PlayerInventory> OnInventoryInitialized;
         public static event Action<IInventoryItem> OnHandsItemSelectedChanged;
         public static event Action<IInventoryItem> OnItemAdded;
         public static event Action<IInventoryItem> OnItemDropped;
@@ -96,13 +97,9 @@ namespace LightHouse.Inventory
         {
             _itemSlots = _inventoryCanvas.GenerateItemSlot(_inventoryCapacity).ToList();
             _interactionCanvas.HideItemPickup();
+            Locator<PlayerInventory>.Register(this);
         }
 
-        private void Start()
-        {
-            OnInventoryInitialized?.Invoke(this);
-        }
-        
         private void Update()
         {
             if (_enableInventoryRaycast)
@@ -132,6 +129,8 @@ namespace LightHouse.Inventory
             Gizmos.color = _dropOverlappingCollider.Length > 0 ? Color.red : Color.green;
             Gizmos.DrawSphere(_inventoryTarget.position, 0.3f);
         }
+
+        private void OnDestroy() => Locator<PlayerInventory>.Clear();
 
         #endregion
 
@@ -542,12 +541,30 @@ namespace LightHouse.Inventory
             return requiredItem.All(item => HasItem(item));
         }
 
+        //TO DOO Pouvoir récupérer des objets stackables
         public List<T> GetItemsOfType<T>() where T : class, IInventoryItem
         {
             return _itemSlots
                 .Where(slot => slot.InventoryItem is T)
                 .Select(slot => slot.InventoryItem as T)
                 .ToList();
+        }
+
+        public T GetCurrentSelectedItemOfType<T>() where T : class, IInventoryItem
+        {
+            if (_currentSelectedSlot == null) return null;
+            return _currentSelectedSlot.InventoryItem as T;
+        }
+
+        public bool GetCurrentSelectedItemTypeOf<T>() where T : class, IInventoryItem
+        {
+            if (_currentSelectedSlot == null) return false;
+            return _currentSelectedSlot.InventoryItem is T;
+        }
+
+        public T GetItemOfType<T>(int slotIndex) where T : class, IInventoryItem
+        {
+            return _itemSlots[slotIndex].InventoryItem as T;
         }
 
         #endregion

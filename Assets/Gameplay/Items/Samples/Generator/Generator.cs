@@ -15,10 +15,9 @@ namespace LightHouse.Items.Samples
         [SerializeField] private bool _isGeneratorOn;
         [SerializeField] private GeneratorSwitch _generatorSwitch;
         [SerializeField] private SingleItemName _fuelIsRequired;
-        [SerializeField] private JerricanReceiver _jerricanReceiver;
+        [SerializeField] private JerricanItemTracker _jerricanReceiver;
 
         private JerricanEssence _lastJerricanSelected;
-        private PlayerInventory _playerInventory;
 
         public event Action OnFuelDown;
         public event Action<bool> OnGeneratorSwitchChanged;
@@ -45,7 +44,6 @@ namespace LightHouse.Items.Samples
 
         private void Start()
         {
-            _jerricanReceiver.ItemDescription = "You need a jerrican to fill the generator";
         }
 
         private void Update()
@@ -82,57 +80,23 @@ namespace LightHouse.Items.Samples
         private void RegisterCallbacks()
         {
             _generatorSwitch.OnObjectInteracted += GeneratorSwitch_OnObjectInteracted;
-            _jerricanReceiver.OnObjectInteracted += JerricanReceiver_OnInteracted;
-            PlayerInventory.OnInventoryInitialized += PlayerInventory_OnInventoryInitialized;
-            PlayerInventory.OnHandsItemSelectedChanged += PlayerInventory_OnItemHandChanged;
+            _jerricanReceiver.OnJerricanUsed += JerricanReceiver_OnJerricanUsed;
         }
 
         private void UnregisterCallbacks()
         {
             _generatorSwitch.OnObjectInteracted -= GeneratorSwitch_OnObjectInteracted;
-            _jerricanReceiver.OnObjectInteracted -= JerricanReceiver_OnInteracted;
-            PlayerInventory.OnInventoryInitialized -= PlayerInventory_OnInventoryInitialized;
-            PlayerInventory.OnHandsItemSelectedChanged -= PlayerInventory_OnItemHandChanged;
+            _jerricanReceiver.OnJerricanUsed -= JerricanReceiver_OnJerricanUsed;
         }
 
-        #endregion
-
-        #region INVENTORY CALLBACKS
-
-        private void PlayerInventory_OnInventoryInitialized(PlayerInventory obj)
-        {
-            _playerInventory = obj;
-        }
-
-        private void PlayerInventory_OnItemHandChanged(IInventoryItem obj)
-        {
-            if (obj is JerricanEssence)
-            {
-                _jerricanReceiver.ItemDescription = $"Press {InputManager.GetBindingName(InputManager.Interact)} to use jerrican";
-                _jerricanReceiver.CanBeInteracted = true;
-                _lastJerricanSelected = obj as JerricanEssence;
-            }
-            else
-            {
-                _jerricanReceiver.ItemDescription = "You need a jerrican to fill the generator";
-                _jerricanReceiver.CanBeInteracted = false;
-                _lastJerricanSelected = null;
-            }
-
-            if(_jerricanReceiver.IsItemRaycasted) _jerricanReceiver.InvokeInteractionNameChanged();
-        }
         #endregion
 
         #region CONTROLLERS CALLBACKS
-        private void JerricanReceiver_OnInteracted()
+        private void JerricanReceiver_OnJerricanUsed(JerricanEssence obj)
         {
-            if (_lastJerricanSelected != null)
-            {
-                AddFuel(_lastJerricanSelected.EssenceAmount);
-                _jerricanReceiver.InvokeInteractionNameChanged();
-                JerricanEssence jerrican = _lastJerricanSelected.InvokeRemoveItemInInventory();
-                Destroy(jerrican.gameObject);
-            }
+            AddFuel(obj.EssenceAmount);
+            JerricanEssence removedJerrican = obj.InvokeRemoveItemInInventory();
+            Destroy(removedJerrican.gameObject);
         }
 
         private void GeneratorSwitch_OnObjectInteracted()

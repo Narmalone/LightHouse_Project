@@ -6,15 +6,15 @@ using LightHouse.Inventory;
 namespace LightHouse.Items.Samples
 {
     //You should use this class to make inventory with key for other objects
-    public class Key : MonoBehaviour, IInventoryItem
+    public class Key : MonoBehaviour, IInventoryItem, IInventoryItemUsable
     {
         #region SERIALIZED FIELDS
-        [Header("Fields")]
+        [Header("KEY Fields")]
         [SerializeField] protected string _Name;
         [SerializeField] protected Collider _Collider;
         [SerializeField] protected Rigidbody _Rigidbody;
         [SerializeField] protected KeyType _key;
-        private bool _hasKey = false;
+        protected bool _hasKey = false;
 
         public bool HasKeyInInventory => _hasKey;
 
@@ -32,9 +32,12 @@ namespace LightHouse.Items.Samples
         public KeyType ItemKeyType => _key;
 
         [field: SerializeField] public bool IsItemOnHands { get; set; }
+        [field: SerializeField] public bool CanBeUsedFromInventory { get; set; }
 
         public event Action ForceRemoveItemInInventory;
         public event Action OnNameUpdated;
+        public event Action OnItemUsed;
+        public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
 
         #endregion
 
@@ -51,17 +54,18 @@ namespace LightHouse.Items.Samples
 
         public virtual string GetPickupName() => $"Press {InputManager.GetBindingName(InputManager.PickUp)} to pick";
 
-        public virtual void OnItemAddedToInventory() { }
-
-        public virtual void OnItemRemovedFromInventory() { }
-
-        public virtual void UseFromInventory() { }
+        public virtual void UseFromInventory() { OnItemUsed?.Invoke(); }
 
         public virtual string UseInInventoryText() => $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to use";
 
         public virtual void ForceRemoveItemFromInventory()
         {
             ForceRemoveItemInInventory?.Invoke();
+        }
+
+        public void InvokeOnCanBeUsedFromInventoryChanged()
+        {
+            CanBeUsedFromInventoryChanged?.Invoke(this);
         }
 
 

@@ -26,9 +26,8 @@ namespace LightHouse.Items.Samples
             ElectricItemRegistry.Register(this);
         }
 
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
-            base.OnDestroy();
             ElectricItemRegistry.Unregister(this);
         }
 
