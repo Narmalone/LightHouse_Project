@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,6 +6,8 @@ namespace LightHouse.Inputs
 {
     public static class InputManager
     {
+        public static event Action OnInputManagerRegistered;
+        public static event Action OnInputManagerWillClear;
         private static PlayerInputActions _player_Input_Actions;
         public static PlayerInputActions PLAYER_INPUTS_ACTIONS => _player_Input_Actions;
 
@@ -25,10 +28,13 @@ namespace LightHouse.Inputs
         {
             if (_player_Input_Actions != null) DisposePlayerInputActions();
             _player_Input_Actions = pia;
+            OnInputManagerRegistered?.Invoke();
+            //InputSystem.RegisterInteraction<TestHoldInteraction>();
         }
 
         public static void DisposePlayerInputActions()
         {
+            OnInputManagerWillClear?.Invoke(); 
             _player_Input_Actions = null;
         }
 

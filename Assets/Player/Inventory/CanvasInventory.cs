@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LightHouse.Inventory
 {
@@ -6,6 +7,8 @@ namespace LightHouse.Inventory
     {
         [SerializeField] private ItemSlot _slotPrefab;
         [SerializeField] private RectTransform _inventoryLayoutGroup;
+        [SerializeField] private Image _holdItemImage;
+        public Image HoldItemProgressImage => _holdItemImage;
         private ItemSlot[] _generatedSlots;
         public ItemSlot[] GeneratedSlot => _generatedSlots;
 
@@ -34,6 +37,11 @@ namespace LightHouse.Inventory
             {
                 _generatedSlots[i].ResetSlot();
             }
+        }
+
+        public void FillHoldedImage(float fillValue)
+        {
+            _holdItemImage.fillAmount = fillValue;
         }
     }
 }

@@ -100,6 +100,12 @@ namespace LightHouse.Inventory
             Locator<PlayerInventory>.Register(this);
         }
 
+        private void Start()
+        {
+            InputManager.OnInputManagerWillClear += InputManager_OnInputManagerUnregister;
+            InputManager.InteractInInventory.canceled += InteractInInventory_canceled;
+        }
+
         private void Update()
         {
             if (_enableInventoryRaycast)
@@ -130,7 +136,11 @@ namespace LightHouse.Inventory
             Gizmos.DrawSphere(_inventoryTarget.position, 0.3f);
         }
 
-        private void OnDestroy() => Locator<PlayerInventory>.Clear();
+        private void OnDestroy() 
+        {
+            InputManager.OnInputManagerWillClear -= InputManager_OnInputManagerUnregister;
+            Locator<PlayerInventory>.Clear();
+        }
 
         #endregion
 
@@ -179,11 +189,37 @@ namespace LightHouse.Inventory
             ChangeSelectedSlot(_currentSlotIndex);
         }
 
+        private void InputManager_OnInputManagerUnregister()
+        {
+            InputManager.InteractInInventory.canceled -= InteractInInventory_canceled;
+
+        }
+        private void InteractInInventory_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            if (_currentSelectedSlot == null || _currentSelectedSlot.InventoryItemUsable == null) return;
+            _inventoryCanvas.FillHoldedImage(0f);
+        }
         private void HandleInteractItemInInventory()
         {
-            if (!InputManager.InteractInInventory.WasPressedThisFrame() || _currentSelectedSlot == null || _currentSelectedSlot.InventoryItemUsable == null)
+            if (_currentSelectedSlot == null || _currentSelectedSlot.InventoryItemUsable == null)
+            {
+                if (_inventoryCanvas.HoldItemProgressImage.fillAmount > 0)
+                    _inventoryCanvas.FillHoldedImage(0f);
                 return;
-            _currentSelectedSlot.InventoryItemUsable.UseFromInventory();
+            }
+           
+            // Only proceed if the key is held
+            if (!InputManager.InteractInInventory.IsPressed() || !_currentSelectedSlot.InventoryItemUsable.CanBeUsedFromInventory)
+                return;
+
+            var holdValuePercent = InputManager.InteractInInventory.GetTimeoutCompletionPercentage();
+            if( holdValuePercent > 0 && holdValuePercent < 0.95f) 
+                _inventoryCanvas.FillHoldedImage(holdValuePercent);
+            if (InputManager.InteractInInventory.triggered)
+            {
+                _currentSelectedSlot.InventoryItemUsable.UseFromInventory();
+                _inventoryCanvas.FillHoldedImage(0f);
+            }
         }
 
         private void HandlePickupInput()

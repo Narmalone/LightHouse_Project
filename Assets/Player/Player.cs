@@ -4,6 +4,7 @@ using LightHouse.Inventory;
 
 namespace LightHouse.KinematicCharacterController
 {
+    [DefaultExecutionOrder(-20)]
     public class Player : MonoBehaviour
     {
         [Header("Character")]

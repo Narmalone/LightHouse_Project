@@ -61,6 +61,17 @@ namespace LightHouse.Items.Samples
 
         #region Register Callbacks
 
+        public override void OnRaycastStart()
+        {
+            if (_isUnLocked) return;
+            base.OnRaycastStart();
+        }
+
+        public override void OnRaycastEnd()
+        {
+            if (_isUnLocked) return;
+            base.OnRaycastEnd();
+        }
 
         #endregion
 
@@ -112,6 +123,8 @@ namespace LightHouse.Items.Samples
             {
                 _isUnLocked = true;
                 CanBeInteracted = true;
+                KeyHandedItem.CanBeUsedFromInventory = false;
+                KeyHandedItem.InvokeOnCanBeUsedFromInventoryChanged();
                 InvokeOnInteractionNameChanged();
                 return;
             }

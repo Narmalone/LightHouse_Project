@@ -53,13 +53,14 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
 
     public void Interact()
     {
-        Eat();
         OnObjectInteracted?.Invoke();
+        Eat();
     }
 
     public void Eat()
     {
-        ForceRemoveItemInInventory?.Invoke();
+        if(IsItemInInventory)
+            ForceRemoveItemInInventory?.Invoke();
         Destroy(this.gameObject);
     }
 
@@ -72,6 +73,6 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
 
     public void InvokeOnCanBeUsedFromInventoryChanged()
     {
-        throw new NotImplementedException();
+        CanBeUsedFromInventoryChanged?.Invoke(this);
     }
 }
