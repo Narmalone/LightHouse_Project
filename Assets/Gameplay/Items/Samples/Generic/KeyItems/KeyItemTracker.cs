@@ -34,7 +34,7 @@ namespace LightHouse.Items.Samples
         {
             if (!IsItemRaycasted) return;
             HasItemInInventoryButNotOnHands = HasKeyInInventoryButNotOnHands();
-            HasItemOnHands = HasTargetItemOnHands();
+            HasItemOnHands = HasTargetItemOnHands(out Key k);
         }
 
         public virtual bool HasKeyInInventoryButNotOnHands()
@@ -42,26 +42,29 @@ namespace LightHouse.Items.Samples
             return Locator<PlayerInventory>.Instance.HasItem(_keyNeededOnHands);
         }
 
-        public virtual bool HasTargetItemOnHands()
+        public virtual bool HasTargetItemOnHands(out Key key)
         {
+            key = null;
             PlayerInventory currInventoryInstance = Locator<PlayerInventory>.Instance;
             bool isOnHandItemIsKey = currInventoryInstance.CurrentSelectedSlot != null && currInventoryInstance.CurrentSelectedItem != null && currInventoryInstance.CurrentSelectedItem is Key;
             if (!isOnHandItemIsKey) return false;
 
             Key keyItm = currInventoryInstance.CurrentSelectedItem as Key;
+            if(keyItm.KeyType == _keyNeededOnHands) key = keyItm;
             return keyItm.KeyType == _keyNeededOnHands;
         }
 
         public virtual Key TryGetKeyItem()
         {
             if(Locator<PlayerInventory>.Instance.CurrentSelectedSlot == null) return null;
-            return Locator<PlayerInventory>.Instance.CurrentSelectedItem as Key;
+            HasTargetItemOnHands(out Key k);
+            return k;
         }
 
         public virtual void OnRaycastStart()
         {
             HasItemInInventoryButNotOnHands = HasKeyInInventoryButNotOnHands();
-            HasItemOnHands = HasTargetItemOnHands();
+            HasItemOnHands = HasTargetItemOnHands(out Key k);
         }
 
         public virtual void OnRaycastEnd() { }
