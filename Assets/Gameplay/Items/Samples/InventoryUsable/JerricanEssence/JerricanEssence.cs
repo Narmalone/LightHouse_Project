@@ -28,8 +28,8 @@ namespace LightHouse.Items.Samples
 
         public event Action OnItemUsed;
         public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
-        public event Action ForceRemoveItemInInventory;
         public event Action OnNameUpdated;
+        public event Action<Vector3, float, bool, bool, IInventoryItem> ForceDropItemInInventory;
 
         public string GetName() => _itemName;
         public string GetPickupName()
@@ -56,7 +56,7 @@ namespace LightHouse.Items.Samples
 
         public JerricanEssence InvokeRemoveItemInInventory()
         {
-            ForceRemoveItemInInventory?.Invoke();
+            //ForceDropItemInInventory?.Invoke();
             return this;
         }
 

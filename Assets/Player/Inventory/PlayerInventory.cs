@@ -239,13 +239,13 @@ namespace LightHouse.Inventory
             }
             else if (_isChargingDrop && InputManager.Drop.WasReleasedThisFrame())
             {
-                DropCurrentSelectedItem(_inventoryTarget.position, _dropPower);
+                DropItemAtSlot(_currentSelectedSlot, _inventoryTarget.position, _dropPower);
                 _dropPower = 0f;
                 _isChargingDrop = false;
             }
             else if (InputManager.Drop.WasPerformedThisFrame())
             {
-                DropCurrentSelectedItem(_inventoryTarget.position, 1f);
+                DropItemAtSlot(_currentSelectedSlot, _inventoryTarget.position, 1f);
             }
         }
 
@@ -419,7 +419,7 @@ namespace LightHouse.Inventory
             _currentSlotTakenInventory++;
             itemCallback?.OnItemAddedToInventory();
             OnItemAdded?.Invoke(item);
-            item.ForceRemoveItemInInventory += () => Item_ForceItemRemove(item, itemCallback);
+            item.ForceDropItemInInventory += (pos, force, enableRB, checkSafePos, item) => Item_ForceDropInInventory(pos, force, enableRB, checkSafePos, item);
             return true;
         }
 
@@ -441,33 +441,52 @@ namespace LightHouse.Inventory
         /// </summary>
         /// <param name="dropPosition"> the position where you want to drop the item </param>
         /// <param name="force"> the force added to the forward of the position if a rigibody is attached to it </param>
-        public void DropCurrentSelectedItem(Vector3 dropPosition, float force, bool enableRigidbodyOnDrop = true)
+        public void DropItemAtSlot(ItemSlot slot, Vector3 dropPosition, float force, bool enableRigidbodyOnDrop = true, bool checkSafePos = true)
         {
-            if (_currentSelectedSlot.InventoryItem == null) return;
-            IInventoryItem itemToDrop;
-            Vector3 safeDropPos = Vector3.zero;
-            if (IsCurrentSelectedItemStackable())
-            {
-                IInventoryStackable stackable = _currentSelectedSlot.InventoryItem as IInventoryStackable;
-                itemToDrop = _currentSelectedSlot.RemoveStackedItem();
-                safeDropPos = GetAdjustedDropPosition(dropPosition, 1);
-                stackable.RemoveFromStack(1);
-                UpdateStackItemCountUI(_currentSelectedSlot);
-            }
-            else
-            {
-                safeDropPos = GetAdjustedDropPosition(dropPosition);
-                itemToDrop = _currentSelectedSlot.InventoryItem;
-                RemoveItemFromInventory(_currentSelectedSlot, itemToDrop, _currentSelectedSlot.InventoryItemCallback);
-            }
+            if (slot?.InventoryItem == null) return;
 
+            IInventoryItem itemToDrop = GetItemToDropFromSlot(slot);
+            if (itemToDrop == null) return;
+
+            Vector3 safeDropPos = GetAdjustedDropPosition(dropPosition);
             GameObject obj = PrepareItemToDropFromInventory(itemToDrop, enableRigidbodyOnDrop);
+
             obj.transform.position = safeDropPos;
             obj.transform.rotation = Quaternion.Euler(0f, _playerCamera.transform.eulerAngles.y, 0f);
+
             Rigidbody rb = itemToDrop.GetRigidBody();
-            if (rb != null && safeDropPos == dropPosition)
+            if (checkSafePos && rb != null && safeDropPos == dropPosition)
                 rb.AddForce(_inventoryTarget.forward * force, ForceMode.Impulse);
+
+            OnItemDropped?.Invoke(itemToDrop);
         }
+
+        private IInventoryItem GetItemToDropFromSlot(ItemSlot slot)
+        {
+            if (slot.InventoryItem is IInventoryStackable stackable && slot.StackedItemsCount > 1)
+            {
+                IInventoryItem stackedItem = slot.RemoveStackedItem();
+                stackable.RemoveFromStack(1);
+                UpdateStackItemCountUI(slot);
+                return stackedItem;
+            }
+
+            IInventoryItem item = slot.InventoryItem;
+            RemoveItemFromInventory(slot, item, slot?.InventoryItemCallback);
+            return item;
+        }
+
+        public IInventoryItem GetItemFromSlot(IInventoryItem item)
+        {
+            var slot = TryFindItemInSlots(item);
+            if(slot.InventoryItem is IInventoryStackable stack)
+            {
+                return slot.GetStackedItem();
+            }
+            return null;
+        }
+
+
         private GameObject PrepareItemToDropFromInventory(IInventoryItem item, bool enablePhysicsOnDrop = true)
         {
             GameObject obj = item.GetGameObject();
@@ -491,7 +510,6 @@ namespace LightHouse.Inventory
             _dropOverlappingCollider = colliders;
             if (colliders.Length > lengthToSafePos)
             {
-                Debug.Log("Obstacle trop proche ! Dépose l'objet juste devant le joueur.");
                 Vector3 adjustedPosition = start - _inventoryTarget.forward * 0.5f; // Reculer légèrement pour ne pas être dans l'obstacle
                 Debug.DrawRay(start, -_inventoryTarget.forward * 0.5f, Color.yellow, 5.0f);
                 return adjustedPosition;
@@ -506,23 +524,19 @@ namespace LightHouse.Inventory
         /// <param name="item"> the item you try to remove </param>
         public GameObject RemoveItemFromInventory(ItemSlot slot, IInventoryItem item, IInventoryItemCallback itemCallback)
         {
-            if (slot == null) return null;
-            if (item is IInventoryStackable stack)
-            {
-                if (slot.ItemStack_TMP.isActiveAndEnabled)
-                    SetEnableStackCountText(slot, false);
-            }
+            if (slot == null) return null;           
+
             if (item is IInventoryItemUsable inventoryUsableItem) inventoryUsableItem.CanBeUsedFromInventoryChanged -= InventoryUsableItem_CanBeUsedFromInventoryChanged;
 
-            SetEnableItemNameTextUI(slot, false);
-            SetEnableItemUseKeyUI(slot, false);
             TryRemoveKeyType(item);
             if (item.IsItemInInventory) item.IsItemInInventory = false;
             if (item.IsItemOnHands) item.IsItemOnHands = false;
             itemCallback?.OnItemRemovedFromInventory();
-            item.ForceRemoveItemInInventory -= () => Item_ForceItemRemove(item, itemCallback);
+            item.ForceDropItemInInventory -= (pos, force, enableRB, checkSafePos, item) => Item_ForceDropInInventory(pos, force, enableRB, checkSafePos, item);
             _currentSlotTakenInventory--;
-            OnItemDropped?.Invoke(item);
+
+            SetEnableItemNameTextUI(slot, false);
+            SetEnableItemUseKeyUI(slot, false);
             //slot is setting the item to null for the callbacks
             slot.ResetSlot();
             OnHandsItemSelectedChanged?.Invoke(null); //once it's null we say it to this delegate
@@ -613,6 +627,11 @@ namespace LightHouse.Inventory
             return _currentSelectedSlot.InventoryItem is IInventoryStackable && _currentSelectedSlot.StackCount > 0;
         }
 
+        private bool IsInventoryItemStackable(int slotIndex)
+        {
+            return _itemSlots[slotIndex].InventoryItem is IInventoryStackable;
+        }
+
         public bool TryStackItem(IInventoryItem item)
         {
             if (item is not IInventoryStackable newStack) return false;
@@ -627,8 +646,8 @@ namespace LightHouse.Inventory
                     existingStack.AddToStack(amount);
                     var slotobj = item.GetGameObject();
                     slotobj.transform.SetParent(InventoryParent);
-                    slotobj.transform.position = InventoryParent.transform.position;
-                    slotobj.transform.rotation = InventoryParent.transform.rotation;
+                    //slotobj.transform.position = InventoryParent.transform.position;
+                    //slotobj.transform.rotation = InventoryParent.transform.rotation;
                     slot.AddStackedItem(item); 
                     UpdateStackItemCountUI(slot);
                     return true;
@@ -662,11 +681,11 @@ namespace LightHouse.Inventory
         /// </summary>
         /// <param name="item"></param>
         /// <param name="itemCallback"></param>
-        private void Item_ForceItemRemove(IInventoryItem item, IInventoryItemCallback itemCallback)
+        private void Item_ForceDropInInventory(Vector3 pos, float force, bool enableRB, bool checkSafePos, IInventoryItem item)
         {
             if (item == null) return;
-            PrepareItemToDropFromInventory(item, false);
-            RemoveItemFromInventory(TryFindItemInSlots(item), item, itemCallback);
+            var slot = TryFindItemInSlots(item);
+            DropItemAtSlot(slot, pos, force, enableRB);
         }
 
         /// <summary>

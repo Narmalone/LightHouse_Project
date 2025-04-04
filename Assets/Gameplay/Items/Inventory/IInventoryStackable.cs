@@ -1,13 +1,15 @@
 using System;
+using UnityEngine;
 
 namespace LightHouse.Inventory
 {
     public interface IInventoryStackable
     {
-        int MaxStack { get; }
-        int CurrentStack { get; set; }
-        bool CanStackWith(IInventoryItem otherItem);
-        int AddToStack(int amount);
-        int RemoveFromStack(int amount);
+        public IInventoryItem Item { get; }
+        public int MaxStack { get; }
+        public int CurrentStack { get; set; }
+        public bool CanStackWith(IInventoryItem otherItem);
+        public int AddToStack(int amount);
+        public int RemoveFromStack(int amount);
     }
 }

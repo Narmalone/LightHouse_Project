@@ -4,6 +4,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+public struct ItemSlot
+{
+    public IInventoryItem Item;
+    public IInventoryItemUsable Usable;
+    public IInventoryItemCallback Callback;
+
+    public int CountItem;
+}
+
 namespace LightHouse.Inventory
 {
     public class ItemSlot : MonoBehaviour
@@ -149,6 +158,12 @@ namespace LightHouse.Inventory
             IInventoryItem item = _stackedItems[^1];
             _stackedItems.RemoveAt(_stackedItems.Count - 1);
             return item;
+        }
+
+        public IInventoryItem GetStackedItem()
+        {
+            if (_stackedItems.Count == 0) return null;
+            return _stackedItems[^1];
         }
 
         public void ClearStack()

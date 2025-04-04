@@ -10,6 +10,7 @@ namespace LightHouse.Items.Samples
         public int MaxStack => _maxStack;
 
         [field: SerializeField] public int CurrentStack { get; set; } = 1;
+        public IInventoryItem Item { get => this; }
 
         public bool CanStackWith(IInventoryItem other)
         {

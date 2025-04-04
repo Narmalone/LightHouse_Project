@@ -37,10 +37,10 @@ namespace LightHouse.Items.Samples
         [SerializeField] private Sprite _keySprite;
         public Sprite ItemSprite => _keySprite;
 
-        public event Action ForceRemoveItemInInventory;
         public event Action OnNameUpdated;
         public event Action OnItemUsed;
         public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
+        public event Action<Vector3, float, bool, bool, IInventoryItem> ForceDropItemInInventory;
 
         #endregion
 
@@ -61,9 +61,10 @@ namespace LightHouse.Items.Samples
 
         public virtual string UseInInventoryText() => $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to use";
 
-        public virtual void ForceRemoveItemFromInventory()
+        public virtual Key ForceRemoveItemFromInventory(Vector3 pos, float force, bool enablePhysics, bool checkSafePos)
         {
-            ForceRemoveItemInInventory?.Invoke();
+            ForceDropItemInInventory?.Invoke(pos, force, enablePhysics, checkSafePos, this);
+            return this;
         }
 
         public void InvokeOnCanBeUsedFromInventoryChanged()

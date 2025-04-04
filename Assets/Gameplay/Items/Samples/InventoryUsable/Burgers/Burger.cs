@@ -20,12 +20,13 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     [SerializeField] private Sprite _burgerSprite;
     public Sprite ItemSprite => _burgerSprite;
 
-    public event Action ForceRemoveItemInInventory;
     public event Action OnNameUpdated;
     public event Action OnInteractionNameChanged;
     public event Action OnObjectInteracted;
     public event Action OnItemUsed;
     public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
+
+    public event Action<Vector3, float, bool, bool, IInventoryItem> ForceDropItemInInventory;
 
     #region IInventoryItem Method
 
@@ -60,7 +61,7 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     public void Eat()
     {
         if(IsItemInInventory)
-            ForceRemoveItemInInventory?.Invoke();
+            ForceDropItemInInventory?.Invoke(transform.position, 0f, false, false, this);
         Destroy(this.gameObject);
     }
 

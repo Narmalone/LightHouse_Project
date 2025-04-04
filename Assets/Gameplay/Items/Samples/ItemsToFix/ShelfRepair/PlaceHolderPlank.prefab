@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 4457454806585895799}
   - component: {fileID: 1048155804734126076}
   - component: {fileID: 8578641519283903431}
-  - component: {fileID: 785525950178262606}
+  - component: {fileID: 551932702372458552}
   m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
@@ -140,7 +140,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &785525950178262606
+--- !u!114 &551932702372458552
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -152,15 +152,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9125345e04cca5543807c25ffe9b17f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _placeHolderName: Need Wood Plank
+  HasItemOnHands: 0
+  HasItemInInventoryButNotOnHands: 0
+  _keyNeededOnHands: {fileID: 11400000, guid: c3f118c34bb4b0a4f9b1fc0b52456e7f, type: 2}
   _col: {fileID: 8578641519283903431}
-  _keyNeeded: {fileID: 11400000, guid: c3f118c34bb4b0a4f9b1fc0b52456e7f, type: 2}
   <CanBeInteracted>k__BackingField: 1
   <CanBeRaycasted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
-  _hasKey: 0
-  _canCheck: 1
-  _hasKeyAndItemOnHand: 0
-  _keyObjSpotted: {fileID: 0}
+  _hasKeyInInventoryButNotOnHands: Take your items in your hands.
+  _doesntHaveKeyInInventory: Find the item to use it
+  _hasKeyOnhands: to use.
+  KeyHandedItem: {fileID: 0}
+  LastStoredKey: {fileID: 0}
   SharpnessPosition: 25
   SharpnessRotation: 25
+  TargetObject: {fileID: 0}

@@ -38,19 +38,17 @@ namespace LightHouse.Items.Samples
         {
             foreach(PlaceHolderKeyMover s in _placeHolderPlanks)
             {
-                s.PlaceHolderKeyInteracted += S_OnPlaceHolderInteracted;
-                s.OnPlaceHolderComplete += S_OnPlaceHolderComplete;
+                s.OnPlaceHolderKeyCompleted += OnPlankPlaced;
 
             }
 
             foreach(PlaceHolderKeyMover m in _visPlaceHolders)
             {
-                m.PlaceHolderKeyInteracted += M_OnPlaceHolderComplete;
-                m.OnPlaceHolderComplete += M_OnPlaceHolderComplete;
+                m.OnPlaceHolderKeyCompleted += OnNailPlaced;
             }
         }
 
-        private void S_OnPlaceHolderComplete(PlaceHolderKey key)
+        private void OnPlankPlaced(PlaceHolderKeyMover key)
         {
             if (Array.Find(_placeHolderPlanks, x => x == key) != null)
             {
@@ -63,6 +61,21 @@ namespace LightHouse.Items.Samples
                 }
             }
         }
+
+        private void OnNailPlaced(PlaceHolderKeyMover key)
+        {
+            if (Array.Find(_visPlaceHolders, x => x == key) != null)
+            {
+                _missingHolderVisToFill--;
+                key.gameObject.SetActive(false);
+                if (_missingHolderVisToFill <= 0)
+                {
+                    _hasSettedAllVis = true;
+                    OnAllVisSetted();
+                }
+            }
+        }
+
 
         private void OnAllPlanksSetted()
         {
@@ -80,49 +93,20 @@ namespace LightHouse.Items.Samples
             LockedDoor.Open();
         }
 
-        private void M_OnPlaceHolderComplete(PlaceHolderKey key)
-        {
-            if (Array.Find(_visPlaceHolders, x => x == key) != null)
-            {
-                _missingHolderVisToFill--;
-                key.gameObject.SetActive(false);
-                if (_missingHolderVisToFill <= 0)
-                {
-                    _hasSettedAllVis = true;
-                    OnAllVisSetted();
-                }
-            }
-        }
-
-        private void M_OnPlaceHolderComplete(PlaceHolderKeyMover mover)
-        {
-            if (mover.TargetObject is IInventoryStackable stack && stack.CurrentStack > 1)
-                mover.TargetObject = Locator<PlayerInventory>.Instance.TryRemoveStackedItem<Key>(mover.TargetObject, stack, mover.TargetObject as IInventoryItemCallback);
-            else
-                mover.TargetObject.ForceRemoveItemFromInventory();
-
-            mover.CanObjectMoveToPosition = true;
-        }
-
         protected void OnDestroy()
         {
             foreach (PlaceHolderKeyMover s in _placeHolderPlanks)
             {
-                s.PlaceHolderKeyInteracted -= S_OnPlaceHolderInteracted;
+                s.OnPlaceHolderKeyCompleted -= OnPlankPlaced;
             }
             foreach (PlaceHolderKeyMover m in _visPlaceHolders)
             {
-                m.PlaceHolderKeyInteracted -= M_OnPlaceHolderComplete;
+                m.OnPlaceHolderKeyCompleted -= OnNailPlaced;
             }
         }
 
         private void S_OnPlaceHolderInteracted(PlaceHolderKeyMover mover)
         {
-            if (mover.TargetObject is IInventoryStackable stack && stack.CurrentStack > 1)
-                mover.TargetObject = Locator<PlayerInventory>.Instance.TryRemoveStackedItem<Key>(mover.TargetObject, stack, mover.TargetObject as IInventoryItemCallback);
-            else
-                mover.TargetObject.ForceRemoveItemFromInventory();
-
             mover.CanObjectMoveToPosition = true;
         }
 

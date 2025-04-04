@@ -50,7 +50,10 @@ namespace LightHouse.Items.Samples
             if (!isOnHandItemIsKey) return false;
 
             Key keyItm = currInventoryInstance.CurrentSelectedItem as Key;
-            if(keyItm.KeyType == _keyNeededOnHands) key = keyItm;
+            if(keyItm.KeyType == _keyNeededOnHands)
+            {
+                key = keyItm;
+            }
             return keyItm.KeyType == _keyNeededOnHands;
         }
 
