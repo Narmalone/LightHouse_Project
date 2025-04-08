@@ -370,8 +370,6 @@ namespace LightHouse.Inventory
         /// <returns> if the items sucessfully been added to inventory</returns>
         public bool AddItem(IInventoryItem item, IInventoryItemCallback itemCallback, IInventoryItemUsable itemUsable)
         {
-            if (TryStackItem(_raycastedInventoryItem)) return true;
-
             if (_currentSlotTakenInventory >= _inventoryCapacity)
                 return false;
 
@@ -387,6 +385,8 @@ namespace LightHouse.Inventory
             if (IsCurrentSlotAlreadyTaken())
             {
                 ItemSlot targetSlot = GetEmptyPlaceInInventory();
+                SetItemToSlot(targetSlot, item, itemCallback, itemUsable);
+                obj.SetActive(false);
 
                 //In case this item is still not stacked
                 if (item is IInventoryStackable)
@@ -394,21 +394,18 @@ namespace LightHouse.Inventory
                     if (!targetSlot.ItemStack_TMP.isActiveAndEnabled) SetEnableStackCountText(targetSlot, true);
                     UpdateStackItemCountUI(targetSlot);
                 }
-                SetItemToSlot(targetSlot, item, itemCallback, itemUsable);
-                obj.SetActive(false);
             }
             //else we presume that the item can be store on our hands bcs it's the current selected slot
             else if (_currentSelectedSlot == _itemSlots[_currentSlotIndex])
             {
                 SetItemToSlot(_currentSelectedSlot, item, itemCallback, itemUsable);
+                SetEnableItemNameTextUI(_currentSelectedSlot, true);
                 //In case this item is still not stacked
                 if (item is IInventoryStackable)
                 {
                     if (!_currentSelectedSlot.ItemStack_TMP.isActiveAndEnabled) SetEnableStackCountText(_currentSelectedSlot, true);
                     UpdateStackItemCountUI(_currentSelectedSlot);
                 }
-
-                SetEnableItemNameTextUI(_currentSelectedSlot, true);
                 IsInventoryUsableUI(_currentSelectedSlot, itemUsable);
                 item.IsItemOnHands = true;
                 OnHandsItemSelectedChanged?.Invoke(item);
@@ -463,13 +460,13 @@ namespace LightHouse.Inventory
 
         private IInventoryItem GetItemToDropFromSlot(ItemSlot slot)
         {
-            if (slot.InventoryItem is IInventoryStackable stackable && slot.StackedItemsCount > 1)
+           /* if (slot.InventoryItem is IInventoryStackable stackable && slot.StackedItemsCount > 1)
             {
                 IInventoryItem stackedItem = slot.RemoveStackedItem();
                 stackable.RemoveFromStack(1);
                 UpdateStackItemCountUI(slot);
                 return stackedItem;
-            }
+            }*/
 
             IInventoryItem item = slot.InventoryItem;
             RemoveItemFromInventory(slot, item, slot?.InventoryItemCallback);
@@ -479,10 +476,10 @@ namespace LightHouse.Inventory
         public IInventoryItem GetItemFromSlot(IInventoryItem item)
         {
             var slot = TryFindItemInSlots(item);
-            if(slot.InventoryItem is IInventoryStackable stack)
+           /* if(slot.InventoryItem is IInventoryStackable stack)
             {
                 return slot.GetStackedItem();
-            }
+            }*/
             return null;
         }
 
@@ -622,56 +619,6 @@ namespace LightHouse.Inventory
 
         #region STACKABLE ITEMS
 
-        private bool IsCurrentSelectedItemStackable()
-        {
-            return _currentSelectedSlot.InventoryItem is IInventoryStackable && _currentSelectedSlot.StackCount > 0;
-        }
-
-        private bool IsInventoryItemStackable(int slotIndex)
-        {
-            return _itemSlots[slotIndex].InventoryItem is IInventoryStackable;
-        }
-
-        public bool TryStackItem(IInventoryItem item)
-        {
-            if (item is not IInventoryStackable newStack) return false;
-
-            foreach (ItemSlot slot in _itemSlots)
-            {
-                if (slot.InventoryItem is IInventoryStackable existingStack &&
-                    existingStack.CanStackWith(item) &&
-                    existingStack.CurrentStack < existingStack.MaxStack)
-                {
-                    int amount = newStack.CurrentStack;
-                    existingStack.AddToStack(amount);
-                    var slotobj = item.GetGameObject();
-                    slotobj.transform.SetParent(InventoryParent);
-                    //slotobj.transform.position = InventoryParent.transform.position;
-                    //slotobj.transform.rotation = InventoryParent.transform.rotation;
-                    slot.AddStackedItem(item); 
-                    UpdateStackItemCountUI(slot);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public T TryRemoveStackedItem<T>(IInventoryItem obj, IInventoryStackable stack, IInventoryItemCallback itemCallback) where T : class, IInventoryItem
-        {
-            ItemSlot slot = TryFindItemInSlots(obj);
-
-            if (slot != null && slot.StackCount > 0)
-            {
-                IInventoryItem stackItemSelected = slot.RemoveStackedItem();
-                PrepareItemToDropFromInventory(stackItemSelected, false);
-                stack.RemoveFromStack(1);
-                slot.UpdateItemStackCount();
-                OnItemStackDropped?.Invoke(stackItemSelected);
-                return stackItemSelected as T;
-            }
-            return null;
-        }
-
         #endregion
 
         #region INTERFACES CALLBACKS
@@ -743,4 +690,6 @@ namespace LightHouse.Inventory
 
         #endregion
     }
+
 }
+

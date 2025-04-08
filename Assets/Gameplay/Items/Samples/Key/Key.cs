@@ -37,6 +37,9 @@ namespace LightHouse.Items.Samples
         [SerializeField] private Sprite _keySprite;
         public Sprite ItemSprite => _keySprite;
 
+        [field: SerializeField] public ushort ID { get; set; }
+        [field: SerializeField] public ushort SpecificID { get; set; }
+
         public event Action OnNameUpdated;
         public event Action OnItemUsed;
         public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;

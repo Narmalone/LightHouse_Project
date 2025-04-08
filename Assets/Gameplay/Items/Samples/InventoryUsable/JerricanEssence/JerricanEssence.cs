@@ -26,6 +26,9 @@ namespace LightHouse.Items.Samples
         [SerializeField] private Sprite _jerricanSprite;
         public Sprite ItemSprite => _jerricanSprite;
 
+        [field: SerializeField] public ushort ID { get; set; }
+        [field: SerializeField] public ushort SpecificID { get; set; }
+
         public event Action OnItemUsed;
         public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
         public event Action OnNameUpdated;

@@ -18,6 +18,7 @@ namespace LightHouse.Inventory
             for (int i = 0; i < _generatedSlots.Length; i++)
             {
                 _generatedSlots[i] = Instantiate(_slotPrefab, _inventoryLayoutGroup);
+                _generatedSlots[i].SlotDatas.SlodID = i;
             }
             return _generatedSlots;
         }

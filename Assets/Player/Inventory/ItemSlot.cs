@@ -4,17 +4,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public struct ItemSlot
-{
-    public IInventoryItem Item;
-    public IInventoryItemUsable Usable;
-    public IInventoryItemCallback Callback;
-
-    public int CountItem;
-}
-
 namespace LightHouse.Inventory
 {
+    [System.Serializable]
+    public struct SlotData
+    {
+        public int SlodID;
+        public uint ItemID;
+    }
+
     public class ItemSlot : MonoBehaviour
     {
         #region Texts Fields
@@ -31,6 +29,8 @@ namespace LightHouse.Inventory
         public TextMeshProUGUI ItemStack_TMP => _itemStack_TMP;
         #endregion
 
+
+        public SlotData SlotDatas;
         #region Inventory Items
 
         private IInventoryItem _inventoryItem;
@@ -46,20 +46,15 @@ namespace LightHouse.Inventory
         public IInventoryItemCallback InventoryItemCallback => _inventoryItemCallback;
         #endregion
 
-        #region STACKING ITEMS
-        private readonly List<IInventoryItem> _stackedItems = new();
-        public List<IInventoryItem> StackedItems => _stackedItems;
-        public int StackCount => _stackedItems.Count;
-        public int StackedItemsCount => _stackedItems.Count + 1; // +1 pour l'item visible
-        #endregion
-
         #endregion
 
         #region UI Functions
 
-        public void SetInventoryItem(IInventoryItem inventoryItem)
+        public void SetInventoryItem(IInventoryItem item)
         {
-            _inventoryItem = inventoryItem;
+            SlotDatas.ItemID = item.ID;
+            PoolManager.Add(item);
+            _inventoryItem = item;
         }
 
         public void SetSpriteItem(IInventoryItem inventoryItem)
@@ -109,7 +104,7 @@ namespace LightHouse.Inventory
 
         public void UpdateItemStackCount()
         {
-            ItemStack_TMP.text = $"x{StackedItemsCount.ToString()}";
+            //ItemStack_TMP.text = $"x{}";
         }
 
         public void SetEnableItemStackCountText(bool value)
@@ -121,7 +116,10 @@ namespace LightHouse.Inventory
         public void ResetSlot()
         {
             if(_inventoryItem != null)
+            {
+                PoolManager.Remove(_inventoryItem);
                 _inventoryItem = null;
+            }
 
             if(_inventoryItemUsable != null)
                 _inventoryItemUsable = null;
@@ -131,45 +129,10 @@ namespace LightHouse.Inventory
 
             if(_spriteItem.sprite != null)
                 _spriteItem.sprite = null;
-
-            if (_stackedItems.Count > 0)
-            {
-                foreach(var item in _stackedItems)
-                {
-                    item.GetGameObject().transform.SetParent(null);
-                }
-                ClearStack();
-            }
         }
 
         #region Stack
-        public void AddStackedItem(IInventoryItem item)
-        {
-            item.GetGameObject().SetActive(false);
-            item.GetCollider().enabled = false;
-            item.GetRigidBody().isKinematic = true;
-            item.IsItemInInventory = true;
-            _stackedItems.Add(item);
-        }
 
-        public IInventoryItem RemoveStackedItem()
-        {
-            if (_stackedItems.Count == 0) return null;
-            IInventoryItem item = _stackedItems[^1];
-            _stackedItems.RemoveAt(_stackedItems.Count - 1);
-            return item;
-        }
-
-        public IInventoryItem GetStackedItem()
-        {
-            if (_stackedItems.Count == 0) return null;
-            return _stackedItems[^1];
-        }
-
-        public void ClearStack()
-        {
-            _stackedItems.Clear();
-        }
 
         #endregion
     }

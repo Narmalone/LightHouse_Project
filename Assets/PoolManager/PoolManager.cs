@@ -3,24 +3,23 @@ using System.Collections.Generic;
 
 public static class PoolManager
 {
-    public static Dictionary<IInventoryItem, List<IInventoryItem>> InventoryItemPools = new();
-    private static IInventoryItem Get(IInventoryItem inventoryItem)
+    public static Dictionary<uint, List<IInventoryItem>> InventoryItemPools = new();
+    public static IInventoryItem Get(IInventoryItem inventoryItem)
     {
-        if (!InventoryItemPools.ContainsKey(inventoryItem)) return null;
-        if(InventoryItemPools[inventoryItem].Count == 0) return null;
-        Remove(InventoryItemPools[inventoryItem][0]);
-        return InventoryItemPools[inventoryItem][0];
+        if (!InventoryItemPools.ContainsKey(inventoryItem.ID)) return null;
+        if(InventoryItemPools[inventoryItem.ID].Count == 0) return null;
+        Remove(InventoryItemPools[inventoryItem.ID][0]);
+        return InventoryItemPools[inventoryItem.ID][0];
     }
 
-    public static void Add(IInventoryItem inventoryItem)
+    public static void Add(IInventoryItem item)
     {
-        if (!InventoryItemPools.ContainsKey(inventoryItem))
+        if (!InventoryItemPools.ContainsKey(item.ID))
         {
-            InventoryItemPools.Add(inventoryItem, new List<IInventoryItem>());
+            InventoryItemPools.Add(item.ID, new List<IInventoryItem>());
         }
-
-        DisableInventoryItem(inventoryItem);
-        InventoryItemPools[inventoryItem].Add(inventoryItem);
+        DisableInventoryItem(item);
+        InventoryItemPools[item.ID].Add(item);
     }
 
     private static void DisableInventoryItem(IInventoryItem item)
@@ -32,14 +31,16 @@ public static class PoolManager
 
     private static void EnableInventoryItem(IInventoryItem item)
     {
-
+        item.GetGameObject().SetActive(true);
+        item.GetCollider().enabled = true;
     }
 
     public static void Remove(IInventoryItem inventoryItem)
     {
-        if (InventoryItemPools.ContainsKey(inventoryItem))
+        if (InventoryItemPools.ContainsKey(inventoryItem.ID))
         {
-            InventoryItemPools[inventoryItem].Remove(inventoryItem);
+            InventoryItemPools[inventoryItem.ID].Remove(inventoryItem);
+            if (InventoryItemPools[inventoryItem.ID].Count == 0) InventoryItemPools.Remove(inventoryItem.ID);
         }
     }
 }
