@@ -15,9 +15,6 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private CameraSpring _cameraSpring;
         [SerializeField] private CameraLean _cameraLean;
 
-        [Header("Inventory")]
-        [SerializeField] private PlayerInventory _inventory;
-
         [Header("Interactions")]
         [SerializeField] private PlayerInteractions _interactions;
 
@@ -48,8 +45,6 @@ namespace LightHouse.KinematicCharacterController
         private void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            _inventory.RegisterInput();
-
             _playerCharacter.Initialize();
             _playerCamera.SetFollowTransform(_playerCharacter.GetCameraTarget());
             _cameraSpring.Initialize();
@@ -71,13 +66,10 @@ namespace LightHouse.KinematicCharacterController
 
             HandleSpring(Time.deltaTime, camTarget.up);
             HandleLean(Time.deltaTime, state.AccelerationVelocity, camTarget.up);
-
-            HandleInventory();
         }
 
         private void OnDestroy()
         {
-            _inventory.UnregisterInput();
             InputManager.DisposePlayerInputActions();
             _inputActions.Dispose();
         }
@@ -137,12 +129,6 @@ namespace LightHouse.KinematicCharacterController
         private void HandleSpring(float deltaTime, Vector3 up)
         {
             _cameraSpring.UpdateSpring(deltaTime, up);
-        }
-
-        private void HandleInventory()
-        {
-            _inventory.HandleInventoryPosition();
-            _inventory.HandleInventoryRotation();
         }
     }
 

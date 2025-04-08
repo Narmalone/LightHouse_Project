@@ -3,14 +3,14 @@ using UnityEngine.UI;
 
 namespace LightHouse.Inventory
 {
-    public class CanvasInventory : MonoBehaviour
+    public class InventoryUIController : MonoBehaviour
     {
         [SerializeField] private ItemSlot _slotPrefab;
         [SerializeField] private RectTransform _inventoryLayoutGroup;
         [SerializeField] private Image _holdItemImage;
         public Image HoldItemProgressImage => _holdItemImage;
         private ItemSlot[] _generatedSlots;
-        public ItemSlot[] GeneratedSlot => _generatedSlots;
+        public ItemSlot[] GeneratedSlots => _generatedSlots;
 
         public ItemSlot[] GenerateItemSlot(int numberOfSlots)
         {
@@ -18,7 +18,7 @@ namespace LightHouse.Inventory
             for (int i = 0; i < _generatedSlots.Length; i++)
             {
                 _generatedSlots[i] = Instantiate(_slotPrefab, _inventoryLayoutGroup);
-                _generatedSlots[i].SlotDatas.SlodID = i;
+                _generatedSlots[i].SlotDatas.SlotID = (byte)i;
             }
             return _generatedSlots;
         }

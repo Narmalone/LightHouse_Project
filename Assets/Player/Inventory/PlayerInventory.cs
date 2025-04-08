@@ -37,7 +37,7 @@ namespace LightHouse.Inventory
         [SerializeField] private LayerMask _securityObstacleMasks = 1 << 0;
 
         [Header("UI")]
-        [SerializeField] private CanvasInventory _inventoryCanvas;
+        [SerializeField] private InventoryUIController _inventoryCanvas;
         [SerializeField] private CanvasInteraction _interactionCanvas;
 
         [Header("Item Keys")]

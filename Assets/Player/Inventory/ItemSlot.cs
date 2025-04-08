@@ -9,8 +9,12 @@ namespace LightHouse.Inventory
     [System.Serializable]
     public struct SlotData
     {
-        public int SlodID;
-        public uint ItemID;
+        public bool HasItem;
+        public byte SlotID;
+        public ushort ItemSpecificID;
+        public ushort ItemID;
+
+        public Sprite ItemSprite;
     }
 
     public class ItemSlot : MonoBehaviour
@@ -31,29 +35,41 @@ namespace LightHouse.Inventory
 
 
         public SlotData SlotDatas;
+
         #region Inventory Items
 
         private IInventoryItem _inventoryItem;
         public IInventoryItem InventoryItem => _inventoryItem;
 
-        #region Iventory Usable Items
         private IInventoryItemUsable _inventoryItemUsable;
         public IInventoryItemUsable InventoryItemUsable => _inventoryItemUsable;
-        #endregion
 
-        #region Inventory Callbacks Items
         private IInventoryItemCallback _inventoryItemCallback;
         public IInventoryItemCallback InventoryItemCallback => _inventoryItemCallback;
-        #endregion
 
         #endregion
 
         #region UI Functions
 
+        public void AddItemDatasToSlot(ushort itemID, ushort itemSpecificID, Sprite itemSprite)
+        {
+            SlotDatas.ItemID = itemID;
+            SlotDatas.ItemSpecificID = itemSpecificID;
+            SlotDatas.ItemSprite = itemSprite;
+            SlotDatas.HasItem = true;
+            
+            RefreshUI();
+        }
+
+        public void RefreshUI()
+        {
+            _spriteItem.sprite = SlotDatas.ItemSprite;
+            
+        }
+
         public void SetInventoryItem(IInventoryItem item)
         {
             SlotDatas.ItemID = item.ID;
-            PoolManager.Add(item);
             _inventoryItem = item;
         }
 
@@ -117,7 +133,6 @@ namespace LightHouse.Inventory
         {
             if(_inventoryItem != null)
             {
-                PoolManager.Remove(_inventoryItem);
                 _inventoryItem = null;
             }
 
@@ -130,11 +145,6 @@ namespace LightHouse.Inventory
             if(_spriteItem.sprite != null)
                 _spriteItem.sprite = null;
         }
-
-        #region Stack
-
-
-        #endregion
     }
 }
 

@@ -1,15 +1,24 @@
 using LightHouse.Inventory;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public static class PoolManager
 {
-    public static Dictionary<uint, List<IInventoryItem>> InventoryItemPools = new();
-    public static IInventoryItem Get(IInventoryItem inventoryItem)
+    public static Dictionary<ushort, List<IInventoryItem>> InventoryItemPools = new();
+
+    public static IInventoryItem GetSpecificItem(ushort globalID, ushort specificID)
     {
-        if (!InventoryItemPools.ContainsKey(inventoryItem.ID)) return null;
-        if(InventoryItemPools[inventoryItem.ID].Count == 0) return null;
-        Remove(InventoryItemPools[inventoryItem.ID][0]);
-        return InventoryItemPools[inventoryItem.ID][0];
+        if (!InventoryItemPools.ContainsKey(globalID)) return null;
+        if (InventoryItemPools[globalID].Count == 0) return null;
+        IInventoryItem findedItem = InventoryItemPools[globalID].Find(x => x.SpecificID == specificID);
+
+        if (findedItem != null)
+        {
+            Debug.Log(findedItem);
+            //RemoveFromPool(findedItem);
+        }
+        return findedItem;
     }
 
     public static void Add(IInventoryItem item)
@@ -20,6 +29,8 @@ public static class PoolManager
         }
         DisableInventoryItem(item);
         InventoryItemPools[item.ID].Add(item);
+        item.SpecificID = (ushort)InventoryItemPools[item.ID].IndexOf(item);
+        Debug.Log("Item added to pool");
     }
 
     private static void DisableInventoryItem(IInventoryItem item)
@@ -35,12 +46,13 @@ public static class PoolManager
         item.GetCollider().enabled = true;
     }
 
-    public static void Remove(IInventoryItem inventoryItem)
+    public static void RemoveFromPool(ushort itemID, ushort itemGlobalID)
     {
-        if (InventoryItemPools.ContainsKey(inventoryItem.ID))
+        if (InventoryItemPools.ContainsKey(itemID))
         {
-            InventoryItemPools[inventoryItem.ID].Remove(inventoryItem);
-            if (InventoryItemPools[inventoryItem.ID].Count == 0) InventoryItemPools.Remove(inventoryItem.ID);
+            //InventoryItemPools[itemID].Remove(inventoryItem);
+            if (InventoryItemPools[itemID].Count == 0) InventoryItemPools.Remove(itemID);
         }
+        //EnableInventoryItem(inventoryItem);
     }
 }

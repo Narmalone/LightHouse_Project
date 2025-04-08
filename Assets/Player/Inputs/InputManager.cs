@@ -29,7 +29,6 @@ namespace LightHouse.Inputs
             if (_player_Input_Actions != null) DisposePlayerInputActions();
             _player_Input_Actions = pia;
             OnInputManagerRegistered?.Invoke();
-            //InputSystem.RegisterInteraction<TestHoldInteraction>();
         }
 
         public static void DisposePlayerInputActions()

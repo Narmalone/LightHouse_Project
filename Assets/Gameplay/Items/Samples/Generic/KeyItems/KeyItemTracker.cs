@@ -39,13 +39,14 @@ namespace LightHouse.Items.Samples
 
         public virtual bool HasKeyInInventoryButNotOnHands()
         {
-            return Locator<PlayerInventory>.Instance.HasItem(_keyNeededOnHands);
+            return false;
+           // return Locator<PlayerInventory>.Instance.HasItem(_keyNeededOnHands);
         }
 
         public virtual bool HasTargetItemOnHands(out Key key)
         {
             key = null;
-            PlayerInventory currInventoryInstance = Locator<PlayerInventory>.Instance;
+            /*PlayerInventory currInventoryInstance = Locator<PlayerInventory>.Instance;
             bool isOnHandItemIsKey = currInventoryInstance.CurrentSelectedSlot != null && currInventoryInstance.CurrentSelectedItem != null && currInventoryInstance.CurrentSelectedItem is Key;
             if (!isOnHandItemIsKey) return false;
 
@@ -53,13 +54,13 @@ namespace LightHouse.Items.Samples
             if(keyItm.KeyType == _keyNeededOnHands)
             {
                 key = keyItm;
-            }
-            return keyItm.KeyType == _keyNeededOnHands;
+            }*/
+            return false;
         }
 
         public virtual Key TryGetKeyItem()
         {
-            if(Locator<PlayerInventory>.Instance.CurrentSelectedSlot == null) return null;
+            //if(Locator<PlayerInventory>.Instance.CurrentSelectedSlot == null) return null;
             HasTargetItemOnHands(out Key k);
             return k;
         }
