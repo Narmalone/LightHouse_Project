@@ -75,8 +75,8 @@ namespace LightHouse.Inventory
 
         public void AddItemDatasToSlot(IInventoryItem item)
         {
-            SlotDatas.ItemGlobalID = item.ID;
-            SlotDatas.ItemSpecificIds.Add(item.SpecificID);
+            SlotDatas.ItemGlobalID = item.GlobalItemID;
+            SlotDatas.ItemSpecificIds.Add(item.ItemSpecificID);
             SlotDatas.ItemSprite = item.ItemSprite;            
             RefreshUI();
         }

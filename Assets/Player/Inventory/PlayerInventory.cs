@@ -128,6 +128,7 @@ namespace LightHouse.Inventory
 
         private void OnDrawGizmos()
         {
+            if (_inventoryTarget == null) return;
             Vector3 start = _inventoryTarget.position;
             float sphereRadius = _securityOverlapSphereRadius;
             Collider[] colliders = Physics.OverlapSphere(start, sphereRadius, _securityObstacleMasks);

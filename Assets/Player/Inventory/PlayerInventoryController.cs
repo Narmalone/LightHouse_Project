@@ -1,6 +1,5 @@
 using LightHouse.Inputs;
 using LightHouse.Inventory;
-using LightHouse.Utilities;
 using UnityEngine;
 
 
@@ -8,9 +7,7 @@ using UnityEngine;
 //Relier les systèmes suivants::
 //lier les booléens, l'objet est dans l'inventaire / ne l'est pas
 //lier les autres interfaces IInventoryUsable, IinventoryCallback, ne pas oublier les delegates etc..
-//Lier le ItemDatabase / ajouter un script editor pour gérer les ID des objets ???
-//Revoir pour séparer les logiques de Drop / pickup
-//recréer les fonctions pour dropper de manière safe un objet
+//refaire le système de key avec keytypes
 //Commenter le code, éviter effets de bords, surplus de variable, ajouter les events associés
 //Revoir dans le pool manager le système de sorting par l'implémentation dans l'IInventoryItem
 //finir d'assigner les infos dans l'ui avec les items
@@ -19,35 +16,46 @@ public class PlayerInventoryController : MonoBehaviour
     #region SERILIAZED FIELDS
     [Header("Inventory Settings")]
     [SerializeField] private byte _inventoryCapacity = 4;
-    [SerializeField] private int _currentSlotIndex = -1;
-    [SerializeField] private byte _currentSlotTakenInventory = 0;
 
     [Header("Inventory References")]
-    [SerializeField] private Transform _inventoryParent = null;
     [SerializeField] private Transform _inventoryTarget = null;
 
-    [Header("Raycast")]
-    [SerializeField] private bool _enableInventoryRaycast = true;
-    [SerializeField] private Camera _playerCamera;
-    [SerializeField] private float _raycastDistance = 3.0f;
-    [SerializeField] private LayerMask _targetMask = 1 << -1;
-    [SerializeField] private QueryTriggerInteraction _queryTriggerInteraction = QueryTriggerInteraction.Ignore;
+    [Header("Inventory Controllers")]
+    [SerializeField] private InventoryRaycastDetector _raycastDetector;
+    [SerializeField] private InventoryPickupHandler _pickupHandler;
+    [SerializeField] private InventoryScrollHandler _scrollHandler;
+    [SerializeField] private InventoryDropHandler _dropHandler;
 
     [Header("UI")]
-    [SerializeField] private InventoryUIController _inventoryCanvas;
+    [SerializeField] private InventoryUIController _inventoryUiController;
 
-    public static bool RaycastResult = false;
+    [Header("Drop Settings")]
+    [SerializeField] private float _maxDropPower = 10f;
+    [SerializeField] private AnimationCurve _dropPowerCurve = AnimationCurve.Linear(0, 0, 1, 1);
+    private float _dropChargeTimer = 0f;
     #endregion
+
+    private float _dropPower = 0f;
+    private bool _isChargingDrop = false;
 
     private ItemSlot[] _slots;
 
-    private ItemSlot CurrentSelectedSlot => _slots[_currentSlotIndex];
+    private ItemSlot CurrentSelectedSlot => _slots[_scrollHandler.CurrentIndex];
     private GameObject _lastObjectSeen;
     private IInventoryItem _lastInventoryItemSeen;
 
+    private void Awake()
+    {
+        _raycastDetector.OnItemDetected += HandleItemDetected;
+        _raycastDetector.OnItemLost += ResetSeenObject;
+    }
+
     private void Start()
     {
-        _slots = _inventoryCanvas.GenerateItemSlot(_inventoryCapacity);
+        _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity);
+        _pickupHandler = new InventoryPickupHandler(_slots, _inventoryCapacity);
+        _scrollHandler = new InventoryScrollHandler(_slots, _inventoryCapacity);
+        _dropHandler.Initialize(_slots, _inventoryTarget);
         InputManager.Scroll.performed += Scroll_performed;
     }
 
@@ -56,55 +64,28 @@ public class PlayerInventoryController : MonoBehaviour
         InputManager.Scroll.performed -= Scroll_performed;
     }
 
+    private void OnDestroy()
+    {
+        _raycastDetector.OnItemDetected -= HandleItemDetected;
+        _raycastDetector.OnItemLost -= ResetSeenObject;
+    }
+
     private void Update()
     {
-        if (_enableInventoryRaycast)
-        {
-            Ray cameraRay = _playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0f));
-            RaycastResult =  RaycastUtility.TryRaycast(cameraRay, _raycastDistance, _targetMask, _queryTriggerInteraction, out RaycastHit hit);
-            if (RaycastResult)
-            {
-                HandleNewObject(hit.collider.gameObject);
+        if (!_scrollHandler.IsIndexInvalid(_scrollHandler.CurrentIndex) && CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count > 0)
+            HandleDropInputs();
 
-                if (HandlePickup()) PickupItem(_currentSlotIndex, _lastInventoryItemSeen);
-            }
-            else
-                ResetSeenObject();
-
-            if(!IsCurrentSelectedIndexNotValid(_currentSlotIndex) && CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count > 0)
-                HandleDrop(CurrentSelectedSlot.SlotDatas.SlotID, CurrentSelectedSlot.SlotDatas.ItemGlobalID, CurrentSelectedSlot.SlotDatas.ItemSpecificIds[0]);
-            Debug.DrawRay(_playerCamera.transform.position, cameraRay.direction * _raycastDistance, Color.cyan);
-        }
+        if (InputManager.PickUp.WasPerformedThisFrame())
+            _pickupHandler.PickupItem(_scrollHandler.CurrentIndex, _lastInventoryItemSeen);
     }
 
-    private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    private void LateUpdate()
     {
-        int scrollDirection = Mathf.RoundToInt(obj.ReadValue<Vector2>().y);
-        int inversedScroll = -scrollDirection; //invert scroll direction (scroll up to left, scroll down to right)
-
-        if (inversedScroll == 0) return;
-
-        if (!IsCurrentSelectedIndexNotValid(_currentSlotIndex))
-        {
-            _slots[_currentSlotIndex].SlotDatas.IsSelected = false;
-            if (_slots[_currentSlotIndex].SlotDatas.HasItem)
-                _slots[_currentSlotIndex].HideSelectedInfos();
-        }
-
-        _currentSlotIndex += inversedScroll;
-        // Cyclic scrolling, -1 is for nothing selected
-        if (_currentSlotIndex < -1)
-            _currentSlotIndex = _inventoryCapacity - 1;
-        else if (_currentSlotIndex >= _inventoryCapacity)
-            _currentSlotIndex = -1;
-
-        if (!IsCurrentSelectedIndexNotValid(_currentSlotIndex))
-        {
-            _slots[_currentSlotIndex].SlotDatas.IsSelected = true;
-            if (_slots[_currentSlotIndex].SlotDatas.HasItem)
-                _slots[_currentSlotIndex].Show();
-        }
+        _inventoryTarget.position = _raycastDetector.RayOrigin + _raycastDetector.RayDirection.normalized;
     }
+
+    #region RAYCAST DELEGATES
+    private void HandleItemDetected(IInventoryItem item) => _lastInventoryItemSeen = item;
 
     private void ResetSeenObject()
     {
@@ -114,128 +95,57 @@ public class PlayerInventoryController : MonoBehaviour
         if (_lastInventoryItemSeen != null)
             _lastInventoryItemSeen = null;
     }
+    #endregion
 
-    private void HandleNewObject(GameObject lastObjectSeen)
+    #region DROP HANDLING
+
+    private void HandleDropInputs()
     {
-        if(_lastObjectSeen != lastObjectSeen)
-        {
-            _lastObjectSeen = lastObjectSeen;
-            _lastObjectSeen.TryGetComponent(out _lastInventoryItemSeen);
-
-            if (_lastInventoryItemSeen != null)
-            {
-                Debug.Log("nouvel inventory item détecté");
-            }
-        }
-    }
-
-    private bool HandlePickup()
-    {
-        return InputManager.PickUp.WasPerformedThisFrame();
-    }
-
-    private void PickupItem(int slotIndex, IInventoryItem item)
-    {
-        //TO DOO Check if the slot id is empty or null
-        if (item == null) return;
-
-        PoolManager.Add(item);
-
-        ItemSlot targetSlot = null;
-
-        if (IsSlotNullOrNotEmpty(slotIndex))
-        {
-            targetSlot = TryGetEmptySlotInInventory();
-        }
-        else
-        {
-            targetSlot = _slots[slotIndex];
-        }
-
-        if (item is IInventoryStackable stackableObject)
-        {
-
-            if (IsItemAlreadyExistInSlotAndPossibleToStack(item.ID, out ItemSlot slot))
-            {
-                if(slot.SlotDatas.TotalItemsInSlots < slot.SlotDatas.MaxStack)
-                    targetSlot = slot;
-            }
-            
-            if(targetSlot.SlotDatas.TotalItemsInSlots == 0) targetSlot.SlotDatas.MaxStack = stackableObject.MaxStack;
-        }
-
-        targetSlot.AddItemDatasToSlot(item);
-    }
-
-    private bool IsSlotNullOrNotEmpty(int slotIndex)
-    {
-        return slotIndex < 0 || slotIndex > _inventoryCapacity || _slots[slotIndex].SlotDatas.HasItem;
-    }
-
-    private bool IsCurrentSelectedIndexNotValid(int slotIndex)
-    {
-        return slotIndex < 0 || slotIndex > _inventoryCapacity;
-    }
-
-    private ItemSlot TryGetEmptySlotInInventory()
-    {
-        foreach(ItemSlot slot in _slots)
-        {
-            if (!slot.SlotDatas.HasItem)
-            {
-                return slot;
-            }
-        }
-        return null;
-    }
-
-    private bool IsItemAlreadyExistInSlotAndPossibleToStack(ushort globalItemID, out ItemSlot findedSlot)
-    {
-        findedSlot = null;
-        foreach (ItemSlot slot in _slots)
-        {
-            if (slot.SlotDatas.ItemGlobalID != globalItemID 
-                || slot.SlotDatas.TotalItemsInSlots == 0 
-                || !slot.SlotDatas.CanStack()) continue;
-            findedSlot = slot;
-            return true;
-        }
-        return false;
-    }
-
-    private void HandleDrop(byte slotID, ushort itemGlobalID, ushort itemSpecificID)
-    {
-        if (InputManager.Drop.WasPerformedThisFrame())
-        {
-            DropItemAtSlot(slotID, itemGlobalID, itemSpecificID);
-        }
-        /*if (InputManager.Drop.IsPressed())
+        if (InputManager.Drop.IsPressed())
         {
             _isChargingDrop = true;
-            _dropPower = Mathf.Clamp(_dropPower + Time.deltaTime * _maxDropPower, 0, _maxDropPower);
+            _dropChargeTimer += Time.deltaTime;
+
+            float curveValue = _dropPowerCurve.Evaluate(Mathf.Clamp01(_dropChargeTimer));
+            _dropPower = curveValue * _maxDropPower;
         }
         else if (_isChargingDrop && InputManager.Drop.WasReleasedThisFrame())
         {
-            DropItemAtSlot(_currentSelectedSlot, _inventoryTarget.position, _dropPower);
+            _dropHandler.DropItem
+            (
+                slotID: CurrentSelectedSlot.SlotDatas.SlotID,
+                itemGlobalID: CurrentSelectedSlot.SlotDatas.ItemGlobalID,
+                pos: _inventoryTarget.position,
+                force: _dropPower,
+                enablePhysicsOnDrop: true,
+                out IInventoryItem droppedItem
+            );
+
             _dropPower = 0f;
+            _dropChargeTimer = 0f;
             _isChargingDrop = false;
         }
         else if (InputManager.Drop.WasPerformedThisFrame())
         {
-            DropItemAtSlot(_currentSelectedSlot, _inventoryTarget.position, 1f);
-        }*/
+            _dropHandler.DropItem
+            (
+                slotID: CurrentSelectedSlot.SlotDatas.SlotID,
+                itemGlobalID: CurrentSelectedSlot.SlotDatas.ItemGlobalID,
+                pos: _inventoryTarget.position,
+                force: 0.0f,
+                enablePhysicsOnDrop: true,
+                out IInventoryItem droppedItem
+            );
+        }
     }
+    #endregion
 
-    private void DropItemAtSlot(byte slotID, ushort itemGlobalID, ushort itemSpecificID)
+    #region SCROLL HANDLING
+    private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        if (!_slots[slotID].SlotDatas.HasItem) return;
-        IInventoryItem item = PoolManager.Get(itemGlobalID, new SortingResult(SortingType.None, itemSpecificID));
-        _slots[slotID].RemoveItemFromSlot(_slots[slotID].SlotDatas.ItemSpecificIds[0]);
-        item.GetGameObject().transform.position = _inventoryTarget.position;
+        int direction = -Mathf.RoundToInt(obj.ReadValue<Vector2>().y);
+        if (direction != 0)
+            _scrollHandler.Scroll(direction);
     }
-
-    private Vector3 GetSafeDropPos()
-    {
-        return transform.position;
-    }
+    #endregion
 }

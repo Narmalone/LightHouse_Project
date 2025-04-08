@@ -5,12 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ItemDB_", menuName = "New ItemDB")]
 public class ItemDatabase : ScriptableObject
 {
-    public SerializedDictionary<uint, GameObject> items = new SerializedDictionary<uint, GameObject>();
+    public SerializedDictionary<ushort, GameObject> items = new SerializedDictionary<ushort, GameObject>();
 
-    public IInventoryItem Get(uint ID)
+    public IInventoryItem Get(ushort ID)
     {
         items[ID].TryGetComponent(out IInventoryItem item);
         return item;
     }
-    
 }

@@ -20,8 +20,8 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     [SerializeField] private Sprite _burgerSprite;
     public Sprite ItemSprite => _burgerSprite;
 
-    [field: SerializeField] public ushort ID { get; set; }
-    [field: SerializeField] public ushort SpecificID { get; set; }
+    [field: SerializeField] public ushort GlobalItemID { get; set; }
+    [field: SerializeField] public ushort ItemSpecificID { get; set; }
 
     public event Action OnNameUpdated;
     public event Action OnInteractionNameChanged;
