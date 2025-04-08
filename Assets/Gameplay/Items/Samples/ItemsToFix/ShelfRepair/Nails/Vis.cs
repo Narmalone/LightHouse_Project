@@ -6,8 +6,8 @@ namespace LightHouse.Items.Samples
 {
     public class Vis : Key, IInventoryStackable
     {
-        [SerializeField] private int _maxStack = 10;
-        public int MaxStack => _maxStack;
+        [SerializeField] private ushort _maxStack = 10;
+        public ushort MaxStack => _maxStack;
 
         [field: SerializeField] public int CurrentStack { get; set; } = 1;
         public IInventoryItem Item { get => this; }

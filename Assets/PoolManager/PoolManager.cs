@@ -1,22 +1,52 @@
 using LightHouse.Inventory;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+
+public enum SortingType
+{
+    None,
+    Random,
+    Target
+}
+
+public struct SortingResult
+{
+    public SortingType SortType;
+    public ushort targetID;
+
+    public SortingResult(SortingType sortType, ushort targetID)
+    {
+        this.SortType = sortType;
+        this.targetID = targetID;
+    }
+}
 
 public static class PoolManager
 {
     public static Dictionary<ushort, List<IInventoryItem>> InventoryItemPools = new();
 
-    public static IInventoryItem GetSpecificItem(ushort globalID, ushort specificID)
+    public static IInventoryItem Get(ushort globalID, SortingResult sortingMode)
     {
         if (!InventoryItemPools.ContainsKey(globalID)) return null;
         if (InventoryItemPools[globalID].Count == 0) return null;
-        IInventoryItem findedItem = InventoryItemPools[globalID].Find(x => x.SpecificID == specificID);
+
+        IInventoryItem findedItem = null;
+        switch (sortingMode.SortType)
+        {
+            case SortingType.None:
+                findedItem = InventoryItemPools[globalID][0];
+                break;
+            case SortingType.Random:
+                break;
+            case SortingType.Target:
+                findedItem = InventoryItemPools[globalID].Find(x => x.SpecificID == sortingMode.targetID);
+                break;
+        }
 
         if (findedItem != null)
         {
-            Debug.Log(findedItem);
-            //RemoveFromPool(findedItem);
+            EnableInventoryItem(findedItem);
+            InventoryItemPools[globalID].Remove(findedItem);
         }
         return findedItem;
     }
@@ -46,13 +76,16 @@ public static class PoolManager
         item.GetCollider().enabled = true;
     }
 
-    public static void RemoveFromPool(ushort itemID, ushort itemGlobalID)
+    public static void RemoveFromPool(ushort itemGlobalID, ushort itemSpecificID)
     {
-        if (InventoryItemPools.ContainsKey(itemID))
+        IInventoryItem removedItem = null;
+        if (InventoryItemPools.ContainsKey(itemGlobalID))
         {
-            //InventoryItemPools[itemID].Remove(inventoryItem);
-            if (InventoryItemPools[itemID].Count == 0) InventoryItemPools.Remove(itemID);
+            removedItem = InventoryItemPools[itemGlobalID].Find(x => x.SpecificID == itemSpecificID);
+            if (InventoryItemPools[itemGlobalID].Count == 0) InventoryItemPools.Remove(itemGlobalID);
         }
-        //EnableInventoryItem(inventoryItem);
+
+        if(removedItem != null)
+            EnableInventoryItem(removedItem);
     }
 }

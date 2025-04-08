@@ -354,14 +354,14 @@ namespace LightHouse.Inventory
             return _currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity || _currentSelectedSlot.InventoryItem != null;
         }
 
-        private void SetItemToSlot(ItemSlot slot, IInventoryItem item, IInventoryItemCallback callback, IInventoryItemUsable usable)
+   /*     private void SetItemToSlot(ItemSlot slot, IInventoryItem item, IInventoryItemCallback callback, IInventoryItemUsable usable)
         {
             slot.SetInventoryItem(item);
             slot.SetSpriteItem(item);
             slot.SetItemCallback(callback);
             slot.SetItemUsable(usable);
             SetItemNameTextUI(slot, item.GetName());
-        }
+        }*/
 
         /// <summary>
         /// Called when the player press the pickup key while looking an item
@@ -385,7 +385,7 @@ namespace LightHouse.Inventory
             if (IsCurrentSlotAlreadyTaken())
             {
                 ItemSlot targetSlot = GetEmptyPlaceInInventory();
-                SetItemToSlot(targetSlot, item, itemCallback, itemUsable);
+                //SetItemToSlot(targetSlot, item, itemCallback, itemUsable);
                 obj.SetActive(false);
 
                 //In case this item is still not stacked
@@ -398,7 +398,7 @@ namespace LightHouse.Inventory
             //else we presume that the item can be store on our hands bcs it's the current selected slot
             else if (_currentSelectedSlot == _itemSlots[_currentSlotIndex])
             {
-                SetItemToSlot(_currentSelectedSlot, item, itemCallback, itemUsable);
+                //SetItemToSlot(_currentSelectedSlot, item, itemCallback, itemUsable);
                 SetEnableItemNameTextUI(_currentSelectedSlot, true);
                 //In case this item is still not stacked
                 if (item is IInventoryStackable)

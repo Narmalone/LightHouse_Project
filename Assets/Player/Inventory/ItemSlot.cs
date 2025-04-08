@@ -9,12 +9,29 @@ namespace LightHouse.Inventory
     [System.Serializable]
     public struct SlotData
     {
-        public bool HasItem;
+        public ushort MaxStack;
+        public bool HasItem => ItemSpecificIds.Count > 0;
         public byte SlotID;
-        public ushort ItemSpecificID;
-        public ushort ItemID;
+        public ushort ItemGlobalID;
+
+        public int TotalItemsInSlots => ItemSpecificIds.Count;
+        public List<ushort> ItemSpecificIds;
+
+        public bool IsSelected;
 
         public Sprite ItemSprite;
+
+        public void Init()
+        {
+            MaxStack = 1;
+            IsSelected = false;
+            ItemSpecificIds = new List<ushort>();
+        }
+
+        public bool CanStack()
+        {
+            return TotalItemsInSlots < MaxStack;
+        }
     }
 
     public class ItemSlot : MonoBehaviour
@@ -49,44 +66,55 @@ namespace LightHouse.Inventory
 
         #endregion
 
+        private void Start()
+        {
+            SlotDatas.Init();
+        }
+
         #region UI Functions
 
-        public void AddItemDatasToSlot(ushort itemID, ushort itemSpecificID, Sprite itemSprite)
+        public void AddItemDatasToSlot(IInventoryItem item)
         {
-            SlotDatas.ItemID = itemID;
-            SlotDatas.ItemSpecificID = itemSpecificID;
-            SlotDatas.ItemSprite = itemSprite;
-            SlotDatas.HasItem = true;
-            
+            SlotDatas.ItemGlobalID = item.ID;
+            SlotDatas.ItemSpecificIds.Add(item.SpecificID);
+            SlotDatas.ItemSprite = item.ItemSprite;            
             RefreshUI();
+        }
+
+        public void RemoveItemFromSlot(ushort specificID)
+        {
+            if (SlotDatas.ItemSpecificIds.Contains(specificID))
+            {
+                SlotDatas.ItemSpecificIds.Remove(specificID);
+                RefreshUI();
+            }
         }
 
         public void RefreshUI()
         {
-            _spriteItem.sprite = SlotDatas.ItemSprite;
-            
+            if (SlotDatas.HasItem)
+            {
+                _spriteItem.sprite = SlotDatas.ItemSprite;
+                if (SlotDatas.IsSelected) Show();
+            }
+            else
+            {
+                _spriteItem.sprite = null;
+                HideSelectedInfos();
+            }
+
         }
 
-        public void SetInventoryItem(IInventoryItem item)
+        public void HideSelectedInfos()
         {
-            SlotDatas.ItemID = item.ID;
-            _inventoryItem = item;
+            SetEnableItemNameText(false);
+            if (ItemStack_TMP.isActiveAndEnabled) SetEnableItemStackCountText(false);
         }
 
-        public void SetSpriteItem(IInventoryItem inventoryItem)
+        public void Show()
         {
-            if (inventoryItem.ItemSprite == null) return;
-            _spriteItem.sprite = inventoryItem.ItemSprite;
-        }
-
-        public void SetItemCallback(IInventoryItemCallback inventoryItemCallback) 
-        {
-            _inventoryItemCallback = inventoryItemCallback;
-        }
-
-        public void SetItemUsable(IInventoryItemUsable inventoryItemUsable)
-        {
-            _inventoryItemUsable = inventoryItemUsable;
+            SetEnableItemNameText(true);
+            if (SlotDatas.TotalItemsInSlots > 1) SetEnableItemStackCountText(true);
         }
 
         public void SetEnableItemNameText(bool value)
@@ -120,7 +148,7 @@ namespace LightHouse.Inventory
 
         public void UpdateItemStackCount()
         {
-            //ItemStack_TMP.text = $"x{}";
+            ItemStack_TMP.text = $"x{SlotDatas.TotalItemsInSlots}";
         }
 
         public void SetEnableItemStackCountText(bool value)

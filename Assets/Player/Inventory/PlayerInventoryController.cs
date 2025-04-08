@@ -3,6 +3,17 @@ using LightHouse.Inventory;
 using LightHouse.Utilities;
 using UnityEngine;
 
+
+//TO DOO ----
+//Relier les systèmes suivants::
+//lier les booléens, l'objet est dans l'inventaire / ne l'est pas
+//lier les autres interfaces IInventoryUsable, IinventoryCallback, ne pas oublier les delegates etc..
+//Lier le ItemDatabase / ajouter un script editor pour gérer les ID des objets ???
+//Revoir pour séparer les logiques de Drop / pickup
+//recréer les fonctions pour dropper de manière safe un objet
+//Commenter le code, éviter effets de bords, surplus de variable, ajouter les events associés
+//Revoir dans le pool manager le système de sorting par l'implémentation dans l'IInventoryItem
+//finir d'assigner les infos dans l'ui avec les items
 public class PlayerInventoryController : MonoBehaviour
 {
     #region SERILIAZED FIELDS
@@ -31,7 +42,6 @@ public class PlayerInventoryController : MonoBehaviour
     private ItemSlot[] _slots;
 
     private ItemSlot CurrentSelectedSlot => _slots[_currentSlotIndex];
-
     private GameObject _lastObjectSeen;
     private IInventoryItem _lastInventoryItemSeen;
 
@@ -56,13 +66,13 @@ public class PlayerInventoryController : MonoBehaviour
             {
                 HandleNewObject(hit.collider.gameObject);
 
-                if (HandlePickup()) PickupItem(_currentSlotIndex);
+                if (HandlePickup()) PickupItem(_currentSlotIndex, _lastInventoryItemSeen);
             }
             else
                 ResetSeenObject();
 
-            if(!IsCurrentSelectedIndexNotValid(_currentSlotIndex))
-                HandleDrop(CurrentSelectedSlot.SlotDatas.SlotID, CurrentSelectedSlot.SlotDatas.ItemID, CurrentSelectedSlot.SlotDatas.ItemSpecificID);
+            if(!IsCurrentSelectedIndexNotValid(_currentSlotIndex) && CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count > 0)
+                HandleDrop(CurrentSelectedSlot.SlotDatas.SlotID, CurrentSelectedSlot.SlotDatas.ItemGlobalID, CurrentSelectedSlot.SlotDatas.ItemSpecificIds[0]);
             Debug.DrawRay(_playerCamera.transform.position, cameraRay.direction * _raycastDistance, Color.cyan);
         }
     }
@@ -74,12 +84,26 @@ public class PlayerInventoryController : MonoBehaviour
 
         if (inversedScroll == 0) return;
 
+        if (!IsCurrentSelectedIndexNotValid(_currentSlotIndex))
+        {
+            _slots[_currentSlotIndex].SlotDatas.IsSelected = false;
+            if (_slots[_currentSlotIndex].SlotDatas.HasItem)
+                _slots[_currentSlotIndex].HideSelectedInfos();
+        }
+
         _currentSlotIndex += inversedScroll;
         // Cyclic scrolling, -1 is for nothing selected
         if (_currentSlotIndex < -1)
             _currentSlotIndex = _inventoryCapacity - 1;
         else if (_currentSlotIndex >= _inventoryCapacity)
             _currentSlotIndex = -1;
+
+        if (!IsCurrentSelectedIndexNotValid(_currentSlotIndex))
+        {
+            _slots[_currentSlotIndex].SlotDatas.IsSelected = true;
+            if (_slots[_currentSlotIndex].SlotDatas.HasItem)
+                _slots[_currentSlotIndex].Show();
+        }
     }
 
     private void ResetSeenObject()
@@ -110,22 +134,37 @@ public class PlayerInventoryController : MonoBehaviour
         return InputManager.PickUp.WasPerformedThisFrame();
     }
 
-    private void PickupItem(int slotID)
+    private void PickupItem(int slotIndex, IInventoryItem item)
     {
         //TO DOO Check if the slot id is empty or null
-        if (_lastInventoryItemSeen == null) return;
+        if (item == null) return;
+
+        PoolManager.Add(item);
 
         ItemSlot targetSlot = null;
-        if (IsSlotNullOrNotEmpty(slotID))
+
+        if (IsSlotNullOrNotEmpty(slotIndex))
         {
             targetSlot = TryGetEmptySlotInInventory();
         }
         else
         {
-            targetSlot = _slots[slotID];
+            targetSlot = _slots[slotIndex];
         }
-        PoolManager.Add(_lastInventoryItemSeen);
-        targetSlot.AddItemDatasToSlot(_lastInventoryItemSeen.ID, _lastInventoryItemSeen.SpecificID, _lastInventoryItemSeen.ItemSprite);
+
+        if (item is IInventoryStackable stackableObject)
+        {
+
+            if (IsItemAlreadyExistInSlotAndPossibleToStack(item.ID, out ItemSlot slot))
+            {
+                if(slot.SlotDatas.TotalItemsInSlots < slot.SlotDatas.MaxStack)
+                    targetSlot = slot;
+            }
+            
+            if(targetSlot.SlotDatas.TotalItemsInSlots == 0) targetSlot.SlotDatas.MaxStack = stackableObject.MaxStack;
+        }
+
+        targetSlot.AddItemDatasToSlot(item);
     }
 
     private bool IsSlotNullOrNotEmpty(int slotIndex)
@@ -148,6 +187,20 @@ public class PlayerInventoryController : MonoBehaviour
             }
         }
         return null;
+    }
+
+    private bool IsItemAlreadyExistInSlotAndPossibleToStack(ushort globalItemID, out ItemSlot findedSlot)
+    {
+        findedSlot = null;
+        foreach (ItemSlot slot in _slots)
+        {
+            if (slot.SlotDatas.ItemGlobalID != globalItemID 
+                || slot.SlotDatas.TotalItemsInSlots == 0 
+                || !slot.SlotDatas.CanStack()) continue;
+            findedSlot = slot;
+            return true;
+        }
+        return false;
     }
 
     private void HandleDrop(byte slotID, ushort itemGlobalID, ushort itemSpecificID)
@@ -173,10 +226,12 @@ public class PlayerInventoryController : MonoBehaviour
         }*/
     }
 
-    private void DropItemAtSlot(byte slodID, ushort itemGlobalID, ushort itemSpecificID)
+    private void DropItemAtSlot(byte slotID, ushort itemGlobalID, ushort itemSpecificID)
     {
-        var item = PoolManager.GetSpecificItem(itemGlobalID, itemSpecificID);
-        Debug.Log(item.GetGameObject().name);
+        if (!_slots[slotID].SlotDatas.HasItem) return;
+        IInventoryItem item = PoolManager.Get(itemGlobalID, new SortingResult(SortingType.None, itemSpecificID));
+        _slots[slotID].RemoveItemFromSlot(_slots[slotID].SlotDatas.ItemSpecificIds[0]);
+        item.GetGameObject().transform.position = _inventoryTarget.position;
     }
 
     private Vector3 GetSafeDropPos()
