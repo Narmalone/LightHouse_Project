@@ -918,14 +918,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bddcef2be503a514885b27053c576bb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enableInteraction: 1
-  _canvasInteraction: {fileID: 5442988119189176741}
-  _playerCamera: {fileID: 7457726863973231117}
-  _interactionDistance: 3
-  _interactableLayer:
+  playerCamera: {fileID: 7457726863973231117}
+  interactionDistance: 3
+  interactableLayer:
     serializedVersion: 2
-    m_Bits: 64
-  _queryTriggerInteraction: 1
+    m_Bits: 192
+  triggerInteraction: 1
+  _interactionCanva: {fileID: 5442988119189176741}
 --- !u!114 &7906979379660786359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -953,12 +952,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryCapacity: 4
-  _currentSlotIndex: -1
-  _currentSlotTakenInventory: 0
   _inventoryTarget: {fileID: 1259359992558668386}
   _raycastDetector: {fileID: 3260111263484607703}
   _dropHandler: {fileID: 4555361120521387341}
+  _itemDatabase: {fileID: 11400000, guid: eec9f4e4453518e4bb148827b9312144, type: 2}
   _inventoryUiController: {fileID: 6065928285298996503}
+  _interactionUiController: {fileID: 5442988119189176741}
   _maxDropPower: 10
   _dropPowerCurve:
     serializedVersion: 2
@@ -1021,7 +1020,7 @@ MonoBehaviour:
   _securityOverlapSphereRadius: 0.2
   _securityObstacleMasks:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129
 --- !u!1 &4098631407428697294
 GameObject:
   m_ObjectHideFlags: 0

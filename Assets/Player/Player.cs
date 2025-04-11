@@ -1,6 +1,6 @@
 using LightHouse.Inputs;
 using UnityEngine;
-using LightHouse.Inventory;
+using LightHouse.Interactions;
 
 namespace LightHouse.KinematicCharacterController
 {

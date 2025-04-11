@@ -12,13 +12,14 @@ namespace LightHouse.Inventory
         private ItemSlot[] _generatedSlots;
         public ItemSlot[] GeneratedSlots => _generatedSlots;
 
-        public ItemSlot[] GenerateItemSlot(int numberOfSlots)
+        public ItemSlot[] GenerateItemSlot(int numberOfSlots, ItemDatabase database)
         {
             _generatedSlots = new ItemSlot[numberOfSlots];
             for (int i = 0; i < _generatedSlots.Length; i++)
             {
                 _generatedSlots[i] = Instantiate(_slotPrefab, _inventoryLayoutGroup);
                 _generatedSlots[i].SlotDatas.SlotID = (byte)i;
+                _generatedSlots[i].Init(database);
             }
             return _generatedSlots;
         }

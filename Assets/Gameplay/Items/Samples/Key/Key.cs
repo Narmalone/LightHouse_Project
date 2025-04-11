@@ -13,24 +13,12 @@ namespace LightHouse.Items.Samples
         [SerializeField] protected string _Name;
         [SerializeField] protected Collider _Collider;
         [SerializeField] protected Rigidbody _Rigidbody;
-        [SerializeField] protected KeyType _key;
-        protected bool _hasKey = false;
-
-        public bool HasKeyInInventory => _hasKey;
-
-        #endregion
-
-        #region PROPERTIES
-        public KeyType KeyType => _key;
         #endregion
 
         #region IInventory Fields
         [field: SerializeField] public bool IsItemInInventory { get; set; }
         [field: SerializeField] public bool IsItemRaycasted { get; set; }
         [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
-
-        public KeyType ItemKeyType => _key;
-
         [field: SerializeField] public bool IsItemOnHands { get; set; }
         [field: SerializeField] public bool CanBeUsedFromInventory { get; set; }
 
@@ -42,8 +30,8 @@ namespace LightHouse.Items.Samples
 
         public event Action OnNameUpdated;
         public event Action OnItemUsed;
-        public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
-        public event Action<Vector3, float, bool, bool, IInventoryItem> ForceDropItemInInventory;
+        public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+        public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
 
         #endregion
 
@@ -60,22 +48,22 @@ namespace LightHouse.Items.Samples
 
         public virtual string GetPickupName() => $"Press {InputManager.GetBindingName(InputManager.PickUp)} to pick";
 
-        public virtual void UseFromInventory() { OnItemUsed?.Invoke(); }
+        public virtual void UseFromInventory() 
+        {
+            OnItemUsed?.Invoke();
+        }
 
         public virtual string UseInInventoryText() => $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to use";
 
-        public virtual Key ForceRemoveItemFromInventory(Vector3 pos, float force, bool enablePhysics, bool checkSafePos)
-        {
-            ForceDropItemInInventory?.Invoke(pos, force, enablePhysics, checkSafePos, this);
-            return this;
-        }
-
         public void InvokeOnCanBeUsedFromInventoryChanged()
         {
-            CanBeUsedFromInventoryChanged?.Invoke(this);
+            CanBeUsedFromInventoryChanged?.Invoke(this.GlobalItemID, this.ItemSpecificID);
         }
 
-
+        public void InvokeForceDropItemFromInventory(Vector3 pos, float force, bool enablePhysics)
+        {
+            ForceDropItemFromInventory?.Invoke(this.GlobalItemID, this.ItemSpecificID, pos, force, enablePhysics);
+        }
         #endregion
     }
 }

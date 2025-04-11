@@ -13,6 +13,7 @@ public class GrabableItemSpring : MonoBehaviour, IInteractable
     [SerializeField] private float maxSpring = 2000f;
     [SerializeField] private float maxDamper = 2000f;
 
+    [SerializeField] private float _maxDistanceBetweenPlayerAndItem = 1.3f;
     [SerializeField] private float maxDistance = 0.3f;
     [SerializeField] private float minDistance = 0f;
     [SerializeField] private float tolerance = 0.01f;
@@ -86,7 +87,6 @@ public class GrabableItemSpring : MonoBehaviour, IInteractable
             springJoint.connectedAnchor = _grabableAnchor.position;
 
             float distance = Vector3.Distance(transform.position, _grabableAnchor.position);
-
             // Calcul dynamique du spring
             if (distance > criticalDistance)
             {
@@ -121,6 +121,13 @@ public class GrabableItemSpring : MonoBehaviour, IInteractable
                 // 5. Appliquer via Rigidbody
                 rb.MoveRotation(smoothedRotation);
             }
+
+            if (distance >= _maxDistanceBetweenPlayerAndItem)
+            {
+                _isDraging = false;
+                springJoint.spring = baseSpring;
+                springJoint.damper = maxDamper; // amorti fort si très proche
+            }
         }
     }
 
@@ -129,8 +136,8 @@ public class GrabableItemSpring : MonoBehaviour, IInteractable
         PlayerGrabableItems.OnPlayerGrabableInitialized -= PlayerGrabableItems_OnPlayerGrabableInitialized;
     }
 
-    public string GetInteractionName() => _isDraging ? $"{InputManager.GetBindingName(InputManager.Interact)} to hold" : $"{InputManager.GetBindingName(InputManager.Interact)} to stop";
-    public string GetName() => "Objet à traîner";
+    public string GetInteractionName() => _isDraging ? $"{InputManager.GetBindingName(InputManager.Interact)} to stop" : $"{InputManager.GetBindingName(InputManager.Interact)} to drag";
+    public string GetName() => "";
     public GameObject GetGameObject() => gameObject;
     public Collider GetCollider() => GetComponent<Collider>();
 }

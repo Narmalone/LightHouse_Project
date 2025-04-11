@@ -19,12 +19,11 @@ public class InventoryDropHandler : MonoBehaviour
         _target = target;
     }
 
-    public void DropItem(int slotID, ushort itemGlobalID, Vector3 pos, float force, bool enablePhysicsOnDrop, out IInventoryItem droppedItem)
+    public void DropItem(int slotID, ushort itemGlobalID, ushort specificID, Vector3 pos, float force, bool enablePhysicsOnDrop, out IInventoryItem droppedItem)
     {
         droppedItem = null;
         if (!_slots[slotID].SlotDatas.HasItem) return;
-
-        IInventoryItem item = PoolManager.Get(itemGlobalID);
+        IInventoryItem item = PoolManager.Get(itemGlobalID, specificID, enablePhysicsOnDrop);
         droppedItem = item;
 
         _slots[slotID].RemoveItemFromSlot(item.ItemSpecificID);
@@ -39,6 +38,9 @@ public class InventoryDropHandler : MonoBehaviour
 
         if(finalPos == pos)
             rb.AddForce(_target.forward * force, ForceMode.Impulse);
+
+        if (item is IInventoryItemCallback callback) callback.OnItemRemovedFromInventory();
+        InventoryHandlerData.NotifyDrop(slotID);
     }
 
     private Vector3 GetAdjustedDropPosition(Transform target, Vector3 intendedDropPosition, int lengthToSafePos = 0)

@@ -24,7 +24,6 @@ namespace LightHouse.Items.Samples
         public abstract string GetInteractionName();
         public abstract string GetName();
         public abstract void Interact();
-        public virtual bool HasKeysInInventory() => Locator<PlayerInventory>.Instance.HasItems(_necesarryItemsInInventory.ToArray());
     }
 
 }

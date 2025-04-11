@@ -5,7 +5,7 @@ namespace LightHouse.Inventory
     public interface IInventoryItemUsable 
     {
         public event Action OnItemUsed;
-        public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
+        public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
         public bool CanBeUsedFromInventory { get; set; }
         string UseInInventoryText();
         void UseFromInventory();

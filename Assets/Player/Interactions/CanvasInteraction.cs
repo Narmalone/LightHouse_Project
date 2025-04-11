@@ -58,6 +58,11 @@ namespace LightHouse.Interactions
         {
             _itemPickup_TPM.gameObject.SetActive(true);
         }
+
+        public void SetItemPickupText(string text)
+        {
+            _itemPickup_TPM.text = text;
+        }
     }
 
 }

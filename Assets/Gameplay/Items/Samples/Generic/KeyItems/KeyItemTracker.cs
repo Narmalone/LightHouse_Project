@@ -27,9 +27,9 @@ namespace LightHouse.Items.Samples
         public abstract string GetInteractionName();
         public abstract string GetName();
         public abstract void Interact();
-        protected virtual void Awake() => PlayerInventory.OnHandsItemSelectedChanged += PlayerInventory_OnHandsItemSelectedChanged;
+       /* protected virtual void Awake() => PlayerInventory.OnHandsItemSelectedChanged += PlayerInventory_OnHandsItemSelectedChanged;
         protected virtual void OnDestroy() => PlayerInventory.OnHandsItemSelectedChanged -= PlayerInventory_OnHandsItemSelectedChanged;
-
+*/
         protected virtual void PlayerInventory_OnHandsItemSelectedChanged(IInventoryItem obj)
         {
             if (!IsItemRaycasted) return;

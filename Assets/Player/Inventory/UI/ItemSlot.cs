@@ -28,6 +28,22 @@ namespace LightHouse.Inventory
             ItemSpecificIds = new List<ushort>();
         }
 
+        /// <summary>
+        /// Retrive first item in the pool with a globalID
+        /// </summary>
+        /// <returns></returns>
+        public IInventoryItem GetFirstItemInSlot()
+        {
+            if (ItemSpecificIds.Count <= 0) return null;
+            return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, ItemSpecificIds[0]);
+        }
+
+        public IInventoryItem GetItemInSlot(ushort specificID)
+        {
+            if (ItemSpecificIds.Count <= 0) return null;
+            return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, ItemSpecificIds[specificID]);
+        }
+
         public bool CanStack()
         {
             return TotalItemsInSlots < MaxStack;
@@ -49,22 +65,13 @@ namespace LightHouse.Inventory
         public TextMeshProUGUI ItemUseKey_TMP => _itemUseKey_TMP;
         public TextMeshProUGUI ItemStack_TMP => _itemStack_TMP;
         #endregion
-
-
         public SlotData SlotDatas;
+        private ItemDatabase _itemDatabase;
 
-        #region Inventory Items
-
-        private IInventoryItem _inventoryItem;
-        public IInventoryItem InventoryItem => _inventoryItem;
-
-        private IInventoryItemUsable _inventoryItemUsable;
-        public IInventoryItemUsable InventoryItemUsable => _inventoryItemUsable;
-
-        private IInventoryItemCallback _inventoryItemCallback;
-        public IInventoryItemCallback InventoryItemCallback => _inventoryItemCallback;
-
-        #endregion
+        public void Init(ItemDatabase itemDB)
+        {
+            _itemDatabase = itemDB;
+        }
 
         private void Start()
         {
@@ -77,21 +84,29 @@ namespace LightHouse.Inventory
         {
             SlotDatas.ItemGlobalID = item.GlobalItemID;
             SlotDatas.ItemSpecificIds.Add(item.ItemSpecificID);
-            SlotDatas.ItemSprite = item.ItemSprite;            
-            RefreshUI();
+            SlotDatas.ItemSprite = item.ItemSprite;
+            RefreshUIWithCurrentDatas();
+
+            if(SlotDatas.IsSelected)
+                IsInventoryItemUsable(item as IInventoryItemUsable);
         }
 
         public void RemoveItemFromSlot(ushort specificID)
         {
-            if (SlotDatas.ItemSpecificIds.Contains(specificID))
-            {
-                SlotDatas.ItemSpecificIds.Remove(specificID);
-                RefreshUI();
-            }
+            if (!SlotDatas.ItemSpecificIds.Contains(specificID)) return;
+            SlotDatas.ItemSpecificIds.Remove(specificID);
+            RefreshUIWithCurrentDatas();
         }
 
-        public void RefreshUI()
+        public void RefreshUIWithCurrentDatas()
         {
+            IInventoryItem item = _itemDatabase.Get(SlotDatas.ItemGlobalID);
+            if(item is IInventoryStackable)
+            {
+                if (!ItemStack_TMP.isActiveAndEnabled) SetEnableItemStackCountText(true);
+                UpdateItemStackCount();
+            }
+
             if (SlotDatas.HasItem)
             {
                 _spriteItem.sprite = SlotDatas.ItemSprite;
@@ -100,6 +115,7 @@ namespace LightHouse.Inventory
             else
             {
                 _spriteItem.sprite = null;
+                if (ItemStack_TMP.isActiveAndEnabled) SetEnableItemStackCountText(false);
                 HideSelectedInfos();
             }
 
@@ -108,13 +124,21 @@ namespace LightHouse.Inventory
         public void HideSelectedInfos()
         {
             SetEnableItemNameText(false);
-            if (ItemStack_TMP.isActiveAndEnabled) SetEnableItemStackCountText(false);
+            SetEnableUseKeyText(false);
         }
 
         public void Show()
         {
             SetEnableItemNameText(true);
-            if (SlotDatas.TotalItemsInSlots > 1) SetEnableItemStackCountText(true);
+            IInventoryItem item = _itemDatabase.Get(SlotDatas.ItemGlobalID);
+            if(item != null)
+                SetItemNameText(item.GetName());
+            if (SlotDatas.TotalItemsInSlots > 1)
+            {
+                SetEnableItemStackCountText(true);
+                UpdateItemStackCount();
+            }
+            IsInventoryItemUsable(item as IInventoryItemUsable);
         }
 
         public void SetEnableItemNameText(bool value)
@@ -159,17 +183,6 @@ namespace LightHouse.Inventory
 
         public void ResetSlot()
         {
-            if(_inventoryItem != null)
-            {
-                _inventoryItem = null;
-            }
-
-            if(_inventoryItemUsable != null)
-                _inventoryItemUsable = null;
-
-            if(_inventoryItemCallback != null)
-                _inventoryItemCallback = null;
-
             if(_spriteItem.sprite != null)
                 _spriteItem.sprite = null;
         }

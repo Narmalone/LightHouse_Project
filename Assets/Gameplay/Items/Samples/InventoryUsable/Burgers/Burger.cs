@@ -27,9 +27,9 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
     public event Action OnInteractionNameChanged;
     public event Action OnObjectInteracted;
     public event Action OnItemUsed;
-    public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
+    public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
 
-    public event Action<Vector3, float, bool, bool, IInventoryItem> ForceDropItemInInventory;
+    public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
 
     #region IInventoryItem Method
 
@@ -63,8 +63,9 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
 
     public void Eat()
     {
-        if(IsItemInInventory)
-            ForceDropItemInInventory?.Invoke(transform.position, 0f, false, false, this);
+        if (IsItemInInventory)
+            ForceDropItemFromInventory?.Invoke(this.GlobalItemID, this.ItemSpecificID, transform.position, 0f, false);
+        this.gameObject.SetActive(false);
         Destroy(this.gameObject);
     }
 
@@ -77,6 +78,11 @@ public class Burger : ItemBase, IInteractable, IInventoryItem, IInventoryItemUsa
 
     public void InvokeOnCanBeUsedFromInventoryChanged()
     {
-        CanBeUsedFromInventoryChanged?.Invoke(this);
+        CanBeUsedFromInventoryChanged?.Invoke(this.GlobalItemID, this.ItemSpecificID);
+    }
+
+    public void InvokeForceDropItemFromInventory(Vector3 pos, float force, bool enablePhysics)
+    {
+        ForceDropItemFromInventory?.Invoke(this.GlobalItemID, this.ItemSpecificID, pos, force, enablePhysics);
     }
 }

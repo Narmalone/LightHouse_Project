@@ -1,14 +1,11 @@
 using LightHouse.Inputs;
+using LightHouse.Interactions;
 using LightHouse.Inventory;
 using UnityEngine;
 
-
 //TO DOO ----
-//Relier les systèmes suivants::
-//lier les booléens, l'objet est dans l'inventaire / ne l'est pas
-//lier les autres interfaces IInventoryUsable, IinventoryCallback, ne pas oublier les delegates etc..
+//lier les autres interfaces IInventoryUsable
 //refaire le système de key avec keytypes
-//Commenter le code, éviter effets de bords, surplus de variable, ajouter les events associés
 //Revoir dans le pool manager le système de sorting par l'implémentation dans l'IInventoryItem
 //finir d'assigner les infos dans l'ui avec les items
 public class PlayerInventoryController : MonoBehaviour
@@ -26,8 +23,11 @@ public class PlayerInventoryController : MonoBehaviour
     [SerializeField] private InventoryScrollHandler _scrollHandler;
     [SerializeField] private InventoryDropHandler _dropHandler;
 
+    [SerializeField] private ItemDatabase _itemDatabase;
+
     [Header("UI")]
     [SerializeField] private InventoryUIController _inventoryUiController;
+    [SerializeField] private CanvasInteraction _interactionUiController;
 
     [Header("Drop Settings")]
     [SerializeField] private float _maxDropPower = 10f;
@@ -48,15 +48,16 @@ public class PlayerInventoryController : MonoBehaviour
     {
         _raycastDetector.OnItemDetected += HandleItemDetected;
         _raycastDetector.OnItemLost += ResetSeenObject;
+        _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
     }
 
     private void Start()
     {
-        _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity);
         _pickupHandler = new InventoryPickupHandler(_slots, _inventoryCapacity);
-        _scrollHandler = new InventoryScrollHandler(_slots, _inventoryCapacity);
+        _scrollHandler = new InventoryScrollHandler(_slots, _inventoryCapacity, _itemDatabase);
         _dropHandler.Initialize(_slots, _inventoryTarget);
         InputManager.Scroll.performed += Scroll_performed;
+        InventoryHandlerData.Initialize(_slots, _inventoryTarget);
     }
 
     private void OnDisable()
@@ -68,15 +69,77 @@ public class PlayerInventoryController : MonoBehaviour
     {
         _raycastDetector.OnItemDetected -= HandleItemDetected;
         _raycastDetector.OnItemLost -= ResetSeenObject;
+        InventoryHandlerData.Reset();
+        PoolManager.Clear();
     }
 
     private void Update()
     {
-        if (!_scrollHandler.IsIndexInvalid(_scrollHandler.CurrentIndex) && CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count > 0)
-            HandleDropInputs();
+        if (!_scrollHandler.IsIndexInvalid(_scrollHandler.CurrentIndex))
+        {
+            if (CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count > 0)
+                HandleDropInputs();
+        }
 
-        if (InputManager.PickUp.WasPerformedThisFrame())
-            _pickupHandler.PickupItem(_scrollHandler.CurrentIndex, _lastInventoryItemSeen);
+        if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
+        {
+            AddItemToInventory(_scrollHandler.CurrentIndex, _lastInventoryItemSeen);
+        }
+
+        if (InputManager.InteractInInventory.WasPerformedThisFrame())
+        {
+            if (_scrollHandler.IsIndexInvalid(_scrollHandler.CurrentIndex)) return;
+            var s = CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot();
+            if (s != null && s is IInventoryItemUsable usable)
+            {
+                if (!usable.CanBeUsedFromInventory) return;
+                usable.UseFromInventory();
+            }
+        }
+            
+    }
+
+    private void AddItemToInventory(int slotIndex, IInventoryItem item)
+    {
+        _pickupHandler.PickupItem(slotIndex, item);
+        item.ForceDropItemFromInventory += IinventoryItem_ForceDropItemInInventory;
+        IInventoryItemUsable usable = item as IInventoryItemUsable;
+        if (usable != null)
+            usable.CanBeUsedFromInventoryChanged += Usable_CanBeUsedFromInventoryChanged;
+    }
+
+    private void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID, 
+        Vector3 position, float force, bool enablePhysicsOnDrop)
+    {
+        _dropHandler.DropItem
+            (
+                slotID: slotIndex,
+                itemGlobalID: globalItemID,
+                specificID: specificItemID,
+                pos: position,
+                force: force,
+                enablePhysicsOnDrop: enablePhysicsOnDrop,
+                out IInventoryItem droppedItem
+            );
+        droppedItem.ForceDropItemFromInventory -= IinventoryItem_ForceDropItemInInventory;
+
+        IInventoryItemUsable usable = droppedItem as IInventoryItemUsable;
+        if (usable != null)
+            usable.CanBeUsedFromInventoryChanged -= Usable_CanBeUsedFromInventoryChanged;
+    }
+
+    private void Usable_CanBeUsedFromInventoryChanged(ushort globalID, ushort specificID)
+    {
+        if(InventoryHandlerData.TryFindSpecificItem(globalID, specificID, out IInventoryItem item, out short slotID))
+        {
+            if(item is IInventoryItemUsable usable)
+                _slots[slotID].IsInventoryItemUsable(usable);
+        }
+    }
+
+    private void IinventoryItem_ForceDropItemInInventory(ushort globalItemID, ushort specificItemID, Vector3 position, float force, bool enablePhysicsOnDrop)
+    {
+        RemoveItemFromInventory(_slots[_scrollHandler.CurrentIndex].SlotDatas.SlotID, globalItemID, specificItemID, position, force, enablePhysicsOnDrop);
     }
 
     private void LateUpdate()
@@ -85,7 +148,12 @@ public class PlayerInventoryController : MonoBehaviour
     }
 
     #region RAYCAST DELEGATES
-    private void HandleItemDetected(IInventoryItem item) => _lastInventoryItemSeen = item;
+    private void HandleItemDetected(IInventoryItem item)
+    {
+        _lastInventoryItemSeen = item;
+        _interactionUiController.ShowItemPickup();
+        _interactionUiController.SetItemPickupText(item.GetPickupName());
+    }
 
     private void ResetSeenObject()
     {
@@ -93,7 +161,10 @@ public class PlayerInventoryController : MonoBehaviour
             _lastObjectSeen = null;
 
         if (_lastInventoryItemSeen != null)
+        {
+            _interactionUiController.HideItemPickup();
             _lastInventoryItemSeen = null;
+        }
     }
     #endregion
 
@@ -111,30 +182,29 @@ public class PlayerInventoryController : MonoBehaviour
         }
         else if (_isChargingDrop && InputManager.Drop.WasReleasedThisFrame())
         {
-            _dropHandler.DropItem
+            RemoveItemFromInventory
             (
-                slotID: CurrentSelectedSlot.SlotDatas.SlotID,
-                itemGlobalID: CurrentSelectedSlot.SlotDatas.ItemGlobalID,
-                pos: _inventoryTarget.position,
+                slotIndex: CurrentSelectedSlot.SlotDatas.SlotID,
+                globalItemID: CurrentSelectedSlot.SlotDatas.ItemGlobalID,
+                specificItemID: _slots[_scrollHandler.CurrentIndex].SlotDatas.ItemSpecificIds[0],
+                position: _inventoryTarget.position,
                 force: _dropPower,
-                enablePhysicsOnDrop: true,
-                out IInventoryItem droppedItem
+                enablePhysicsOnDrop: true
             );
-
             _dropPower = 0f;
             _dropChargeTimer = 0f;
             _isChargingDrop = false;
         }
         else if (InputManager.Drop.WasPerformedThisFrame())
         {
-            _dropHandler.DropItem
+            RemoveItemFromInventory
             (
-                slotID: CurrentSelectedSlot.SlotDatas.SlotID,
-                itemGlobalID: CurrentSelectedSlot.SlotDatas.ItemGlobalID,
-                pos: _inventoryTarget.position,
+                slotIndex: CurrentSelectedSlot.SlotDatas.SlotID,
+                globalItemID: CurrentSelectedSlot.SlotDatas.ItemGlobalID,
+                specificItemID: _slots[_scrollHandler.CurrentIndex].SlotDatas.ItemSpecificIds[0],
+                position: _inventoryTarget.position,
                 force: 0.0f,
-                enablePhysicsOnDrop: true,
-                out IInventoryItem droppedItem
+                enablePhysicsOnDrop: true
             );
         }
     }

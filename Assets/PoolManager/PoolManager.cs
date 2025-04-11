@@ -6,19 +6,29 @@ public static class PoolManager
 {
     public static Dictionary<ushort, List<IInventoryItem>> InventoryItemPools = new();
 
-    public static IInventoryItem Get(ushort globalID)
+    public static IInventoryItem GetWithoutRemovingFromPool(ushort globalID, ushort itemSpecifcID)
+    {
+        if (!InventoryItemPools.ContainsKey(globalID)) return null;
+        if (InventoryItemPools[globalID].Count == 0) return null;
+        return InventoryItemPools[globalID].Find(x => x.ItemSpecificID == itemSpecifcID);
+    }
+
+    public static IInventoryItem Get(ushort globalID, ushort itemSpecificID, bool enablePhysicsOnGet)
     {
         if (!InventoryItemPools.ContainsKey(globalID)) return null;
         if (InventoryItemPools[globalID].Count == 0) return null;
 
         IInventoryItem findedItem = null;
-        findedItem = InventoryItemPools[globalID][0];
+        //findedItem = InventoryItemPools[globalID][0];
+        findedItem = InventoryItemPools[globalID].Find(x => x.ItemSpecificID == itemSpecificID);
 
         if (findedItem != null)
         {
-            EnableInventoryItem(findedItem);
+            EnableInventoryItem(findedItem, enablePhysicsOnGet);
             InventoryItemPools[globalID].Remove(findedItem);
         }
+
+        if (InventoryItemPools[globalID].Count <= 0) InventoryItemPools.Remove(globalID);
         return findedItem;
     }
 
@@ -37,24 +47,20 @@ public static class PoolManager
     {
         item.GetGameObject().SetActive(false);
         item.GetCollider().enabled = false;
+        item.GetRigidBody().isKinematic = true;
     }
 
-    private static void EnableInventoryItem(IInventoryItem item)
+    private static void EnableInventoryItem(IInventoryItem item, bool enablePhysics)
     {
+        if (item == null) return;
         item.GetGameObject().SetActive(true);
+        if (!enablePhysics) return;
         item.GetCollider().enabled = true;
+        item.GetRigidBody().isKinematic = false;
     }
 
-    public static void RemoveFromPool(ushort itemGlobalID, ushort itemSpecificID)
+    public static void Clear()
     {
-        IInventoryItem removedItem = null;
-        if (InventoryItemPools.ContainsKey(itemGlobalID))
-        {
-            removedItem = InventoryItemPools[itemGlobalID].Find(x => x.ItemSpecificID == itemSpecificID);
-            if (InventoryItemPools[itemGlobalID].Count == 0) InventoryItemPools.Remove(itemGlobalID);
-        }
-
-        if(removedItem != null)
-            EnableInventoryItem(removedItem);
+        InventoryItemPools.Clear();
     }
 }

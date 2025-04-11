@@ -7,13 +7,15 @@ using UnityEngine.InputSystem;
 
 namespace LightHouse.Items.Samples
 {
-    public class PlaceHolderKeyMover : KeyItemUseTracker
+    public class PlaceHolderKeyMover : IDUseItemTracker
     {
         private bool _isObjectTargetMoving = false;
         [SerializeField] private float SharpnessPosition = 25f;
         [SerializeField] private float SharpnessRotation = 25f;
         public event Action<PlaceHolderKeyMover> OnPlaceHolderKeyCompleted;
-        public Key TargetObject;
+
+        private IInventoryItem TargetItem;
+        public Transform TargetObject => TargetItem.GetGameObject().transform;
         public bool CanObjectMoveToPosition { get => _isObjectTargetMoving; set { _isObjectTargetMoving = value; } }
         public override string GetInteractionName()
         {
@@ -26,50 +28,18 @@ namespace LightHouse.Items.Samples
             
         }
 
-        private void Start()
-        {
-            PlayerInventory.OnItemDropped += PlayerInventory_OnItemDropped;
-        }
-
-        private void PlayerInventory_OnItemDropped(IInventoryItem obj)
-        {
-            
-        }
-        public override void OnRaycastEnd()
-        {
-            base.OnRaycastEnd();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            PlayerInventory.OnItemDropped -= PlayerInventory_OnItemDropped;
-        }
-
         protected override void Usable_OnItemUsed()
         {
+            IInventoryItem item = _inventoryItemUsable as IInventoryItem;
+            if (item != null)
+            {
+                TargetItem = item;
+                TargetObject.gameObject.layer = 0;
+                item.InvokeForceDropItemFromInventory(InventoryHandlerData.InventoryTargetPosition.position, 0.0f, false);
+            }
             base.Usable_OnItemUsed();
-
-            //TO DO :: Handle si l'objet est stackable dans l'inventaire -> revoir le systeme
-            //de stacking d'objets ?
-
-            if (KeyHandedItem is IInventoryStackable stack)
-            {
-                if(stack.CurrentStack > 1)
-                {
-                    TargetObject = Locator<PlayerInventory>.Instance.GetItemFromSlot(KeyHandedItem) as Key;
-                    KeyHandedItem.ForceRemoveItemFromInventory(KeyHandedItem.transform.position, 0f, false, false);
-                }
-                else
-                {
-                    TargetObject = KeyHandedItem.ForceRemoveItemFromInventory(KeyHandedItem.transform.position, 0f, false, false);
-                }
-
-            }
-            else
-            {
-                TargetObject = KeyHandedItem.ForceRemoveItemFromInventory(KeyHandedItem.transform.position, 0f, false, false);
-            }
+            CanBeInteracted = false;
+            CanBeRaycasted = false;
             _isObjectTargetMoving = true;
         }
 
@@ -90,22 +60,20 @@ namespace LightHouse.Items.Samples
                     t: 1f - Mathf.Exp(-SharpnessRotation * Time.deltaTime)
                 );
 
-            TargetObject.transform.localScale = this.transform.localScale;
-
             float posDist = Vector3.Distance(TargetObject.transform.position, transform.position);
             Vector3 eulersDist = (TargetObject.transform.eulerAngles - transform.eulerAngles);
             
             if (posDist <= 0.0001f && eulersDist.magnitude < 0.01f)
             {
+                //à changer plus tard pour mettre de fausses "planches" par exemple qui n'ont pas de 
+                //script / listener ou autre...
+                _isObjectTargetMoving = false;
+                TargetItem.GetCollider().enabled = true;
                 TargetObject.transform.position = this.transform.position;
                 TargetObject.transform.rotation = this.transform.rotation;
-
-                _isObjectTargetMoving = false;
-                TargetObject.GetCollider().enabled = true;
-                TargetObject.gameObject.layer = 0;
-                TargetObject.enabled = false;
+                //Destroy(TargetItem.GetGameObject());
+                TargetItem = null;
                 OnPlaceHolderKeyCompleted?.Invoke(this);
-                TargetObject = null;
             }
         }
 

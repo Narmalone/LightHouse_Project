@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &628502574896919933
+--- !u!1 &6052273258239615266
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,83 +8,65 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2629196592336163693}
-  - component: {fileID: 3257248284275988232}
-  - component: {fileID: 6014912849866339431}
-  - component: {fileID: 2773966567434714135}
-  m_Layer: 7
-  m_Name: Pivot
+  - component: {fileID: 6826264961758810938}
+  - component: {fileID: 1421357872287460008}
+  - component: {fileID: 5644919683976309068}
+  - component: {fileID: 4253784631881380918}
+  m_Layer: 6
+  m_Name: WoodenPlank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2629196592336163693
+--- !u!4 &6826264961758810938
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628502574896919933}
+  m_GameObject: {fileID: 6052273258239615266}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.0000004768371, z: -0, w: 1}
-  m_LocalPosition: {x: -0.034, y: -1.209, z: 0.791}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.705013, y: 0.50000006, z: 6.3650208}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8422317272392303128}
-  m_Father: {fileID: 8578177552427112516}
+  - {fileID: 561539457865069417}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3257248284275988232
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628502574896919933}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.17739105, y: 2.6206317, z: 1.5048424}
-  m_Center: {x: -0.0000000144256616, y: 1.3078673, z: -0.742021}
---- !u!114 &6014912849866339431
+--- !u!114 &1421357872287460008
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628502574896919933}
+  m_GameObject: {fileID: 6052273258239615266}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86463bf272eb2cb4487fee73136bf733, type: 3}
+  m_Script: {fileID: 11500000, guid: 5641e513d97c80049a9b455ad03d345e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pivot: {fileID: 2629196592336163693}
-  _openRotationAngles: {x: 0, y: 90, z: 0}
-  _rotationSpeed: 2
-  _doorCollider: {fileID: 3257248284275988232}
-  <CanBeInteracted>k__BackingField: 1
+  _Name: Wood Plank
+  _Collider: {fileID: 4253784631881380918}
+  _Rigidbody: {fileID: 5644919683976309068}
+  <IsItemInInventory>k__BackingField: 0
   <IsItemRaycasted>k__BackingField: 0
-  _isOpen: 0
   <CanBeRaycasted>k__BackingField: 1
---- !u!54 &2773966567434714135
+  <IsItemOnHands>k__BackingField: 0
+  <CanBeUsedFromInventory>k__BackingField: 0
+  _keySprite: {fileID: 21300000, guid: fba791cd1d06f6b4ca3f5d31d703906e, type: 3}
+  <GlobalItemID>k__BackingField: 3
+  <ItemSpecificID>k__BackingField: 0
+--- !u!54 &5644919683976309068
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628502574896919933}
+  m_GameObject: {fileID: 6052273258239615266}
   serializedVersion: 4
-  m_Mass: 200
+  m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -99,11 +81,32 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 94
+  m_Constraints: 0
   m_CollisionDetection: 0
---- !u!1 &6241700384106666401
+--- !u!65 &4253784631881380918
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6052273258239615266}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.8009355, y: 0.51714575, z: 0.05821228}
+  m_Center: {x: -0.00064504147, y: -0.004624665, z: 0.0017852783}
+--- !u!1 &8135201358403799879
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -111,9 +114,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8422317272392303128}
-  - component: {fileID: 3990281861235365546}
-  - component: {fileID: 8700810144650999287}
+  - component: {fileID: 561539457865069417}
+  - component: {fileID: 2998067521888830913}
+  - component: {fileID: 478025357349638337}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -121,36 +124,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8422317272392303128
+--- !u!4 &561539457865069417
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6241700384106666401}
+  m_GameObject: {fileID: 8135201358403799879}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.0000000596047, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0072978344, y: 1.3153706, z: -0.7439984}
-  m_LocalScale: {x: 0.1455, y: 2.616724, z: 1.4911}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.8043, y: 0.51112413, z: 0.087046646}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2629196592336163693}
+  m_Father: {fileID: 6826264961758810938}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3990281861235365546
+--- !u!33 &2998067521888830913
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6241700384106666401}
+  m_GameObject: {fileID: 8135201358403799879}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &8700810144650999287
+--- !u!23 &478025357349638337
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6241700384106666401}
+  m_GameObject: {fileID: 8135201358403799879}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -188,35 +191,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &8692822252749091957
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8578177552427112516}
-  m_Layer: 0
-  m_Name: SimpleDoor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8578177552427112516
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8692822252749091957}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.1739998, y: 0.69417393, z: 2.6529999}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2629196592336163693}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

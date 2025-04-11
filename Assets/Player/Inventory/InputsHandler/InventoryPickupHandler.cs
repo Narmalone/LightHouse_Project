@@ -1,5 +1,4 @@
 using LightHouse.Inventory;
-using UnityEngine;
 
 public class InventoryPickupHandler
 {
@@ -44,6 +43,8 @@ public class InventoryPickupHandler
         }
 
         targetSlot.AddItemDatasToSlot(item);
+
+        if (item is IInventoryItemCallback callback) callback.OnItemAddedToInventory();
     }
 
     private bool IsSlotInvalidOrOccupied(int index)

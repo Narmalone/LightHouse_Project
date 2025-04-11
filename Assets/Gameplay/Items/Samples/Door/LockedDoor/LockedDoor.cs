@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LightHouse.Items.Samples
 {
-    public class LockedDoor : KeyItemUseTracker, IDoor
+    public class LockedDoor : IDUseItemTracker, IDoor
     {
         #region SERIALIZED FIELDS
         [Header("Door Control")]
@@ -12,7 +12,6 @@ namespace LightHouse.Items.Samples
         [SerializeField] protected float _rotationSpeed = 2f;
 
         [Header("Debug")]
-        [SerializeField] protected bool _hasKey = false;
         [SerializeField] protected bool _isUnLocked = false;
         public bool IsUnLocked => _isUnLocked;
 
@@ -26,6 +25,7 @@ namespace LightHouse.Items.Samples
         protected Quaternion _openRotation;
         protected float _lerpTime = 0f;
         protected bool _isMoving = false;
+
         #endregion
 
         #region MONO'S CALLBACK
@@ -41,6 +41,7 @@ namespace LightHouse.Items.Samples
         {
             CanBeInteracted = false;
         }
+
         protected virtual void Update()
         {
             if (_isMoving)
@@ -55,22 +56,27 @@ namespace LightHouse.Items.Samples
                 }
             }
         }
-
-
         #endregion
 
         #region Register Callbacks
-
         public override void OnRaycastStart()
         {
-            if (_isUnLocked) return;
             base.OnRaycastStart();
+            if (_isUnLocked) return;
         }
 
         public override void OnRaycastEnd()
         {
-            if (_isUnLocked) return;
             base.OnRaycastEnd();
+            if (_isUnLocked) return;
+        }
+
+        protected override void Usable_OnItemUsed()
+        {
+            base.Usable_OnItemUsed();
+            _isUnLocked = true;
+            CanBeInteracted = true;
+            Open();
         }
 
         #endregion
@@ -80,17 +86,11 @@ namespace LightHouse.Items.Samples
         {
             if (!_isUnLocked)
             {
-                _hasKeyOnhands = $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to unlock with the key.";
                 return base.GetInteractionName();
             }
-            return _hasKeyOnhands = _isOpen
+            return _isOpen
                 ? $"Press {InputManager.GetBindingName(InputManager.Interact)} to close"
                 : $"Press {InputManager.GetBindingName(InputManager.Interact)} to open";
-        }
-
-        public override string GetName()
-        {
-            return string.Empty;
         }
 
         public override void Interact()
@@ -111,24 +111,9 @@ namespace LightHouse.Items.Samples
             if (IsItemRaycasted)
             {
                 // Update the Player's Interactions Raycast data
-                InvokeOnNameChanged();
-                InvokeOnInteractionNameChanged();
+                InvokeNameUpdated();
+                InvokeInteractionDescriptionUpdated();
             }
-        }
-
-        protected override void Usable_OnItemUsed()
-        {
-            if (!_keyNeededOnHands) return;
-            if (!_isUnLocked)
-            {
-                _isUnLocked = true;
-                CanBeInteracted = true;
-                KeyHandedItem.CanBeUsedFromInventory = false;
-                KeyHandedItem.InvokeOnCanBeUsedFromInventoryChanged();
-                InvokeOnInteractionNameChanged();
-                return;
-            }
-            base.Usable_OnItemUsed();
         }
 
         #endregion

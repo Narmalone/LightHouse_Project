@@ -92,11 +92,9 @@ namespace LightHouse.Items.Samples
         #endregion
 
         #region CONTROLLERS CALLBACKS
-        private void JerricanReceiver_OnJerricanUsed(JerricanEssence obj)
+        private void JerricanReceiver_OnJerricanUsed(float essenceAmount)
         {
-            AddFuel(obj.EssenceAmount);
-            JerricanEssence removedJerrican = obj.InvokeRemoveItemInInventory();
-            Destroy(removedJerrican.gameObject);
+            AddFuel(essenceAmount);
         }
 
         private void GeneratorSwitch_OnObjectInteracted()

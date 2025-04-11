@@ -6,7 +6,7 @@ namespace LightHouse.Items.Samples
 {
     public class WoodPlank : Key
     {
-        
+
     }
 
 }

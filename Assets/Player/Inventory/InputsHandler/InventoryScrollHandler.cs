@@ -1,21 +1,30 @@
 using LightHouse.Inventory;
+using UnityEngine;
 
 public class InventoryScrollHandler
 {
     private ItemSlot[] _slots;
     private byte _inventoryCapacity;
     private int _currentIndex;
+    private ItemDatabase _itemDatabase;
 
     public int CurrentIndex => _currentIndex;
 
-    public InventoryScrollHandler(ItemSlot[] slots, byte capacity)
+    public InventoryScrollHandler(ItemSlot[] slots, byte capacity, ItemDatabase database)
     {
         _slots = slots;
         _inventoryCapacity = capacity;
         _currentIndex = -1;
+        _itemDatabase = database;
     }
 
     public void Scroll(int direction)
+    {
+        int nextScrollValue = _currentIndex + direction;
+        ChangeSelectedSlot(nextScrollValue);
+    }
+
+    public void ChangeSelectedSlot(int slotID)
     {
         if (!IsIndexInvalid(_currentIndex))
         {
@@ -24,7 +33,7 @@ public class InventoryScrollHandler
                 _slots[_currentIndex].HideSelectedInfos();
         }
 
-        _currentIndex += direction;
+        _currentIndex = slotID;
 
         if (_currentIndex < -1)
             _currentIndex = _inventoryCapacity - 1;
@@ -36,6 +45,20 @@ public class InventoryScrollHandler
             _slots[_currentIndex].SlotDatas.IsSelected = true;
             if (_slots[_currentIndex].SlotDatas.HasItem)
                 _slots[_currentIndex].Show();
+
+            if (_slots[_currentIndex].SlotDatas.HasItem)
+            {
+                var item = _itemDatabase.Get(_slots[_currentIndex].SlotDatas.ItemGlobalID);
+                InventoryHandlerData.SetSelectedItem(item);
+            }
+            else
+            {
+                InventoryHandlerData.ClearSelection();
+            }
+        }
+        else
+        {
+            InventoryHandlerData.ClearSelection();
         }
     }
 

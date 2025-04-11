@@ -1,16 +1,13 @@
-using UnityEngine;
-
 namespace LightHouse.Items.Samples
 {
-    public class DestroyableItem : KeyItemUseTracker
+    public class IDUseItemHideTracker : IDUseItemTracker
     {
-
         #region IInventoryUsable Callbacks
-         
         protected override void Usable_OnItemUsed()
         {
+            if (_inventoryItemUsable == null) return;
             base.Usable_OnItemUsed();
-            Destroy(this.gameObject);
+            this.gameObject.SetActive(false);
         }
         #endregion
     }

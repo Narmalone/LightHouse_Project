@@ -13,7 +13,7 @@ namespace LightHouse.Inventory
     [DefaultExecutionOrder(-1)]
     public class PlayerInventory : MonoBehaviour
     {
-        #region SERILIAZED FIELDS
+        /*#region SERILIAZED FIELDS
         [Header("Inventory Settings")]
         [SerializeField] private byte _inventoryCapacity = 4;
         [SerializeField] private int _currentSlotIndex = -1;
@@ -95,7 +95,7 @@ namespace LightHouse.Inventory
         #region MONO'S CALLBACK
         private void Awake()
         {
-            _itemSlots = _inventoryCanvas.GenerateItemSlot(_inventoryCapacity).ToList();
+            //_itemSlots = _inventoryCanvas.GenerateItemSlot(_inventoryCapacity).ToList();
             _interactionCanvas.HideItemPickup();
             Locator<PlayerInventory>.Register(this);
         }
@@ -137,7 +137,7 @@ namespace LightHouse.Inventory
             Gizmos.DrawSphere(_inventoryTarget.position, 0.3f);
         }
 
-        private void OnDestroy() 
+        private void OnDestroy()
         {
             InputManager.OnInputManagerWillClear -= InputManager_OnInputManagerUnregister;
             Locator<PlayerInventory>.Clear();
@@ -178,7 +178,7 @@ namespace LightHouse.Inventory
             int scrollDirection = Mathf.RoundToInt(obj.ReadValue<Vector2>().y);
             int inversedScroll = -scrollDirection; //invert scroll direction (scroll up to left, scroll down to right)
 
-            if (inversedScroll == 0) return; 
+            if (inversedScroll == 0) return;
 
             _currentSlotIndex += inversedScroll;
             // Cyclic scrolling, -1 is for nothing selected
@@ -208,13 +208,13 @@ namespace LightHouse.Inventory
                     _inventoryCanvas.FillHoldedImage(0f);
                 return;
             }
-           
+
             // Only proceed if the key is held
             if (!InputManager.InteractInInventory.IsPressed() || !_currentSelectedSlot.InventoryItemUsable.CanBeUsedFromInventory)
                 return;
 
             var holdValuePercent = InputManager.InteractInInventory.GetTimeoutCompletionPercentage();
-            if( holdValuePercent > 0 && holdValuePercent < 0.95f) 
+            if (holdValuePercent > 0 && holdValuePercent < 0.95f)
                 _inventoryCanvas.FillHoldedImage(holdValuePercent);
             if (InputManager.InteractInInventory.triggered)
             {
@@ -266,7 +266,7 @@ namespace LightHouse.Inventory
                 _raycastedInventoryItem = hitObject.GetComponent<IInventoryItem>();
                 _raycastedInventoryItemCallback = hitObject.GetComponent<IInventoryItemCallback>();
                 _raycastedInventoryItemUsable = hitObject.GetComponent<IInventoryItemUsable>();
-                
+
                 if (_raycastedInventoryItem != null)
                     ShowPickupItemInteractionUI(_raycastedInventoryItem);
                 //in case we are looking an item and looking an other item whithout seeing nothing (without the ResetSeenObjectMethod())
@@ -283,7 +283,7 @@ namespace LightHouse.Inventory
         /// </summary>
         private void ResetSeenObject()
         {
-            if(_lastObjectSeen != null)
+            if (_lastObjectSeen != null)
                 _lastObjectSeen = null;
 
             if (_raycastedInventoryItem != null)
@@ -355,14 +355,14 @@ namespace LightHouse.Inventory
             return _currentSlotIndex < 0 || _currentSlotIndex >= _inventoryCapacity || _currentSelectedSlot.InventoryItem != null;
         }
 
-   /*     private void SetItemToSlot(ItemSlot slot, IInventoryItem item, IInventoryItemCallback callback, IInventoryItemUsable usable)
+        private void SetItemToSlot(ItemSlot slot, IInventoryItem item, IInventoryItemCallback callback, IInventoryItemUsable usable)
         {
             slot.SetInventoryItem(item);
             slot.SetSpriteItem(item);
             slot.SetItemCallback(callback);
             slot.SetItemUsable(usable);
             SetItemNameTextUI(slot, item.GetName());
-        }*/
+        }
 
         /// <summary>
         /// Called when the player press the pickup key while looking an item
@@ -417,7 +417,7 @@ namespace LightHouse.Inventory
             _currentSlotTakenInventory++;
             itemCallback?.OnItemAddedToInventory();
             OnItemAdded?.Invoke(item);
-            item.ForceDropItemInInventory += (pos, force, enableRB, checkSafePos, item) => Item_ForceDropInInventory(pos, force, enableRB, checkSafePos, item);
+            item.ForceDropItemFromInventory += (pos, force, enableRB, checkSafePos, item) => Item_ForceDropInInventory(pos, force, enableRB, checkSafePos, item);
             return true;
         }
 
@@ -461,13 +461,13 @@ namespace LightHouse.Inventory
 
         private IInventoryItem GetItemToDropFromSlot(ItemSlot slot)
         {
-           /* if (slot.InventoryItem is IInventoryStackable stackable && slot.StackedItemsCount > 1)
+            if (slot.InventoryItem is IInventoryStackable stackable && slot.StackedItemsCount > 1)
             {
                 IInventoryItem stackedItem = slot.RemoveStackedItem();
                 stackable.RemoveFromStack(1);
                 UpdateStackItemCountUI(slot);
                 return stackedItem;
-            }*/
+            }
 
             IInventoryItem item = slot.InventoryItem;
             RemoveItemFromInventory(slot, item, slot?.InventoryItemCallback);
@@ -477,10 +477,10 @@ namespace LightHouse.Inventory
         public IInventoryItem GetItemFromSlot(IInventoryItem item)
         {
             var slot = TryFindItemInSlots(item);
-           /* if(slot.InventoryItem is IInventoryStackable stack)
+            if (slot.InventoryItem is IInventoryStackable stack)
             {
                 return slot.GetStackedItem();
-            }*/
+            }
             return null;
         }
 
@@ -522,7 +522,7 @@ namespace LightHouse.Inventory
         /// <param name="item"> the item you try to remove </param>
         public GameObject RemoveItemFromInventory(ItemSlot slot, IInventoryItem item, IInventoryItemCallback itemCallback)
         {
-            if (slot == null) return null;           
+            if (slot == null) return null;
 
             if (item is IInventoryItemUsable inventoryUsableItem) inventoryUsableItem.CanBeUsedFromInventoryChanged -= InventoryUsableItem_CanBeUsedFromInventoryChanged;
 
@@ -530,7 +530,7 @@ namespace LightHouse.Inventory
             if (item.IsItemInInventory) item.IsItemInInventory = false;
             if (item.IsItemOnHands) item.IsItemOnHands = false;
             itemCallback?.OnItemRemovedFromInventory();
-            item.ForceDropItemInInventory -= (pos, force, enableRB, checkSafePos, item) => Item_ForceDropInInventory(pos, force, enableRB, checkSafePos, item);
+            item.ForceDropItemFromInventory -= (pos, force, enableRB, checkSafePos, item) => Item_ForceDropInInventory(pos, force, enableRB, checkSafePos, item);
             _currentSlotTakenInventory--;
 
             SetEnableItemNameTextUI(slot, false);
@@ -689,7 +689,7 @@ namespace LightHouse.Inventory
             target.ItemUseKey_TMP.gameObject.SetActive(value);
         }
 
-        #endregion
+        #endregion*/
     }
 
 }

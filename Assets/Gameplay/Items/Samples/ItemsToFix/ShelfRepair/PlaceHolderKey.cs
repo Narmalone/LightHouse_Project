@@ -39,7 +39,7 @@ namespace LightHouse.Items.Samples
 
         protected virtual void Awake()
         {
-            PlayerInventory.OnHandsItemSelectedChanged += PlayerInventory_OnHandsItemSelectedChanged;
+            //PlayerInventory.OnHandsItemSelectedChanged += PlayerInventory_OnHandsItemSelectedChanged;
         }
 
         private void PlayerInventory_OnHandsItemSelectedChanged(IInventoryItem obj)
@@ -60,18 +60,18 @@ namespace LightHouse.Items.Samples
 
         protected virtual void OnDestroy()
         {
-            PlayerInventory.OnHandsItemSelectedChanged -= PlayerInventory_OnHandsItemSelectedChanged;
+            //PlayerInventory.OnHandsItemSelectedChanged -= PlayerInventory_OnHandsItemSelectedChanged;
         }
 
         protected virtual bool HasKeyInInventory()
         {
-            return _hasKey = Locator<PlayerInventory>.Instance.HasItem(_keyNeeded); 
+            return false; 
         }
 
         protected virtual bool HasKeyOnHands()
         {
             if (!_canCheck) return false;
-            if (Locator<PlayerInventory>.Instance.CurrentSelectedSlot == null || Locator<PlayerInventory>.Instance.CurrentSelectedSlot.InventoryItem == null)
+            /*if (Locator<PlayerInventory>.Instance.CurrentSelectedSlot == null || Locator<PlayerInventory>.Instance.CurrentSelectedSlot.InventoryItem == null)
             {
                 _hasKeyAndItemOnHand = false;
                 TargetObject = null;
@@ -93,7 +93,7 @@ namespace LightHouse.Items.Samples
             if (lastStoredResult != _hasKeyAndItemOnHand)
             {
                 OnInteractionNameChanged?.Invoke();
-            }
+            }*/
             return _hasKeyAndItemOnHand;
         }
 

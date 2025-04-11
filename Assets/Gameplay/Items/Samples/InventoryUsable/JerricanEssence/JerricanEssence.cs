@@ -2,6 +2,7 @@ using LightHouse.Inputs;
 using LightHouse.Inventory;
 using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace LightHouse.Items.Samples
 {
@@ -30,9 +31,9 @@ namespace LightHouse.Items.Samples
         [field: SerializeField] public ushort ItemSpecificID { get; set; }
 
         public event Action OnItemUsed;
-        public event Action<IInventoryItem> CanBeUsedFromInventoryChanged;
+        public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
         public event Action OnNameUpdated;
-        public event Action<Vector3, float, bool, bool, IInventoryItem> ForceDropItemInInventory;
+        public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
 
         public string GetName() => _itemName;
         public string GetPickupName()
@@ -45,7 +46,7 @@ namespace LightHouse.Items.Samples
 
         public void InvokeOnCanBeUsedFromInventoryChanged()
         {
-            CanBeUsedFromInventoryChanged?.Invoke(this);
+            CanBeUsedFromInventoryChanged?.Invoke(this.GlobalItemID, this.ItemSpecificID);
         }
 
         public void UseFromInventory()
@@ -57,12 +58,10 @@ namespace LightHouse.Items.Samples
             return $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to use.";
         }
 
-        public JerricanEssence InvokeRemoveItemInInventory()
+        public void InvokeForceDropItemFromInventory(Vector3 pos, float force, bool enablePhysics)
         {
-            //ForceDropItemInInventory?.Invoke();
-            return this;
+            ForceDropItemFromInventory?.Invoke(this.GlobalItemID, this.ItemSpecificID, pos, force, enablePhysics);
         }
-
     }
 
 }
