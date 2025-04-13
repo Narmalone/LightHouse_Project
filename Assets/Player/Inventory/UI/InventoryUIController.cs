@@ -10,6 +10,7 @@ namespace LightHouse.Inventory
         [SerializeField] private ItemSlot _slotPrefab;
         [SerializeField] private RectTransform _inventoryLayoutGroup;
         [SerializeField] private Image _holdItemImage;
+        [SerializeField] private Image _dropHoldPowerImage;
         private ItemSlot[] _generatedSlots;
         #endregion
 
@@ -28,10 +29,18 @@ namespace LightHouse.Inventory
         #endregion
 
         #region InteractItemInInventory Fill Image
-        public void FillHoldedImage(float fillValue)
+        public void FillInteractHoldedImage(float fillValue)
         {
             if (_holdItemImage.fillAmount == fillValue) return;
             _holdItemImage.fillAmount = fillValue;
+        }
+        #endregion
+
+        #region Drop Power Fill Image
+        public void FillDropHoldedImage(float fillValue)
+        {
+            if (_dropHoldPowerImage.fillAmount == fillValue) return;
+            _dropHoldPowerImage.fillAmount = fillValue;
         }
         #endregion
     }

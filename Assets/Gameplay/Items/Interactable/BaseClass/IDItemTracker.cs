@@ -70,7 +70,7 @@ public abstract class IDItemTracker : MonoBehaviour, IInteractable, IItemCallbac
     #endregion
 
     #region INVENTORY CALLBACKS
-    protected virtual void InventoryHandlerData_OnItemDropped()
+    protected virtual void InventoryHandlerData_OnItemDropped(IInventoryItem itm)
     {
         if (!IsItemRaycasted) return;
         CheckConditions();

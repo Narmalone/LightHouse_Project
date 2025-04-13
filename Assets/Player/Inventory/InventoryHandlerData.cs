@@ -23,7 +23,7 @@ namespace LightHouse.Inventory
 
         // Events
         public static event Action<IInventoryItem> OnSelectedItemChanged;
-        public static event Action OnItemDropped;
+        public static event Action<IInventoryItem> OnItemDropped;
 
         /// <summary>
         /// The Generated Slots
@@ -65,13 +65,13 @@ namespace LightHouse.Inventory
         #endregion
 
         #region DROP
-        public static void NotifyDrop(int slotID)
+        public static void NotifyDrop(int slotID, IInventoryItem item)
         {
             if (!_slots[slotID].SlotDatas.HasItem)
             {
                 ClearSelection();
             }
-            OnItemDropped?.Invoke();
+            OnItemDropped?.Invoke(item);
         }
         #endregion
     }

@@ -89,7 +89,7 @@ namespace LightHouse.Inventory
             _pickupHandler = new InventoryPickupHandler();
             _scrollHandler = new InventoryScrollHandler(_itemDatabase);
             _useFromInventoryHandler = new InventoryUseItemHandler(_inventoryUiController);
-            _dropHandler.Initialize(_slots, _inventoryTarget);
+            _dropHandler.Initialize(_slots, _inventoryUiController, _inventoryTarget);
             
         }
         #endregion
@@ -101,6 +101,7 @@ namespace LightHouse.Inventory
             InputManager.OnInputManagerWillClear += InputManager_OnInputManagerWillClear;
             _raycastDetector.OnItemDetected += HandleItemDetected;
             _raycastDetector.OnItemLost += ResetSeenObject;
+            InventoryHandlerData.OnItemDropped += InventoryHandlerData_OnItemDropped;
         }
 
         public void UnregisterInputs()
@@ -109,6 +110,7 @@ namespace LightHouse.Inventory
             InputManager.OnInputManagerInitialized -= InputManager_OnInputManagerInitialized;
             _raycastDetector.OnItemDetected -= HandleItemDetected;
             _raycastDetector.OnItemLost -= ResetSeenObject;
+            InventoryHandlerData.OnItemDropped -= InventoryHandlerData_OnItemDropped;
         }
 
         private void InputManager_OnInputManagerInitialized()
@@ -116,6 +118,7 @@ namespace LightHouse.Inventory
             InputManager.Select.performed += Select_performed;
             InputManager.Scroll.performed += Scroll_performed;
             InputManager.InteractInInventory.started += InteractInInventory_started;
+            InputManager.InteractInInventory.canceled += InteractInInventory_canceled; ;
         }
 
         private void InputManager_OnInputManagerWillClear() 
@@ -123,6 +126,7 @@ namespace LightHouse.Inventory
             InputManager.Select.performed -= Select_performed;
             InputManager.Scroll.performed -= Scroll_performed;
             InputManager.InteractInInventory.started -= InteractInInventory_started;
+            InputManager.InteractInInventory.canceled -= InteractInInventory_canceled;
         }
 
         #endregion
@@ -151,8 +155,6 @@ namespace LightHouse.Inventory
                     enablePhysicsOnDrop: enablePhysicsOnDrop,
                     out IInventoryItem droppedItem
                 );
-            droppedItem.ForceDropItemFromInventory -= IInventoryItem_ForceDropItemFromInventory;
-
             IInventoryItemUsable usable = droppedItem as IInventoryItemUsable;
             if (usable != null)
                 usable.CanBeUsedFromInventoryChanged -= Usable_CanBeUsedFromInventoryChanged;
@@ -196,7 +198,16 @@ namespace LightHouse.Inventory
         }
         #endregion
 
-        #region DROP HANDLING
+        #region DROP HANDLING && Callback
+        /// <summary>
+        /// when an item is dropped the <see cref="InventoryHandlerData"/> call an event
+        /// it allow us to unsubscribe the item
+        /// </summary>
+        private void InventoryHandlerData_OnItemDropped(IInventoryItem obj)
+        {
+            obj.ForceDropItemFromInventory -= IInventoryItem_ForceDropItemFromInventory;
+        }
+
         private void HandleDropInput() => _dropHandler.HandleDropInput();
         #endregion
 
@@ -208,6 +219,21 @@ namespace LightHouse.Inventory
             {
                 if (item is IInventoryItemUsable usable)
                     _useFromInventoryHandler.SetTarget(usable);
+            }
+        }
+        private void InteractInInventory_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex)) return;
+            if (!SlotManager.CurrentSelectedSlot.SlotDatas.HasItem)
+            {
+                _useFromInventoryHandler.SetTarget(null);
+                return;
+            }
+
+            if (SlotManager.CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot(out IInventoryItem item))
+            {
+                if (item is IInventoryItemUsable)
+                    _useFromInventoryHandler.SetTarget(null);
             }
         }
         private void HandleInteractInInventoryInput() => _useFromInventoryHandler.HandeInteractInInventoryInput();

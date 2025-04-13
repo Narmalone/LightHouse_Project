@@ -36,13 +36,16 @@ namespace LightHouse.Inventory
                     return;
                 if (!_usableItem.CanBeUsedFromInventory) return;
                 float holdvaluePercent = InputManager.InteractInInventory.GetTimeoutCompletionPercentage();
-                _inventoryUIController.FillHoldedImage(holdvaluePercent);
+                if (holdvaluePercent < 1f)
+                    _inventoryUIController.FillInteractHoldedImage(holdvaluePercent);
+                else
+                    _inventoryUIController.FillInteractHoldedImage(0.0f);
             }
             else if (InputManager.InteractInInventory.WasReleasedThisFrame())
             {
                 if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex))
                     return;
-                _inventoryUIController.FillHoldedImage(0.0f);
+                _inventoryUIController.FillInteractHoldedImage(0.0f);
             }
 
             //in seperated if bcs it cannot be performed while pressed
@@ -51,7 +54,7 @@ namespace LightHouse.Inventory
                 if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex))
                     return;
                 UseItemFromInventory(_usableItem);
-                _inventoryUIController.FillHoldedImage(0.0f);
+                _inventoryUIController.FillInteractHoldedImage(0.0f);
             }
         }
     }
