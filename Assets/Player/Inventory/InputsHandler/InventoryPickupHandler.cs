@@ -1,0 +1,36 @@
+namespace LightHouse.Inventory
+{
+    public class InventoryPickupHandler
+    {
+        #region PICKUP 
+        public void PickupItem(short slotIndex, IInventoryItem item)
+        {
+            if (item == null) return;
+            PoolManager.Add(item);
+            ItemSlot targetSlot = null;
+
+            if (SlotManager.IsSlotInvalidOrOccupied(slotIndex))
+                 SlotManager.FindFirstEmptySlot(out targetSlot);
+            else
+                targetSlot = SlotManager.Slots[slotIndex];
+
+            item.IsItemInInventory = true;
+            if (item is IInventoryStackable stackable)
+            {
+                if (SlotManager.TryFindStackableSlot(item.GlobalItemID, out ItemSlot existingSlot))
+                {
+                    if (existingSlot.SlotDatas.TotalItemsInSlots < existingSlot.SlotDatas.MaxStack)
+                        targetSlot = existingSlot;
+                }
+
+                if (targetSlot.SlotDatas.TotalItemsInSlots == 0)
+                    targetSlot.SlotDatas.MaxStack = stackable.MaxStack;
+            }
+
+            targetSlot.AddItemDatasToSlot(item);
+            if (item is IInventoryItemCallback callback) callback.OnItemAddedToInventory();
+        }
+        #endregion
+    }
+
+}

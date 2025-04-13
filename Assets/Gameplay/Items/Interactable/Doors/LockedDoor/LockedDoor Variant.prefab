@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &682378504396190784
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.15900001
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.188
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 15.645
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.70710677
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8692822252749091957, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_Name
+      value: LockedDoor Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 8700810144650999287, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5439ea0ff2bae2544b1ef79c2ed88f28, type: 2}
+    m_RemovedComponents:
+    - {fileID: 6014912849866339431, guid: c8139ae770d8ff24b8ff1c155ed19035, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 628502574896919933, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7411978420854202155}
+  m_SourcePrefab: {fileID: 100100000, guid: c8139ae770d8ff24b8ff1c155ed19035, type: 3}
+--- !u!1 &126285925906088253 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 628502574896919933, guid: c8139ae770d8ff24b8ff1c155ed19035,
+    type: 3}
+  m_PrefabInstance: {fileID: 682378504396190784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7411978420854202155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126285925906088253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fed8539b43ce46842afa74764fedae04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _name: 
+  _noKeyInInventoryText: Find the blue key
+  _keyInInventoryButNotOnHandsText: Take the key in your hands
+  _hasKeyOnHandsText: to unlock
+  <CanBeInteracted>k__BackingField: 1
+  <CanBeRaycasted>k__BackingField: 1
+  <IsItemRaycasted>k__BackingField: 0
+  _col: {fileID: 2615564082981430088}
+  _itemNeeded: 1000
+  _hasKeyInInventory: 0
+  _hasKeyOnHands: 0
+  _pivot: {fileID: 3243862752220473133}
+  _openRotationAngles: {x: 0, y: 90, z: 0}
+  _rotationSpeed: 2
+  _isUnLocked: 0
+--- !u!65 &2615564082981430088 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 3257248284275988232, guid: c8139ae770d8ff24b8ff1c155ed19035,
+    type: 3}
+  m_PrefabInstance: {fileID: 682378504396190784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3243862752220473133 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2629196592336163693, guid: c8139ae770d8ff24b8ff1c155ed19035,
+    type: 3}
+  m_PrefabInstance: {fileID: 682378504396190784}
+  m_PrefabAsset: {fileID: 0}
