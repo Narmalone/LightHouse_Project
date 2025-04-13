@@ -1,52 +1,62 @@
-using LightHouse.Interactions;
-using UnityEngine;
-
-public class RaycastNameDisplayHandler
+namespace LightHouse.Interactions
 {
-    [SerializeField] private CanvasInteraction _interactionCanvas;
-
-    private IItemName currentItem;
-
-    public bool HasTarget => currentItem != null;
-
-    public RaycastNameDisplayHandler(CanvasInteraction interactionCanva)
+    /// <summary>
+    /// Class to handle datas and UI with the interface <see cref="IItemName"/>
+    /// </summary>
+    public class RaycastNameDisplayHandler
     {
-        _interactionCanvas = interactionCanva;
+        #region FIELDS & PROPERTIES
+        private CanvasInteraction _interactionCanvas;
+        private IItemName _currentItemName;
+        public bool HasTarget => _currentItemName != null;
+        #endregion
+
+        #region CONSTRUCTOR
+        public RaycastNameDisplayHandler(CanvasInteraction interactionCanva)
+        {
+            _interactionCanvas = interactionCanva;
+        }
+        #endregion
+
+        #region SET METHODS
+        /// <summary>
+        /// Mainly used by <see cref="PlayerInteractions"/>, to display the current Item seen.
+        /// </summary>
+        public void SetTarget(IItemName item)
+        {
+            if (_currentItemName != null)
+            {
+                _currentItemName.OnNameUpdated -= UpdateName;
+                _currentItemName.IsItemRaycasted = false;
+            }
+            _currentItemName = item;
+            if (_currentItemName == null)
+            {
+                _interactionCanvas.HideItemName();
+                return;
+            }
+            _currentItemName.IsItemRaycasted = true;
+            _currentItemName.OnNameUpdated += UpdateName;
+            UpdateName();
+        }
+        #endregion
+
+        #region UI
+        /// <summary>
+        /// Show or hide the name to display on the screen
+        /// </summary>
+        private void UpdateName()
+        {
+            if (_currentItemName == null) return;
+            if (!_currentItemName.CanBeRaycasted || string.IsNullOrEmpty(_currentItemName.GetName()))
+                _interactionCanvas.HideItemName();
+            else
+            {
+                _interactionCanvas.ItemName_TMP.text = _currentItemName.GetName();
+                _interactionCanvas.ShowItemName();
+            }
+        }
+        #endregion
     }
 
-    public void SetTarget(IItemName item)
-    {
-        if (currentItem != null)
-        {
-            currentItem.OnNameUpdated -= UpdateName;
-            currentItem.IsItemRaycasted = false;
-        }
-
-        currentItem = item;
-
-        if (currentItem == null)
-        {
-            _interactionCanvas.HideItemName();
-            return;
-        }
-
-        currentItem.IsItemRaycasted = true;
-        currentItem.OnNameUpdated += UpdateName;
-        UpdateName();
-    }
-
-    private void UpdateName()
-    {
-        if (currentItem == null) return;
-
-        if (!currentItem.CanBeRaycasted || string.IsNullOrEmpty(currentItem.GetName()))
-        {
-            _interactionCanvas.HideItemName();
-        }
-        else
-        {
-            _interactionCanvas.ItemName_TMP.text = currentItem.GetName();
-            _interactionCanvas.ShowItemName();
-        }
-    }
 }

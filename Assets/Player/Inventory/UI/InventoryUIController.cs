@@ -5,13 +5,15 @@ namespace LightHouse.Inventory
 {
     public class InventoryUIController : MonoBehaviour
     {
+        #region FIELDS
+        [Header("References")]
         [SerializeField] private ItemSlot _slotPrefab;
         [SerializeField] private RectTransform _inventoryLayoutGroup;
         [SerializeField] private Image _holdItemImage;
-        public Image HoldItemProgressImage => _holdItemImage;
         private ItemSlot[] _generatedSlots;
-        public ItemSlot[] GeneratedSlots => _generatedSlots;
+        #endregion
 
+        #region GENERATE
         public ItemSlot[] GenerateItemSlot(int numberOfSlots, ItemDatabase database)
         {
             _generatedSlots = new ItemSlot[numberOfSlots];
@@ -23,28 +25,15 @@ namespace LightHouse.Inventory
             }
             return _generatedSlots;
         }
+        #endregion
 
-        public void DestroyAllSlots()
-        {
-            for (int i = 0; i < _generatedSlots.Length; i++)
-            {
-                Destroy(_generatedSlots[i]);
-                _generatedSlots[i] = null;
-            }
-        }
-
-        public void ResetAllSlots()
-        {
-            for (int i = 0; i < _generatedSlots.Length; i++)
-            {
-                _generatedSlots[i].ResetSlot();
-            }
-        }
-
+        #region InteractItemInInventory Fill Image
         public void FillHoldedImage(float fillValue)
         {
+            if (_holdItemImage.fillAmount == fillValue) return;
             _holdItemImage.fillAmount = fillValue;
         }
+        #endregion
     }
 }
 

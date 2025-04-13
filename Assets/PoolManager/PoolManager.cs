@@ -6,11 +6,14 @@ public static class PoolManager
 {
     public static Dictionary<ushort, List<IInventoryItem>> InventoryItemPools = new();
 
-    public static IInventoryItem GetWithoutRemovingFromPool(ushort globalID, ushort itemSpecifcID)
+    public static bool GetWithoutRemovingFromPool(ushort globalID, ushort itemSpecifcID, out IInventoryItem item)
     {
-        if (!InventoryItemPools.ContainsKey(globalID)) return null;
-        if (InventoryItemPools[globalID].Count == 0) return null;
-        return InventoryItemPools[globalID].Find(x => x.ItemSpecificID == itemSpecifcID);
+        item = null;
+        if (!InventoryItemPools.ContainsKey(globalID)) return false;
+        if (InventoryItemPools[globalID].Count == 0) return false;
+        item = InventoryItemPools[globalID].Find(x => x.ItemSpecificID == itemSpecifcID);
+        if (item == null) return false;
+        return true;
     }
 
     public static IInventoryItem Get(ushort globalID, ushort itemSpecificID, bool enablePhysicsOnGet)

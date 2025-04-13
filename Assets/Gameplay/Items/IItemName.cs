@@ -5,22 +5,24 @@ namespace LightHouse.Interactions
 {
     public interface IItemName
     {
-        //MUST BE CALLED ONLY WHEN RAYCASTING
+        /// <summary>
+        /// Must be called only when raycasting the object (it force to update the UI).
+        /// </summary>
         public event Action OnNameUpdated;
 
         /// <summary>
-        /// Automatically setted, to know when the objet is raycasted
+        /// Automatically setted by <see cref="PlayerInteractions"/>, to know when the objet is raycasted.
         /// </summary>
         public bool IsItemRaycasted { get; set; }
 
         /// <summary>
         /// If cannot be raycasted the name won't be displayed.
-        /// There still no Action when this raycasted Changed to update while raycasting an item
+        /// There still no Action when this raycasted Changed to update while raycasting an item.
         /// </summary>
         public bool CanBeRaycasted { get; set; }
 
         /// <summary>
-        /// Display the name of the item (displays nothing if string.empty)
+        /// Display the name of the item (displays nothing if string.empty).
         /// </summary>
         string GetName();
 
@@ -43,7 +45,7 @@ namespace LightHouse.Interactions
         void OnRaycastStart();
 
         /// <summary>
-        /// When we change raycasted item or stop raycast anything
+        /// When we stop to raycast the item
         /// </summary>
         void OnRaycastEnd();
     }

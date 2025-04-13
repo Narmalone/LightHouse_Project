@@ -3,69 +3,66 @@ using LightHouse.Utilities;
 using System;
 using UnityEngine;
 
-public class InventoryRaycastDetector : MonoBehaviour
+namespace LightHouse.Inventory
 {
-    [Header("Raycast Settings")]
-    [SerializeField] private float raycastDistance = 3f;
-    [SerializeField] private LayerMask targetMask = ~0;
-    [SerializeField] private QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Ignore;
-
-    public event Action<IInventoryItem> OnItemDetected;
-    public event Action OnItemLost;
-
-    private IInventoryItem _lastSeenItem;
-    private GameObject _lastSeenObject;
-    [SerializeField] private Camera _camera;
-
-    public Vector3 RayOrigin;
-    public Vector3 RayDirection;
-    public bool RaycastHitItem { get; private set; }
-
-    private void Update()
+    public class InventoryRaycastDetector : MonoBehaviour
     {
-        Ray cameraRay = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0f));
-        RayOrigin = _camera.transform.position;
-        RayDirection = cameraRay.direction;
-        RaycastHit hit;
+        #region FIELDS & PROPERTIES
+        public event Action<IInventoryItem> OnItemDetected;
+        public event Action OnItemLost;
 
-        RaycastHitItem = RaycastUtility.TryRaycast(cameraRay, raycastDistance, targetMask, queryTriggerInteraction, out hit);
+        [Header("Raycast Settings")]
+        [SerializeField] private Camera _camera;
+        [SerializeField] private float _raycastDistance = 3f;
+        [SerializeField] private LayerMask _targetMasks = ~0;
+        [SerializeField] private QueryTriggerInteraction _queryTriggerInteraction = QueryTriggerInteraction.Ignore;
 
-        if (RaycastHitItem)
+        public Vector3 RayOrigin { get; private set; }
+        public Vector3 RayDirection { get; private set; }
+
+        private IInventoryItem _lastSeenItem;
+        private GameObject _lastSeenObject;
+        #endregion
+
+        #region MONO'S CALLBACK
+        private void Update()
         {
-            HandleNewObject(hit.collider.gameObject);
+            Ray cameraRay = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0f));
+            RaycastHit hit;
+
+            RayOrigin = _camera.transform.position;
+            RayDirection = cameraRay.direction;
+            if(RaycastUtility.TryRaycast(cameraRay, _raycastDistance, _targetMasks, _queryTriggerInteraction, out hit))
+                HandleNewObject(hit.collider.gameObject);
+            else
+                ResetSeenObject();
+            Debug.DrawRay(_camera.transform.position, cameraRay.direction * _raycastDistance, Color.cyan);
         }
-        else
+        #endregion
+
+        #region RAYCAST METHODS
+        private void HandleNewObject(GameObject go)
         {
-            ResetSeenObject();
+            if (_lastSeenObject == go)
+                return;
+
+            _lastSeenObject = go;
+            go.TryGetComponent(out _lastSeenItem);
+            if (_lastSeenItem != null)
+                OnItemDetected?.Invoke(_lastSeenItem);
         }
 
-        Debug.DrawRay(_camera.transform.position, cameraRay.direction * raycastDistance, Color.cyan);
+        private void ResetSeenObject()
+        {
+            if (_lastSeenItem != null)
+            {
+                OnItemLost?.Invoke();
+                _lastSeenItem = null;
+            }
+            if(_lastSeenObject != null)
+                _lastSeenObject = null;
+        }
+        #endregion
     }
-
-    private void HandleNewObject(GameObject go)
-    {
-        if (_lastSeenObject == go)
-            return;
-
-        _lastSeenObject = go;
-        go.TryGetComponent(out _lastSeenItem);
-
-        if (_lastSeenItem != null)
-        {
-            OnItemDetected?.Invoke(_lastSeenItem);
-        }
-    }
-
-    private void ResetSeenObject()
-    {
-        if (_lastSeenItem != null)
-        {
-            OnItemLost?.Invoke();
-        }
-
-        _lastSeenItem = null;
-        _lastSeenObject = null;
-    }
-
-    public IInventoryItem GetCurrentItemSeen() => _lastSeenItem;
 }
+

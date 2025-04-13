@@ -45,6 +45,7 @@ namespace LightHouse.KinematicCharacterController
         private void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
+            InputManager.InputManagerInitialized();
             _playerCharacter.Initialize();
             _playerCamera.SetFollowTransform(_playerCharacter.GetCameraTarget());
             _cameraSpring.Initialize();

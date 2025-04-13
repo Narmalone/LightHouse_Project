@@ -1,76 +1,36 @@
-using LightHouse.Inventory;
-
-public class InventoryPickupHandler
+namespace LightHouse.Inventory
 {
-    private ItemSlot[] _slots;
-    private byte _inventoryCapacity;
-
-    public InventoryPickupHandler(ItemSlot[] slots, byte inventoryCapacity)
+    public class InventoryPickupHandler
     {
-        _slots = slots;
-        _inventoryCapacity = inventoryCapacity;
-    }
-
-    public void PickupItem(int slotIndex, IInventoryItem item)
-    {
-        if (item == null) return;
-
-        PoolManager.Add(item);
-
-        ItemSlot targetSlot = null;
-
-        if (IsSlotInvalidOrOccupied(slotIndex))
+        #region PICKUP 
+        public void PickupItem(short slotIndex, IInventoryItem item)
         {
-            targetSlot = FindEmptySlot();
-        }
-        else
-        {
-            targetSlot = _slots[slotIndex];
-        }
+            if (item == null) return;
+            PoolManager.Add(item);
+            ItemSlot targetSlot = null;
 
-        item.IsItemInInventory = true;
+            if (SlotManager.IsSlotInvalidOrOccupied(slotIndex))
+                 SlotManager.FindFirstEmptySlot(out targetSlot);
+            else
+                targetSlot = SlotManager.Slots[slotIndex];
 
-        if (item is IInventoryStackable stackable)
-        {
-            if (TryFindStackableSlot(item.GlobalItemID, out ItemSlot existingSlot))
+            item.IsItemInInventory = true;
+            if (item is IInventoryStackable stackable)
             {
-                if (existingSlot.SlotDatas.TotalItemsInSlots < existingSlot.SlotDatas.MaxStack)
-                    targetSlot = existingSlot;
+                if (SlotManager.TryFindStackableSlot(item.GlobalItemID, out ItemSlot existingSlot))
+                {
+                    if (existingSlot.SlotDatas.TotalItemsInSlots < existingSlot.SlotDatas.MaxStack)
+                        targetSlot = existingSlot;
+                }
+
+                if (targetSlot.SlotDatas.TotalItemsInSlots == 0)
+                    targetSlot.SlotDatas.MaxStack = stackable.MaxStack;
             }
 
-            if (targetSlot.SlotDatas.TotalItemsInSlots == 0)
-                targetSlot.SlotDatas.MaxStack = stackable.MaxStack;
+            targetSlot.AddItemDatasToSlot(item);
+            if (item is IInventoryItemCallback callback) callback.OnItemAddedToInventory();
         }
-
-        targetSlot.AddItemDatasToSlot(item);
-
-        if (item is IInventoryItemCallback callback) callback.OnItemAddedToInventory();
+        #endregion
     }
 
-    private bool IsSlotInvalidOrOccupied(int index)
-    {
-        return index < 0 || index >= _inventoryCapacity || _slots[index].SlotDatas.HasItem;
-    }
-
-    private ItemSlot FindEmptySlot()
-    {
-        foreach (var slot in _slots)
-        {
-            if (!slot.SlotDatas.HasItem)
-                return slot;
-        }
-        return null;
-    }
-
-    private bool TryFindStackableSlot(ushort itemID, out ItemSlot slot)
-    {
-        slot = null;
-        foreach (var s in _slots)
-        {
-            if (s.SlotDatas.ItemGlobalID != itemID || !s.SlotDatas.CanStack()) continue;
-            slot = s;
-            return true;
-        }
-        return false;
-    }
 }

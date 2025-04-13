@@ -1,221 +1,241 @@
 using LightHouse.Inputs;
 using LightHouse.Interactions;
-using LightHouse.Inventory;
 using UnityEngine;
 
-//TO DOO ----
-//lier les autres interfaces IInventoryUsable
-//refaire le système de key avec keytypes
-//Revoir dans le pool manager le système de sorting par l'implémentation dans l'IInventoryItem
-//finir d'assigner les infos dans l'ui avec les items
-public class PlayerInventoryController : MonoBehaviour
+namespace LightHouse.Inventory
 {
-    #region SERILIAZED FIELDS
-    [Header("Inventory Settings")]
-    [SerializeField] private byte _inventoryCapacity = 4;
-
-    [Header("Inventory References")]
-    [SerializeField] private Transform _inventoryTarget = null;
-
-    [Header("Inventory Controllers")]
-    [SerializeField] private InventoryRaycastDetector _raycastDetector;
-    [SerializeField] private InventoryPickupHandler _pickupHandler;
-    [SerializeField] private InventoryScrollHandler _scrollHandler;
-    [SerializeField] private InventoryDropHandler _dropHandler;
-
-    [SerializeField] private ItemDatabase _itemDatabase;
-
-    [Header("UI")]
-    [SerializeField] private InventoryUIController _inventoryUiController;
-    [SerializeField] private CanvasInteraction _interactionUiController;
-
-    [Header("Drop Settings")]
-    [SerializeField] private float _maxDropPower = 10f;
-    [SerializeField] private AnimationCurve _dropPowerCurve = AnimationCurve.Linear(0, 0, 1, 1);
-    private float _dropChargeTimer = 0f;
-    #endregion
-
-    private float _dropPower = 0f;
-    private bool _isChargingDrop = false;
-
-    private ItemSlot[] _slots;
-
-    private ItemSlot CurrentSelectedSlot => _slots[_scrollHandler.CurrentIndex];
-    private GameObject _lastObjectSeen;
-    private IInventoryItem _lastInventoryItemSeen;
-
-    private void Awake()
+    /// <summary>
+    /// Main controller of the inventory system
+    /// </summary>
+    public class PlayerInventoryController : MonoBehaviour
     {
-        _raycastDetector.OnItemDetected += HandleItemDetected;
-        _raycastDetector.OnItemLost += ResetSeenObject;
-        _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
-    }
+        #region SERILIAZED FIELDS
+        [Header("Inventory Settings")]
+        [SerializeField] private byte _inventoryCapacity = 4;
 
-    private void Start()
-    {
-        _pickupHandler = new InventoryPickupHandler(_slots, _inventoryCapacity);
-        _scrollHandler = new InventoryScrollHandler(_slots, _inventoryCapacity, _itemDatabase);
-        _dropHandler.Initialize(_slots, _inventoryTarget);
-        InputManager.Scroll.performed += Scroll_performed;
-        InventoryHandlerData.Initialize(_slots, _inventoryTarget);
-    }
+        [Header("Inventory References")]
+        [SerializeField] private ItemDatabase _itemDatabase;
+        [SerializeField] private Transform _inventoryTarget = null;
 
-    private void OnDisable()
-    {
-        InputManager.Scroll.performed -= Scroll_performed;
-    }
+        [Header("Inventory Controllers")]
+        [SerializeField] private InventoryRaycastDetector _raycastDetector;
+        [SerializeField] private InventoryPickupHandler _pickupHandler;
+        [SerializeField] private InventoryScrollHandler _scrollHandler;
+        [SerializeField] private InventoryDropHandler _dropHandler;
+        [SerializeField] private InventoryUseItemHandler _useFromInventoryHandler;
 
-    private void OnDestroy()
-    {
-        _raycastDetector.OnItemDetected -= HandleItemDetected;
-        _raycastDetector.OnItemLost -= ResetSeenObject;
-        InventoryHandlerData.Reset();
-        PoolManager.Clear();
-    }
+        [Header("UI")]
+        [SerializeField] private InventoryUIController _inventoryUiController;
+        [SerializeField] private CanvasInteraction _interactionUiController;
 
-    private void Update()
-    {
-        if (!_scrollHandler.IsIndexInvalid(_scrollHandler.CurrentIndex))
+        #endregion
+
+        #region PRIVATE / HIDED FIELDS
+
+        //generated Slots
+        private ItemSlot[] _slots;
+
+        //Qui access
+        private ItemSlot CurrentSelectedSlot => SlotManager.CurrentSelectedSlot;
+        private short CurrentSlotIndex => SlotManager.CurrentSlotIndex;
+
+        //Raycast datas
+        private GameObject _lastObjectSeen;
+        private IInventoryItem _lastInventoryItemSeen;
+
+        #endregion
+
+        #region MONO CALLBACKS
+        private void Awake() => Initialize();
+
+        private void Update()
         {
-            if (CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count > 0)
-                HandleDropInputs();
+            HandleDropInput();
+
+            if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
+                AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen);
+
+            HandleInteractInInventoryInput();
+            
         }
 
-        if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
+        private void LateUpdate()
         {
-            AddItemToInventory(_scrollHandler.CurrentIndex, _lastInventoryItemSeen);
+            _inventoryTarget.position = _raycastDetector.RayOrigin + _raycastDetector.RayDirection.normalized;
         }
 
-        if (InputManager.InteractInInventory.WasPerformedThisFrame())
+        private void OnDestroy()
         {
-            if (_scrollHandler.IsIndexInvalid(_scrollHandler.CurrentIndex)) return;
-            var s = CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot();
-            if (s != null && s is IInventoryItemUsable usable)
+            UnregisterInputs();
+            SlotManager.Clear();
+            InventoryHandlerData.Reset();
+            PoolManager.Clear();
+        }
+
+        #endregion
+
+        #region INITIALIZE METHODS
+        private void Initialize()
+        {
+            RegisterInputs();
+            _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
+            SlotManager.Initialize(_slots);
+            InventoryHandlerData.Initialize(_inventoryUiController, _inventoryTarget);
+            InitializeControllers();
+        }
+
+        private void InitializeControllers()
+        {
+            _pickupHandler = new InventoryPickupHandler();
+            _scrollHandler = new InventoryScrollHandler(_itemDatabase);
+            _useFromInventoryHandler = new InventoryUseItemHandler(_inventoryUiController);
+            _dropHandler.Initialize(_slots, _inventoryTarget);
+            
+        }
+        #endregion
+
+        #region REGISTER / UNREGISTER INPUTS CALLBACKS
+        public void RegisterInputs()
+        {
+            InputManager.OnInputManagerInitialized += InputManager_OnInputManagerInitialized;
+            InputManager.OnInputManagerWillClear += InputManager_OnInputManagerWillClear;
+            _raycastDetector.OnItemDetected += HandleItemDetected;
+            _raycastDetector.OnItemLost += ResetSeenObject;
+        }
+
+        public void UnregisterInputs()
+        {
+            InputManager.OnInputManagerWillClear -= InputManager_OnInputManagerWillClear;
+            InputManager.OnInputManagerInitialized -= InputManager_OnInputManagerInitialized;
+            _raycastDetector.OnItemDetected -= HandleItemDetected;
+            _raycastDetector.OnItemLost -= ResetSeenObject;
+        }
+
+        private void InputManager_OnInputManagerInitialized()
+        {
+            InputManager.Select.performed += Select_performed;
+            InputManager.Scroll.performed += Scroll_performed;
+            InputManager.InteractInInventory.started += InteractInInventory_started;
+        }
+
+        private void InputManager_OnInputManagerWillClear() 
+        {
+            InputManager.Select.performed -= Select_performed;
+            InputManager.Scroll.performed -= Scroll_performed;
+            InputManager.InteractInInventory.started -= InteractInInventory_started;
+        }
+
+        #endregion
+
+        #region ADD / REMOVE ITEM 
+
+        private void AddItemToInventory(short slotIndex, IInventoryItem item)
+        {
+            _pickupHandler.PickupItem(slotIndex, item);
+            item.ForceDropItemFromInventory += IInventoryItem_ForceDropItemFromInventory;
+            IInventoryItemUsable usable = item as IInventoryItemUsable;
+            if (usable != null)
+                usable.CanBeUsedFromInventoryChanged += Usable_CanBeUsedFromInventoryChanged;
+        }
+
+        private void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID,
+            Vector3 position, float force, bool enablePhysicsOnDrop)
+        {
+            _dropHandler.DropItem
+                (
+                    slotID: slotIndex,
+                    itemGlobalID: globalItemID,
+                    specificID: specificItemID,
+                    pos: position,
+                    force: force,
+                    enablePhysicsOnDrop: enablePhysicsOnDrop,
+                    out IInventoryItem droppedItem
+                );
+            droppedItem.ForceDropItemFromInventory -= IInventoryItem_ForceDropItemFromInventory;
+
+            IInventoryItemUsable usable = droppedItem as IInventoryItemUsable;
+            if (usable != null)
+                usable.CanBeUsedFromInventoryChanged -= Usable_CanBeUsedFromInventoryChanged;
+        }
+
+        #endregion
+
+        #region IInventoryItem && IInventoryUsable Callbacks
+        private void Usable_CanBeUsedFromInventoryChanged(ushort globalID, ushort specificID)
+        {
+            if (SlotManager.TryFindItemInCurrentSelectedSlot(globalID, specificID, out IInventoryItem item, out short slotID))
             {
-                if (!usable.CanBeUsedFromInventory) return;
-                usable.UseFromInventory();
+                if (item is IInventoryItemUsable usable)
+                    _slots[slotID].IsInventoryItemUsable(usable);
             }
         }
-            
-    }
 
-    private void AddItemToInventory(int slotIndex, IInventoryItem item)
-    {
-        _pickupHandler.PickupItem(slotIndex, item);
-        item.ForceDropItemFromInventory += IinventoryItem_ForceDropItemInInventory;
-        IInventoryItemUsable usable = item as IInventoryItemUsable;
-        if (usable != null)
-            usable.CanBeUsedFromInventoryChanged += Usable_CanBeUsedFromInventoryChanged;
-    }
+        private void IInventoryItem_ForceDropItemFromInventory(ushort globalItemID, ushort specificItemID, Vector3 position, float force, bool enablePhysicsOnDrop)
+         => RemoveItemFromInventory(CurrentSelectedSlot.SlotDatas.SlotID, globalItemID, specificItemID, position, force, enablePhysicsOnDrop);
 
-    private void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID, 
-        Vector3 position, float force, bool enablePhysicsOnDrop)
-    {
-        _dropHandler.DropItem
-            (
-                slotID: slotIndex,
-                itemGlobalID: globalItemID,
-                specificID: specificItemID,
-                pos: position,
-                force: force,
-                enablePhysicsOnDrop: enablePhysicsOnDrop,
-                out IInventoryItem droppedItem
-            );
-        droppedItem.ForceDropItemFromInventory -= IinventoryItem_ForceDropItemInInventory;
+        #endregion
 
-        IInventoryItemUsable usable = droppedItem as IInventoryItemUsable;
-        if (usable != null)
-            usable.CanBeUsedFromInventoryChanged -= Usable_CanBeUsedFromInventoryChanged;
-    }
-
-    private void Usable_CanBeUsedFromInventoryChanged(ushort globalID, ushort specificID)
-    {
-        if(InventoryHandlerData.TryFindSpecificItem(globalID, specificID, out IInventoryItem item, out short slotID))
+        #region RAYCAST CALLBACKS
+        private void HandleItemDetected(IInventoryItem item)
         {
-            if(item is IInventoryItemUsable usable)
-                _slots[slotID].IsInventoryItemUsable(usable);
+            _lastInventoryItemSeen = item;
+            _interactionUiController.ShowItemPickup();
+            _interactionUiController.SetItemPickupText(item.GetPickupName());
         }
-    }
 
-    private void IinventoryItem_ForceDropItemInInventory(ushort globalItemID, ushort specificItemID, Vector3 position, float force, bool enablePhysicsOnDrop)
-    {
-        RemoveItemFromInventory(_slots[_scrollHandler.CurrentIndex].SlotDatas.SlotID, globalItemID, specificItemID, position, force, enablePhysicsOnDrop);
-    }
-
-    private void LateUpdate()
-    {
-        _inventoryTarget.position = _raycastDetector.RayOrigin + _raycastDetector.RayDirection.normalized;
-    }
-
-    #region RAYCAST DELEGATES
-    private void HandleItemDetected(IInventoryItem item)
-    {
-        _lastInventoryItemSeen = item;
-        _interactionUiController.ShowItemPickup();
-        _interactionUiController.SetItemPickupText(item.GetPickupName());
-    }
-
-    private void ResetSeenObject()
-    {
-        if (_lastObjectSeen != null)
-            _lastObjectSeen = null;
-
-        if (_lastInventoryItemSeen != null)
+        private void ResetSeenObject()
         {
-            _interactionUiController.HideItemPickup();
-            _lastInventoryItemSeen = null;
+            if (_lastObjectSeen != null)
+                _lastObjectSeen = null;
+
+            if (_lastInventoryItemSeen != null)
+            {
+                _interactionUiController.HideItemPickup();
+                _lastInventoryItemSeen = null;
+            }
         }
-    }
-    #endregion
+        #endregion
 
-    #region DROP HANDLING
+        #region DROP HANDLING
+        private void HandleDropInput() => _dropHandler.HandleDropInput();
+        #endregion
 
-    private void HandleDropInputs()
-    {
-        if (InputManager.Drop.IsPressed())
+        #region InteractInInventory Handling & Input callback
+        private void InteractInInventory_started(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            _isChargingDrop = true;
-            _dropChargeTimer += Time.deltaTime;
-
-            float curveValue = _dropPowerCurve.Evaluate(Mathf.Clamp01(_dropChargeTimer));
-            _dropPower = curveValue * _maxDropPower;
+            if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex)) return;
+            if (SlotManager.CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot(out IInventoryItem item))
+            {
+                if (item is IInventoryItemUsable usable)
+                    _useFromInventoryHandler.SetTarget(usable);
+            }
         }
-        else if (_isChargingDrop && InputManager.Drop.WasReleasedThisFrame())
+        private void HandleInteractInInventoryInput() => _useFromInventoryHandler.HandeInteractInInventoryInput();
+        #endregion
+        #region SCROLL HANDLING
+        private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            RemoveItemFromInventory
-            (
-                slotIndex: CurrentSelectedSlot.SlotDatas.SlotID,
-                globalItemID: CurrentSelectedSlot.SlotDatas.ItemGlobalID,
-                specificItemID: _slots[_scrollHandler.CurrentIndex].SlotDatas.ItemSpecificIds[0],
-                position: _inventoryTarget.position,
-                force: _dropPower,
-                enablePhysicsOnDrop: true
-            );
-            _dropPower = 0f;
-            _dropChargeTimer = 0f;
-            _isChargingDrop = false;
+            int direction = -Mathf.RoundToInt(obj.ReadValue<Vector2>().y);
+            if (direction != 0)
+                _scrollHandler.Scroll(direction);
         }
-        else if (InputManager.Drop.WasPerformedThisFrame())
-        {
-            RemoveItemFromInventory
-            (
-                slotIndex: CurrentSelectedSlot.SlotDatas.SlotID,
-                globalItemID: CurrentSelectedSlot.SlotDatas.ItemGlobalID,
-                specificItemID: _slots[_scrollHandler.CurrentIndex].SlotDatas.ItemSpecificIds[0],
-                position: _inventoryTarget.position,
-                force: 0.0f,
-                enablePhysicsOnDrop: true
-            );
-        }
-    }
-    #endregion
+        #endregion
 
-    #region SCROLL HANDLING
-    private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
-    {
-        int direction = -Mathf.RoundToInt(obj.ReadValue<Vector2>().y);
-        if (direction != 0)
-            _scrollHandler.Scroll(direction);
+        #region SELECT HANDLING
+        private void Select_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            if (short.TryParse(obj.control.name, out short slotIndex))
+            {
+                short targetSlotIndex = slotIndex;
+                //if slot already selected we just don't select anything
+                if (slotIndex - 1 == CurrentSlotIndex)
+                    targetSlotIndex = -1;
+                else
+                    targetSlotIndex = (short)(slotIndex - 1);
+                SlotManager.ChangeSelectedSlot(_itemDatabase, targetSlotIndex);
+            }
+        }
+        #endregion
     }
-    #endregion
+
 }

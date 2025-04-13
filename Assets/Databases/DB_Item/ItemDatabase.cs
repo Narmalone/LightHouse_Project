@@ -7,19 +7,8 @@ public class ItemDatabase : ScriptableObject
 {
     public SerializedDictionary<ushort, GameObject> items = new SerializedDictionary<ushort, GameObject>();
 
-    public IInventoryItem Get(ItemIDEnum id)
-    {
-        return Get((ushort)id);
-    }
-
     public IInventoryItem Get(ushort ID)
     {
         return items[ID].GetComponentInChildren<IInventoryItem>();
     }
-
-    public IInventoryItemUsable GetUsable(ushort ID)
-    {
-        return items[ID].GetComponentInChildren<IInventoryItemUsable>();
-    }
-
 }

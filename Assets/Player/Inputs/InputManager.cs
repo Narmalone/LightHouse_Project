@@ -6,7 +6,7 @@ namespace LightHouse.Inputs
 {
     public static class InputManager
     {
-        public static event Action OnInputManagerRegistered;
+        public static event Action OnInputManagerInitialized;
         public static event Action OnInputManagerWillClear;
         private static PlayerInputActions _player_Input_Actions;
         public static PlayerInputActions PLAYER_INPUTS_ACTIONS => _player_Input_Actions;
@@ -16,6 +16,7 @@ namespace LightHouse.Inputs
         public static PlayerInputActions.UIActions UI => _player_Input_Actions.UI;
 
         public static InputAction Interact => Player.Interact;
+        public static InputAction Select => Player.Select;
         public static InputAction InteractInInventory => Player.InteractInInventory;
         public static InputAction Move => Player.Move;
         public static InputAction Jump => Player.Jump;
@@ -28,7 +29,11 @@ namespace LightHouse.Inputs
         {
             if (_player_Input_Actions != null) DisposePlayerInputActions();
             _player_Input_Actions = pia;
-            OnInputManagerRegistered?.Invoke();
+        }
+
+        public static void InputManagerInitialized()
+        {
+            OnInputManagerInitialized?.Invoke();
         }
 
         public static void DisposePlayerInputActions()

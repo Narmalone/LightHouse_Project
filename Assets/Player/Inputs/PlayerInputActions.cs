@@ -116,6 +116,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold(duration=0.4,pressPoint=0.5)"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Select"",
+                    ""type"": ""Button"",
+                    ""id"": ""ef70dc0a-879a-4b9e-9c8f-588a93426f41"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -391,6 +400,50 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""InteractInInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""672dba31-54ca-4654-abb5-0a6bbb4e25c1"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a6e0dbaf-64bb-4e9f-823e-03f6f06934e5"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c5abe00f-33bd-451f-944c-40ce834378d0"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""009ad565-0115-4624-84fa-f24e4d0d8822"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -927,6 +980,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Drop = m_Player.FindAction("Drop", throwIfNotFound: true);
         m_Player_Scroll = m_Player.FindAction("Scroll", throwIfNotFound: true);
         m_Player_InteractInInventory = m_Player.FindAction("InteractInInventory", throwIfNotFound: true);
+        m_Player_Select = m_Player.FindAction("Select", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1010,6 +1064,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Drop;
     private readonly InputAction m_Player_Scroll;
     private readonly InputAction m_Player_InteractInInventory;
+    private readonly InputAction m_Player_Select;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -1024,6 +1079,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Drop => m_Wrapper.m_Player_Drop;
         public InputAction @Scroll => m_Wrapper.m_Player_Scroll;
         public InputAction @InteractInInventory => m_Wrapper.m_Player_InteractInInventory;
+        public InputAction @Select => m_Wrapper.m_Player_Select;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1063,6 +1119,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @InteractInInventory.started += instance.OnInteractInInventory;
             @InteractInInventory.performed += instance.OnInteractInInventory;
             @InteractInInventory.canceled += instance.OnInteractInInventory;
+            @Select.started += instance.OnSelect;
+            @Select.performed += instance.OnSelect;
+            @Select.canceled += instance.OnSelect;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1097,6 +1156,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @InteractInInventory.started -= instance.OnInteractInInventory;
             @InteractInInventory.performed -= instance.OnInteractInInventory;
             @InteractInInventory.canceled -= instance.OnInteractInInventory;
+            @Select.started -= instance.OnSelect;
+            @Select.performed -= instance.OnSelect;
+            @Select.canceled -= instance.OnSelect;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1244,6 +1306,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnDrop(InputAction.CallbackContext context);
         void OnScroll(InputAction.CallbackContext context);
         void OnInteractInInventory(InputAction.CallbackContext context);
+        void OnSelect(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

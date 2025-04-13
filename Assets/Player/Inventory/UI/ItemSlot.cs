@@ -1,4 +1,3 @@
-using LightHouse.Inventory;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,76 +8,119 @@ namespace LightHouse.Inventory
     [System.Serializable]
     public struct SlotData
     {
-        public ushort MaxStack;
-        public bool HasItem => ItemSpecificIds.Count > 0;
+        #region Fields & Properties
+        /// <summary>
+        /// The slot ID or more likely the slot index <see cref="PlayerInventoryController._slots"/>
+        /// </summary>
         public byte SlotID;
+
+        /// <summary>
+        /// The maximum items the player can stack in this slot, if the item is not stackable
+        /// it will be 1 by default or cf "<see cref="IInventoryStackable"/>".
+        /// </summary>
+        public ushort MaxStack;
+
+        /// <summary>
+        /// Which item is stored in the slot <see cref="ItemDatabase"/>
+        /// </summary>
         public ushort ItemGlobalID;
 
-        public int TotalItemsInSlots => ItemSpecificIds.Count;
+        /// <summary>
+        /// A list of "Specific IDS", attribuated by the <see cref="PoolManager.InventoryItemPools"/> to directly 
+        /// modify the <seealso cref="IInventoryItem.ItemSpecificID"/>
+        /// </summary>
         public List<ushort> ItemSpecificIds;
 
+        /// <summary>
+        /// If there are any items in this slots
+        /// </summary>
+        public bool HasItem => ItemSpecificIds.Count > 0;
+
+        /// <summary>
+        /// The total numbers of items, representing the length of the list
+        /// </summary>
+        public int TotalItemsInSlots => ItemSpecificIds.Count;
+
+        /// <summary>
+        /// If this slot is selected by the <see cref="PlayerInventoryController"/>
+        /// </summary>
         public bool IsSelected;
 
+        /// <summary>
+        /// The stored ItemSprite
+        /// </summary>
         public Sprite ItemSprite;
 
+        #endregion
+
+        #region Init
         public void Init()
         {
             MaxStack = 1;
             IsSelected = false;
             ItemSpecificIds = new List<ushort>();
         }
+        #endregion
 
+        #region Retrieve Items
         /// <summary>
         /// Retrive first item in the pool with a globalID
         /// </summary>
-        /// <returns></returns>
-        public IInventoryItem GetFirstItemInSlot()
+        public bool GetFirstItemInSlot(out IInventoryItem item)
         {
-            if (ItemSpecificIds.Count <= 0) return null;
-            return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, ItemSpecificIds[0]);
+            item = null;
+            if (ItemSpecificIds.Count <= 0) return false;
+            return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, ItemSpecificIds[0], out item);
         }
 
-        public IInventoryItem GetItemInSlot(ushort specificID)
+        /// <summary>
+        /// Retried a specific item from this slot in the pool with a specific ID
+        /// </summary>
+        /// <param name="specificID"></param>
+        public bool GetItemInSlot(ushort specificID, out IInventoryItem item)
         {
-            if (ItemSpecificIds.Count <= 0) return null;
-            return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, ItemSpecificIds[specificID]);
+            item = null;
+            if (ItemSpecificIds.Count <= 0) return false;
+            return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, specificID, out item);
         }
+        #endregion
 
+        #region Can Stack
+        /// <summary>
+        /// Check if we can stack an item in this slot
+        /// </summary>
         public bool CanStack()
         {
             return TotalItemsInSlots < MaxStack;
         }
+        #endregion
     }
 
     public class ItemSlot : MonoBehaviour
     {
-        #region Texts Fields
+        #region FIELDS && PROPERTIES
         [SerializeField] private TextMeshProUGUI _itemName_TMP;
         [SerializeField] private TextMeshProUGUI _itemUseKey_TMP;
         [SerializeField] private TextMeshProUGUI _itemStack_TMP;
         [SerializeField] private Image _spriteItem;
 
-        public Image SpriteItemImage => _spriteItem;
-        public Sprite SpriteItem => _spriteItem.sprite;
-
         public TextMeshProUGUI ItemName_TMP => _itemName_TMP;
         public TextMeshProUGUI ItemUseKey_TMP => _itemUseKey_TMP;
         public TextMeshProUGUI ItemStack_TMP => _itemStack_TMP;
-        #endregion
-        public SlotData SlotDatas;
+
         private ItemDatabase _itemDatabase;
+        public SlotData SlotDatas;
+        #endregion
 
-        public void Init(ItemDatabase itemDB)
-        {
-            _itemDatabase = itemDB;
-        }
+        #region INIT
+        public void Init(ItemDatabase itemDB) => _itemDatabase = itemDB;
+        #endregion
 
-        private void Start()
-        {
-            SlotDatas.Init();
-        }
+        #region MONO CALLBACKS
+        private void Start() => SlotDatas.Init();
+        #endregion
 
-        #region UI Functions
+        #region ADD / REMOVE METHODS
 
         public void AddItemDatasToSlot(IInventoryItem item)
         {
@@ -98,6 +140,9 @@ namespace LightHouse.Inventory
             RefreshUIWithCurrentDatas();
         }
 
+        #endregion
+
+        #region Refresh UI On Add or Removed Item
         public void RefreshUIWithCurrentDatas()
         {
             IInventoryItem item = _itemDatabase.Get(SlotDatas.ItemGlobalID);
@@ -120,18 +165,14 @@ namespace LightHouse.Inventory
             }
 
         }
+        #endregion
 
-        public void HideSelectedInfos()
-        {
-            SetEnableItemNameText(false);
-            SetEnableUseKeyText(false);
-        }
-
+        #region Show / Hide Methods
         public void Show()
         {
             SetEnableItemNameText(true);
             IInventoryItem item = _itemDatabase.Get(SlotDatas.ItemGlobalID);
-            if(item != null)
+            if (item != null)
                 SetItemNameText(item.GetName());
             if (SlotDatas.TotalItemsInSlots > 1)
             {
@@ -141,51 +182,49 @@ namespace LightHouse.Inventory
             IsInventoryItemUsable(item as IInventoryItemUsable);
         }
 
-        public void SetEnableItemNameText(bool value)
+        public void HideSelectedInfos()
         {
-            ItemName_TMP.gameObject.SetActive(value);
+            SetEnableItemNameText(false);
+            SetEnableUseKeyText(false);
         }
+        #endregion
 
-        public void SetEnableUseKeyText(bool value)
-        {
-            ItemUseKey_TMP.gameObject.SetActive(value);
-        }
+        #region ITEM NAME METHODS
+        public void SetEnableItemNameText(bool value) => ItemName_TMP.gameObject.SetActive(value);
+        public void SetItemNameText(string text) => ItemName_TMP.text = text;
+        #endregion
 
+        #region STACKABLE METHODS
+        public void SetEnableItemStackCountText(bool value) => ItemStack_TMP.gameObject.SetActive(value);
+        public void UpdateItemStackCount() => ItemStack_TMP.text = $"x{SlotDatas.TotalItemsInSlots}";
+        #endregion
+
+        #region INVENTORY USABLE METHODS
         public void IsInventoryItemUsable(IInventoryItemUsable itemUsable)
         {
             if (itemUsable == null) return;
             if (itemUsable.CanBeUsedFromInventory)
             {
                 SetEnableUseKeyText(true);
-                ItemUseKey_TMP.text = itemUsable.UseInInventoryText();
+                SetUseKeyText(itemUsable.UseInInventoryText());
             }
             else
-            {
                 SetEnableUseKeyText(false);
-            }
-        }
-
-        public void SetItemNameText(string text)
-        {
-            ItemName_TMP.text = text;
-        }
-
-        public void UpdateItemStackCount()
-        {
-            ItemStack_TMP.text = $"x{SlotDatas.TotalItemsInSlots}";
-        }
-
-        public void SetEnableItemStackCountText(bool value)
-        {
-            ItemStack_TMP.gameObject.SetActive(value);
         }
         #endregion
 
+        #region USE KEY
+        public void SetEnableUseKeyText(bool value) => ItemUseKey_TMP.gameObject.SetActive(value);
+        public void SetUseKeyText(string text) => ItemUseKey_TMP.text = text;
+        #endregion
+
+        #region RESET
         public void ResetSlot()
         {
             if(_spriteItem.sprite != null)
                 _spriteItem.sprite = null;
         }
+        #endregion
     }
 }
 

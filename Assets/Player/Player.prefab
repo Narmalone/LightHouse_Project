@@ -918,13 +918,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bddcef2be503a514885b27053c576bb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerCamera: {fileID: 7457726863973231117}
-  interactionDistance: 3
-  interactableLayer:
+  _playerCamera: {fileID: 7457726863973231117}
+  _raycastDistance: 3
+  _targetLayersLayer:
     serializedVersion: 2
     m_Bits: 192
-  triggerInteraction: 1
-  _interactionCanva: {fileID: 5442988119189176741}
+  _triggerInteraction: 1
+  _interactionCanvas: {fileID: 5442988119189176741}
 --- !u!114 &7906979379660786359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -952,12 +952,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryCapacity: 4
+  _itemDatabase: {fileID: 11400000, guid: eec9f4e4453518e4bb148827b9312144, type: 2}
   _inventoryTarget: {fileID: 1259359992558668386}
   _raycastDetector: {fileID: 3260111263484607703}
   _dropHandler: {fileID: 4555361120521387341}
-  _itemDatabase: {fileID: 11400000, guid: eec9f4e4453518e4bb148827b9312144, type: 2}
   _inventoryUiController: {fileID: 6065928285298996503}
   _interactionUiController: {fileID: 5442988119189176741}
+--- !u!114 &3260111263484607703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3576453257779527103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 707f2de148a24e0468fe4dbf4b3408ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 7457726863973231117}
+  _raycastDistance: 3
+  _targetMasks:
+    serializedVersion: 2
+    m_Bits: 64
+  _queryTriggerInteraction: 1
+--- !u!114 &4555361120521387341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3576453257779527103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0730ed6a6b3071f45b982c3fae0d319d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _maxDropPower: 10
   _dropPowerCurve:
     serializedVersion: 2
@@ -983,44 +1013,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &3260111263484607703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3576453257779527103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 707f2de148a24e0468fe4dbf4b3408ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  raycastDistance: 3
-  targetMask:
-    serializedVersion: 2
-    m_Bits: 64
-  queryTriggerInteraction: 1
-  _camera: {fileID: 7457726863973231117}
-  RayOrigin: {x: 0, y: 0, z: 0}
-  RayDirection: {x: 0, y: 0, z: 0}
---- !u!114 &4555361120521387341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3576453257779527103}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0730ed6a6b3071f45b982c3fae0d319d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dropOverlappingCollider: []
-  _maxDropPower: 10
   _securityOverlapSphereRadius: 0.2
   _securityObstacleMasks:
     serializedVersion: 2
     m_Bits: 129
+  _dropOverlappingCollider: []
 --- !u!1 &4098631407428697294
 GameObject:
   m_ObjectHideFlags: 0
@@ -1923,7 +1920,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 25, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8492373074120364832
 CanvasRenderer:
