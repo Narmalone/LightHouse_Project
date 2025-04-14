@@ -8,6 +8,46 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8021119577869042942, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 2.6965213
+      objectReference: {fileID: 0}
+    - target: {fileID: 8021119577869042942, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0.13592505
+      objectReference: {fileID: 0}
+    - target: {fileID: 8021119577869042942, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_Center.z
+      value: 0.04153806
+      objectReference: {fileID: 0}
+    - target: {fileID: 8368009818892102462, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 2.6958523
+      objectReference: {fileID: 0}
+    - target: {fileID: 8368009818892102462, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_Center.x
+      value: 0.66982526
+      objectReference: {fileID: 0}
+    - target: {fileID: 8368009818892102462, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 0.13559055
+      objectReference: {fileID: 0}
+    - target: {fileID: 8422317272392303128, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.6779552
+      objectReference: {fileID: 0}
+    - target: {fileID: 8422317272392303128, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.137
+      objectReference: {fileID: 0}
     - target: {fileID: 8578177552427112516, guid: c8139ae770d8ff24b8ff1c155ed19035,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -70,13 +110,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 5439ea0ff2bae2544b1ef79c2ed88f28, type: 2}
     m_RemovedComponents:
     - {fileID: 6014912849866339431, guid: c8139ae770d8ff24b8ff1c155ed19035, type: 3}
+    - {fileID: 7562842854467655549, guid: c8139ae770d8ff24b8ff1c155ed19035, type: 3}
+    - {fileID: 6220575460807866169, guid: c8139ae770d8ff24b8ff1c155ed19035, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 628502574896919933, guid: c8139ae770d8ff24b8ff1c155ed19035,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7411978420854202155}
+      addedObject: {fileID: 5627074373312054929}
   m_SourcePrefab: {fileID: 100100000, guid: c8139ae770d8ff24b8ff1c155ed19035, type: 3}
 --- !u!1 &126285925906088253 stripped
 GameObject:
@@ -84,7 +126,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 682378504396190784}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7411978420854202155
+--- !u!114 &5627074373312054929
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fed8539b43ce46842afa74764fedae04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _col: {fileID: 2615564082981430088}
+  _col: {fileID: 9032372824059076478}
   _itemNeeded: 1000
   _name: 
   _noKeyInInventoryText: You need to find the key
@@ -110,16 +152,64 @@ MonoBehaviour:
   _pivot: {fileID: 3243862752220473133}
   _openRotationAngles: {x: 0, y: 90, z: 0}
   _rotationSpeed: 2
+  _openCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _closeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   _isUnLocked: 0
---- !u!65 &2615564082981430088 stripped
-BoxCollider:
-  m_CorrespondingSourceObject: {fileID: 3257248284275988232, guid: c8139ae770d8ff24b8ff1c155ed19035,
-    type: 3}
-  m_PrefabInstance: {fileID: 682378504396190784}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3243862752220473133 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2629196592336163693, guid: c8139ae770d8ff24b8ff1c155ed19035,
+    type: 3}
+  m_PrefabInstance: {fileID: 682378504396190784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &9032372824059076478 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 8368009818892102462, guid: c8139ae770d8ff24b8ff1c155ed19035,
     type: 3}
   m_PrefabInstance: {fileID: 682378504396190784}
   m_PrefabAsset: {fileID: 0}

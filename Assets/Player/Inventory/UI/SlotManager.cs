@@ -103,6 +103,9 @@ namespace LightHouse.Inventory
             return false;
         }
 
+        /// <summary>
+        /// Try to find an item in the slots.
+        /// </summary>
         public static bool FindItemInSlot(ushort globalId, ushort specificID, out byte slotID)
         {
             slotID = 100;

@@ -64,6 +64,7 @@ namespace LightHouse.Inventory
         private void LateUpdate()
         {
             _inventoryTarget.position = _raycastDetector.RayOrigin + (_raycastDetector.RayDirection.normalized * _grabAndDropItemRange);
+            _inventoryTarget.rotation = Quaternion.LookRotation(_raycastDetector.RayDirection.normalized);
         }
 
         private void OnDestroy()

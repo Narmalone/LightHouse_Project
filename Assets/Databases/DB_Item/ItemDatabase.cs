@@ -2,7 +2,7 @@ using AYellowpaper.SerializedCollections;
 using LightHouse.Inventory;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemDB_", menuName = "New ItemDB")]
+[CreateAssetMenu(fileName = "ItemDB_", menuName = "LightHouse/Databases/InventoryItems")]
 public class ItemDatabase : ScriptableObject
 {
     public SerializedDictionary<ushort, GameObject> items = new SerializedDictionary<ushort, GameObject>();
