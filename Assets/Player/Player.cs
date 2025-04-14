@@ -1,6 +1,8 @@
 using LightHouse.Inputs;
 using UnityEngine;
 using LightHouse.Interactions;
+using LightHouse.Inventory;
+using LightHouse.Handlers;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -18,11 +20,13 @@ namespace LightHouse.KinematicCharacterController
         [Header("Interactions")]
         [SerializeField] private PlayerInteractions _interactions;
 
+        [Header("Inventory")]
+        [SerializeField] private PlayerInventoryController _inventoryController;
+
         [Header("Character Input Control")]
         [SerializeField] private bool _enableAllCharacterInputs = true;
         [SerializeField] private bool _enableMoveInput = true;
         [SerializeField] private bool _enableCameraRotationInput = true;
-
         [SerializeField] private bool _enableSprintInput = true;
         [SerializeField] private bool _enableJumpInput = true;
         [SerializeField] private bool _enableCrouchInput = true;
@@ -30,8 +34,10 @@ namespace LightHouse.KinematicCharacterController
         private PlayerInputActions _inputActions;
 
         //PROPERTIES
-        public PlayerCharacter PlayerCharacter => _playerCharacter;
-        public PlayerCamera Camera => _playerCamera;
+        public PlayerCharacter Character => _playerCharacter;
+        public PlayerInventoryController Inventory => _inventoryController;
+        public PlayerInteractions Interactions => _interactions;
+        public PlayerCamera PlayerCamera => _playerCamera;
         public CameraSpring CameraSpring => _cameraSpring;
         public CameraLean CameraLean => _cameraLean;
 
@@ -44,6 +50,7 @@ namespace LightHouse.KinematicCharacterController
 
         private void Start()
         {
+            PlayerHandlerData.InitializeHandlerData(this);
             Cursor.lockState = CursorLockMode.Locked;
             InputManager.InputManagerInitialized();
             _playerCharacter.Initialize();
@@ -56,6 +63,7 @@ namespace LightHouse.KinematicCharacterController
         {
             HandleCharacterInput();
             _playerCharacter.UpdateCapsuleMeshRoot(Time.deltaTime);
+
         }
 
         private void LateUpdate()

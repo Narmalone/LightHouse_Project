@@ -76,7 +76,8 @@ namespace LightHouse.Items.Samples
             base.Usable_OnItemUsed();
             _isUnLocked = true;
             CanBeInteracted = true;
-            Open();
+            if (IsItemRaycasted)
+                InvokeInteractionDescriptionUpdated();
         }
 
         #endregion

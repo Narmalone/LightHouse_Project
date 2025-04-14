@@ -9,7 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 647991345429371992}
-  m_Layer: 0
+  - component: {fileID: 5582724277270521453}
+  - component: {fileID: 1767384463093143437}
+  - component: {fileID: 8138508967292356559}
+  m_Layer: 7
   m_Name: SM_Supply_Crate_Small_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32,6 +35,79 @@ Transform:
   - {fileID: 8447083440475640816}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5582724277270521453
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6207568710116704386}
+  m_Material: {fileID: 13400000, guid: cdf52f31ea4c2214a831e838c435fb25, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.234297, y: 1.3291178, z: 1.250819}
+  m_Center: {x: 0.004576862, y: 0.5908179, z: 0.015642643}
+--- !u!54 &1767384463093143437
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6207568710116704386}
+  serializedVersion: 4
+  m_Mass: 10
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 1
+--- !u!114 &8138508967292356559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6207568710116704386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb61f7b6b88c36a458d396122c876420, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _itemName: 
+  _alreadyGrabbingAnObjectText: You are already grabbing an item.
+  _col: {fileID: 5582724277270521453}
+  rb: {fileID: 1767384463093143437}
+  _moveForce: 500
+  _rotationSpeed: 20
+  _maxClampedVelocity: 10
+  _offsetPos: {x: 0, y: -1, z: 0}
+  _objectAtRange: 1.8
+  _maxItemRangeToAutomaticRelease: 4
+  <CanBeInteracted>k__BackingField: 1
+  <IsItemRaycasted>k__BackingField: 0
+  <CanBeRaycasted>k__BackingField: 1
 --- !u!1001 &8264290992209785883
 PrefabInstance:
   m_ObjectHideFlags: 0

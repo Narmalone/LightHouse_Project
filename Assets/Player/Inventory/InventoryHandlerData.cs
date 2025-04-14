@@ -21,9 +21,13 @@ namespace LightHouse.Inventory
         /// </summary>
         public static Transform InventoryTargetPosition { get; private set; }
 
+        public static bool IsGrabbingObject { get; private set; }
+
         // Events
         public static event Action<IInventoryItem> OnSelectedItemChanged;
         public static event Action<IInventoryItem> OnItemDropped;
+
+        public static event Action OnGrabObjectChanged;
 
         /// <summary>
         /// The Generated Slots
@@ -41,6 +45,7 @@ namespace LightHouse.Inventory
         public static void Reset()
         {
             _uiController = null;
+            IsGrabbingObject = false;
             InventoryTargetPosition = null;
             CurrentHandedItemType = null;
             CurrentHandedItemID = null;
@@ -74,6 +79,22 @@ namespace LightHouse.Inventory
             OnItemDropped?.Invoke(item);
         }
         #endregion
+
+        #region GRAB INFO
+        public static void SetGrabbingObject(bool value)
+        {
+            if(value != IsGrabbingObject)
+            {
+                IsGrabbingObject = value;
+                OnGrabObjectChanged?.Invoke();
+            }
+        }
+        #endregion
+
+        public static bool IsGrabbingObjectOrIndexInvalid()
+        {
+            return IsGrabbingObject || SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex) || SlotManager.CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count <= 0;
+        }
     }
 }
 

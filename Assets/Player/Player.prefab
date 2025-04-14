@@ -32,7 +32,6 @@ Transform:
   - {fileID: 5858299661234520692}
   - {fileID: 7527910149137334154}
   - {fileID: 1259359992558668386}
-  - {fileID: 5140771278911201481}
   m_Father: {fileID: 7442496301228367719}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &954376354796325370
@@ -827,11 +826,11 @@ Transform:
   m_GameObject: {fileID: 2973295173894252359}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 1.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8330855046840785471}
+  m_Father: {fileID: 1259359992558668386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2983849498025462104
 GameObject:
@@ -858,10 +857,11 @@ Transform:
   m_GameObject: {fileID: 2983849498025462104}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.276, y: 1.1500001, z: 0.598}
+  m_LocalPosition: {x: 0.5138587, y: 1.1500001, z: 1.4856993}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5140771278911201481}
   m_Father: {fileID: 8330855046840785471}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2997750609895392499
@@ -912,12 +912,13 @@ MonoBehaviour:
   InvertX: 0
   InvertY: 0
   DefaultVerticalAngle: 20
-  MinVerticalAngle: -90
-  MaxVerticalAngle: 90
+  MinVerticalAngle: -80
+  MaxVerticalAngle: 80
   RotationSpeed: 1
   RotationSharpness: 10000
   RotateWithPhysicsMover: 0
   PositionSharpness: 10000
+  DampSmoothTime: 0.005
   SensiX: 0.1
   SensiY: 0.1
 --- !u!1 &3576453257779527103
@@ -978,6 +979,7 @@ MonoBehaviour:
   _cameraSpring: {fileID: 7312947504195620440}
   _cameraLean: {fileID: 6419952540914484700}
   _interactions: {fileID: 4390841736390168758}
+  _inventoryController: {fileID: 5860776069107868818}
   _enableAllCharacterInputs: 1
   _enableMoveInput: 1
   _enableCameraRotationInput: 1
@@ -1030,6 +1032,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryCapacity: 4
+  _grabAndDropItemRange: 1.5
   _itemDatabase: {fileID: 11400000, guid: eec9f4e4453518e4bb148827b9312144, type: 2}
   _inventoryTarget: {fileID: 1259359992558668386}
   _raycastDetector: {fileID: 3260111263484607703}
@@ -1340,7 +1343,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _attackDamping: 0.5
   _decayDamping: 0.3
-  _strength: 5
+  _strength: 2.5
 --- !u!1 &4444602152259135559
 GameObject:
   m_ObjectHideFlags: 0
@@ -1491,7 +1494,7 @@ Transform:
   m_GameObject: {fileID: 5264825378655831165}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5138584, y: 1.1499996, z: 1.485699}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1507,13 +1510,13 @@ PositionConstraint:
   m_Enabled: 1
   serializedVersion: 2
   m_Weight: 1
-  m_TranslationAtRest: {x: 0, y: 0, z: 0}
-  m_TranslationOffset: {x: -0.276, y: -1.1500001, z: -0.598}
+  m_TranslationAtRest: {x: 0.5138584, y: 1.1499996, z: 1.485699}
+  m_TranslationOffset: {x: 0, y: 0, z: 0}
   m_AffectTranslationX: 1
   m_AffectTranslationY: 1
   m_AffectTranslationZ: 1
   m_Active: 1
-  m_IsLocked: 0
+  m_IsLocked: 1
   m_Sources:
   - sourceTransform: {fileID: 1259359992558668386}
     weight: 1

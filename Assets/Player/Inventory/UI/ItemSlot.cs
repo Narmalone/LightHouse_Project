@@ -77,11 +77,15 @@ namespace LightHouse.Inventory
         /// Retried a specific item from this slot in the pool with a specific ID
         /// </summary>
         /// <param name="specificID"></param>
-        public bool GetItemInSlot(ushort specificID, out IInventoryItem item)
+        public bool TryGetItemInSlot(ushort specificID, out IInventoryItem item)
         {
             item = null;
             if (ItemSpecificIds.Count <= 0) return false;
-            return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, specificID, out item);
+            if (ItemSpecificIds.Contains(specificID))
+            {
+                return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, specificID, out item);
+            }
+            return false;
         }
         #endregion
 

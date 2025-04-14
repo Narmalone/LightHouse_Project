@@ -1981,6 +1981,13 @@ namespace KinematicCharacterController
         /// </summary>
         private bool InternalIsColliderValidForCollisions(Collider coll)
         {
+            // Custom checks
+            bool colliderValid = CharacterController.IsColliderValidForCollisions(coll);
+            if (!colliderValid)
+            {
+                return false;
+            }
+
             Rigidbody colliderAttachedRigidbody = coll.attachedRigidbody;
             if (colliderAttachedRigidbody)
             {
@@ -2003,13 +2010,6 @@ namespace KinematicCharacterController
 
                     return false;
                 }
-            }
-
-            // Custom checks
-            bool colliderValid = CharacterController.IsColliderValidForCollisions(coll);
-            if (!colliderValid)
-            {
-                return false;
             }
 
             return true;

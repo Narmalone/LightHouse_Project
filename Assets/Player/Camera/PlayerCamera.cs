@@ -25,6 +25,7 @@ namespace LightHouse.KinematicCharacterController
         public bool RotateWithPhysicsMover = false;
 
         public float PositionSharpness = 10000f;
+        public float DampSmoothTime = 0.05f;
 
         [Header("Sensitivity")]
         public float SensiX = 1f;
@@ -57,6 +58,7 @@ namespace LightHouse.KinematicCharacterController
             PlanarDirection = FollowTransform.forward;
             _currentFollowPosition = FollowTransform.position;
         }
+        private Vector3 _velocitySmoothing;
 
         public void UpdateWithInput(float deltaTime, Vector3 rotationInput)
         {
@@ -89,7 +91,14 @@ namespace LightHouse.KinematicCharacterController
                 Transform.rotation = targetRotation;
 
                 // Position follow
-                _currentFollowPosition = Vector3.Lerp(_currentFollowPosition, FollowTransform.position, 1f - Mathf.Exp(-PositionSharpness * deltaTime));
+                //_currentFollowPosition = Vector3.Lerp(_currentFollowPosition, FollowTransform.position, 1f - Mathf.Exp(-PositionSharpness * deltaTime));
+                _currentFollowPosition = Vector3.SmoothDamp(
+                    _currentFollowPosition,
+                    FollowTransform.position,
+                    ref _velocitySmoothing,
+                    DampSmoothTime // délai d'amortissement
+                );
+
                 Vector3 targetPosition = _currentFollowPosition;
 
                 // Apply position

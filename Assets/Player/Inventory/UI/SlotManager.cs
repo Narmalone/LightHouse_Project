@@ -103,6 +103,20 @@ namespace LightHouse.Inventory
             return false;
         }
 
+        public static bool FindItemInSlot(ushort globalId, ushort specificID, out byte slotID)
+        {
+            slotID = 100;
+            foreach(ItemSlot itemSlot in Slots)
+            {
+                if (itemSlot.SlotDatas.TryGetItemInSlot(specificID, out IInventoryItem item))
+                {
+                    slotID = itemSlot.SlotDatas.SlotID;
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Check if there is the matching items in the current selected slot
         /// </summary>
@@ -115,7 +129,7 @@ namespace LightHouse.Inventory
             {
                 if (slot.SlotDatas.IsSelected && slot.SlotDatas.HasItem && slot.SlotDatas.ItemGlobalID == globalID)
                 {
-                    if (slot.SlotDatas.GetItemInSlot(specificID, out item))
+                    if (slot.SlotDatas.TryGetItemInSlot(specificID, out item))
                     {
                         slotID = slot.SlotDatas.SlotID;
                         return true;

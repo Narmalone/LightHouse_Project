@@ -5,8 +5,8 @@ namespace LightHouse.Inventory
         JerricanEssence = 0,
         Nail = 1,
         Burger = 2,
-        WoodenPlank_Inventory = 3,
+        WoodPlank = 3,
         Hammer = 4,
-        BlueKey = 1000,
+        MainEntranceKey = 1000,
     }
 }

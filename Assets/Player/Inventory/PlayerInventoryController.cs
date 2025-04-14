@@ -12,6 +12,7 @@ namespace LightHouse.Inventory
         #region SERILIAZED FIELDS
         [Header("Inventory Settings")]
         [SerializeField] private byte _inventoryCapacity = 4;
+        [SerializeField] private float _grabAndDropItemRange = 1.5f;
 
         [Header("Inventory References")]
         [SerializeField] private ItemDatabase _itemDatabase;
@@ -28,6 +29,7 @@ namespace LightHouse.Inventory
         [SerializeField] private InventoryUIController _inventoryUiController;
         [SerializeField] private CanvasInteraction _interactionUiController;
 
+        public InventoryRaycastDetector RaycastDetector => _raycastDetector;
         #endregion
 
         #region PRIVATE / HIDED FIELDS
@@ -50,18 +52,18 @@ namespace LightHouse.Inventory
 
         private void Update()
         {
-            HandleDropInput();
-
             if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
                 AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen);
 
+            if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
+                return;
+            HandleDropInput();
             HandleInteractInInventoryInput();
-            
         }
 
         private void LateUpdate()
         {
-            _inventoryTarget.position = _raycastDetector.RayOrigin + _raycastDetector.RayDirection.normalized;
+            _inventoryTarget.position = _raycastDetector.RayOrigin + (_raycastDetector.RayDirection.normalized * _grabAndDropItemRange);
         }
 
         private void OnDestroy()
@@ -173,7 +175,10 @@ namespace LightHouse.Inventory
         }
 
         private void IInventoryItem_ForceDropItemFromInventory(ushort globalItemID, ushort specificItemID, Vector3 position, float force, bool enablePhysicsOnDrop)
-         => RemoveItemFromInventory(CurrentSelectedSlot.SlotDatas.SlotID, globalItemID, specificItemID, position, force, enablePhysicsOnDrop);
+        {
+            if(SlotManager.FindItemInSlot(globalItemID, specificItemID, out byte slotID))
+                RemoveItemFromInventory(slotID, globalItemID, specificItemID, position, force, enablePhysicsOnDrop);
+        }
 
         #endregion
 
@@ -214,7 +219,10 @@ namespace LightHouse.Inventory
         #region InteractInInventory Handling & Input callback
         private void InteractInInventory_started(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex)) return;
+            if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
+            {
+                return;
+            }
             if (SlotManager.CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot(out IInventoryItem item))
             {
                 if (item is IInventoryItemUsable usable)
@@ -223,7 +231,10 @@ namespace LightHouse.Inventory
         }
         private void InteractInInventory_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex)) return;
+            if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
+            {
+                return;
+            }
             if (!SlotManager.CurrentSelectedSlot.SlotDatas.HasItem)
             {
                 _useFromInventoryHandler.SetTarget(null);

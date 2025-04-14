@@ -1,5 +1,6 @@
 using KinematicCharacterController;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightHouse.KinematicCharacterController
@@ -15,6 +16,12 @@ namespace LightHouse.KinematicCharacterController
         Sprinting,
         StopSprint,
         Toggle
+    }
+
+    public enum HandsState
+    {
+        None,
+        GrabbingItem
     }
 
     public enum Stance
@@ -104,6 +111,9 @@ namespace LightHouse.KinematicCharacterController
         public CharacterState _state;
         private Collider[] _uncrouchOverlapResults;
 
+        //allow to ignore collision with specifics colliders
+        private HashSet<Collider> _ignoredColliders = new HashSet<Collider>();
+
         //PROPERTIES
         public float CurrentSpeed
         {
@@ -115,6 +125,27 @@ namespace LightHouse.KinematicCharacterController
             _motor.CharacterController = this;
             _state.Stance = Stance.Stand;
             _uncrouchOverlapResults = new Collider[8];
+        }
+
+        /// <summary>
+        /// Put in a list to ignore the collision with a specific object
+        /// </summary>
+        /// <param name="col"></param>
+        public void IgnoreCollider(Collider col)
+        {
+            if (!_ignoredColliders.Contains(col))
+            {
+                _ignoredColliders.Add(col);
+            }
+        }
+
+        /// <summary>
+        /// Check the list and restore the collision with this object
+        /// </summary>
+        public void RestoreCollider(Collider col)
+        {
+            if(_ignoredColliders.Contains(col))
+                _ignoredColliders.Remove(col);
         }
 
         /// <summary>
@@ -398,7 +429,13 @@ namespace LightHouse.KinematicCharacterController
             _state.IsGrounded = _motor.GroundingStatus.IsStableOnGround;
         }
 
-        public bool IsColliderValidForCollisions(Collider coll) => true;
+        public bool IsColliderValidForCollisions(Collider coll)
+        {
+            if (_ignoredColliders.Contains(coll))
+                return false;
+
+            return true;
+        }
 
         public void OnDiscreteCollisionDetected(Collider hitCollider) { }
 
