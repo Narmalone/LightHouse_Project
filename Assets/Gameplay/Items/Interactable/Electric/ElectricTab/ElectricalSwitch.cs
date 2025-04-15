@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using LightHouse.Electricity;
 
-namespace LightHouse.Items.Samples
+namespace LightHouse.Items
 {
     public class ElectricalSwitch : MonoBehaviour, IInteractable
     {

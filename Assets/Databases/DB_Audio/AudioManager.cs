@@ -46,7 +46,6 @@ public class AudioManager : MonoBehaviour
         source.volume = volume;
         source.spatialBlend = spatialBlend; // 0 = 2D, 1 = 3D
         source.Play();
-        Debug.Log("ça doit play");
         Destroy(tempGO, clip.length);
     }
 

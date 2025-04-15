@@ -1,44 +1,74 @@
-using LightHouse.Inputs;
-using LightHouse.Interactions;
-using System;
+using LightHouse.Items;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Items.Samples
+public class GeneratorSwitch : InteractableSwitch
 {
-    public class GeneratorSwitch : MonoBehaviour, IInteractable
+    private static readonly int EmissiveColorID = Shader.PropertyToID("_EmissiveColor");
+
+    [Header("Emission Intensity")]
+    [SerializeField] private float _baseEmissionIntensity = 100.0f;
+    [SerializeField] private float _maxEmissionIntensity = 500.0f;
+    [SerializeField] private float _blinkDuration = 1.0f; // durée d’un cycle complet
+    [SerializeField] private AnimationCurve _blinkCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
+    [Header("Colors")]
+    [SerializeField] private Color _disabledColor = Color.red;
+    [SerializeField] private Color _enabledColor = Color.green;
+    [SerializeField] private Renderer rend;
+
+    [SerializeField] private bool _enableBlink = true;
+
+    private float _blinkTimer = 0f;
+
+    private void Update()
     {
-        [SerializeField] private string _itemName;
-        [SerializeField] private Collider _col;
-
-        private bool _isSwitchOn = false;
-        public bool IsSwitchOn => _isSwitchOn;
-        public bool CanBeInteracted { get; set; } = true;
-        public bool IsItemRaycasted { get; set; }
-        public bool CanBeRaycasted { get; set; } = true;
-
-        public event Action OnObjectInteracted;
-        public event Action OnInteractionNameChanged;
-        public event Action OnNameUpdated;
-
-        public Collider GetCollider() => _col;
-
-        public GameObject GetGameObject() => this.gameObject;
-
-        public virtual string GetInteractionName()
+        if (_enableBlink)
         {
-            return _isSwitchOn ? $"Press {InputManager.GetBindingName(InputManager.Interact)} to switch Off"
-                           : $"Press {InputManager.GetBindingName(InputManager.Interact)} to switch On";
+            _blinkTimer += Time.deltaTime;
+
+            // Boucle le temps sur la durée du cycle
+            float t = (_blinkTimer % _blinkDuration) / _blinkDuration;
+
+            // Récupère la valeur sur la courbe (entre 0 et 1)
+            float curveValue = _blinkCurve.Evaluate(t);
+
+            // Interpole l’intensité entre base et max
+            float intensity = Mathf.Lerp(_baseEmissionIntensity, _maxEmissionIntensity, curveValue);
+
+            ApplyMaterialProperties(intensity, _disabledColor);
         }
-
-        public string GetName() => _itemName;
-
-        public void Interact()
-        {
-            _isSwitchOn = !_isSwitchOn;
-            OnInteractionNameChanged?.Invoke();
-            OnObjectInteracted?.Invoke();
-        }
-
+        
     }
 
+    private void ApplyMaterialProperties(float intensity, Color color)
+    {
+        MaterialPropertyBlock block = new MaterialPropertyBlock();
+        block.SetColor(EmissiveColorID, color * intensity);
+        rend.SetPropertyBlock(block);
+    }
+
+    // Facultatif : pour changer dynamiquement l’intensité de base
+    public void SetEmission(float baseIntensity, float maxIntensity)
+    {
+        _baseEmissionIntensity = baseIntensity;
+        _maxEmissionIntensity = maxIntensity;
+        _blinkTimer = 0f;
+    }
+
+    public override void Interact()
+    {
+        base.Interact();
+        if (_isSwitchOn)
+        {
+            _enableBlink = false;
+            ApplyMaterialProperties(_baseEmissionIntensity, _enabledColor);
+        }
+        else
+        {
+            _blinkTimer = 0.0f;
+            _enableBlink = true;
+        }
+    }
 }

@@ -1,7 +1,7 @@
 using LightHouse.Inventory;
 using System;
 
-namespace LightHouse.Items.Samples
+namespace LightHouse.Items
 {
     public class JerricanItemTracker : IDUseItemTracker
     {

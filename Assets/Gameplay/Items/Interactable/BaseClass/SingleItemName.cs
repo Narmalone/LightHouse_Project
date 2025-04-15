@@ -2,7 +2,7 @@ using LightHouse.Interactions;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Items.Samples
+namespace LightHouse.Items
 {
     public class SingleItemName : MonoBehaviour, IItemName
     {

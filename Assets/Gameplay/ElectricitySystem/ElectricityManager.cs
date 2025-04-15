@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using LightHouse.Items.Samples;
+using LightHouse.Items;
 using System.Collections.Generic;
 using System;
 

@@ -2,9 +2,8 @@ using LightHouse.Inputs;
 using LightHouse.Inventory;
 using System;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-namespace LightHouse.Items.Samples
+namespace LightHouse.Items
 {
     public class JerricanEssence : MonoBehaviour, IInventoryItem, IInventoryItemUsable
     {

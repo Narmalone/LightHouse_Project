@@ -3,7 +3,7 @@ using LightHouse.Inventory;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Items.Samples
+namespace LightHouse.Items
 {
     public class Generator : MonoBehaviour
     {
@@ -13,7 +13,7 @@ namespace LightHouse.Items.Samples
 
         [Header("DEBUG")]
         [SerializeField] private bool _isGeneratorOn;
-        [SerializeField] private GeneratorSwitch _generatorSwitch;
+        [SerializeField] private InteractableSwitch _generatorSwitch;
         [SerializeField] private SingleItemName _fuelIsRequired;
         [SerializeField] private JerricanItemTracker _jerricanReceiver;
 
