@@ -12,13 +12,17 @@ namespace LightHouse.KinematicCharacterController
 
         private void OnTriggerEnter(Collider other)
         {
-            PlayerCharacter cc = other.GetComponent<PlayerCharacter>();
-            if (cc)
+            if (!isBeingTeleportedTo)
             {
-                cc.Motor.SetPositionAndRotation(_teleportTo.transform.position, _teleportTo.transform.rotation);
-                OnPlayerTeleported?.Invoke(cc);
-                //_teleportTo.isBeingTeleportedTo = true;
+                PlayerCharacter cc = other.GetComponent<PlayerCharacter>();
+                if (cc)
+                {
+                    cc.Motor.SetPositionAndRotation(_teleportTo.transform.position, _teleportTo.transform.rotation);
+                    OnPlayerTeleported?.Invoke(cc);
+                    _teleportTo.isBeingTeleportedTo = true;
+                }
             }
+            isBeingTeleportedTo = false;
         }
     }
 

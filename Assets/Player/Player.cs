@@ -40,7 +40,6 @@ namespace LightHouse.KinematicCharacterController
         public PlayerCamera PlayerCamera => _playerCamera;
         public CameraSpring CameraSpring => _cameraSpring;
         public CameraLean CameraLean => _cameraLean;
-
         private void Awake()
         {
             _inputActions = new PlayerInputActions();
@@ -126,6 +125,7 @@ namespace LightHouse.KinematicCharacterController
             {
                 CameraInput cameraInput = new CameraInput() { Look = _inputActions.Player.Look.ReadValue<Vector2>() };
                 _playerCamera.UpdateWithInput(Time.deltaTime, cameraInput.Look);
+                //_cameraController.UpdateCameraInput(cameraInput.Look, Time.deltaTime);
             }
             
         }

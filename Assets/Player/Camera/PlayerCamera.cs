@@ -22,7 +22,6 @@ namespace LightHouse.KinematicCharacterController
         public float MaxVerticalAngle = 90f;
         public float RotationSpeed = 1f;
         public float RotationSharpness = 10000f;
-        public bool RotateWithPhysicsMover = false;
 
         public float PositionSharpness = 10000f;
         public float DampSmoothTime = 0.05f;
@@ -38,6 +37,7 @@ namespace LightHouse.KinematicCharacterController
 
         private float _targetVerticalAngle;
         private Vector3 _currentFollowPosition;
+        private Vector3 _velocitySmoothing;
 
         void OnValidate()
         {
@@ -58,7 +58,6 @@ namespace LightHouse.KinematicCharacterController
             PlanarDirection = FollowTransform.forward;
             _currentFollowPosition = FollowTransform.position;
         }
-        private Vector3 _velocitySmoothing;
 
         public void UpdateWithInput(float deltaTime, Vector3 rotationInput)
         {
