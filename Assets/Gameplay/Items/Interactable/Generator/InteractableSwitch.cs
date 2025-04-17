@@ -35,7 +35,8 @@ namespace LightHouse.Items
         public virtual void Interact()
         {
             _isSwitchOn = !_isSwitchOn;
-            OnInteractionNameChanged?.Invoke();
+            if (IsItemRaycasted)
+                OnInteractionNameChanged?.Invoke();
             OnObjectInteracted?.Invoke();
         }
     }

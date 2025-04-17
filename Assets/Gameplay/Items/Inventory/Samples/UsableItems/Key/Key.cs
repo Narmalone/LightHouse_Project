@@ -17,6 +17,9 @@ namespace LightHouse.Items.Samples
         [SerializeField] private bool _destroyOnUsed;
         [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
         [field: SerializeField] public bool CanBeUsedFromInventory { get; set; }
+
+        [field: SerializeField] public Vector3 InventoryLocalPositionOffset { get; set; }
+        [field: SerializeField] public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
         #endregion
 
         #region IInventory Fields

@@ -107,6 +107,19 @@ namespace LightHouse.KinematicCharacterController
         private float _timeSinceJumpRequested = Mathf.Infinity;
         private float _timeSinceLastAbleToJump = 0f;
 
+        public float SprintSpeed => _sprintSpeed;
+        public float CurrentHeight
+        {
+            get
+            {
+                return _state.Stance switch
+                {
+                    Stance.Stand => _standHeight,
+                    Stance.Crouch => _crouchHeight,
+                    _ => _standHeight,
+                };
+            }
+        }
         //States
         public CharacterState _state;
         private Collider[] _uncrouchOverlapResults;
@@ -168,7 +181,7 @@ namespace LightHouse.KinematicCharacterController
             _moveInputVector = cameraPlanarRotation * moveInputVector;
             _lookInputVector = cameraPlanarDirection;
 
-            if (inputs.Jump)
+            if (inputs.Jump && _state.Stance == Stance.Stand)
             {
                 _jumpRequested = true;
                 _timeSinceJumpRequested = 0f;
@@ -317,6 +330,8 @@ namespace LightHouse.KinematicCharacterController
             }
 
             // Handle jumping
+
+            if (_state.Stance != Stance.Stand) return;
             _jumpedThisFrame = false;
             _timeSinceJumpRequested += deltaTime;
 
@@ -367,6 +382,7 @@ namespace LightHouse.KinematicCharacterController
             //_state.Acceleration = Vector3.ClampMagnitude(_state.Acceleration, totalAcceleration.magnitude);
 
             // Handle jump-related values
+            if(_state.Stance == Stance.Stand)
             {
                 // Handle jumping pre-ground grace period
                 if (_jumpRequested && _timeSinceJumpRequested > _jumpPreGroundingGraceTime)

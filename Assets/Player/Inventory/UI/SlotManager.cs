@@ -1,3 +1,6 @@
+using System;
+using UnityEngine;
+
 namespace LightHouse.Inventory
 {
     public static class SlotManager
@@ -7,6 +10,8 @@ namespace LightHouse.Inventory
         public static short CurrentSlotIndex = -1;
         public static short SlotLength => (short)Slots.Length;
         public static ItemSlot CurrentSelectedSlot => Slots[CurrentSlotIndex];
+
+        public static event Action OnSlotSelectedChanged;
         #endregion
 
         #region Init & Clear
@@ -41,14 +46,17 @@ namespace LightHouse.Inventory
 
                 if (CurrentSelectedSlot.SlotDatas.HasItem)
                 {
-                    IInventoryItem item = db.Get(CurrentSelectedSlot.SlotDatas.ItemGlobalID);
-                    InventoryHandlerData.SetSelectedItem(item);
+                    //IInventoryItem item = db.Get(CurrentSelectedSlot.SlotDatas.ItemGlobalID);
+                    CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot(out IInventoryItem itm);
+                    InventoryHandlerData.SetSelectedItem(itm);
                 }
                 else
                     InventoryHandlerData.ClearSelection();
             }
             else
                 InventoryHandlerData.ClearSelection();
+
+            OnSlotSelectedChanged?.Invoke();
         }
 
         #endregion
@@ -111,7 +119,8 @@ namespace LightHouse.Inventory
             slotID = 100;
             foreach(ItemSlot itemSlot in Slots)
             {
-                if (itemSlot.SlotDatas.TryGetItemInSlot(specificID, out IInventoryItem item))
+                if (itemSlot.SlotDatas.ItemGlobalID != globalId) continue;
+                if (itemSlot.SlotDatas.TryGetItemInSlot(globalId, specificID, out IInventoryItem item))
                 {
                     slotID = itemSlot.SlotDatas.SlotID;
                     return true;
@@ -132,7 +141,7 @@ namespace LightHouse.Inventory
             {
                 if (slot.SlotDatas.IsSelected && slot.SlotDatas.HasItem && slot.SlotDatas.ItemGlobalID == globalID)
                 {
-                    if (slot.SlotDatas.TryGetItemInSlot(specificID, out item))
+                    if (slot.SlotDatas.TryGetItemInSlot(globalID, specificID, out item))
                     {
                         slotID = slot.SlotDatas.SlotID;
                         return true;
@@ -142,6 +151,19 @@ namespace LightHouse.Inventory
             return false;
         }
 
+        /// <summary>
+        /// Check if there is the matching items in the current selected slot
+        /// </summary>
+        public static bool TryFindFirstItemInCurrentSelectedSlot(out IInventoryItem item)
+        {
+            item = null;
+            if (IsIndexInvalid(CurrentSlotIndex) || CurrentSelectedSlot == null || !CurrentSelectedSlot.SlotDatas.HasItem) return false;
+            if (CurrentSelectedSlot.SlotDatas.TryGetItemInSlot(CurrentSelectedSlot.SlotDatas.ItemGlobalID, CurrentSelectedSlot.SlotDatas.ItemSpecificIds[0], out item))
+            {
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Check if there is an item matching with it's global id

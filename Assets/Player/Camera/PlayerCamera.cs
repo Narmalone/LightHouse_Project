@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Cinemachine;
 using UnityEngine;
 
 namespace LightHouse.KinematicCharacterController
@@ -14,12 +14,11 @@ namespace LightHouse.KinematicCharacterController
         [Header("Rotation")]
         public bool InvertX = false;
         public bool InvertY = false;
-        [Range(-90f, 90f)]
-        public float DefaultVerticalAngle = 20f;
-        [Range(-90f, 90f)]
-        public float MinVerticalAngle = -90f;
-        [Range(-90f, 90f)]
-        public float MaxVerticalAngle = 90f;
+
+        [Range(-90f, 90f)] public float DefaultVerticalAngle = 20f;
+        [Range(-90f, 90f)] public float MinVerticalAngle = -90f;
+        [Range(-90f, 90f)] public float MaxVerticalAngle = 90f;
+
         public float RotationSpeed = 1f;
         public float RotationSharpness = 10000f;
 
@@ -29,11 +28,18 @@ namespace LightHouse.KinematicCharacterController
         [Header("Sensitivity")]
         public float SensiX = 1f;
         public float SensiY = 1f;
+        public float FOV = 80f;
 
         public Transform Transform { get; private set; }
         public Transform FollowTransform { get; private set; }
 
         public Vector3 PlanarDirection { get; set; }
+
+        [SerializeField] private CinemachineVirtualCamera _cm;
+        public CinemachineVirtualCamera CinemachineCamera => _cm;
+
+        [SerializeField] private Camera _playerCamera;
+        public Camera Camera => _playerCamera;
 
         private float _targetVerticalAngle;
         private Vector3 _currentFollowPosition;
@@ -42,13 +48,13 @@ namespace LightHouse.KinematicCharacterController
         void OnValidate()
         {
             DefaultVerticalAngle = Mathf.Clamp(DefaultVerticalAngle, MinVerticalAngle, MaxVerticalAngle);
+            _cm.m_Lens.FieldOfView = FOV;
         }
 
         void Awake()
         {
             Transform = this.transform;
             _targetVerticalAngle = 0f;
-
             PlanarDirection = Vector3.forward;
         }
 

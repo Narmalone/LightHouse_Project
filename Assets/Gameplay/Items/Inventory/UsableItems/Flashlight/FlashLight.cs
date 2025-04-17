@@ -1,0 +1,88 @@
+using LightHouse.Inputs;
+using LightHouse.Inventory;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class FlashLight : MonoBehaviour, IInventoryItem, IInventoryItemUsable
+{
+    [Header("IInventory Item")]
+    [SerializeField] private string _itemName;
+    [SerializeField] private Sprite _itemSprite;
+    [SerializeField] private Collider _flashlightCol;
+    [SerializeField] private Rigidbody _rb;
+    [field: SerializeField] public ushort GlobalItemID { get; set; }
+    public ushort ItemSpecificID { get; set; }
+    public bool IsItemInInventory { get; set; }
+    public bool IsItemOnHands { get; set; }
+    public Sprite ItemSprite => _itemSprite;
+    public bool IsItemRaycasted { get; set; }
+    public bool CanBeRaycasted { get; set; } = true;
+    public bool CanBeUsedFromInventory { get; set; } = true;
+    [field: SerializeField] public Vector3 InventoryLocalPositionOffset { get; set; }
+    [field: SerializeField] public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
+
+    public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
+    public event Action OnNameUpdated;
+    public event Action OnItemUsed;
+    public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+
+    private bool _isLightOn = false;
+    [SerializeField] private Light _light;
+
+    private void Awake()
+    {
+        Off();
+    }
+
+    public void On()
+    {
+        _isLightOn = true;
+        _light.gameObject.SetActive(true);
+    }
+    
+    public void Off()
+    {
+        _isLightOn = false;
+        _light.gameObject.SetActive(false);
+    }
+
+    public string GetPickupName()
+    {
+        return $"Press {InputManager.GetBindingName(InputManager.PickUp)} to pick.";
+    }
+
+    public Rigidbody GetRigidBody() => _rb;
+
+    public void InvokeForceDropItemFromInventory(Vector3 pos, float force, bool enablePhysics)
+    {
+        ForceDropItemFromInventory?.Invoke(this.GlobalItemID, this.ItemSpecificID, pos, force, enablePhysics);
+    }
+
+    public string GetName() => _itemName;
+
+    public GameObject GetGameObject() => this.gameObject;
+
+    public Collider GetCollider() => _flashlightCol;
+
+
+    //IInventoryUSable
+    public string UseInInventoryText()
+    {
+        return "Press to";
+    }
+
+    public void UseFromInventory()
+    {
+        if (_isLightOn)
+            Off();
+        else
+            On();
+    }
+
+    public void InvokeOnCanBeUsedFromInventoryChanged()
+    {
+        CanBeUsedFromInventoryChanged?.Invoke(this.GlobalItemID, this.ItemSpecificID);
+    }
+}

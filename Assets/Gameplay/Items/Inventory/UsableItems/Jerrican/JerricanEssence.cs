@@ -28,6 +28,8 @@ namespace LightHouse.Items
 
         [field: SerializeField] public ushort GlobalItemID { get; set; }
         [field: SerializeField] public ushort ItemSpecificID { get; set; }
+        [field: SerializeField] public Vector3 InventoryLocalPositionOffset { get; set; }
+        [field: SerializeField] public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
 
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;

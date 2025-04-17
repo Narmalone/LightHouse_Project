@@ -49,6 +49,10 @@ namespace LightHouse.Inventory
 
         #region MONO CALLBACKS
         private void Awake() => Initialize();
+        private void Start()
+        {
+            InventoryHandlerData.Initialize(_inventoryUiController, _inventoryTarget);
+        }
 
         private void Update()
         {
@@ -83,7 +87,6 @@ namespace LightHouse.Inventory
             RegisterInputs();
             _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
             SlotManager.Initialize(_slots);
-            InventoryHandlerData.Initialize(_inventoryUiController, _inventoryTarget);
             InitializeControllers();
         }
 
@@ -143,6 +146,7 @@ namespace LightHouse.Inventory
             IInventoryItemUsable usable = item as IInventoryItemUsable;
             if (usable != null)
                 usable.CanBeUsedFromInventoryChanged += Usable_CanBeUsedFromInventoryChanged;
+            InventoryHandlerData.NotifyAddedToInventory(item);
         }
 
         private void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID,
@@ -220,33 +224,11 @@ namespace LightHouse.Inventory
         #region InteractInInventory Handling & Input callback
         private void InteractInInventory_started(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
-            {
-                return;
-            }
-            if (SlotManager.CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot(out IInventoryItem item))
-            {
-                if (item is IInventoryItemUsable usable)
-                    _useFromInventoryHandler.SetTarget(usable);
-            }
+            _useFromInventoryHandler.Started();
         }
         private void InteractInInventory_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
-            {
-                return;
-            }
-            if (!SlotManager.CurrentSelectedSlot.SlotDatas.HasItem)
-            {
-                _useFromInventoryHandler.SetTarget(null);
-                return;
-            }
-
-            if (SlotManager.CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot(out IInventoryItem item))
-            {
-                if (item is IInventoryItemUsable)
-                    _useFromInventoryHandler.SetTarget(null);
-            }
+            _useFromInventoryHandler.Canceled();
         }
         private void HandleInteractInInventoryInput() => _useFromInventoryHandler.HandeInteractInInventoryInput();
         #endregion

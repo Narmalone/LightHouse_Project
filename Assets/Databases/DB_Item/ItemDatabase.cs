@@ -11,4 +11,9 @@ public class ItemDatabase : ScriptableObject
     {
         return items[ID].GetComponentInChildren<IInventoryItem>();
     }
+
+    public GameObject GetPrefab(ushort ID)
+    {
+        return items[ID];
+    }
 }

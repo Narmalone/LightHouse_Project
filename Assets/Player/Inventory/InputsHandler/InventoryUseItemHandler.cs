@@ -1,7 +1,4 @@
 using LightHouse.Inputs;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace LightHouse.Inventory
 {
@@ -25,6 +22,38 @@ namespace LightHouse.Inventory
             if (usable == null || !usable.CanBeUsedFromInventory) return false;
             usable.UseFromInventory();
             return true;
+        }
+
+        public void Started()
+        {
+            if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
+                return;
+
+            if (SlotManager.CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot(out IInventoryItem item))
+            {
+                if (item is IInventoryItemUsable usable)
+                    SetTarget(usable);
+            }
+        }
+
+        public void Canceled()
+        {
+            _inventoryUIController.FillInteractHoldedImage(0.0f);
+
+            if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
+                return;
+
+            if (!SlotManager.CurrentSelectedSlot.SlotDatas.HasItem)
+            {
+                SetTarget(null);
+                return;
+            }
+
+            if (SlotManager.CurrentSelectedSlot.SlotDatas.GetFirstItemInSlot(out IInventoryItem item))
+            {
+                if (item is IInventoryItemUsable)
+                    SetTarget(null);
+            }
         }
 
         public void HandeInteractInInventoryInput()

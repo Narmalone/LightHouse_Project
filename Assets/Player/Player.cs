@@ -118,14 +118,10 @@ namespace LightHouse.KinematicCharacterController
 
         private void HandleCameraInput()
         {
-            //Known issue, can cause some trouble if we let possibility to player to move
-            //while this is false, because of the character.SetInputs() due to ProjectOnPlane
-            //and planar calculation
             if (_enableCameraRotationInput)
             {
                 CameraInput cameraInput = new CameraInput() { Look = _inputActions.Player.Look.ReadValue<Vector2>() };
                 _playerCamera.UpdateWithInput(Time.deltaTime, cameraInput.Look);
-                //_cameraController.UpdateCameraInput(cameraInput.Look, Time.deltaTime);
             }
             
         }

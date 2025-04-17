@@ -22,7 +22,7 @@ public class AudioManager : MonoBehaviour
     {
 
     }
-    private void PlayClip(AudioClip clip, Transform parent, float volume, float spatialBlend, float pitch = 1.0f)
+    private GameObject PlayClip(AudioClip clip, Transform parent, float volume, float spatialBlend, float pitch = 1.0f)
     {
         GameObject tempGO = new GameObject("TempAudio2D");
         if (spatialBlend != 0.0f)
@@ -36,6 +36,7 @@ public class AudioManager : MonoBehaviour
         source.spatialBlend = spatialBlend; // 0 = 2D, 1 = 3D
         source.Play();
         Destroy(tempGO, clip.length);
+        return tempGO;
     }
     private void PlayClip(AudioClip clip, Vector3 pos, float volume, float spatialBlend, float pitch = 1.0f)
     {

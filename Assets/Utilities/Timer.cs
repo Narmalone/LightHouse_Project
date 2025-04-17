@@ -18,7 +18,7 @@ public class Timer
     public event Action OnTimerReset;
     public event Action OnTimerComplete;
 
-    void Tick(float deltaTime, float timerSpeed = 1.0f)
+    public void Tick(float deltaTime, float timerSpeed = 1.0f)
     {
         if (_isRunning)
         {

@@ -41,6 +41,16 @@ namespace LightHouse.Inventory
         public Sprite ItemSprite { get; }
 
         /// <summary>
+        /// While holded in inventory, representing an offset local Position
+        /// </summary>
+        public Vector3 InventoryLocalPositionOffset { get; set; }
+
+        /// <summary>
+        /// While holded in inventory, representing the target Local Euler angles
+        /// </summary>
+        public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
+
+        /// <summary>
         /// Automatically retrieved by the <see cref="PlayerInventory"/> and <seealso cref="InventoryRaycastDetector"/>.
         /// </summary>
         /// <returns>The text to display to pickup the item.</returns>

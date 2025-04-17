@@ -15,7 +15,8 @@ namespace LightHouse.Items
             base.Usable_OnItemUsed();
             _currentJerricanOnhands.InvokeForceDropItemFromInventory(InventoryHandlerData.InventoryTargetPosition.position, 0.0f, false);
             OnJerricanUsed?.Invoke(_currentJerricanOnhands.EssenceAmount);
-            Destroy(_currentJerricanOnhands.gameObject);
+            //Destroy(_currentJerricanOnhands.gameObject);
+            _currentJerricanOnhands.gameObject.SetActive(false);
         }
     }
 

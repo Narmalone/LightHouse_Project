@@ -25,7 +25,9 @@ namespace LightHouse.Inventory
 
         // Events
         public static event Action<IInventoryItem> OnSelectedItemChanged;
+        public static event Action<IInventoryItem> OnItemAddedToInventory;
         public static event Action<IInventoryItem> OnItemDropped;
+        public static event Action OnInitialized;
 
         public static event Action OnGrabObjectChanged;
 
@@ -41,6 +43,7 @@ namespace LightHouse.Inventory
         {
             InventoryTargetPosition = inventoryTargetPosition;
             _uiController = uiController;
+            OnInitialized?.Invoke();
         }
         public static void Reset()
         {
@@ -66,6 +69,13 @@ namespace LightHouse.Inventory
             CurrentHandedItemType = null;
             CurrentHandedItemID = null;
             OnSelectedItemChanged?.Invoke(null);
+        }
+        #endregion
+
+        #region Added To Inventory
+        public static void NotifyAddedToInventory(IInventoryItem item)
+        {
+            OnItemAddedToInventory?.Invoke(item);
         }
         #endregion
 

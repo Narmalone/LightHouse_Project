@@ -46,14 +46,14 @@ public static class PoolManager
         item.ItemSpecificID = (ushort)InventoryItemPools[item.GlobalItemID].IndexOf(item);
     }
 
-    private static void DisableInventoryItem(IInventoryItem item)
+    public static void DisableInventoryItem(IInventoryItem item)
     {
         item.GetGameObject().SetActive(false);
         item.GetCollider().enabled = false;
         item.GetRigidBody().isKinematic = true;
     }
 
-    private static void EnableInventoryItem(IInventoryItem item, bool enablePhysics)
+    public static void EnableInventoryItem(IInventoryItem item, bool enablePhysics)
     {
         if (item == null) return;
         item.GetGameObject().SetActive(true);

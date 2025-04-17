@@ -22,6 +22,8 @@ public class Burger : MonoBehaviour, IInteractable, IInventoryItem, IInventoryIt
 
     [field: SerializeField] public ushort GlobalItemID { get; set; }
     [field: SerializeField] public ushort ItemSpecificID { get; set; }
+    [field: SerializeField] public Vector3 InventoryLocalPositionOffset { get; set; }
+    [field: SerializeField] public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
 
     public event Action OnNameUpdated;
     public event Action OnInteractionNameChanged;

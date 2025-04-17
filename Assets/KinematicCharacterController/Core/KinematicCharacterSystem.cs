@@ -124,7 +124,7 @@ namespace KinematicCharacterController
         {
             if (Settings.AutoSimulation)
             {
-                float deltaTime = Time.deltaTime;
+                float deltaTime = Time.fixedDeltaTime;
 
                 if (Settings.Interpolate)
                 {

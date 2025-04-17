@@ -2,7 +2,8 @@ namespace LightHouse.Inventory
 {
     public enum ItemIDEnum : ushort
     {
-        JerricanEssence = 0,
+        Jerrican = 0,
+        FlashLight = 5,
         Nail = 1,
         Burger = 2,
         WoodPlank = 3,
