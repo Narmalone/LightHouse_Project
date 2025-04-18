@@ -1,31 +1,41 @@
-using LightHouse.Inventory;
 using LightHouse.Utilities;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Items.Detection
 {
-    public class InventoryRaycastDetector : MonoBehaviour
+    public class CameraRaycastDetector
     {
         #region FIELDS & PROPERTIES
-        public event Action<IInventoryItem> OnItemDetected;
-        public event Action OnItemLost;
+        public Action<GameObject> OnItemDetected;
+        public Action OnItemLost;
 
-        [Header("Raycast Settings")]
-        [SerializeField] private Camera _camera;
-        [SerializeField] private float _raycastDistance = 3f;
-        [SerializeField] private LayerMask _targetMasks = ~0;
-        [SerializeField] private QueryTriggerInteraction _queryTriggerInteraction = QueryTriggerInteraction.Ignore;
+        //Ray settings
+        private Camera _camera;
+        private float _raycastDistance = 3f;
+        private LayerMask _targetMasks = ~0;
+        private QueryTriggerInteraction _queryTriggerInteraction = QueryTriggerInteraction.Ignore;
 
+        //Ray infos
         public Vector3 RayOrigin { get; private set; }
         public Vector3 RayDirection { get; private set; }
 
-        private IInventoryItem _lastSeenItem;
         private GameObject _lastSeenObject;
+        public GameObject LastSeenObject => _lastSeenObject;
+        #endregion
+
+        #region Constructor
+        public CameraRaycastDetector(Camera cam, float distance, LayerMask masks, QueryTriggerInteraction qti)
+        {
+            _camera = cam;
+            _raycastDistance = distance;
+            _targetMasks = masks;
+            _queryTriggerInteraction = qti;
+        }
         #endregion
 
         #region MONO'S CALLBACK
-        private void Update()
+        public virtual void UpdateRay()
         {
             Ray cameraRay = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0f));
             RaycastHit hit;
@@ -41,26 +51,22 @@ namespace LightHouse.Inventory
         #endregion
 
         #region RAYCAST METHODS
-        private void HandleNewObject(GameObject go)
+        protected virtual void HandleNewObject(GameObject go)
         {
             if (_lastSeenObject == go)
                 return;
-
             _lastSeenObject = go;
-            go.TryGetComponent(out _lastSeenItem);
-            if (_lastSeenItem != null)
-                OnItemDetected?.Invoke(_lastSeenItem);
+            if(_lastSeenObject != null)
+                OnItemDetected?.Invoke(go);
         }
 
-        private void ResetSeenObject()
+        protected virtual void ResetSeenObject()
         {
-            if (_lastSeenItem != null)
-            {
-                OnItemLost?.Invoke();
-                _lastSeenItem = null;
-            }
             if(_lastSeenObject != null)
+            {
                 _lastSeenObject = null;
+                OnItemLost?.Invoke();
+            }
         }
         #endregion
     }

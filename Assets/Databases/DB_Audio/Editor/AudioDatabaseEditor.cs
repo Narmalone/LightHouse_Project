@@ -16,14 +16,7 @@ namespace LightHouse.CustomEditors
             base.OnInspectorGUI();
             AudioDatabase audioDatabase = (AudioDatabase)target;
 
-            if(GUILayout.Button("Generate All"))
-            {
-                GenerateAmbiancesEnum();
-                GenerateEffectsEnum();
-                GenerateMusicsEnum();
-            }
-
-            if(GUILayout.Button("Find All"))
+            if (GUILayout.Button("Find All"))
             {
                 audioDatabase.ambiances = FindAmbiancesAssets();
                 audioDatabase.effets = FindEffectsAssets();
@@ -31,51 +24,63 @@ namespace LightHouse.CustomEditors
                 EditorUtility.SetDirty(target);
             }
 
+            if (GUILayout.Button("Refresh Files All"))
+            {
+                GenerateAmbiancesEnum();
+                GenerateEffectsEnum();
+                GenerateMusicsEnum();
+            }
+
             if (GUILayout.Button("Apply Settings to SO"))
             {
-                var ambianceAssets = FindAmbiancesAssets();
-                foreach (var asset in ambianceAssets)
-                {
-                    string sanitized = SanitizeName(asset.displayName);
-                    if (System.Enum.TryParse<AmbianceAudioName>(sanitized, out var parsed))
-                    {
-                        asset.Category = parsed;
-                        EditorUtility.SetDirty(asset);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[ApplySettings] Nom '{sanitized}' non trouvé dans l'enum AmbianceAudioName");
-                    }
-                }
+                ApplySettingsToAsset();
+            }
+        }
 
-                var effectAssets = FindEffectsAssets();
-                foreach (var asset in effectAssets)
+        private void ApplySettingsToAsset()
+        {
+            var ambianceAssets = FindAmbiancesAssets();
+            foreach (var asset in ambianceAssets)
+            {
+                string sanitized = SanitizeName(asset.displayName);
+                if (System.Enum.TryParse<AmbianceAudioName>(sanitized, out var parsed))
                 {
-                    string sanitized = SanitizeName(asset.displayName);
-                    if (System.Enum.TryParse<EffectsAudioName>(sanitized, out var parsed))
-                    {
-                        asset.Category = parsed;
-                        EditorUtility.SetDirty(asset);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[ApplySettings] Nom '{sanitized}' non trouvé dans l'enum EffectsAudioName");
-                    }
+                    asset.Category = parsed;
+                    EditorUtility.SetDirty(asset);
                 }
-
-                var musicAssets = FindMusicsAssets();
-                foreach (var asset in musicAssets)
+                else
                 {
-                    string sanitized = SanitizeName(asset.displayName);
-                    if (System.Enum.TryParse<MusicsAudioName>(sanitized, out var parsed))
-                    {
-                        asset.Category = parsed;
-                        EditorUtility.SetDirty(asset);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[ApplySettings] Nom '{sanitized}' non trouvé dans l'enum AmbianceAudioName");
-                    }
+                    Debug.LogWarning($"[ApplySettings] Nom '{sanitized}' non trouvé dans l'enum AmbianceAudioName");
+                }
+            }
+
+            var effectAssets = FindEffectsAssets();
+            foreach (var asset in effectAssets)
+            {
+                string sanitized = SanitizeName(asset.displayName);
+                if (System.Enum.TryParse<EffectsAudioName>(sanitized, out var parsed))
+                {
+                    asset.Category = parsed;
+                    EditorUtility.SetDirty(asset);
+                }
+                else
+                {
+                    Debug.LogWarning($"[ApplySettings] Nom '{sanitized}' non trouvé dans l'enum EffectsAudioName");
+                }
+            }
+
+            var musicAssets = FindMusicsAssets();
+            foreach (var asset in musicAssets)
+            {
+                string sanitized = SanitizeName(asset.displayName);
+                if (System.Enum.TryParse<MusicsAudioName>(sanitized, out var parsed))
+                {
+                    asset.Category = parsed;
+                    EditorUtility.SetDirty(asset);
+                }
+                else
+                {
+                    Debug.LogWarning($"[ApplySettings] Nom '{sanitized}' non trouvé dans l'enum AmbianceAudioName");
                 }
             }
         }

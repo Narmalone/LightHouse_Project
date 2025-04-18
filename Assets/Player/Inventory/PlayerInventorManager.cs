@@ -1,13 +1,15 @@
 using LightHouse.Inputs;
 using LightHouse.Interactions;
 using UnityEngine;
+using LightHouse.Items.Detection;
+using LightHouse.Inventory;
 
-namespace LightHouse.Inventory
+namespace LightHouse.KinematicCharacterController
 {
     /// <summary>
     /// Main controller of the inventory system
     /// </summary>
-    public class PlayerInventoryController : MonoBehaviour
+    public class PlayerInventorManager : MonoBehaviour
     {
         #region SERILIAZED FIELDS
         [Header("Inventory Settings")]
@@ -18,8 +20,20 @@ namespace LightHouse.Inventory
         [SerializeField] private ItemDatabase _itemDatabase;
         [SerializeField] private Transform _inventoryTarget = null;
 
+        [Header("Raycast")]
+        [SerializeField] private Camera _playerCamera; //automatically attribuated from player ?
+        [SerializeField] private float _raycastDetectionRange = 3.0f; //automatically attribuated from player ?
+        [SerializeField] private LayerMask _inventoryItemsMask = 1 << 6;
+        [SerializeField] private QueryTriggerInteraction _inventoryRaycastQti = QueryTriggerInteraction.Ignore;
+
+        [Header("Drop Settings")]
+        [SerializeField] private float _maxDropPower = 10f;
+        [SerializeField] private AnimationCurve _dropPowerCurve = AnimationCurve.Linear(0, 0, 1, 1);
+        [SerializeField] private float _securityOverlapSphereRadius = 0.3f;
+        [SerializeField] private LayerMask _securityObstacleMasks = 1 << 0;
+
         [Header("Inventory Controllers")]
-        [SerializeField] private InventoryRaycastDetector _raycastDetector;
+        private RaycastDetector<IInventoryItem> _raycastDetector;
         [SerializeField] private InventoryPickupHandler _pickupHandler;
         [SerializeField] private InventoryScrollHandler _scrollHandler;
         [SerializeField] private InventoryDropHandler _dropHandler;
@@ -29,7 +43,7 @@ namespace LightHouse.Inventory
         [SerializeField] private InventoryUIController _inventoryUiController;
         [SerializeField] private CanvasInteraction _interactionUiController;
 
-        public InventoryRaycastDetector RaycastDetector => _raycastDetector;
+        public RaycastDetector<IInventoryItem> RaycastDetector => _raycastDetector;
         #endregion
 
         #region PRIVATE / HIDED FIELDS
@@ -56,6 +70,7 @@ namespace LightHouse.Inventory
 
         private void Update()
         {
+            _raycastDetector.UpdateRay();
             if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
                 AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen);
 
@@ -71,9 +86,16 @@ namespace LightHouse.Inventory
             _inventoryTarget.rotation = Quaternion.LookRotation(_raycastDetector.RayDirection.normalized);
         }
 
+        private void OnDrawGizmos()
+        {
+            _dropHandler?.OnDrawGizmos();
+        }
+
         private void OnDestroy()
         {
             UnregisterInputs();
+            _raycastDetector.OnDetected -= HandleItemDetected;
+            _raycastDetector.OnItemLost -= ResetSeenObject;
             SlotManager.Clear();
             InventoryHandlerData.Reset();
             PoolManager.Clear();
@@ -95,8 +117,17 @@ namespace LightHouse.Inventory
             _pickupHandler = new InventoryPickupHandler();
             _scrollHandler = new InventoryScrollHandler(_itemDatabase);
             _useFromInventoryHandler = new InventoryUseItemHandler(_inventoryUiController);
-            _dropHandler.Initialize(_slots, _inventoryUiController, _inventoryTarget);
-            
+            _dropHandler = new InventoryDropHandler(_inventoryUiController, _inventoryTarget, _maxDropPower, _dropPowerCurve, _securityObstacleMasks, _securityOverlapSphereRadius);
+
+            _raycastDetector = new RaycastDetector<IInventoryItem>(
+                _playerCamera,
+                _raycastDetectionRange,
+                _inventoryItemsMask,
+                _inventoryRaycastQti
+            );
+            _raycastDetector.OnDetected += HandleItemDetected;
+            _raycastDetector.OnItemLost += ResetSeenObject;
+
         }
         #endregion
 
@@ -105,8 +136,6 @@ namespace LightHouse.Inventory
         {
             InputManager.OnInputManagerInitialized += InputManager_OnInputManagerInitialized;
             InputManager.OnInputManagerWillClear += InputManager_OnInputManagerWillClear;
-            _raycastDetector.OnItemDetected += HandleItemDetected;
-            _raycastDetector.OnItemLost += ResetSeenObject;
             InventoryHandlerData.OnItemDropped += InventoryHandlerData_OnItemDropped;
         }
 
@@ -114,8 +143,6 @@ namespace LightHouse.Inventory
         {
             InputManager.OnInputManagerWillClear -= InputManager_OnInputManagerWillClear;
             InputManager.OnInputManagerInitialized -= InputManager_OnInputManagerInitialized;
-            _raycastDetector.OnItemDetected -= HandleItemDetected;
-            _raycastDetector.OnItemLost -= ResetSeenObject;
             InventoryHandlerData.OnItemDropped -= InventoryHandlerData_OnItemDropped;
         }
 

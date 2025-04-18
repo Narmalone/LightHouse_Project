@@ -15,4 +15,15 @@ public abstract class AudioClipGroup : ScriptableObject
         if(clips.Length == 1) return clips[0];  
         return clips[Random.Range(0, clips.Length)];
     }
+    protected string SanitizeName(string rawName)
+    {
+        string clean = rawName.Replace(" ", "_")
+                              .Replace("-", "_")
+                              .Replace(".", "_");
+
+        // Remove all non numerical characters
+        clean = System.Text.RegularExpressions.Regex.Replace(clean, @"[^a-zA-Z0-9_]", "");
+
+        return clean;
+    }
 }

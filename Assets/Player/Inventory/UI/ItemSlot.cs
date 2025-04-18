@@ -10,7 +10,7 @@ namespace LightHouse.Inventory
     {
         #region Fields & Properties
         /// <summary>
-        /// The slot ID or more likely the slot index <see cref="PlayerInventoryController._slots"/>
+        /// The slot ID or more likely the slot index <see cref="PlayerInventorManager._slots"/>
         /// </summary>
         public byte SlotID;
 
@@ -42,7 +42,7 @@ namespace LightHouse.Inventory
         public int TotalItemsInSlots => ItemSpecificIds.Count;
 
         /// <summary>
-        /// If this slot is selected by the <see cref="PlayerInventoryController"/>
+        /// If this slot is selected by the <see cref="PlayerInventorManager"/>
         /// </summary>
         public bool IsSelected;
 

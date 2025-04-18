@@ -1,13 +1,16 @@
 using LightHouse.Inputs;
 using LightHouse.Interactions;
-using UnityEngine;
 
+namespace LightHouse.Raycast
+{
+
+}
 public class RaycastInteractionHandler
 {
-    [SerializeField] private CanvasInteraction _interactionCanvas;
+    private CanvasInteraction _interactionCanvas;
 
-    private IInteractable currentInteractable;
-    public bool HasTarget => currentInteractable != null;
+    private IInteractable _currentInteractable;
+    public bool HasTarget => _currentInteractable != null;
 
     public RaycastInteractionHandler(CanvasInteraction interactionCanva)
     {
@@ -16,15 +19,15 @@ public class RaycastInteractionHandler
 
     public void SetTarget(IInteractable interactable)
     {
-        if (currentInteractable != null)
+        if (_currentInteractable != null)
         {
-            currentInteractable.OnInteractionNameChanged -= UpdateInteractionText;
-            if (currentInteractable is IItemCallback interacCallback) interacCallback.OnRaycastEnd();
+            _currentInteractable.OnInteractionNameChanged -= UpdateInteractionText;
+            if (_currentInteractable is IItemCallback interacCallback) interacCallback.OnRaycastEnd();
         }
 
-        currentInteractable = interactable;
+        _currentInteractable = interactable;
 
-        if (currentInteractable == null)
+        if (_currentInteractable == null)
         {
             _interactionCanvas.HideItemInteractionName();
             return;
@@ -32,26 +35,26 @@ public class RaycastInteractionHandler
 
         if (interactable is IItemCallback interactableCallback) interactableCallback.OnRaycastStart();
 
-        currentInteractable.OnInteractionNameChanged += UpdateInteractionText;
+        _currentInteractable.OnInteractionNameChanged += UpdateInteractionText;
         UpdateInteractionText();
     }
 
     public void Update()
     {
-        if (currentInteractable != null && currentInteractable.CanBeInteracted && currentInteractable.CanBeRaycasted &&
+        if (_currentInteractable != null && _currentInteractable.CanBeInteracted && _currentInteractable.CanBeRaycasted &&
             InputManager.Interact.WasPerformedThisFrame())
         {
-            currentInteractable.Interact();
+            _currentInteractable.Interact();
         }
     }
 
     private void UpdateInteractionText()
     {
-        if (currentInteractable == null) return;
+        if (_currentInteractable == null) return;
 
-        string name = currentInteractable.GetInteractionName();
+        string name = _currentInteractable.GetInteractionName();
 
-        if (!currentInteractable.CanBeRaycasted || string.IsNullOrEmpty(name))
+        if (!_currentInteractable.CanBeRaycasted || string.IsNullOrEmpty(name))
         {
             _interactionCanvas.HideItemInteractionName();
         }

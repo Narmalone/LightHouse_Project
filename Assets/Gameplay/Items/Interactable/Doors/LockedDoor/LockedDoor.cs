@@ -20,9 +20,10 @@ namespace LightHouse.Items.Samples
         [SerializeField] protected AnimationCurve _closeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         [Header("Sound")]
-        [SerializeField] private EffectsAudioName _openEffect = EffectsAudioName.FrontDoorOpen;
-        [SerializeField] private EffectsAudioName _closeEffect = EffectsAudioName.FrontDoorClose;
-        [SerializeField] private EffectsAudioName _unlockEffect = EffectsAudioName.UnlockDoor;
+        [SerializeField] private EffectsAudioName _openEffect = EffectsAudioName.Effect_OpenFrontDoor;
+        [SerializeField] private EffectsAudioName _closeEffect = EffectsAudioName.Effect_CloseFrontDoor;
+        [SerializeField] private EffectsAudioName _lockedEffect = EffectsAudioName.Effect_LockedDoor;
+        [SerializeField] private EffectsAudioName _unlockEffect = EffectsAudioName.Effect_UnlockDoor;
 
         [Header("Debug")]
         [SerializeField] protected bool _isUnLocked = false;
@@ -89,7 +90,7 @@ namespace LightHouse.Items.Samples
         {
             base.Usable_OnItemUsed();
             if (!_isUnLocked)
-                AudioHandlerData.AudioManager.PlayEffect(this.transform, _unlockEffect);
+                AudioHandlerData.AudioManager.PlayRandomEffect(this.transform, _unlockEffect);
             _isUnLocked = true;
             CanBeInteracted = true;
             if (IsItemRaycasted)
@@ -115,7 +116,7 @@ namespace LightHouse.Items.Samples
             if (!_isUnLocked)
             {
                 if (AudioHandlerData.AudioManager != null)
-                    AudioHandlerData.AudioManager.PlayEffect(this.transform, EffectsAudioName.LockedDoor);
+                    AudioHandlerData.AudioManager.PlayRandomEffect(this.transform, _lockedEffect);
                 return;
             }
             if (_isOpen)
@@ -159,7 +160,7 @@ namespace LightHouse.Items.Samples
             _isOpen = true;
             _currentCurve = _openCurve;
             _rotationDuration = AudioHandlerData.AudioManager.GetEffectLength(_openEffect);
-            AudioHandlerData.AudioManager.PlayEffect(this.transform, _openEffect);
+            AudioHandlerData.AudioManager.PlayRandomEffect(this.transform, _openEffect);
 
             OnDoorInteracted();
         }
@@ -168,7 +169,7 @@ namespace LightHouse.Items.Samples
         {
             _currentCurve = _closeCurve;
             _rotationDuration = AudioHandlerData.AudioManager.GetEffectLength(_closeEffect);
-            AudioHandlerData.AudioManager.PlayEffect(this.transform, _closeEffect);
+            AudioHandlerData.AudioManager.PlayRandomEffect(this.transform, _closeEffect);
             _isOpen = false;
             OnDoorInteracted();
         }

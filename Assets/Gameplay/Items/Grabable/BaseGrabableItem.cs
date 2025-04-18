@@ -4,6 +4,7 @@ using LightHouse.Inputs;
 using LightHouse.Interactions;
 using LightHouse.Inventory;
 using LightHouse.KinematicCharacterController;
+using LightHouse.Items.Detection;
 using System;
 using UnityEngine;
 
@@ -43,7 +44,7 @@ namespace LightHouse.Items.Grabable
         private Vector3 _grabRayOrigin;
         private Vector3 _grabRayDirection;
         private PlayerCharacter _playerCharacter;
-        private InventoryRaycastDetector _inventoryRaycastDetector;
+        private CameraRaycastDetector _inventoryRaycastDetector;
         #endregion
 
         #region IInteractable

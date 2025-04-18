@@ -18,11 +18,7 @@ public class AudioManager : MonoBehaviour
         AudioHandlerData.Clear();
     }
 
-    public void AttachAndPlay(Transform parent)
-    {
-
-    }
-    private GameObject PlayClip(AudioClip clip, Transform parent, float volume, float spatialBlend, float pitch = 1.0f)
+    private AudioSource PlayTempClip(AudioClip clip, Transform parent, float volume, float spatialBlend, float pitch = 1.0f)
     {
         GameObject tempGO = new GameObject("TempAudio2D");
         if (spatialBlend != 0.0f)
@@ -36,9 +32,9 @@ public class AudioManager : MonoBehaviour
         source.spatialBlend = spatialBlend; // 0 = 2D, 1 = 3D
         source.Play();
         Destroy(tempGO, clip.length);
-        return tempGO;
+        return source;
     }
-    private void PlayClip(AudioClip clip, Vector3 pos, float volume, float spatialBlend, float pitch = 1.0f)
+    private AudioSource PlayTempClip(AudioClip clip, Vector3 pos, float volume, float spatialBlend, float pitch = 1.0f)
     {
         GameObject tempGO = new GameObject("TempAudio2D");
         tempGO.transform.position = pos;
@@ -48,92 +44,92 @@ public class AudioManager : MonoBehaviour
         source.spatialBlend = spatialBlend; // 0 = 2D, 1 = 3D
         source.Play();
         Destroy(tempGO, clip.length);
+        return source;
     }
 
-
-    public void PlayAmbiance(Transform parent, AmbianceAudioName category)
-    {
-        AmbianceAudio ambiance = _audioDB.GetAmbiance(category);
-        if (ambiance == null)
-        {
-            Debug.LogWarning($"[AudioManager] Ambiance '{category}' introuvable !");
-            return;
-        }
-
-        AudioClip clip = ambiance.GetRandomClip();
-        if (clip == null)
-        {
-            Debug.LogWarning($"[AudioManager] Aucun clip trouvé pour l’ambiance '{category}'");
-            return;
-        }
-
-        PlayClip(clip, parent, ambiance.volume, ambiance._spatialBlend);
-        //AudioSource.PlayClipAtPoint(clip, position, ambiance.volume);
-    }
-
-
-    public void PlayEffect(Transform parent, EffectsAudioName category)
-    {
-        EffectAudio effect = _audioDB.GetEffect(category);
-        if (effect == null)
-        {
-            Debug.LogWarning($"[AudioManager] Ambiance '{category}' introuvable !");
-            return;
-        }
-
-        AudioClip clip = effect.GetRandomClip();
-        if (clip == null)
-        {
-            Debug.LogWarning($"[AudioManager] Aucun clip trouvé pour l’ambiance '{category}'");
-            return;
-        }
-        // Lecture du clip à la position spécifiée
-        PlayClip(clip, parent, effect.volume, effect._spatialBlend);
-    }
-
-    public void PlayEffect(Vector3 pos, EffectsAudioName category)
-    {
-        EffectAudio effect = _audioDB.GetEffect(category);
-        if (effect == null)
-        {
-            Debug.LogWarning($"[AudioManager] Ambiance '{category}' introuvable !");
-            return;
-        }
-
-        AudioClip clip = effect.GetRandomClip();
-        if (clip == null)
-        {
-            Debug.LogWarning($"[AudioManager] Aucun clip trouvé pour l’ambiance '{category}'");
-            return;
-        }
-        
-        PlayClip(clip, pos, effect.volume, effect._spatialBlend);
-    }
-
-    public float GetEffectLength(EffectsAudioName category, int clipIndex = 0)
-    {
-        var effect = _audioDB.GetEffect(category).clips[clipIndex];
-        return effect.length;
-    }
-
-    public void PlayMusic(Transform parent, MusicsAudioName category)
+    public AudioSource PlayMusic(Transform parent, MusicsAudioName category)
     {
         MusicAudio music = _audioDB.GetMusic(category);
         if (music == null)
         {
             Debug.LogWarning($"[AudioManager] Ambiance '{category}' introuvable !");
-            return;
+            return null;
         }
 
         AudioClip clip = music.GetRandomClip();
         if (clip == null)
         {
             Debug.LogWarning($"[AudioManager] Aucun clip trouvé pour l’ambiance '{category}'");
-            return;
+            return null;
         }
 
         // Lecture du clip à la position spécifiée
-        PlayClip(clip, parent, music.volume, music._spatialBlend);
+        return PlayTempClip(clip, parent, music.volume, music._spatialBlend);
+    }
+
+
+    public AudioSource PlayAmbiance(Transform parent, AmbianceAudioName category)
+    {
+        AmbianceAudio ambiance = _audioDB.GetAmbiance(category);
+        if (ambiance == null)
+        {
+            Debug.LogWarning($"[AudioManager] Ambiance '{category}' introuvable !");
+            return null;
+        }
+
+        AudioClip clip = ambiance.GetRandomClip();
+        if (clip == null)
+        {
+            Debug.LogWarning($"[AudioManager] Aucun clip trouvé pour l’ambiance '{category}'");
+            return null;
+        }
+
+        return PlayTempClip(clip, parent, ambiance.volume, ambiance._spatialBlend);
+    }
+
+
+    public AudioSource PlayRandomEffect(Transform parent, EffectsAudioName category)
+    {
+        EffectAudio effect = _audioDB.GetEffect(category);
+        if (effect == null)
+        {
+            Debug.LogWarning($"[AudioManager] Ambiance '{category}' introuvable !");
+            return null;
+        }
+
+        AudioClip clip = effect.GetRandomClip();
+        if (clip == null)
+        {
+            Debug.LogWarning($"[AudioManager] Aucun clip trouvé pour l’ambiance '{category}'");
+            return null;
+        }
+        // Lecture du clip à la position spécifiée
+        return PlayTempClip(clip, parent, effect.volume, effect._spatialBlend);
+    }
+
+    public AudioSource PlayRandomEffect(Vector3 pos, EffectsAudioName category)
+    {
+        EffectAudio effect = _audioDB.GetEffect(category);
+        if (effect == null)
+        {
+            Debug.LogWarning($"[AudioManager] Ambiance '{category}' introuvable !");
+            return null;
+        }
+
+        AudioClip clip = effect.GetRandomClip();
+        if (clip == null)
+        {
+            Debug.LogWarning($"[AudioManager] Aucun clip trouvé pour l’ambiance '{category}'");
+            return null;
+        }
+        
+        return PlayTempClip(clip, pos, effect.volume, effect._spatialBlend);
+    }
+
+    public float GetEffectLength(EffectsAudioName category, int clipIndex = 0)
+    {
+        var effect = _audioDB.GetEffect(category).clips[clipIndex];
+        return effect.length;
     }
 
 }

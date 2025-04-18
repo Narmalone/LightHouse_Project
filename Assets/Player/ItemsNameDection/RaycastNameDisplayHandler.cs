@@ -20,7 +20,7 @@ namespace LightHouse.Interactions
 
         #region SET METHODS
         /// <summary>
-        /// Mainly used by <see cref="PlayerInteractions"/>, to display the current Item seen.
+        /// Mainly used by <see cref="PlayerInteractableManager"/>, to display the current Item seen.
         /// </summary>
         public void SetTarget(IItemName item)
         {

@@ -25,7 +25,7 @@ namespace LightHouse.Inventory
         public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
 
         /// <summary>
-        /// Automatically setted by the <see cref="PlayerInventoryController"/> to let you know if the instance
+        /// Automatically setted by the <see cref="PlayerInventorManager"/> to let you know if the instance
         /// is inside the inventory / pool
         /// </summary>
         public bool IsItemInInventory { get; set; }
@@ -42,16 +42,18 @@ namespace LightHouse.Inventory
 
         /// <summary>
         /// While holded in inventory, representing an offset local Position
+        /// Used by <see cref="VisualItemInventory"/>
         /// </summary>
         public Vector3 InventoryLocalPositionOffset { get; set; }
 
         /// <summary>
         /// While holded in inventory, representing the target Local Euler angles
+        /// Used by <see cref="VisualItemInventory"/>
         /// </summary>
         public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
 
         /// <summary>
-        /// Automatically retrieved by the <see cref="PlayerInventory"/> and <seealso cref="InventoryRaycastDetector"/>.
+        /// Automatically retrieved by the <see cref="PlayerInventory"/> and <seealso cref="CameraRaycastDetector"/>.
         /// </summary>
         /// <returns>The text to display to pickup the item.</returns>
         string GetPickupName();

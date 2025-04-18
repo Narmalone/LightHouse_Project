@@ -11,7 +11,7 @@ namespace LightHouse.Interactions
         public event Action OnNameUpdated;
 
         /// <summary>
-        /// Automatically setted by <see cref="PlayerInteractions"/>, to know when the objet is raycasted.
+        /// Automatically setted by <see cref="PlayerInteractableManager"/>, to know when the objet is raycasted.
         /// </summary>
         public bool IsItemRaycasted { get; set; }
 

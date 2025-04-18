@@ -8,4 +8,16 @@ public class EffectAudio : AudioClipGroup
 {
     public EffectsAudioName Category;
 
+    private void OnValidate()
+    {
+        if (displayName != name)
+        {
+            displayName = SanitizeName(name);
+            if (System.Enum.TryParse<EffectsAudioName>(displayName, out var parsed))
+            {
+                Category = parsed;
+            }
+        }
+    }
+
 }
