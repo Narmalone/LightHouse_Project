@@ -18,6 +18,7 @@ namespace LightHouse.Inventory
         /// the intance of the item in the inventory.
         /// </summary>
         public ushort ItemSpecificID { get; set; }
+
         /// <summary>
         /// An event to drop an item where the inventory automatically subscribe with.
         /// <para>Parameters: GlobalID, Specific ID, Position, Force, EnablePhysicsOnDrop </para>

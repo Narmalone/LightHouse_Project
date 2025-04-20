@@ -115,10 +115,14 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8692822252749091957, guid: c8139ae770d8ff24b8ff1c155ed19035,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6521201170016444398}
     - targetCorrespondingSourceObject: {fileID: 628502574896919933, guid: c8139ae770d8ff24b8ff1c155ed19035,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5627074373312054929}
+      addedObject: {fileID: 1320645186145195241}
   m_SourcePrefab: {fileID: 100100000, guid: c8139ae770d8ff24b8ff1c155ed19035, type: 3}
 --- !u!1 &126285925906088253 stripped
 GameObject:
@@ -126,7 +130,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 682378504396190784}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5627074373312054929
+--- !u!114 &1320645186145195241
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,23 +139,48 @@ MonoBehaviour:
   m_GameObject: {fileID: 126285925906088253}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 548a34fe55e4ee74ba3431e418a42924, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemRole: 1
+  TargetComponent: {fileID: 8204239562958815285}
+--- !u!4 &3243862752220473133 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2629196592336163693, guid: c8139ae770d8ff24b8ff1c155ed19035,
+    type: 3}
+  m_PrefabInstance: {fileID: 682378504396190784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8204239562958815285 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8692822252749091957, guid: c8139ae770d8ff24b8ff1c155ed19035,
+    type: 3}
+  m_PrefabInstance: {fileID: 682378504396190784}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6521201170016444398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8204239562958815285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fed8539b43ce46842afa74764fedae04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _col: {fileID: 9032372824059076478}
-  _itemNeeded: 1000
   _name: 
+  _detectionCollider: {fileID: 9032372824059076478}
+  <CanBeRaycasted>k__BackingField: 1
+  <CanBeInteracted>k__BackingField: 1
+  <IsItemRaycasted>k__BackingField: 0
+  _itemNeeded: 1000
   _noKeyInInventoryText: You need to find the key
   _keyInInventoryButNotOnHandsText: Take the key in your hands
   _hasKeyOnHandsText: to unlock
-  <CanBeInteracted>k__BackingField: 1
-  <CanBeRaycasted>k__BackingField: 1
-  <IsItemRaycasted>k__BackingField: 0
   _hasKeyInInventory: 0
   _hasKeyOnHands: 0
   _pivot: {fileID: 3243862752220473133}
   _openRotationAngles: {x: 0, y: 90, z: 0}
-  _rotationSpeed: 2
   _openCurve:
     serializedVersion: 2
     m_Curve:
@@ -200,13 +229,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _openEffect: 2
+  _closeEffect: 0
+  _lockedEffect: 1
+  _unlockEffect: 4
   _isUnLocked: 0
---- !u!4 &3243862752220473133 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2629196592336163693, guid: c8139ae770d8ff24b8ff1c155ed19035,
-    type: 3}
-  m_PrefabInstance: {fileID: 682378504396190784}
-  m_PrefabAsset: {fileID: 0}
 --- !u!65 &9032372824059076478 stripped
 BoxCollider:
   m_CorrespondingSourceObject: {fileID: 8368009818892102462, guid: c8139ae770d8ff24b8ff1c155ed19035,

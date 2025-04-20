@@ -31,9 +31,10 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private AnimationCurve _dropPowerCurve = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField] private float _securityOverlapSphereRadius = 0.3f;
         [SerializeField] private LayerMask _securityObstacleMasks = 1 << 0;
+        public LayerMask forgetterMask;
 
         [Header("Inventory Controllers")]
-        private RaycastDetector<IInventoryItem> _raycastDetector;
+        private RaycastDetector<IInventoryItem> _inventoryRaycastDetector;
         [SerializeField] private InventoryPickupHandler _pickupHandler;
         [SerializeField] private InventoryScrollHandler _scrollHandler;
         [SerializeField] private InventoryDropHandler _dropHandler;
@@ -43,7 +44,7 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private InventoryUIController _inventoryUiController;
         [SerializeField] private CanvasInteraction _interactionUiController;
 
-        public RaycastDetector<IInventoryItem> RaycastDetector => _raycastDetector;
+        public RaycastDetector<IInventoryItem> RaycastDetector => _inventoryRaycastDetector;
         #endregion
 
         #region PRIVATE / HIDED FIELDS
@@ -70,7 +71,7 @@ namespace LightHouse.KinematicCharacterController
 
         private void Update()
         {
-            _raycastDetector.UpdateRay();
+            _inventoryRaycastDetector.UpdateRay();
             if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
                 AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen);
 
@@ -82,8 +83,8 @@ namespace LightHouse.KinematicCharacterController
 
         private void LateUpdate()
         {
-            _inventoryTarget.position = _raycastDetector.RayOrigin + (_raycastDetector.RayDirection.normalized * _grabAndDropItemRange);
-            _inventoryTarget.rotation = Quaternion.LookRotation(_raycastDetector.RayDirection.normalized);
+            _inventoryTarget.position = _inventoryRaycastDetector.RayOrigin + (_inventoryRaycastDetector.RayDirection.normalized * _grabAndDropItemRange);
+            _inventoryTarget.rotation = Quaternion.LookRotation(_inventoryRaycastDetector.RayDirection.normalized);
         }
 
         private void OnDrawGizmos()
@@ -94,8 +95,8 @@ namespace LightHouse.KinematicCharacterController
         private void OnDestroy()
         {
             UnregisterInputs();
-            _raycastDetector.OnDetected -= HandleItemDetected;
-            _raycastDetector.OnItemLost -= ResetSeenObject;
+            _inventoryRaycastDetector.OnDetected -= HandleItemDetected;
+            _inventoryRaycastDetector.OnItemLost -= ResetSeenObject;
             SlotManager.Clear();
             InventoryHandlerData.Reset();
             PoolManager.Clear();
@@ -119,14 +120,14 @@ namespace LightHouse.KinematicCharacterController
             _useFromInventoryHandler = new InventoryUseItemHandler(_inventoryUiController);
             _dropHandler = new InventoryDropHandler(_inventoryUiController, _inventoryTarget, _maxDropPower, _dropPowerCurve, _securityObstacleMasks, _securityOverlapSphereRadius);
 
-            _raycastDetector = new RaycastDetector<IInventoryItem>(
+            _inventoryRaycastDetector = new RaycastDetector<IInventoryItem>(
                 _playerCamera,
                 _raycastDetectionRange,
                 _inventoryItemsMask,
                 _inventoryRaycastQti
             );
-            _raycastDetector.OnDetected += HandleItemDetected;
-            _raycastDetector.OnItemLost += ResetSeenObject;
+            _inventoryRaycastDetector.OnDetected += HandleItemDetected;
+            _inventoryRaycastDetector.OnItemLost += ResetSeenObject;
 
         }
         #endregion
@@ -217,6 +218,7 @@ namespace LightHouse.KinematicCharacterController
         #region RAYCAST CALLBACKS
         private void HandleItemDetected(IInventoryItem item)
         {
+            if (!item.CanBeRaycasted) return;
             _lastInventoryItemSeen = item;
             _interactionUiController.ShowItemPickup();
             _interactionUiController.SetItemPickupText(item.GetPickupName());

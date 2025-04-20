@@ -32,8 +32,8 @@ namespace LightHouse.Items
 
         public virtual string GetInteractionName()
         {
-            return _isSwitchOn ? $"Press {InputManager.GetBindingName(InputManager.Interact)} to Close"
-                           : $"Press {InputManager.GetBindingName(InputManager.Interact)} to Open";
+            return _isSwitchOn ? $"Press {InputManager.GetBindingName(InputManager.Interact)} to set off"
+                           : $"Press {InputManager.GetBindingName(InputManager.Interact)} to set on";
         }
 
         public string GetName()

@@ -1,3 +1,4 @@
+using LightHouse.Handlers;
 using LightHouse.Inputs;
 using UnityEngine;
 
@@ -74,7 +75,8 @@ namespace LightHouse.Inventory
             DropOverlappingColliders = colliders;
             if (colliders.Length > lengthToSafePos)
             {
-                Vector3 adjustedPosition = start - target.forward * 0.5f; // Reculer légèrement pour ne pas être dans l'obstacle
+                //Vector3 adjustedPosition = start - target.forward * 0.5f; // Reculer légèrement pour ne pas être dans l'obstacle
+                Vector3 adjustedPosition = PlayerHandlerData.MainPlayer.Character.transform.position + Vector3.up; // Reculer légèrement pour ne pas être dans l'obstacle
                 Debug.DrawRay(start, -target.forward * 0.5f, Color.yellow, 5.0f);
                 Debug.Log("Adjusting position due to overlap result");
                 return adjustedPosition;

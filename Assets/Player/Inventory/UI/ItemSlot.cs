@@ -183,7 +183,8 @@ namespace LightHouse.Inventory
                 SetEnableItemStackCountText(true);
                 UpdateItemStackCount();
             }
-            IsInventoryItemUsable(item as IInventoryItemUsable);
+            SlotDatas.GetFirstItemInSlot(out IInventoryItem itm);
+            IsInventoryItemUsable(itm as IInventoryItemUsable);
         }
 
         public void HideSelectedInfos()

@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace LightHouse.Items.Detection
 {
-    public class RaycastDetector<T> : CameraRaycastDetector where T : class
+    [System.Serializable]
+    public class RaycastDetector<T> : PlayerRaycastSystem where T : class
     {
         public Action<T> OnDetected;
         private T _lastSeenComponent;
@@ -15,9 +16,13 @@ namespace LightHouse.Items.Detection
         protected override void HandleNewObject(GameObject go)
         {
             base.HandleNewObject(go);
-            go.TryGetComponent(out _lastSeenComponent);
+            go.TryGetComponent(out _lastSeenComponent); //try to get the target component
+            //if we have something it's bcs its in the good layer
             if (_lastSeenComponent != null)
                 OnDetected?.Invoke(_lastSeenComponent);
+            //if not probably bcs we got default (avoid raycasting through walls)
+            else
+                ResetSeenObject();
         }
 
         protected override void ResetSeenObject()

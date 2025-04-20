@@ -19,11 +19,6 @@ namespace LightHouse.Items
             RegisterEvents();
         }
 
-        private void Start()
-        {
-            _enableElectricityFirst.gameObject.SetActive(true);
-        }
-
         private void OnDestroy()
         {
             UnregisterEvents();

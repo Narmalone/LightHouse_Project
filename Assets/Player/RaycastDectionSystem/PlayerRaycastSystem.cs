@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace LightHouse.Items.Detection
 {
-    public class CameraRaycastDetector
+    [System.Serializable]
+    public class PlayerRaycastSystem
     {
         #region FIELDS & PROPERTIES
         public Action<GameObject> OnItemDetected;
@@ -25,7 +26,7 @@ namespace LightHouse.Items.Detection
         #endregion
 
         #region Constructor
-        public CameraRaycastDetector(Camera cam, float distance, LayerMask masks, QueryTriggerInteraction qti)
+        public PlayerRaycastSystem(Camera cam, float distance, LayerMask masks, QueryTriggerInteraction qti)
         {
             _camera = cam;
             _raycastDistance = distance;
@@ -43,7 +44,16 @@ namespace LightHouse.Items.Detection
             RayOrigin = _camera.transform.position;
             RayDirection = cameraRay.direction;
             if(RaycastUtility.TryRaycast(cameraRay, _raycastDistance, _targetMasks, _queryTriggerInteraction, out hit))
-                HandleNewObject(hit.collider.gameObject);
+            {
+                if (ItemRegistry.IsMarked(hit.collider, out GameObject markedObj))
+                {
+                    HandleNewObject(markedObj);
+                }
+                else 
+                {
+                    HandleNewObject(hit.collider.gameObject);
+                }
+            }
             else
                 ResetSeenObject();
             Debug.DrawRay(_camera.transform.position, cameraRay.direction * _raycastDistance, Color.cyan);

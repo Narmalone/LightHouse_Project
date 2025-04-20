@@ -8,8 +8,12 @@ namespace LightHouse.Electricity
     public enum ElectricityZones
     {
         None, 
-        RDC,
-        OutsideLocal,
+        Maintenance,
+        Kitchen,
+        BedroomAndBathroom,
+        Office,
+        Lens,
+        Shed,
     }
 
     [Serializable]

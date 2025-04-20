@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 477746923525176075}
   - component: {fileID: 1896435429427532531}
   - component: {fileID: 2499938023322140573}
-  m_Layer: 8
+  m_Layer: 3
   m_Name: Character
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -190,6 +190,9 @@ MonoBehaviour:
     Stance: 0
     Velocity: {x: 0, y: 0, z: 0}
     AccelerationVelocity: {x: 0, y: 0, z: 0}
+  layers:
+    serializedVersion: 2
+    m_Bits: 129
 --- !u!136 &1896435429427532531
 CapsuleCollider:
   m_ObjectHideFlags: 8
@@ -1128,6 +1131,9 @@ MonoBehaviour:
   _securityObstacleMasks:
     serializedVersion: 2
     m_Bits: 129
+  forgetterMask:
+    serializedVersion: 2
+    m_Bits: 0
   _inventoryUiController: {fileID: 6065928285298996503}
   _interactionUiController: {fileID: 5442988119189176741}
 --- !u!114 &8588254507179195592
@@ -1577,7 +1583,7 @@ Transform:
   m_GameObject: {fileID: 5264825378655831165}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5138584, y: 1.1499996, z: 1.485699}
+  m_LocalPosition: {x: 0.51385885, y: 1.1499996, z: 1.4856989}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

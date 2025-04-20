@@ -4,32 +4,21 @@ using UnityEngine;
 using LightHouse.Inventory;
 using LightHouse.Inputs;
 
-public abstract class IDItemTracker : MonoBehaviour, IInteractable, IItemCallback
+public abstract class IDItemTracker : InteractableItemBase, IItemCallback
 {
     #region FIELDS & PROPERTIES
     [Header(" --- ID ITEM TRACKER --- ")]
     [Header("Main Fields")]
-    [SerializeField] protected Collider _col;
     [SerializeField] protected ItemIDEnum _itemNeeded;
 
     [Header("Texts")]
-    [SerializeField] protected string _name;
     [SerializeField] protected string _noKeyInInventoryText;
     [SerializeField] protected string _keyInInventoryButNotOnHandsText;
     [SerializeField] protected string _hasKeyOnHandsText;
-    [field: SerializeField] public bool CanBeInteracted { get; set; } = false;
-    [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
 
     [Header("Read Only / Debug purposes")]
-    [field: SerializeField] public bool IsItemRaycasted { get; set; }
     [SerializeField] protected bool _hasKeyInInventory = false;
     [SerializeField] protected bool _hasKeyOnHands = false;
-    #endregion
-
-    #region EVENTS
-    public event Action OnObjectInteracted;
-    public event Action OnInteractionNameChanged;
-    public event Action OnNameUpdated;
     #endregion
 
     #region MONO'S CALLBACK
@@ -45,15 +34,8 @@ public abstract class IDItemTracker : MonoBehaviour, IInteractable, IItemCallbac
     }
     #endregion
 
-    #region IItemName
-    public virtual string GetName() => _name;
-    public virtual Collider GetCollider() => _col;
-
-    public virtual GameObject GetGameObject() => this.gameObject;
-    #endregion
-
     #region IInteractable
-    public virtual string GetInteractionName()
+    public override string GetInteractionName()
     {
         if (!_hasKeyInInventory)
             return _noKeyInInventoryText;
@@ -63,10 +45,8 @@ public abstract class IDItemTracker : MonoBehaviour, IInteractable, IItemCallbac
             return $"Hold {InputManager.GetBindingName(InputManager.InteractInInventory)} {_hasKeyOnHandsText}";
     }
 
-    public virtual void Interact() => OnObjectInteracted?.Invoke();
+    public override void Interact() => InvokeObjectInteracted();
 
-    public void InvokeNameUpdated() => OnNameUpdated?.Invoke();
-    public void InvokeInteractionDescriptionUpdated() => OnInteractionNameChanged?.Invoke();
     #endregion
 
     #region INVENTORY CALLBACKS

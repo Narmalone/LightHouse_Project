@@ -147,7 +147,7 @@ namespace LightHouse.Items.Samples
             if (!_isUnLocked)
                 _isUnLocked = true;
 
-            Vector3 doorForward = transform.parent.forward;
+            Vector3 doorForward = transform.forward;
             Vector3 directionToPlayer = (PlayerHandlerData.MainPlayer.Character.transform.position - _pivot.position).normalized;
             float dot = Vector3.Dot(doorForward, directionToPlayer);
 

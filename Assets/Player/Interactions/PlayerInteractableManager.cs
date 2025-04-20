@@ -17,7 +17,7 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private QueryTriggerInteraction _triggerInteraction;
         [SerializeField] private CanvasInteraction _interactionCanvas;
 
-        //controllers
+        //controllers s
         private RaycastInteractionHandler _interactionHandler;
         private RaycastDetector<IInteractable> _raycastInteractable;
         #endregion

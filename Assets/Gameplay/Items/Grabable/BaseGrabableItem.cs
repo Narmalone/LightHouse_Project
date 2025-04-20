@@ -11,7 +11,7 @@ using UnityEngine;
 namespace LightHouse.Items.Grabable
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class BaseGrabableItem : MonoBehaviour, IInteractable, IItemCallback
+    public class BaseGrabableItem : InteractableItemBase, IInteractable, IItemCallback
     {
         #region FIELDS
         [Header("Main References")]
@@ -28,13 +28,7 @@ namespace LightHouse.Items.Grabable
         [SerializeField] private float _objectAtRange = 1.0f;
         [SerializeField] private float _maxItemRangeToAutomaticRelease = 4.0f;
 
-        [Header("Automatically Setted")]
-        [field: SerializeField] public bool CanBeInteracted { get; set; } = true;
-        [field: SerializeField] public bool IsItemRaycasted { get; set; }
-        [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
-
-        public event Action OnObjectInteracted;
-        public event Action OnInteractionNameChanged;
+#pragma warning disable
         public event Action OnNameUpdated;
 
         //DEBUG ONLY
@@ -44,7 +38,7 @@ namespace LightHouse.Items.Grabable
         private Vector3 _grabRayOrigin;
         private Vector3 _grabRayDirection;
         private PlayerCharacter _playerCharacter;
-        private CameraRaycastDetector _inventoryRaycastDetector;
+        private PlayerRaycastSystem _inventoryRaycastDetector;
         #endregion
 
         #region IInteractable
@@ -61,12 +55,13 @@ namespace LightHouse.Items.Grabable
                 $"Press {InputManager.GetBindingName(InputManager.Interact)} to grab.";
         }
 
-        public void Interact()
+        public override void Interact()
         {
             if (_isGrabbed)
                 Release();
             else
                 Grab(_targetPoint);
+            InvokeObjectInteracted();
         }
         #endregion
 
@@ -144,7 +139,7 @@ namespace LightHouse.Items.Grabable
             _targetPoint = grabTarget;
 
             if (IsItemRaycasted)
-                OnInteractionNameChanged?.Invoke();
+                InvokeInteractionDescriptionUpdated();
         }
 
         public void Release()
@@ -160,7 +155,7 @@ namespace LightHouse.Items.Grabable
             _isGrabbed = false;
 
             if (IsItemRaycasted)
-                OnInteractionNameChanged?.Invoke();
+                InvokeInteractionDescriptionUpdated();
         }
         #endregion
 
