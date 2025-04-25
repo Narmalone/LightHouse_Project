@@ -21,7 +21,7 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private PlayerInteractableManager _interactions;
 
         [Header("Inventory")]
-        [SerializeField] private PlayerInventorManager _inventoryController;
+        [SerializeField] private PlayerInventoryManager _inventoryController;
 
         [Header("Character Input Control")]
         [SerializeField] private bool _enableAllCharacterInputs = true;
@@ -35,7 +35,7 @@ namespace LightHouse.KinematicCharacterController
 
         //PROPERTIES
         public PlayerCharacter Character => _playerCharacter;
-        public PlayerInventorManager Inventory => _inventoryController;
+        public PlayerInventoryManager Inventory => _inventoryController;
         public PlayerInteractableManager Interactions => _interactions;
         public PlayerCamera PlayerCamera => _playerCamera;
         public CameraSpring CameraSpring => _cameraSpring;

@@ -9,7 +9,7 @@ namespace LightHouse.KinematicCharacterController
     /// <summary>
     /// Main controller of the inventory system
     /// </summary>
-    public class PlayerInventorManager : MonoBehaviour
+    public class PlayerInventoryManager : MonoBehaviour
     {
         #region SERILIAZED FIELDS
         [Header("Inventory Settings")]
@@ -24,6 +24,7 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private Camera _playerCamera; //automatically attribuated from player ?
         [SerializeField] private float _raycastDetectionRange = 3.0f; //automatically attribuated from player ?
         [SerializeField] private LayerMask _inventoryItemsMask = 1 << 6;
+        [SerializeField] private LayerMask _blockingLayers = 1 << 6;
         [SerializeField] private QueryTriggerInteraction _inventoryRaycastQti = QueryTriggerInteraction.Ignore;
 
         [Header("Drop Settings")]
@@ -31,7 +32,6 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private AnimationCurve _dropPowerCurve = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField] private float _securityOverlapSphereRadius = 0.3f;
         [SerializeField] private LayerMask _securityObstacleMasks = 1 << 0;
-        public LayerMask forgetterMask;
 
         [Header("Inventory Controllers")]
         private RaycastDetector<IInventoryItem> _inventoryRaycastDetector;
@@ -52,8 +52,6 @@ namespace LightHouse.KinematicCharacterController
         //generated Slots
         private ItemSlot[] _slots;
 
-        //Qui access
-        private ItemSlot CurrentSelectedSlot => SlotManager.CurrentSelectedSlot;
         private short CurrentSlotIndex => SlotManager.CurrentSlotIndex;
 
         //Raycast datas
@@ -124,6 +122,7 @@ namespace LightHouse.KinematicCharacterController
                 _playerCamera,
                 _raycastDetectionRange,
                 _inventoryItemsMask,
+                _blockingLayers,
                 _inventoryRaycastQti
             );
             _inventoryRaycastDetector.OnDetected += HandleItemDetected;
@@ -135,7 +134,7 @@ namespace LightHouse.KinematicCharacterController
         #region REGISTER / UNREGISTER INPUTS CALLBACKS
         public void RegisterInputs()
         {
-            InputManager.OnInputManagerInitialized += InputManager_OnInputManagerInitialized;
+            InputManager.OnInitialized += InputManager_OnInputManagerInitialized;
             InputManager.OnInputManagerWillClear += InputManager_OnInputManagerWillClear;
             InventoryHandlerData.OnItemDropped += InventoryHandlerData_OnItemDropped;
         }
@@ -143,7 +142,7 @@ namespace LightHouse.KinematicCharacterController
         public void UnregisterInputs()
         {
             InputManager.OnInputManagerWillClear -= InputManager_OnInputManagerWillClear;
-            InputManager.OnInputManagerInitialized -= InputManager_OnInputManagerInitialized;
+            InputManager.OnInitialized -= InputManager_OnInputManagerInitialized;
             InventoryHandlerData.OnItemDropped -= InventoryHandlerData_OnItemDropped;
         }
 
@@ -169,12 +168,15 @@ namespace LightHouse.KinematicCharacterController
 
         private void AddItemToInventory(short slotIndex, IInventoryItem item)
         {
-            _pickupHandler.PickupItem(slotIndex, item);
-            item.ForceDropItemFromInventory += IInventoryItem_ForceDropItemFromInventory;
-            IInventoryItemUsable usable = item as IInventoryItemUsable;
-            if (usable != null)
-                usable.CanBeUsedFromInventoryChanged += Usable_CanBeUsedFromInventoryChanged;
-            InventoryHandlerData.NotifyAddedToInventory(item);
+            if(_pickupHandler.PickupItem(slotIndex, item))
+            {
+                item.ForceDropItemFromInventory += IInventoryItem_ForceDropItemFromInventory;
+                InventoryHandlerData.NotifyAddedToInventory(item);
+            }
+            else
+            {
+                Debug.Log("item non récupéré inventaire plein");
+            }
         }
 
         private void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID,
@@ -190,22 +192,11 @@ namespace LightHouse.KinematicCharacterController
                     enablePhysicsOnDrop: enablePhysicsOnDrop,
                     out IInventoryItem droppedItem
                 );
-            IInventoryItemUsable usable = droppedItem as IInventoryItemUsable;
-            if (usable != null)
-                usable.CanBeUsedFromInventoryChanged -= Usable_CanBeUsedFromInventoryChanged;
         }
 
         #endregion
 
         #region IInventoryItem && IInventoryUsable Callbacks
-        private void Usable_CanBeUsedFromInventoryChanged(ushort globalID, ushort specificID)
-        {
-            if (SlotManager.TryFindItemInCurrentSelectedSlot(globalID, specificID, out IInventoryItem item, out short slotID))
-            {
-                if (item is IInventoryItemUsable usable)
-                    _slots[slotID].IsInventoryItemUsable(usable);
-            }
-        }
 
         private void IInventoryItem_ForceDropItemFromInventory(ushort globalItemID, ushort specificItemID, Vector3 position, float force, bool enablePhysicsOnDrop)
         {
@@ -261,6 +252,7 @@ namespace LightHouse.KinematicCharacterController
         }
         private void HandleInteractInInventoryInput() => _useFromInventoryHandler.HandeInteractInInventoryInput();
         #endregion
+
         #region SCROLL HANDLING
         private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {

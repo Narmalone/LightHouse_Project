@@ -1,3 +1,4 @@
+using UnityEngine;
 using LightHouse.Inputs;
 using LightHouse.Interactions;
 
@@ -34,7 +35,6 @@ public class RaycastInteractionHandler
         }
 
         if (interactable is IItemCallback interactableCallback) interactableCallback.OnRaycastStart();
-
         _currentInteractable.OnInteractionNameChanged += UpdateInteractionText;
         UpdateInteractionText();
     }

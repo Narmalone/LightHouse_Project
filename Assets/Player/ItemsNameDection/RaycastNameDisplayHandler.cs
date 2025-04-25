@@ -37,7 +37,7 @@ namespace LightHouse.Interactions
             }
             _currentItemName.IsItemRaycasted = true;
             _currentItemName.OnNameUpdated += UpdateName;
-            UpdateName();
+            UpdateName(_currentItemName.GetName());
         }
         #endregion
 
@@ -45,7 +45,7 @@ namespace LightHouse.Interactions
         /// <summary>
         /// Show or hide the name to display on the screen
         /// </summary>
-        private void UpdateName()
+        private void UpdateName(string newvalue)
         {
             if (_currentItemName == null) return;
             if (!_currentItemName.CanBeRaycasted || string.IsNullOrEmpty(_currentItemName.GetName()))

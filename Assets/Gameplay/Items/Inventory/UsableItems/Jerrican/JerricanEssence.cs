@@ -3,7 +3,7 @@ using LightHouse.Inventory;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Items
+namespace LightHouse.Items.Inventory
 {
     public class JerricanEssence : InventoryItemBase, IInventoryItemUsable
     {
@@ -16,6 +16,7 @@ namespace LightHouse.Items
 
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+        public event Action<string> UseTextSlotChanged;
 
         public void InvokeOnCanBeUsedFromInventoryChanged()
         {
@@ -26,7 +27,7 @@ namespace LightHouse.Items
         {
             OnItemUsed?.Invoke();
         }
-        public string UseInInventoryText()
+        public string UseTextSlot()
         {
             return $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to use.";
         }

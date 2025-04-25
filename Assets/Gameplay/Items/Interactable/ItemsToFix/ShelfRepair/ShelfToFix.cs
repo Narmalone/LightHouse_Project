@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using LightHouse.Items.Interactable;
 
 namespace LightHouse.Items.Samples
 {
@@ -11,6 +12,7 @@ namespace LightHouse.Items.Samples
         [SerializeField] private short _missingHolderVisToFill = short.MaxValue;
         [SerializeField] private LockedDoor LockedDoor;
 
+#pragma warning disable
         public event Action OnShelfRepaired;
 
         private bool _hasSettedAllPlanks = false;

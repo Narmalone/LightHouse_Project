@@ -1,4 +1,4 @@
-using LightHouse.Utilities;
+﻿using LightHouse.Utilities;
 using System;
 using UnityEngine;
 
@@ -15,23 +15,25 @@ namespace LightHouse.Items.Detection
         private Camera _camera;
         private float _raycastDistance = 3f;
         private LayerMask _targetMasks = ~0;
+        private LayerMask _blockingLayers = ~0;
         private QueryTriggerInteraction _queryTriggerInteraction = QueryTriggerInteraction.Ignore;
 
         //Ray infos
         public Vector3 RayOrigin { get; private set; }
         public Vector3 RayDirection { get; private set; }
 
-        private GameObject _lastSeenObject;
+        protected GameObject _lastSeenObject;
         public GameObject LastSeenObject => _lastSeenObject;
         #endregion
 
         #region Constructor
-        public PlayerRaycastSystem(Camera cam, float distance, LayerMask masks, QueryTriggerInteraction qti)
+        public PlayerRaycastSystem(Camera cam, float distance, LayerMask masks, LayerMask blockingLayers, QueryTriggerInteraction qti)
         {
             _camera = cam;
             _raycastDistance = distance;
             _targetMasks = masks;
             _queryTriggerInteraction = qti;
+            _blockingLayers = blockingLayers;
         }
         #endregion
 
@@ -39,23 +41,38 @@ namespace LightHouse.Items.Detection
         public virtual void UpdateRay()
         {
             Ray cameraRay = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0f));
-            RaycastHit hit;
+            RaycastHit[] hits = Physics.RaycastAll(cameraRay, _raycastDistance, _blockingLayers, _queryTriggerInteraction);
+            Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance)); // tri par distance
 
-            RayOrigin = _camera.transform.position;
+            RayOrigin = cameraRay.origin;
             RayDirection = cameraRay.direction;
-            if(RaycastUtility.TryRaycast(cameraRay, _raycastDistance, _targetMasks, _queryTriggerInteraction, out hit))
+            foreach (var hit in hits)
             {
-                if (ItemRegistry.IsMarked(hit.collider, out GameObject markedObj))
+                int hitLayer = hit.collider.gameObject.layer;
+
+                // 🎯 Si c’est une couche bloquante mais non interactive, on stoppe là
+                if (((1 << hitLayer) & _blockingLayers) != 0 && ((1 << hitLayer) & _targetMasks) == 0)
                 {
-                    HandleNewObject(markedObj);
+                    ResetSeenObject();
+                    return;
                 }
-                else 
+
+                // 🎯 Si c’est une couche interactive (Inventory, Interactable)
+                if (((1 << hitLayer) & _targetMasks) != 0)
                 {
-                    HandleNewObject(hit.collider.gameObject);
+                    GameObject go = hit.collider.gameObject;
+
+                    if (ItemRegistry.IsMarked(hit.collider, out GameObject markedObj))
+                        HandleNewObject(markedObj);
+                    else
+                        HandleNewObject(go);
+
+                    return; // On traite le premier interactif qu’on rencontre
                 }
             }
-            else
-                ResetSeenObject();
+
+            // Aucun interactif trouvé
+            ResetSeenObject();
             Debug.DrawRay(_camera.transform.position, cameraRay.direction * _raycastDistance, Color.cyan);
         }
         #endregion
@@ -65,6 +82,7 @@ namespace LightHouse.Items.Detection
         {
             if (_lastSeenObject == go)
                 return;
+            Debug.Log("ray changed");
             _lastSeenObject = go;
             if(_lastSeenObject != null)
                 OnItemDetected?.Invoke(go);

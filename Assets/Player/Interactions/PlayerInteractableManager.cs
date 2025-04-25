@@ -14,6 +14,7 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private Camera _playerCamera;
         [SerializeField] private float _raycastDistance = 3.0f;
         [SerializeField] private LayerMask _targetLayersLayer;
+        [SerializeField] private LayerMask _blockingLayer;
         [SerializeField] private QueryTriggerInteraction _triggerInteraction;
         [SerializeField] private CanvasInteraction _interactionCanvas;
 
@@ -28,7 +29,7 @@ namespace LightHouse.KinematicCharacterController
             _interactionHandler = new RaycastInteractionHandler(_interactionCanvas);
 
             _raycastInteractable = new RaycastDetector<IInteractable>(
-                _playerCamera, _raycastDistance, _targetLayersLayer, _triggerInteraction
+                _playerCamera, _raycastDistance, _targetLayersLayer, _blockingLayer, _triggerInteraction
             );
 
             _raycastInteractable.OnDetected += interactable => _interactionHandler.SetTarget(interactable);

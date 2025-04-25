@@ -190,9 +190,6 @@ MonoBehaviour:
     Stance: 0
     Velocity: {x: 0, y: 0, z: 0}
     AccelerationVelocity: {x: 0, y: 0, z: 0}
-  layers:
-    serializedVersion: 2
-    m_Bits: 129
 --- !u!136 &1896435429427532531
 CapsuleCollider:
   m_ObjectHideFlags: 8
@@ -469,10 +466,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 4262258936072788609}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 90}
+  m_SizeDelta: {x: 1820, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2053248913160459546
 MonoBehaviour:
@@ -1101,6 +1098,9 @@ MonoBehaviour:
   _inventoryItemsMask:
     serializedVersion: 2
     m_Bits: 64
+  _blockingLayers:
+    serializedVersion: 2
+    m_Bits: 193
   _inventoryRaycastQti: 1
   _maxDropPower: 10
   _dropPowerCurve:
@@ -1153,6 +1153,9 @@ MonoBehaviour:
   _targetLayersLayer:
     serializedVersion: 2
     m_Bits: 192
+  _blockingLayers:
+    serializedVersion: 2
+    m_Bits: 193
   _triggerInteraction: 1
   _interactionCanvas: {fileID: 5442988119189176741}
 --- !u!114 &4390841736390168758
@@ -1172,6 +1175,9 @@ MonoBehaviour:
   _targetLayersLayer:
     serializedVersion: 2
     m_Bits: 128
+  _blockingLayer:
+    serializedVersion: 2
+    m_Bits: 193
   _triggerInteraction: 1
   _interactionCanvas: {fileID: 5442988119189176741}
 --- !u!114 &7906979379660786359
@@ -1583,7 +1589,7 @@ Transform:
   m_GameObject: {fileID: 5264825378655831165}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.51385885, y: 1.1499996, z: 1.4856989}
+  m_LocalPosition: {x: 0.51385885, y: 1.1499996, z: 1.4857008}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2384,10 +2390,10 @@ RectTransform:
   - {fileID: 5552824359987286737}
   m_Father: {fileID: 6391766715308661781}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 110}
-  m_SizeDelta: {x: -100, y: 180}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 152}
+  m_SizeDelta: {x: 1820, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8815750711361841588
 GameObject:

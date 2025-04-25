@@ -13,9 +13,12 @@ namespace LightHouse.Items.Samples
         public bool IsItemRaycasted { get; set; }
         [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
 
+#pragma warning disable
         public event Action OnObjectInteracted;
         public event Action OnInteractionNameChanged;
-        public event Action OnNameUpdated;
+
+#pragma warning disable
+        public event Action<string> OnNameUpdated;
         public abstract Collider GetCollider();
         public virtual GameObject GetGameObject() => this.gameObject;
         public abstract string GetInteractionName();

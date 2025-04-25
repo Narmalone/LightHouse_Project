@@ -3,49 +3,48 @@ using LightHouse.Interactions;
 using System;
 using UnityEngine;
 using LightHouse.Electricity;
+using UnityEngine.Localization;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace LightHouse.Items
 {
-    public class ElectricalSwitch : MonoBehaviour, IInteractable
+    public class ElectricalSwitch : InteractableSwitchRotate, IInteractable
     {
-        [SerializeField] private string _itemName;
-        [SerializeField] private Collider _col;
         [SerializeField] private ElectricZoneData _electricityZone = new ElectricZoneData();
-
         public ElectricZoneData ElectricityZone => _electricityZone;
-        [field: SerializeField] public bool CanBeInteracted { get; set; } = true;
-        [field: SerializeField] public bool IsItemRaycasted { get; set; }
-
-        public event Action OnObjectInteracted;
-        public event Action OnInteractionNameChanged;
-        public event Action OnNameUpdated;
-        private bool _isSwitchOn = false;
-        public bool IsSwitchOn => _isSwitchOn;
-
-        public bool CanBeRaycasted { get; set; } = true;
-
         public event Action<ElectricalSwitch> OnSwitchInteracted;
 
-        public Collider GetCollider() => _col;
+        [Header(" -- Localization Electric --")]
+        [SerializeField] protected LocalizedString _electricZone;
+        protected string _electricZoneName;
 
-        public GameObject GetGameObject() => this.gameObject;
-
-        public virtual string GetInteractionName()
+        protected override void Awake()
         {
-            return _isSwitchOn ? $"Press {InputManager.GetBindingName(InputManager.Interact)} to set off"
-                           : $"Press {InputManager.GetBindingName(InputManager.Interact)} to set on";
+            base.Awake();
+            SetUpElectricityText();
         }
 
-        public string GetName()
+        protected async void SetUpElectricityText()
         {
-            return $"{_itemName} {_electricityZone.Zone.ToString()}";
+            AsyncOperationHandle<string> actionTextOp = _electricZone.GetLocalizedStringAsync();
+            await actionTextOp.Task;
+            _electricZoneName = actionTextOp.Result;
         }
 
-        public void Interact()
+        protected override void OnLocaleChanged(Locale locale)
         {
-            //interact with the switch
-            _isSwitchOn = !_isSwitchOn;
-            OnInteractionNameChanged?.Invoke();
+            base.OnLocaleChanged(locale);
+            SetUpElectricityText();
+        }
+
+        public override string GetName()
+        {
+            return $"{_name} {_electricZoneName}";
+        }
+
+        public override void Interact()
+        {
+            base.Interact();
             OnSwitchInteracted?.Invoke(this);
         }
     }

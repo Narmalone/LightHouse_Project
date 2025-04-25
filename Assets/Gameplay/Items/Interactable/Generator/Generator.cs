@@ -1,13 +1,14 @@
-using LightHouse.Inputs;
-using LightHouse.Inventory;
+using LightHouse.Items.Interactable;
+using LightHouse.Items.Inventory;
 using System;
 using System.Collections;
 using UnityEngine;
 
-namespace LightHouse.Items
+namespace LightHouse.Items.Interactable
 {
     public class Generator : MonoBehaviour
     {
+        #region FIELDS
         [Header("Fuel Settings")]
         [SerializeField] private float _fuelLevel = 0f;
         [SerializeField] private float _fuelDecrementationSpeed = 1.0f;
@@ -15,7 +16,7 @@ namespace LightHouse.Items
         [Header("DEBUG")]
         [SerializeField] private bool _isGeneratorOn;
         [SerializeField] private InteractableSwitch _generatorSwitch;
-        [SerializeField] private SingleItemName _fuelIsRequired;
+        [SerializeField] private SingleRaycastedItemName _fuelIsRequired;
         [SerializeField] private JerricanItemTracker _jerricanReceiver;
         [SerializeField] private InteractableSwitch _fuelFillerLID;
 
@@ -25,6 +26,7 @@ namespace LightHouse.Items
 
         public event Action OnFuelDown;
         public event Action<bool> OnGeneratorSwitchChanged;
+        #endregion
 
         #region PROPERTIES
         public bool IsGeneratorOn

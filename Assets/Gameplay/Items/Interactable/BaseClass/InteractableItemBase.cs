@@ -15,15 +15,15 @@ public abstract class InteractableItemBase : MonoBehaviour, IInteractable
 
     public event Action OnObjectInteracted;
     public event Action OnInteractionNameChanged;
-    public event Action OnNameUpdated;
+    public event Action<string> OnNameUpdated;
 
     public virtual string GetName() => this._name;
     public virtual Collider GetCollider() => this._detectionCollider;
     public virtual GameObject GetGameObject() => this.gameObject;
-    public virtual string GetInteractionName() => $"Press {InputManager.GetBindingName(InputManager.Interact)} to interact.";
+    public abstract string GetInteractionName();
     public abstract void Interact();
 
-    public void InvokeNameUpdated() => OnNameUpdated?.Invoke();
+    public void InvokeNameUpdated() => OnNameUpdated?.Invoke(_name);
     public void InvokeInteractionDescriptionUpdated() => OnInteractionNameChanged?.Invoke();
     public void InvokeObjectInteracted() => OnObjectInteracted?.Invoke();
 

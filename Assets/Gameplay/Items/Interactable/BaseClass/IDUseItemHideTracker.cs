@@ -1,4 +1,4 @@
-namespace LightHouse.Items.Samples
+namespace LightHouse.Items.Interactable
 {
     public class IDUseItemHideTracker : IDUseItemTracker
     {

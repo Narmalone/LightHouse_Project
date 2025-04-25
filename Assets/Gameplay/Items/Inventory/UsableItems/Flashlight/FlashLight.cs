@@ -2,23 +2,58 @@ using LightHouse.Inputs;
 using LightHouse.Inventory;
 using System;
 using UnityEngine;
+using LightHouse.Localization;
+using UnityEngine.Localization;
 
-namespace LightHouse.Items
+namespace LightHouse.Items.Inventory
 {
     public class FlashLight : InventoryItemBase, IInventoryItemUsable
     {
+        public LocalizedString _lightOn => _inventoryTextsDB.Light_On;
+        public LocalizedString _lightOff => _inventoryTextsDB.Light_Off;
+        public LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
+        [SerializeField] protected string _currentUseInInventoryText;
         [Header("IInventory Item")]
         public bool CanBeUsedFromInventory { get; set; } = true;
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+        public event Action<string> UseTextSlotChanged;
+
         private bool _isLightOn = false;
         [SerializeField] private Light _light;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _isLightOn = false;
             _light.gameObject.SetActive(false);
         }
+
+        protected override void InputManager_OnInitialized()
+        {
+            base.InputManager_OnInitialized();
+            UpdateUsableText();
+        }
+
+        protected override void LocalizationSettings_SelectedLocaleChanged(Locale obj)
+        {
+            base.LocalizationSettings_SelectedLocaleChanged(obj);
+            UpdateUsableText();
+        }
+
+        public async void UpdateUsableText()
+        {
+            var action = _isLightOn ? _lightOff : _lightOn;
+            var key = InputManager.InteractInInventory_Bind_Name;
+
+            _currentUseInInventoryText = await InteractionTextBuilder.Build(
+                action,
+                key,
+                _holdToAction
+            );
+            InvokeUseTextSlotChanged(_currentUseInInventoryText);
+        }
+
 
         public void On()
         {
@@ -35,10 +70,9 @@ namespace LightHouse.Items
         }
 
         //IInventoryUSable
-        public string UseInInventoryText()
+        public string UseTextSlot()
         {
-            return _isLightOn ? $"Hold {InputManager.GetBindingName(InputManager.InteractInInventory)} to turn off"
-             : $"Hold {InputManager.GetBindingName(InputManager.InteractInInventory)} to turn on";
+            return _currentUseInInventoryText;
         }
 
         public void UseFromInventory()
@@ -47,7 +81,8 @@ namespace LightHouse.Items
                 Off();
             else
                 On();
-            UpdateUseInInventoryAtSlot(UseInInventoryText());
+            OnItemUsed?.Invoke();
+            UpdateUsableText();
         }
 
         public void InvokeOnCanBeUsedFromInventoryChanged()
@@ -55,12 +90,9 @@ namespace LightHouse.Items
             CanBeUsedFromInventoryChanged?.Invoke(this.GlobalItemID, this.ItemSpecificID);
         }
 
-        public void UpdateUseInInventoryAtSlot(string newText)
+        public void InvokeUseTextSlotChanged(string newText)
         {
-            if (SlotManager.FindItemInSlot(this.GlobalItemID, this.ItemSpecificID, out byte slotID))
-            {
-                SlotManager.Slots[slotID].SetUseKeyText(newText);
-            }
+            UseTextSlotChanged?.Invoke(newText);
         }
     }
 }

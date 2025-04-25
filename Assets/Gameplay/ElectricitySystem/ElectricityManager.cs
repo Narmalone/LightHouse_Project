@@ -2,6 +2,7 @@
 using LightHouse.Items;
 using System.Collections.Generic;
 using System;
+using LightHouse.Items.Interactable;
 
 namespace LightHouse.Electricity
 {
@@ -45,7 +46,6 @@ namespace LightHouse.Electricity
         }
     }
 
-
     [DefaultExecutionOrder(-1)]
     public class ElectricityManager : MonoBehaviour
     {
@@ -53,7 +53,9 @@ namespace LightHouse.Electricity
         [SerializeField] private ElectricalPannel _electricalPannel;
 
         private Dictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
+#pragma warning disable
         [SerializeField] private float _maxTotalPower = 600.0f;
+#pragma warning disable
         [SerializeField] private float _currentTotalPower = 0.0f;
 
         #region MONO'S Callback

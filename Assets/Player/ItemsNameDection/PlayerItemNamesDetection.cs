@@ -10,6 +10,7 @@ namespace LightHouse.Items.Detection
         [SerializeField] private Camera _playerCamera;
         [SerializeField] private float _raycastDistance = 3.0f;
         [SerializeField] private LayerMask _targetLayersLayer;
+        [SerializeField] private LayerMask _blockingLayers;
         [SerializeField] private QueryTriggerInteraction _triggerInteraction;
         [SerializeField] private CanvasInteraction _interactionCanvas;
 
@@ -25,7 +26,7 @@ namespace LightHouse.Items.Detection
             _nameDisplayHandler = new RaycastNameDisplayHandler(_interactionCanvas);
 
             _raycastItemName = new RaycastDetector<IItemName>(
-                _playerCamera, _raycastDistance, _targetLayersLayer, _triggerInteraction
+                _playerCamera, _raycastDistance, _targetLayersLayer, _blockingLayers, _triggerInteraction
             );
 
             _raycastItemName.OnDetected += item => _nameDisplayHandler.SetTarget(item);

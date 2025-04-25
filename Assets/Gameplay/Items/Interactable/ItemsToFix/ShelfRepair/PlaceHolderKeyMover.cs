@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace LightHouse.Items.Samples
+namespace LightHouse.Items.Interactable
 {
     public class PlaceHolderKeyMover : IDUseItemTracker
     {

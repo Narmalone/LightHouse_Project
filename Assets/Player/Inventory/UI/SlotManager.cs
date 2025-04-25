@@ -8,6 +8,19 @@ namespace LightHouse.Inventory
         #region FIELDS & PROPTERTIES
         public static ItemSlot[] Slots;
         public static short CurrentSlotIndex = -1;
+        public static byte NumberOfSlotsTaken
+        {
+            get
+            {
+                byte count = 0;
+                foreach (var slot in Slots)
+                {
+                    if (slot.SlotDatas.TotalItemsInSlots > 0)
+                        count++;
+                }
+                return count;
+            }
+        }
         public static short SlotLength => (short)Slots.Length;
         public static ItemSlot CurrentSelectedSlot => Slots[CurrentSlotIndex];
 

@@ -6,7 +6,7 @@ namespace LightHouse.Inputs
 {
     public static class InputManager
     {
-        public static event Action OnInputManagerInitialized;
+        public static event Action OnInitialized;
         public static event Action OnInputManagerWillClear;
         private static PlayerInputActions _player_Input_Actions;
         public static PlayerInputActions PLAYER_INPUTS_ACTIONS => _player_Input_Actions;
@@ -25,15 +25,39 @@ namespace LightHouse.Inputs
         public static InputAction Drop => Player.Drop;
         public static InputAction Scroll => Player.Scroll;
 
+        public static string Interact_Bind_Name;
+        public static string Pickup_Bind_Name;
+        public static string Drop_Bind_Name;
+        public static string Crouch_Bind_Name;
+        public static string Scroll_Bind_Name;
+        public static string Select_Bind_Name;
+        public static string InteractInInventory_Bind_Name;
+        public static string Jump_Bind_Name;
+        public static string Move_Bind_Name;
+
         public static void SetPlayerInputActions(PlayerInputActions pia)
         {
             if (_player_Input_Actions != null) DisposePlayerInputActions();
             _player_Input_Actions = pia;
+            UpdateAllBindNames(pia);
+        }
+
+        public static void UpdateAllBindNames(PlayerInputActions pia)
+        {
+            Interact_Bind_Name = GetBindingName(pia.Player.Interact);
+            Pickup_Bind_Name = GetBindingName(pia.Player.Pickup);
+            Drop_Bind_Name = GetBindingName(pia.Player.Drop);
+            Crouch_Bind_Name = GetBindingName(pia.Player.Crouch);
+            Scroll_Bind_Name = GetBindingName(pia.Player.Scroll);
+            Select_Bind_Name = GetBindingName(pia.Player.Select);
+            InteractInInventory_Bind_Name = GetBindingName(pia.Player.InteractInInventory);
+            Jump_Bind_Name = GetBindingName(pia.Player.Jump);
+            Move_Bind_Name = GetBindingName(pia.Player.Move);
         }
 
         public static void InputManagerInitialized()
         {
-            OnInputManagerInitialized?.Invoke();
+            OnInitialized?.Invoke();
         }
 
         public static void DisposePlayerInputActions()

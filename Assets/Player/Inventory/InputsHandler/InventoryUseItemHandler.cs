@@ -1,4 +1,5 @@
 using LightHouse.Inputs;
+using UnityEngine;
 
 namespace LightHouse.Inventory
 {

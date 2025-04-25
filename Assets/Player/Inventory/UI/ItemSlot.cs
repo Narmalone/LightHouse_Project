@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -146,6 +147,49 @@ namespace LightHouse.Inventory
 
         #endregion
 
+        #region IInventory Usable Callbacks
+        public void SubscribeToIInventoryUsable(IInventoryItemUsable usable)
+        {
+            usable.CanBeUsedFromInventoryChanged += Usable_CanBeUsedFromInventoryChanged;
+            usable.UseTextSlotChanged += Usable_UseTextSlotChanged;
+        }
+
+        public void UnsubscribeToIInventoryUsable(IInventoryItemUsable usable)
+        {
+            usable.CanBeUsedFromInventoryChanged -= Usable_CanBeUsedFromInventoryChanged;
+            usable.UseTextSlotChanged -= Usable_UseTextSlotChanged;
+        }
+
+        private void Usable_UseTextSlotChanged(string obj)
+        {
+            SetUseKeyText(obj);
+        }
+
+        private void Usable_CanBeUsedFromInventoryChanged(ushort globalID, ushort specificID)
+        {
+            if (SlotManager.TryFindItemInCurrentSelectedSlot(globalID, specificID, out IInventoryItem item, out short slotID))
+            {
+                if (item is IInventoryItemUsable usable)
+                    IsInventoryItemUsable(usable);
+            }
+        }
+        #endregion
+
+        public void SubscribeToIInventoryItem(IInventoryItem item)
+        {
+            item.OnNameUpdated += Item_OnNameUpdated;
+        }
+
+        private void Item_OnNameUpdated(string value)
+        {
+            _itemName_TMP.text = value;
+        }
+
+        public void UnsubscribeToIInventoryItem(IInventoryItem item)
+        {
+            item.OnNameUpdated -= Item_OnNameUpdated;
+        }
+
         #region Refresh UI On Add or Removed Item
         public void RefreshUIWithCurrentDatas()
         {
@@ -175,15 +219,17 @@ namespace LightHouse.Inventory
         public void Show()
         {
             SetEnableItemNameText(true);
-            IInventoryItem item = _itemDatabase.Get(SlotDatas.ItemGlobalID);
-            if (item != null)
-                SetItemNameText(item.GetName());
+            SlotDatas.GetFirstItemInSlot(out IInventoryItem itm);
+            if (itm != null)
+            {
+                SetItemNameText(itm.GetName());
+
+            }
             if (SlotDatas.TotalItemsInSlots > 1)
             {
                 SetEnableItemStackCountText(true);
                 UpdateItemStackCount();
             }
-            SlotDatas.GetFirstItemInSlot(out IInventoryItem itm);
             IsInventoryItemUsable(itm as IInventoryItemUsable);
         }
 
@@ -211,7 +257,7 @@ namespace LightHouse.Inventory
             if (itemUsable.CanBeUsedFromInventory)
             {
                 SetEnableUseKeyText(true);
-                SetUseKeyText(itemUsable.UseInInventoryText());
+                SetUseKeyText(itemUsable.UseTextSlot());
             }
             else
                 SetEnableUseKeyText(false);

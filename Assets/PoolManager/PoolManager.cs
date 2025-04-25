@@ -5,6 +5,7 @@ using UnityEngine;
 public static class PoolManager
 {
     public static Dictionary<ushort, List<IInventoryItem>> InventoryItemPools = new();
+    private static Dictionary<ushort, ushort> _specificIdCounters = new(); //Needed to make a proper count and set of specific id's taking in count dropping etc...
 
     public static bool GetWithoutRemovingFromPool(ushort globalID, ushort itemSpecifcID, out IInventoryItem item)
     {
@@ -41,9 +42,15 @@ public static class PoolManager
         {
             InventoryItemPools.Add(item.GlobalItemID, new List<IInventoryItem>());
         }
-        DisableInventoryItem(item);
+
         InventoryItemPools[item.GlobalItemID].Add(item);
-        item.ItemSpecificID = (ushort)InventoryItemPools[item.GlobalItemID].IndexOf(item);
+        if (!_specificIdCounters.ContainsKey(item.GlobalItemID))
+            _specificIdCounters[item.GlobalItemID] = 0;
+
+        item.ItemSpecificID = _specificIdCounters[item.GlobalItemID];
+        _specificIdCounters[item.GlobalItemID]++;
+        DisableInventoryItem(item);
+       
     }
 
     public static void DisableInventoryItem(IInventoryItem item)
@@ -65,5 +72,6 @@ public static class PoolManager
     public static void Clear()
     {
         InventoryItemPools.Clear();
+        _specificIdCounters.Clear();
     }
 }

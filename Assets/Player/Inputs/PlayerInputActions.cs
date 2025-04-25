@@ -1019,6 +1019,54 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Debug"",
+            ""id"": ""5299762a-4094-4c49-bd23-11a9f716d4dd"",
+            ""actions"": [
+                {
+                    ""name"": ""UnlockCursor"",
+                    ""type"": ""Button"",
+                    ""id"": ""360b59d8-9090-4559-9eac-13b1884d4ee9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LockCursor"",
+                    ""type"": ""Button"",
+                    ""id"": ""887dbc84-4936-4132-8739-bd0c03b7e1f0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""9d8e225e-e417-43d2-a8a8-212dd2050ec8"",
+                    ""path"": ""<Keyboard>/u"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""334291b5-e441-4e30-809a-afdc325ab159"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LockCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -1048,6 +1096,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // Debug
+        m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
+        m_Debug_UnlockCursor = m_Debug.FindAction("UnlockCursor", throwIfNotFound: true);
+        m_Debug_LockCursor = m_Debug.FindAction("LockCursor", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1349,6 +1401,60 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // Debug
+    private readonly InputActionMap m_Debug;
+    private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
+    private readonly InputAction m_Debug_UnlockCursor;
+    private readonly InputAction m_Debug_LockCursor;
+    public struct DebugActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public DebugActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @UnlockCursor => m_Wrapper.m_Debug_UnlockCursor;
+        public InputAction @LockCursor => m_Wrapper.m_Debug_LockCursor;
+        public InputActionMap Get() { return m_Wrapper.m_Debug; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(DebugActions set) { return set.Get(); }
+        public void AddCallbacks(IDebugActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DebugActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DebugActionsCallbackInterfaces.Add(instance);
+            @UnlockCursor.started += instance.OnUnlockCursor;
+            @UnlockCursor.performed += instance.OnUnlockCursor;
+            @UnlockCursor.canceled += instance.OnUnlockCursor;
+            @LockCursor.started += instance.OnLockCursor;
+            @LockCursor.performed += instance.OnLockCursor;
+            @LockCursor.canceled += instance.OnLockCursor;
+        }
+
+        private void UnregisterCallbacks(IDebugActions instance)
+        {
+            @UnlockCursor.started -= instance.OnUnlockCursor;
+            @UnlockCursor.performed -= instance.OnUnlockCursor;
+            @UnlockCursor.canceled -= instance.OnUnlockCursor;
+            @LockCursor.started -= instance.OnLockCursor;
+            @LockCursor.performed -= instance.OnLockCursor;
+            @LockCursor.canceled -= instance.OnLockCursor;
+        }
+
+        public void RemoveCallbacks(IDebugActions instance)
+        {
+            if (m_Wrapper.m_DebugActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IDebugActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DebugActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DebugActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public DebugActions @Debug => new DebugActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -1375,5 +1481,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    public interface IDebugActions
+    {
+        void OnUnlockCursor(InputAction.CallbackContext context);
+        void OnLockCursor(InputAction.CallbackContext context);
     }
 }

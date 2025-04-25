@@ -7,7 +7,7 @@ namespace LightHouse.Items
 {
     public class ElectricalPannel : MonoBehaviour
     {
-        [SerializeField] private SingleItemName _enableElectricityFirst;
+        [SerializeField] private SingleRaycastedItemName _enableElectricityFirst;
         [SerializeField] private ElectricalSwitch[] _switchesOnPannel;
 
         public event Action<bool, ElectricityZones, ElectricZoneData> OnSwitchElectricityChanged;

@@ -174,13 +174,22 @@ MonoBehaviour:
   <CanBeInteracted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
   _itemNeeded: 1000
-  _noKeyInInventoryText: You need to find the key
-  _keyInInventoryButNotOnHandsText: Take the key in your hands
-  _hasKeyOnHandsText: to unlock
+  _interactionTextsDB: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
+    type: 2}
+  _currentText: 
   _hasKeyInInventory: 0
   _hasKeyOnHands: 0
   _pivot: {fileID: 3243862752220473133}
   _openRotationAngles: {x: 0, y: 90, z: 0}
+  _neededKey:
+    m_TableReference:
+      m_TableCollectionName: GUID:017d10ec823be454082f9cc2c984dbe4
+    m_TableEntryReference:
+      m_KeyId: 756469880463360
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   _openCurve:
     serializedVersion: 2
     m_Curve:
@@ -234,6 +243,9 @@ MonoBehaviour:
   _lockedEffect: 1
   _unlockEffect: 4
   _isUnLocked: 0
+  references:
+    version: 2
+    RefIds: []
 --- !u!65 &9032372824059076478 stripped
 BoxCollider:
   m_CorrespondingSourceObject: {fileID: 8368009818892102462, guid: c8139ae770d8ff24b8ff1c155ed19035,

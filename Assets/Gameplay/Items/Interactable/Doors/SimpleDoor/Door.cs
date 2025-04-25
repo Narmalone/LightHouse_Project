@@ -36,7 +36,7 @@ namespace LightHouse.Interactions.Samples
 
         #region IINTERACTABLE EVENTS
         public event Action OnInteractionNameChanged;
-        public event Action OnNameUpdated;
+        public event Action<string> OnNameUpdated;
         public event Action OnObjectInteracted;
         #endregion
 
@@ -87,6 +87,7 @@ namespace LightHouse.Interactions.Samples
         public virtual void Interact()
         {
             OnDoorInteracted();
+            OnObjectInteracted?.Invoke();
         }
 
         public virtual void OnDoorInteracted()
@@ -104,7 +105,7 @@ namespace LightHouse.Interactions.Samples
             if (IsItemRaycasted)
             {
                 // Update the Player's Interactions Raycast data
-                OnNameUpdated?.Invoke();
+                OnNameUpdated?.Invoke(GetName());
                 OnInteractionNameChanged?.Invoke();
             }
         }

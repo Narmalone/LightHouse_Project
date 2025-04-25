@@ -1,59 +1,63 @@
 using LightHouse.Inventory;
 
-public class IDUseItemTracker : IDItemTracker
+namespace LightHouse.Items.Interactable
 {
-    protected IInventoryItemUsable _inventoryItemUsable;
-    protected override void CheckConditions()
+    public class IDUseItemTracker : IDItemTracker
     {
-        _hasKeyInInventory = SlotManager.IsItemExistInInventory((ushort)_itemNeeded);
-        _hasKeyOnHands = SlotManager.IsItemOnHands((ushort)_itemNeeded, out IInventoryItem itm);
-
-        if (_inventoryItemUsable != null)
+        protected IInventoryItemUsable _inventoryItemUsable;
+        protected override void CheckConditions()
         {
-            ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
-            UnsubscribeToItem(_inventoryItemUsable);
-            _inventoryItemUsable = null;
+            _hasKeyInInventory = SlotManager.IsItemExistInInventory((ushort)_itemNeeded);
+            _hasKeyOnHands = SlotManager.IsItemOnHands((ushort)_itemNeeded, out IInventoryItem itm);
+
+            if (_inventoryItemUsable != null)
+            {
+                ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
+                UnsubscribeToItem(_inventoryItemUsable);
+                _inventoryItemUsable = null;
+            }
+
+            InvokeNameUpdated();
+            InvokeInteractionDescriptionUpdated();
+
+            if (itm == null) return;
+            if (itm is IInventoryItemUsable usable)
+            {
+                _inventoryItemUsable = usable;
+                SubscribeToItem(_inventoryItemUsable);
+                ChangeCanBeUsedFromInventory(_inventoryItemUsable, true);
+            }
         }
 
-        InvokeNameUpdated();
-        InvokeInteractionDescriptionUpdated();
-
-        if (itm == null) return;
-        if (itm is IInventoryItemUsable usable)
+        protected virtual void Usable_OnItemUsed()
         {
-            _inventoryItemUsable = usable;
-            SubscribeToItem(_inventoryItemUsable);
-            ChangeCanBeUsedFromInventory(_inventoryItemUsable, true);
+            if (_inventoryItemUsable != null)
+            {
+                ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
+                UnsubscribeToItem(_inventoryItemUsable);
+                _inventoryItemUsable = null;
+            }
         }
-    }
 
-    protected virtual void Usable_OnItemUsed()
-    {
-        if (_inventoryItemUsable != null) 
+        public override void OnRaycastEnd()
         {
-            ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
-            UnsubscribeToItem(_inventoryItemUsable);
-            _inventoryItemUsable = null;
+            base.OnRaycastEnd();
+            if (_inventoryItemUsable != null)
+            {
+                UnsubscribeToItem(_inventoryItemUsable);
+                ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
+                _inventoryItemUsable = null;
+            }
         }
-    }
 
-    public override void OnRaycastEnd()
-    {
-        base.OnRaycastEnd();
-        if (_inventoryItemUsable != null)
+        public void ChangeCanBeUsedFromInventory(IInventoryItemUsable usable, bool value)
         {
-            UnsubscribeToItem(_inventoryItemUsable);
-            ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
-            _inventoryItemUsable = null;
+            usable.CanBeUsedFromInventory = value;
+            usable.InvokeOnCanBeUsedFromInventoryChanged();
         }
-    }
 
-    public void ChangeCanBeUsedFromInventory(IInventoryItemUsable usable, bool value)
-    {
-        usable.CanBeUsedFromInventory = value;
-        usable.InvokeOnCanBeUsedFromInventoryChanged();
+        public void SubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed += Usable_OnItemUsed;
+        public void UnsubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed -= Usable_OnItemUsed;
     }
-
-    public void SubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed += Usable_OnItemUsed;
-    public void UnsubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed -= Usable_OnItemUsed;
 }
+

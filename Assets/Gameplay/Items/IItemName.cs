@@ -8,7 +8,7 @@ namespace LightHouse.Interactions
         /// <summary>
         /// Must be called only when raycasting the object (it force to update the UI).
         /// </summary>
-        public event Action OnNameUpdated;
+        public event Action<string> OnNameUpdated;
 
         /// <summary>
         /// Automatically setted by <see cref="PlayerInteractableManager"/>, to know when the objet is raycasted.

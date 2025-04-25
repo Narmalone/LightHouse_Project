@@ -1,19 +1,23 @@
 using UnityEngine;
 
-public class RopePlaceHolder : IDUseItemTracker
+namespace LightHouse.Items.Interactable
 {
-    [SerializeField] private GameObject[] _objectsToEnable;
-    [SerializeField] private GameObject[] _objectsToDisable;
-    protected override void Usable_OnItemUsed()
+    public class RopePlaceHolder : IDUseItemTracker
     {
-        base.Usable_OnItemUsed();
-        foreach(GameObject obj in _objectsToEnable)
+        [SerializeField] private GameObject[] _objectsToEnable;
+        [SerializeField] private GameObject[] _objectsToDisable;
+        protected override void Usable_OnItemUsed()
         {
-            obj.SetActive(true);
-        }
-        foreach (GameObject obj in _objectsToDisable)
-        {
-            obj.SetActive(false);
+            base.Usable_OnItemUsed();
+            foreach (GameObject obj in _objectsToEnable)
+            {
+                obj.SetActive(true);
+            }
+            foreach (GameObject obj in _objectsToDisable)
+            {
+                obj.SetActive(false);
+            }
         }
     }
+
 }

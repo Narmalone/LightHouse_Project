@@ -1,12 +1,20 @@
-﻿using LightHouse.GrabableItems;
+﻿#region LIGHTHOUSE NAMES
+using LightHouse.GrabableItems;
 using LightHouse.Handlers;
 using LightHouse.Inputs;
 using LightHouse.Interactions;
 using LightHouse.Inventory;
 using LightHouse.KinematicCharacterController;
 using LightHouse.Items.Detection;
-using System;
+using LightHouse.Localization;
+#endregion
+
+#region UNITY NAMES
 using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using UnityEngine.ResourceManagement.AsyncOperations;
+#endregion
 
 namespace LightHouse.Items.Grabable
 {
@@ -14,13 +22,17 @@ namespace LightHouse.Items.Grabable
     public class BaseGrabableItem : InteractableItemBase, IInteractable, IItemCallback
     {
         #region FIELDS
-        [Header("Main References")]
-        [SerializeField] private string _itemName;
-        [SerializeField] private string _alreadyGrabbingAnObjectText;
-        [SerializeField] private Collider _col;
-        [SerializeField] private Rigidbody rb;
+        [Header(" --- GRABABLE FIELDS --- ")]
+        [SerializeField] private Rigidbody _rb;
 
-        [Header("Grab Settings")]
+        [Header(" --- LOCALIZATION --- ")]
+        [SerializeField] private LocalizedStringDatabase_InteractionTexts _interactionTextsDB;
+        private LocalizedString _grabText => _interactionTextsDB.Grab;
+        private LocalizedString _releaseText => _interactionTextsDB.Release;
+        private LocalizedString _alreadyGrabbingAnItemText => _interactionTextsDB.Already_Grabbing_Item;
+        private LocalizedString _pressToAction => _interactionTextsDB.Press_To_Action;
+
+        [Header(" --- GRAB FIELDS --- ")]
         [SerializeField] private float _moveForce = 500f;
         [SerializeField] private float _rotationSpeed = 20f;
         [SerializeField] private float _maxClampedVelocity = 10f;
@@ -29,8 +41,8 @@ namespace LightHouse.Items.Grabable
         [SerializeField] private float _maxItemRangeToAutomaticRelease = 4.0f;
 
 #pragma warning disable
-        public event Action OnNameUpdated;
 
+        private string _currentText;
         //DEBUG ONLY
         private Transform _targetPoint;
         private bool _isGrabbed = false;
@@ -42,17 +54,9 @@ namespace LightHouse.Items.Grabable
         #endregion
 
         #region IInteractable
-        public string GetName() => _itemName;
-        public GameObject GetGameObject() => this.gameObject;
-        public Collider GetCollider() => _col;
-
-        public string GetInteractionName()
+        public override string GetInteractionName()
         {
-            if (!CanBeInteracted && !_isGrabbed)
-                return _alreadyGrabbingAnObjectText;
-            return _isGrabbed ?
-                $"Press {InputManager.GetBindingName(InputManager.Interact)} to release." :
-                $"Press {InputManager.GetBindingName(InputManager.Interact)} to grab.";
+            return _currentText;
         }
 
         public override void Interact()
@@ -73,6 +77,7 @@ namespace LightHouse.Items.Grabable
                 CanBeInteracted = false;
             else
                 if (!CanBeInteracted) CanBeInteracted = true;
+            UpdateInteractionText();
         }
 
         public void OnRaycastEnd() { }
@@ -81,9 +86,17 @@ namespace LightHouse.Items.Grabable
         #region MONO CALLBACK
         private void Awake()
         {
-            _baseMass = rb.mass;
+            _baseMass = _rb.mass;
             PlayerGrabableItems.OnPlayerGrabableInitialized += PlayerGrabableItems_OnPlayerGrabableInitialized;
             PlayerHandlerData.OnHandlerInitialized += PlayerHandlerData_OnHandlerInitialized;
+            LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+            InputManager.OnInitialized += InputManager_OnInputManagerInitialized;
+
+        }
+
+        private void InputManager_OnInputManagerInitialized()
+        {
+            UpdateInteractionText();
         }
 
         private void FixedUpdate()
@@ -93,32 +106,73 @@ namespace LightHouse.Items.Grabable
             _grabRayOrigin = _inventoryRaycastDetector.RayOrigin;
             Vector3 fullDirection = _inventoryRaycastDetector.RayDirection.normalized;
             Vector3 targetPos = _grabRayOrigin + (fullDirection * _objectAtRange) + _offsetPos;
-            Vector3 toTarget = targetPos - rb.position;
+            Vector3 toTarget = targetPos - _rb.position;
             float dist = toTarget.magnitude;
 
             if (dist < 0.01f)
-                rb.velocity = Vector3.zero;
+                _rb.velocity = Vector3.zero;
             else
-                rb.velocity = Vector3.ClampMagnitude(toTarget * _moveForce * Time.fixedDeltaTime, _maxClampedVelocity);
+                _rb.velocity = Vector3.ClampMagnitude(toTarget * _moveForce * Time.fixedDeltaTime, _maxClampedVelocity);
 
             if (dist >= _maxItemRangeToAutomaticRelease)
             {
-                rb.velocity = Vector3.zero;
+                _rb.velocity = Vector3.zero;
                 Release();
                 return;
             }
 
             // Rotation fluide
             Quaternion desiredRotation = _targetPoint.rotation;
-            Quaternion smoothedRotation = Quaternion.Slerp(rb.rotation, desiredRotation, _rotationSpeed * Time.fixedDeltaTime);
-            rb.MoveRotation(smoothedRotation);
+            Quaternion smoothedRotation = Quaternion.Slerp(_rb.rotation, desiredRotation, _rotationSpeed * Time.fixedDeltaTime);
+            _rb.MoveRotation(smoothedRotation);
         }
 
         private void OnDestroy()
         {
             PlayerGrabableItems.OnPlayerGrabableInitialized -= PlayerGrabableItems_OnPlayerGrabableInitialized;
             PlayerHandlerData.OnHandlerInitialized -= PlayerHandlerData_OnHandlerInitialized;
+            LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+            InputManager.OnInitialized -= InputManager_OnInputManagerInitialized;
         }
+        #endregion
+
+        #region LOCALIZATION
+
+        private void OnLocaleChanged(Locale locale)
+        {
+            UpdateInteractionText();
+        }
+
+        protected async void UpdateInteractionText()
+        {
+            string input = InputManager.Interact_Bind_Name;
+
+            // Cas sans interaction possible : texte direct
+            if (!CanBeInteracted && !_isGrabbed)
+            {
+                var op = _alreadyGrabbingAnItemText.GetLocalizedStringAsync();
+                await op.Task;
+                _currentText = op.Result;
+
+                if (IsItemRaycasted)
+                    InvokeInteractionDescriptionUpdated();
+                return;
+            }
+
+            // Choix du texte d'action en fonction de l'état actuel
+            var actionText = _isGrabbed ? _releaseText : _grabText;
+
+            // Utilisation du builder pour construire le texte final
+            _currentText = await InteractionTextBuilder.Build(
+                actionText,
+                input,
+                _pressToAction
+            );
+
+            if (IsItemRaycasted)
+                InvokeInteractionDescriptionUpdated();
+        }
+
         #endregion
 
         #region Grab & Release
@@ -126,36 +180,34 @@ namespace LightHouse.Items.Grabable
         {
             if (_isGrabbed || grabTarget == null) return;
 
-            rb.freezeRotation = true;
-            rb.useGravity = false;
-            rb.mass = 0.01f;
+            _rb.freezeRotation = true;
+            _rb.useGravity = false;
+            _rb.mass = 0.01f;
 
-            _playerCharacter.IgnoreCollider(_col);
-            Physics.IgnoreCollision(_col, _playerCharacter.Motor.Capsule, true);
-
+            _playerCharacter.IgnoreCollider(_detectionCollider);
+            Physics.IgnoreCollision(_detectionCollider, _playerCharacter.Motor.Capsule, true);
             InventoryHandlerData.SetGrabbingObject(true);
 
             _isGrabbed = true;
             _targetPoint = grabTarget;
-
             if (IsItemRaycasted)
                 InvokeInteractionDescriptionUpdated();
+            UpdateInteractionText();
         }
 
         public void Release()
         {
-            rb.useGravity = true;
-            rb.freezeRotation = false;
-            rb.mass = _baseMass;
+            _rb.useGravity = true;
+            _rb.freezeRotation = false;
+            _rb.mass = _baseMass;
 
             InventoryHandlerData.SetGrabbingObject(false);
-
-            _playerCharacter.RestoreCollider(_col);
-            Physics.IgnoreCollision(_col, _playerCharacter.Motor.Capsule, false);
+            _playerCharacter.RestoreCollider(_detectionCollider);
+            Physics.IgnoreCollision(_detectionCollider, _playerCharacter.Motor.Capsule, false);
             _isGrabbed = false;
-
             if (IsItemRaycasted)
                 InvokeInteractionDescriptionUpdated();
+            UpdateInteractionText();
         }
         #endregion
 

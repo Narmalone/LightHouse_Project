@@ -22,8 +22,9 @@ public class InteractableSwitchRotate : InteractableSwitch
     private bool _isMoving = false;
     private float _rotationTimer = 0f;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (_targetToRotate == null) _targetToRotate = this.transform;
 
         _initialRotation = _targetToRotate.localRotation;
@@ -50,14 +51,15 @@ public class InteractableSwitchRotate : InteractableSwitch
             }
         }
 
-        if (_isSwitchOn)
+        if (_isSwitchOn && AutoCombackAfterDelay)
         {
             _timer.Tick(Time.deltaTime);
         }
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         _timer.OnTimerComplete -= Timer_OnTimerComplete;
     }
 
@@ -78,7 +80,7 @@ public class InteractableSwitchRotate : InteractableSwitch
     public void GoToTarget()
     {
         _startRotation = _targetToRotate.localRotation;
-        _currentTarget = _startRotation * Quaternion.Euler(_rotationDelta);
+        _currentTarget = Quaternion.Euler(_rotationDelta);
         _rotationTimer = 0f;
         _timer.ResetTimer();
         _timer.StartTimer();

@@ -1,41 +1,132 @@
 using System;
 using LightHouse.Inputs;
 using LightHouse.Inventory;
+using LightHouse.Localization;
 using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
-public abstract class InventoryItemBase : MonoBehaviour, IInventoryItem
+namespace LightHouse.Items.Inventory
 {
-    [Header("Inventory Item Base")]
-    [SerializeField] protected string _name;
-    [SerializeField] protected Sprite _inventorySprite;
-    [SerializeField] protected Collider _detectionCollider;
-    [SerializeField] protected Rigidbody _rb;
-    [field: SerializeField] public Vector3 InventoryLocalPositionOffset { get; set; }
-    [field: SerializeField] public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
-    [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
+    public abstract class InventoryItemBase : MonoBehaviour, IInventoryItem
+    {
+        #region FIELDS & PROPERTIES
+        [Header(" --- BASE FIELDS --- ")]
+        [SerializeField] protected string _name;
+        [SerializeField] protected Sprite _inventorySprite;
+        [SerializeField] protected Collider _detectionCollider;
+        [SerializeField] protected Rigidbody _rb;
+        [field: SerializeField] public Vector3 InventoryLocalPositionOffset { get; set; }
+        [field: SerializeField] public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
+        [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
 
-    public Sprite ItemSprite => _inventorySprite;
-    [field: SerializeField] public ushort GlobalItemID { get; set; }
-    [field: SerializeField] public ushort ItemSpecificID { get; set; }
-    public bool IsItemInInventory { get; set; }
-    public bool IsItemOnHands { get; set; }
- 
-    public bool IsItemRaycasted { get; set; }
+        [Header(" --- LOCALIZATION --- ")]
+        public LocalizedStringDatabase_InventoryTexts _inventoryTextsDB;
+        public LocalizedStringDatabase_InteractionTexts _interactionTextsDB;
+        [SerializeField] protected LocalizedString _itemNameString;
+        protected LocalizedString _pressToAction => _interactionTextsDB.Press_To_Action;
+        protected LocalizedString _pickupText => _interactionTextsDB.Pickup;
+        protected string _currentPickupText;
 
-    public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
+        public Sprite ItemSprite => _inventorySprite;
+        [field: SerializeField] public ushort GlobalItemID { get; set; }
+        [field: SerializeField] public ushort ItemSpecificID { get; set; }
+        public bool IsItemInInventory { get; set; }
+        public bool IsItemOnHands { get; set; }
+
+        public bool IsItemRaycasted { get; set; }
+
+        public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
 
 #pragma warning disable
-    public event Action OnNameUpdated;
+        public event Action<string> OnNameUpdated;
+        #endregion
 
-    public virtual string GetName() => _name;
-    public virtual GameObject GetGameObject() => this.gameObject;
-    public virtual Collider GetCollider() => _detectionCollider;
-    public virtual Rigidbody GetRigidBody() => _rb;
+        #region GET METHODS
+        public virtual string GetName() => _name;
+        public virtual GameObject GetGameObject() => this.gameObject;
+        public virtual Collider GetCollider() => _detectionCollider;
+        public virtual Rigidbody GetRigidBody() => _rb;
 
-    public virtual string GetPickupName()
-        => $"Press {InputManager.GetBindingName(InputManager.PickUp)} to pick up.";
+        public virtual string GetPickupName() => _currentPickupText;
+        #endregion
 
-    public void InvokeForceDropItemFromInventory(Vector3 pos, float force, bool enablePhysics) 
-        => ForceDropItemFromInventory?.Invoke(this.GlobalItemID, this.ItemSpecificID, pos, force, enablePhysics);
+        #region MONO CALLBACKS
+
+        protected virtual void Awake()
+        {
+            LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
+            InputManager.OnInitialized += InputManager_OnInitialized;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            LocalizationSettings.SelectedLocaleChanged -= LocalizationSettings_SelectedLocaleChanged;
+            InputManager.OnInitialized -= InputManager_OnInitialized;
+        }
+        #endregion
+
+        #region INPUT MANAGER CALLBACKS
+
+        protected virtual void InputManager_OnInitialized()
+        {
+            UpdateNameText();
+            UpdatePickupText();
+        }
+        #endregion
+
+        #region INVENTORY CALLBACKS
+        public virtual void InvokeForceDropItemFromInventory(Vector3 pos, float force, bool enablePhysics)
+            => ForceDropItemFromInventory?.Invoke(this.GlobalItemID, this.ItemSpecificID, pos, force, enablePhysics);
+        #endregion
+
+        #region LOCALIZATION
+
+        protected virtual void LocalizationSettings_SelectedLocaleChanged(Locale obj)
+        {
+            UpdateNameText();
+            UpdatePickupText();
+        }
+
+        public async virtual void UpdateNameText()
+        {
+            LocalizedString targetString = _itemNameString;
+            AsyncOperationHandle<string> actionTextOp = targetString.GetLocalizedStringAsync();
+            await actionTextOp.Task;
+            _name = actionTextOp.Result;
+            targetString.RefreshString();
+            OnNameUpdated?.Invoke(_name);
+        }
+
+        protected async virtual void UpdatePickupText()
+        {
+            string input = InputManager.Pickup_Bind_Name;
+            LocalizedString actionString = _pickupText;
+
+            // Resolve action async
+            AsyncOperationHandle<string> actionTextOp = actionString.GetLocalizedStringAsync();
+            await actionTextOp.Task;
+
+            //we make a temp bcs a LocalizedString are shared between all instances, even we don't have multiple
+            //interactable objects displayed at the same time it's more safe, the performances are negligeable.
+            LocalizedString composed = new LocalizedString
+            {
+                TableReference = _pressToAction.TableReference,
+                TableEntryReference = _pressToAction.TableEntryReference,
+                Arguments = new object[]
+                {
+                    new { key = input, action = actionTextOp.Result }
+                }
+            };
+
+            // Resolve final string
+            AsyncOperationHandle<string> finalTextOp = composed.GetLocalizedStringAsync();
+            await finalTextOp.Task;
+
+            _currentPickupText = finalTextOp.Result;
+        }
+        #endregion
+    }
 
 }
