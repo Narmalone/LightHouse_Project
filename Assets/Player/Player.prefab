@@ -598,7 +598,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8399151625320597331
 Transform:
   m_ObjectHideFlags: 0
@@ -899,6 +899,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5140771278911201481}
+  - component: {fileID: 643083027766866731}
   m_Layer: 0
   m_Name: GrabableItem
   m_TagString: Untagged
@@ -921,6 +922,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1259359992558668386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &643083027766866731
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2973295173894252359}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &2983849498025462104
 GameObject:
   m_ObjectHideFlags: 0
@@ -946,7 +974,7 @@ Transform:
   m_GameObject: {fileID: 2983849498025462104}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5138587, y: 1.1500001, z: 1.4856993}
+  m_LocalPosition: {x: 0.6432684, y: 1.1500001, z: 1.9686621}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1131,9 +1159,6 @@ MonoBehaviour:
   _securityObstacleMasks:
     serializedVersion: 2
     m_Bits: 129
-  forgetterMask:
-    serializedVersion: 2
-    m_Bits: 0
   _inventoryUiController: {fileID: 6065928285298996503}
   _interactionUiController: {fileID: 5442988119189176741}
 --- !u!114 &8588254507179195592
@@ -1572,7 +1597,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2350219748159219150}
-  - component: {fileID: 8565305909471223827}
   m_Layer: 0
   m_Name: InventoryParent
   m_TagString: Untagged
@@ -1589,32 +1613,12 @@ Transform:
   m_GameObject: {fileID: 5264825378655831165}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.51385885, y: 1.1499996, z: 1.4857008}
+  m_LocalPosition: {x: 0.64326805, y: 1.1499996, z: 1.9686619}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8674682485748669005}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1818360608 &8565305909471223827
-PositionConstraint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5264825378655831165}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Weight: 1
-  m_TranslationAtRest: {x: 0.5138584, y: 1.1499996, z: 1.485699}
-  m_TranslationOffset: {x: 0, y: 0, z: 0}
-  m_AffectTranslationX: 1
-  m_AffectTranslationY: 1
-  m_AffectTranslationZ: 1
-  m_Active: 1
-  m_IsLocked: 1
-  m_Sources:
-  - sourceTransform: {fileID: 1259359992558668386}
-    weight: 1
 --- !u!1 &5630163784421652890
 GameObject:
   m_ObjectHideFlags: 0
@@ -1670,7 +1674,7 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 20.78461
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -1684,7 +1688,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 5000
+  far clip plane: 50000
   field of view: 80
   orthographic: 0
   orthographic size: 10
@@ -1901,7 +1905,7 @@ MonoBehaviour:
     FieldOfView: 80
     OrthographicSize: 10
     NearClipPlane: 0.01
-    FarClipPlane: 5000
+    FarClipPlane: 50000
     Dutch: 0
     ModeOverride: 0
     LensShift: {x: 0, y: 0}

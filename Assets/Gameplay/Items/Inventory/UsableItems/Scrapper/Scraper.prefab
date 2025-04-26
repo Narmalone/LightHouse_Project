@@ -10,8 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5965101967242570107}
   - component: {fileID: 2374924453595151112}
-  m_Layer: 0
-  m_Name: SM_Scraper
+  - component: {fileID: 2046844595109162951}
+  - component: {fileID: 2192133407928570697}
+  m_Layer: 6
+  m_Name: Scraper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54,6 +56,73 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.41324025, y: 0.025868356, z: 0.13457611}
   m_Center: {x: 0.00027123094, y: -0.0014117956, z: -0.0007059127}
+--- !u!114 &2046844595109162951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5145284697068379430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d3421f5794317a40a4801d243f2f59c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _name: Scraper
+  _inventorySprite: {fileID: 0}
+  _detectionCollider: {fileID: 2374924453595151112}
+  _rb: {fileID: 2192133407928570697}
+  <InventoryLocalPositionOffset>k__BackingField: {x: 0, y: 0, z: 0}
+  <InventoryEulerAnglesForLocalRotation>k__BackingField: {x: 0, y: 0, z: 0}
+  <CanBeRaycasted>k__BackingField: 1
+  _inventoryTextsDB: {fileID: 11400000, guid: 9835667b078b139458a6be56869ce3f5, type: 2}
+  _interactionTextsDB: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
+    type: 2}
+  _itemNameString:
+    m_TableReference:
+      m_TableCollectionName: GUID:017d10ec823be454082f9cc2c984dbe4
+    m_TableEntryReference:
+      m_KeyId: 1149765916172288
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  <GlobalItemID>k__BackingField: 7
+  <ItemSpecificID>k__BackingField: 0
+  Tag: Barnacle
+  TargetMasks:
+    serializedVersion: 2
+    m_Bits: 128
+  references:
+    version: 2
+    RefIds: []
+--- !u!54 &2192133407928570697
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5145284697068379430}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &337323015569485408
 PrefabInstance:
   m_ObjectHideFlags: 0

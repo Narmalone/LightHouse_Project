@@ -18,6 +18,7 @@ namespace LightHouse.Items.Interactable
         [SerializeField] protected LocalizedStringDatabase_InteractionTexts _interactionTextsDB;
         [SerializeField] protected LocalizedString _missingItemInInventoryTxt => _interactionTextsDB.Need_Item;
         [SerializeField] protected LocalizedString _needItemOnHandsTxt => _interactionTextsDB.Need_Item_In_Hands;
+        [SerializeField] protected LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
 
         [SerializeField] protected string _currentText;
 
@@ -49,28 +50,51 @@ namespace LightHouse.Items.Interactable
 
         protected virtual void UpdateInteractionText()
         {
-            LocalizedString targetString = null;
             string input = InputManager.InteractInInventory_Bind_Name;
 
             if (!_hasKeyInInventory)
             {
-                targetString = _missingItemInInventoryTxt;
-                input = _itemNeeded.ToString();
+                var rawString = _missingItemInInventoryTxt;
+                rawString.Arguments = new object[] { new { key = _itemNeeded.ToString() } };
+                ResolveAndSetText(rawString);
             }
             else if (_hasKeyInInventory && !_hasKeyOnHands)
             {
-                targetString = _needItemOnHandsTxt;
-                input = _itemNeeded.ToString();
+                var rawString = _needItemOnHandsTxt;
+                rawString.Arguments = new object[] { new { key = _itemNeeded.ToString() } };
+                ResolveAndSetText(rawString);
             }
+            else
+            {
+                // On veut ici afficher : "Maintiens [E] pour utiliser"
+                var action = _interactionTextsDB.Use; // par exemple
+                ResolveWithWrapper(_holdToAction, action, input);
+            }
+        }
 
-            targetString.Arguments = new object[] { new { key = input } };
-            targetString.StringChanged += result =>
+
+        private void ResolveAndSetText(LocalizedString str)
+        {
+            str.StringChanged += result =>
             {
                 _currentText = result;
                 if (IsItemRaycasted)
                     InvokeInteractionDescriptionUpdated();
             };
-            targetString.RefreshString();
+            str.RefreshString();
+        }
+
+        private async void ResolveWithWrapper(LocalizedString wrapper, LocalizedString actionText, string input)
+        {
+            var finalText = await InteractionTextBuilder.Build(
+                baseText: actionText,
+                bindKey: input,
+                wrapperTemplate: wrapper
+            );
+
+            _currentText = finalText;
+            if (IsItemRaycasted)
+                InvokeInteractionDescriptionUpdated();
         }
 
         #endregion

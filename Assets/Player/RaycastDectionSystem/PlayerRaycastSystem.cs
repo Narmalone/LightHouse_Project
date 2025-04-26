@@ -82,15 +82,14 @@ namespace LightHouse.Items.Detection
         {
             if (_lastSeenObject == go)
                 return;
-            Debug.Log("ray changed");
             _lastSeenObject = go;
-            if(_lastSeenObject != null)
-                OnItemDetected?.Invoke(go);
+            OnItemDetected?.Invoke(go);
         }
+
 
         protected virtual void ResetSeenObject()
         {
-            if(_lastSeenObject != null)
+            if (_lastSeenObject != null)
             {
                 _lastSeenObject = null;
                 OnItemLost?.Invoke();

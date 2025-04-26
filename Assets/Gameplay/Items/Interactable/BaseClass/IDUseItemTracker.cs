@@ -1,4 +1,5 @@
 using LightHouse.Inventory;
+using UnityEngine;
 
 namespace LightHouse.Items.Interactable
 {
@@ -17,10 +18,17 @@ namespace LightHouse.Items.Interactable
                 _inventoryItemUsable = null;
             }
 
-            InvokeNameUpdated();
-            InvokeInteractionDescriptionUpdated();
+            if (IsItemRaycasted)
+            {
+                /*InvokeNameUpdated();
+                InvokeInteractionDescriptionUpdated();*/
+            }
 
-            if (itm == null) return;
+            // Si on n’a rien en main ou cast impossible
+            if (!_hasKeyOnHands || itm == null)
+            {
+                return;
+            }
             if (itm is IInventoryItemUsable usable)
             {
                 _inventoryItemUsable = usable;

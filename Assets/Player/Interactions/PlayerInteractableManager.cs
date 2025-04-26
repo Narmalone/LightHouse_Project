@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using LightHouse.Items.Detection;
 using LightHouse.Interactions;
+using System;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -9,6 +10,7 @@ namespace LightHouse.KinematicCharacterController
     /// </summary>
     public class PlayerInteractableManager : MonoBehaviour
     {
+        public static Action ForceUpdateTarget;
         #region FIELDS
         [Header("Settings")]
         [SerializeField] private Camera _playerCamera;
@@ -33,6 +35,7 @@ namespace LightHouse.KinematicCharacterController
             );
 
             _raycastInteractable.OnDetected += interactable => _interactionHandler.SetTarget(interactable);
+            _raycastInteractable.OnItemDestroyed += () => _interactionHandler.SetTarget(null);
             _raycastInteractable.OnItemLost += () => _interactionHandler.SetTarget(null);
         }
 
