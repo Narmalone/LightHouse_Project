@@ -1,5 +1,6 @@
 using UnityEngine.UIElements;
 using LightHouse.Localization;
+using System;
 
 namespace LightHouse.Game.Options
 {
@@ -22,20 +23,21 @@ namespace LightHouse.Game.Options
         public DisplayOptionsWindow(VisualElement root, ConfirmationPopupController confirmationPopup, LocalizedStringDatabase_Options_Display optionDB) : base(root, confirmationPopup)
         {
             _localizedDB = optionDB;
+            GenerateClasses();
             InitializeControllers();
         }
 
         public void UpdateAllTextsLanguage()
         {
             resolutionController.UpdateLanguage();
-            displaysController.UpdateLanguage();
+            //displaysController.UpdateLanguage();
             displayModeController.UpdateLanguage();
             vsyncToggleController.UpdateLanguage();
             refreshRateDropdownController.UpdateLanguage();
             frameRateDropdownController.UpdateLanguage();
         }
 
-        public override void InitializeControllers()
+        public void GenerateClasses()
         {
             resolutionController = new ResolutionDropdownController
             (
@@ -43,15 +45,12 @@ namespace LightHouse.Game.Options
                 new ResolutionSetting(),
                 optionDisplayDB: _localizedDB
             );
-            resolutionController.Initialize();
 
             displaysController = new DisplaysDropdownController
             (
                 root.Q<DropdownField>("DisplaysDropdown"),
-                new DisplaysSetting(),
-                _localizedDB
+                confirmationPopupController
             );
-            displaysController.Initialize();
 
             displayModeController = new DisplayModeDropdownController
             (
@@ -59,7 +58,6 @@ namespace LightHouse.Game.Options
                 new DisplayModeSetting(),
                 _localizedDB
             );
-            displayModeController.Initialize();
 
             vsyncToggleController = new VSyncToggleController
             (
@@ -67,7 +65,6 @@ namespace LightHouse.Game.Options
                 new VSyncSetting(),
                 _localizedDB
             );
-            vsyncToggleController.Initialize();
 
             refreshRateDropdownController = new RefreshRateDropdownController
             (
@@ -75,7 +72,6 @@ namespace LightHouse.Game.Options
                 new RefreshRateSetting(),
                 _localizedDB
             );
-            refreshRateDropdownController.Initialize();
 
             frameRateDropdownController = new FrameRateDropdownController
             (
@@ -83,21 +79,46 @@ namespace LightHouse.Game.Options
                 new FrameRateLimitSetting(),
                 _localizedDB
             );
+        }
+
+        public override void InitializeControllers()
+        {
+            resolutionController.Initialize();
+            displaysController.Initialize();
+            displayModeController.Initialize();
+            vsyncToggleController.Initialize();
+            refreshRateDropdownController.Initialize();
             frameRateDropdownController.Initialize();
 
-            optionsSettings = new IOptionSetting[6];
+            optionsSettings = new IOptionSetting[5];
             optionsSettings[0] = resolutionController.Setting;
-            optionsSettings[1] = displaysController.Setting;
-            optionsSettings[2] = displayModeController.Setting;
-            optionsSettings[3] = vsyncToggleController.Setting;
-            optionsSettings[4] = refreshRateDropdownController.Setting;
-            optionsSettings[5] = frameRateDropdownController.Setting;
+            //optionsSettings[1] = displaysController.Setting;
+            optionsSettings[1] = displayModeController.Setting;
+            optionsSettings[2] = vsyncToggleController.Setting;
+            optionsSettings[3] = refreshRateDropdownController.Setting;
+            optionsSettings[4] = frameRateDropdownController.Setting;
+        }
+        public void RevertSettingsAndUI()
+        {
+            // 1. Annuler toutes les settings (valeurs internes)
+            foreach (var setting in optionsSettings)
+            {
+                setting.Revert();
+            }
+
+            // 2. Réinitialiser toutes les UI visuellement
+            resolutionController.Initialize();
+            displaysController.Initialize();
+            displayModeController.Initialize();
+            vsyncToggleController.Initialize();
+            refreshRateDropdownController.Initialize();
+            frameRateDropdownController.Initialize();
         }
 
         public override void RevertSettings()
         {
             resolutionController?.Revert();
-            displaysController?.Revert();
+            //displaysController?.Revert();
             displayModeController?.Revert();
             vsyncToggleController?.Revert();
             refreshRateDropdownController?.Revert();
@@ -107,7 +128,7 @@ namespace LightHouse.Game.Options
         public override void ApplySettings()
         {
             resolutionController?.Apply();
-            displaysController?.Apply();
+            //displaysController?.Apply();
             displayModeController?.Apply();
             vsyncToggleController?.Apply();
             refreshRateDropdownController?.Apply();
@@ -121,6 +142,23 @@ namespace LightHouse.Game.Options
                 if (setting.HasChanged()) return true;
             }
             return false; 
+        }
+
+        internal void RefreshOnlyUI()
+        {
+            // 1. Annuler toutes les settings (valeurs internes)
+            foreach (var setting in optionsSettings)
+            {
+                setting.Revert();
+            }
+
+            // 2. Réinitialiser toutes les UI visuellement
+            resolutionController.Initialize();
+            displaysController.Initialize();
+            displayModeController.Initialize();
+            vsyncToggleController.Initialize();
+            refreshRateDropdownController.Initialize();
+            frameRateDropdownController.Initialize();
         }
     }
 }

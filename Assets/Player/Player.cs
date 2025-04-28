@@ -78,6 +78,11 @@ namespace LightHouse.KinematicCharacterController
 
         private void OnDestroy()
         {
+            
+        }
+
+        private void OnApplicationQuit()
+        {
             InputManager.DisposePlayerInputActions();
             _inputActions.Dispose();
         }

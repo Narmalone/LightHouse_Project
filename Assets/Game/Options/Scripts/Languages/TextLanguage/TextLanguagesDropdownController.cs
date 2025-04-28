@@ -14,7 +14,6 @@ namespace LightHouse.Game.Options
     {
         private readonly DropdownField dropdown;
         private LocalizedString _dropdownName;
-
         public TextLanguagesDropdownController(DropdownField dropdown, LocalizedString dropdownName)
         {
             this.dropdown = dropdown;

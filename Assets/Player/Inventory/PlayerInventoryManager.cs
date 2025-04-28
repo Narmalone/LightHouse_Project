@@ -92,6 +92,11 @@ namespace LightHouse.KinematicCharacterController
 
         private void OnDestroy()
         {
+            
+        }
+
+        private void OnApplicationQuit()
+        {
             UnregisterInputs();
             _inventoryRaycastDetector.OnDetected -= HandleItemDetected;
             _inventoryRaycastDetector.OnItemLost -= ResetSeenObject;

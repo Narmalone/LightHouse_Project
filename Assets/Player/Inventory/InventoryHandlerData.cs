@@ -35,19 +35,23 @@ namespace LightHouse.Inventory
         /// The Generated Slots
         /// </summary>
         private static ItemSlot[] _slots => SlotManager.Slots;
-        private static InventoryUIController _uiController;
         #endregion
 
         #region INIT & RESET
         public static void Initialize(InventoryUIController uiController, Transform inventoryTargetPosition)
         {
             InventoryTargetPosition = inventoryTargetPosition;
-            _uiController = uiController;
             OnInitialized?.Invoke();
         }
         public static void Reset()
         {
-            _uiController = null;
+            OnGrabObjectChanged = null;
+            OnSelectedItemChanged = null;
+            OnItemAddedToInventory = null;
+            OnItemDropped = null;
+            OnInitialized = null;
+            CurrentHandedItemID = null;
+            CurrentHandedItemType = null;
             IsGrabbingObject = false;
             InventoryTargetPosition = null;
             CurrentHandedItemType = null;

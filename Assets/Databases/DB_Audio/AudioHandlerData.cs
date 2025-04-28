@@ -15,6 +15,7 @@ public static class AudioHandlerData
 
     public static void Clear()
     {
+        OnAudioManagerInitialized = null;
         AudioManager = null;
     }
 }

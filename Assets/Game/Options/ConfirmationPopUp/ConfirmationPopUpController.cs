@@ -35,7 +35,7 @@ namespace LightHouse.Game.Options
             cancelButton.clicked += CancelClicked;
         }
 
-        public void Show(Action confirmAction, Action cancelAction)
+        public void Show(Action confirmAction, Action cancelAction, float timeOutAction = 15.0f)
         {
             onConfirm = confirmAction;
             onCancel = cancelAction;
@@ -45,7 +45,7 @@ namespace LightHouse.Game.Options
             {
                 StopCoroutine(countdownCoroutine);
             }
-            countdownCoroutine = StartCoroutine(AutoCancelCoroutine());
+            countdownCoroutine = StartCoroutine(AutoCancelCoroutine(timeOutAction));
         }
 
         public void Hide()
@@ -71,7 +71,7 @@ namespace LightHouse.Game.Options
             Hide();
         }
 
-        private IEnumerator AutoCancelCoroutine()
+        private IEnumerator AutoCancelCoroutine(float timeoutSeconds)
         {
             float timer = timeoutSeconds;
             while (timer > 0)

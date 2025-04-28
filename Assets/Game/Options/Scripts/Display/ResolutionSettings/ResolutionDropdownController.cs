@@ -45,7 +45,7 @@ namespace LightHouse.Game.Options
 
             dropdown.choices = resolutions;
             string current = $"{Screen.width}x{Screen.height}";
-            dropdown.value = resolutions.Contains(current) ? current : resolutions[0];
+            dropdown.value = resolutions.Contains(current) ? current : resolutions[resolutions.Count - 1];
             UpdateSettingFromValue(dropdown.value);
 
             dropdown.RegisterValueChangedCallback(evt => UpdateSettingFromValue(evt.newValue));

@@ -1,77 +1,53 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
-using LightHouse.Localization;
 
 namespace LightHouse.Game.Options
 {
     public class DisplaysDropdownController
     {
         private readonly DropdownField dropdown;
-        private readonly DisplaysSetting setting;
-        private LocalizedStringDatabase_Options_Display optionDB;
+        private readonly ConfirmationPopupController confirmationPopupController;
 
-        public DisplaysSetting Setting => setting;
-
-        public DisplaysDropdownController(DropdownField dropdown, DisplaysSetting setting, LocalizedStringDatabase_Options_Display optionDisplayDB)
+        public DisplaysDropdownController(DropdownField dropdown, ConfirmationPopupController confirmationPopupController)
         {
             this.dropdown = dropdown;
-            this.setting = setting;
-            this.optionDB = optionDisplayDB;
+            this.confirmationPopupController = confirmationPopupController;
         }
 
         public void Initialize()
         {
-            if (dropdown == null)
-            {
-                Debug.LogError("DropdownField is null for DisplayDropdownController!");
-                return;
-            }
+            RefreshDropdown();
+            dropdown.RegisterValueChangedCallback(evt => OnDisplayChanged(evt.newValue));
+        }
 
+        private void RefreshDropdown()
+        {
             List<string> displays = new();
-            for (int i = 0; i < Display.displays.Length; i++)
-            {
-                displays.Add($"Display {i + 1} ({Display.displays[i].systemWidth}x{Display.displays[i].systemHeight})");
-                Debug.Log($"Display {i + 1} ({Display.displays[i].systemWidth}x{Display.displays[i].systemHeight})");
-            }
+            List<DisplayInfo> displayInfos = new();
+            Screen.GetDisplayLayout(displayInfos);
 
-            if (displays.Count == 0)
+            for (int i = 0; i < displayInfos.Count; i++)
             {
-                displays.Add("Display 1 (Default)");
+                displays.Add($"Display {i + 1} ({displayInfos[i].width}x{displayInfos[i].height})");
             }
 
             dropdown.choices = displays;
-            dropdown.value = displays[setting.SelectedDisplay];
-            dropdown.RegisterValueChangedCallback(evt => UpdateSettingFromValue(evt.newValue));
+            dropdown.SetValueWithoutNotify(displays[DisplaySettingManager.GetCurrentDisplayIndex()]);
         }
 
-        public void UpdateLanguage()
+        private void OnDisplayChanged(string newValue)
         {
-            //dropdown.label = optionDB.Display.GetLocalizedString();
-        }
-
-        private void UpdateSettingFromValue(string value)
-        {
-            int index = dropdown.choices.IndexOf(value);
+            int index = dropdown.choices.IndexOf(newValue);
             if (index >= 0)
             {
-                setting.SetSelectedDisplay(index);
-            }
-        }
+                DisplaySettingManager.ApplyDisplayChange(index);
 
-        public void Apply()
-        {
-            if (setting.HasChanged())
-            {
-                setting.Apply();
-            }
-        }
-
-        public void Revert()
-        {
-            if (setting.HasChanged())
-            {
-                setting.Revert();
+                confirmationPopupController.Show(
+                    confirmAction: () => { Debug.Log("Display change confirmed."); },
+                    cancelAction: () => { DisplaySettingManager.RevertDisplayChange(); },
+                    timeOutAction: 15
+                );
             }
         }
     }

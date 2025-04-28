@@ -13,6 +13,12 @@ namespace LightHouse.Handlers
             MainPlayer = player;
             OnHandlerInitialized?.Invoke();
         }
+
+        public static void Dispose()
+        {
+            MainPlayer = null;
+            OnHandlerInitialized = null;
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LightHouse.Handlers;
 using LightHouse.Localization;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
@@ -37,13 +38,39 @@ namespace LightHouse.Game.Options
 
             LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
 
+            DisplaysSetting.OnDisplayScreenChanged += DisplaysSetting_OnDisplayScreenChanged;
+
             displayOptionsWindow = new DisplayOptionsWindow(root, confirmationPopupController, _displayTextsDB);
             languageOptionWindow = new LanguageOptionWindow(root, confirmationPopupController, _languagesTextsDB);
+
+            DisplaySettingManager.OnDisplayChanged += RefreshDisplayOptionsUI;
 
             InitializePanels();
             InitializeNavigationButtons();
             HideAllPanels();
 
+        }
+
+        private void RefreshDisplayOptionsUI()
+        {
+            displayOptionsWindow.RefreshOnlyUI();
+        }
+
+        private void OnGUI()
+        {
+            GUI.Label(new Rect(20, 600, 300, 100), DisplaysSetting.SSelectedDisplay.ToString());
+        }
+
+        private void DisplaysSetting_OnDisplayScreenChanged()
+        {
+            if (DisplaysSetting.IsRevertingDisplay)
+            {
+                Debug.Log("Display reverted, pas de reinitialisation !");
+                return;
+            }
+
+            displayOptionsWindow.InitializeControllers();
+            displayOptionsWindow.ApplySettings();
         }
 
 
@@ -55,15 +82,7 @@ namespace LightHouse.Game.Options
         private void ApplyCanceled()
         {
             //cancel change on the current pannel
-            switch (currentCategory)
-            {
-                case OptionCategory.Display:
-                    displayOptionsWindow.RevertSettings();
-                    break;
-                case OptionCategory.Language:
-                    languageOptionWindow.RevertSettings();
-                    break;
-            }
+            panelsByCategory[currentCategory].Window.RevertSettings();
         }
 
         private void ApplyConfirmed()
@@ -80,11 +99,12 @@ namespace LightHouse.Game.Options
             }
             _applySttingsBtn.clicked -= ApplySettingsCliqued;
             LocalizationSettings.SelectedLocaleChanged -= LocalizationSettings_SelectedLocaleChanged;
+            DisplaySettingManager.OnDisplayChanged -= RefreshDisplayOptionsUI;
         }
 
         void OnApplicationQuit()
         {
-            Application.Quit();
+            
 
 /*#if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;

@@ -19,5 +19,6 @@ namespace LightHouse.Localization
 		public LocalizedString Section_Name;
 		public LocalizedString VSync;
 		public LocalizedString DisplayMode_Windowed;
+		public LocalizedString Display;
 	}
 }
