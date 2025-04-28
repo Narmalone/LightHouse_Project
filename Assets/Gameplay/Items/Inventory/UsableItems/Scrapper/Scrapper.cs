@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using LightHouse.Handlers;
 using LightHouse.Inventory;
 using LightHouse.Items.Interactable;
 using UnityEngine;
@@ -12,7 +13,8 @@ namespace LightHouse.Items.Inventory
         [TagSelector, SerializeField] private string Tag;
         [SerializeField] private LayerMask TargetMasks;
         [SerializeField] private float _scrapRadius = 1.0f;
-
+        public ItemDatabase ItemDatabase;
+        public ItemIDEnum ItemToAddInInventory;
         public bool CanBeUsedFromInventory { get; set; } = false;
 
         public event Action OnItemUsed;
@@ -38,16 +40,12 @@ namespace LightHouse.Items.Inventory
             {
                 if (hit.CompareTag(Tag))
                 {
-                    //Debug.Log($"Detected barnacle by tag: {hit.name}");
-                    Bernacle barnacleComp = hit.GetComponent<Bernacle>();
+                    BernacleInteractable barnacleComp = hit.GetComponent<BernacleInteractable>();
                     if (barnacleComp != null && barnacleComp.gameObject != this.gameObject)
                     {
-                        //Debug.Log($"Found nearby barnacle: {barnacleComp.name}");
-                        //barnacleComp.gameObject.SetActive(false);
-                        if (barnacleComp.IsItemRaycasted)
-                        {
-
-                        }
+                        var obj = Instantiate(ItemDatabase.GetPrefab((ushort)ItemToAddInInventory));
+                        var s = obj.GetComponent<IInventoryItem>();
+                        PlayerHandlerData.MainPlayer.Inventory.AddItemToInventory(SlotManager.CurrentSlotIndex, s);
                         Destroy(barnacleComp.gameObject);
                     }
                 }                

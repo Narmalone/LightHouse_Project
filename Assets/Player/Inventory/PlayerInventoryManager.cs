@@ -166,7 +166,7 @@ namespace LightHouse.KinematicCharacterController
 
         #region ADD / REMOVE ITEM 
 
-        private void AddItemToInventory(short slotIndex, IInventoryItem item)
+        public void AddItemToInventory(short slotIndex, IInventoryItem item)
         {
             if(_pickupHandler.PickupItem(slotIndex, item))
             {
@@ -179,7 +179,7 @@ namespace LightHouse.KinematicCharacterController
             }
         }
 
-        private void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID,
+        public void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID,
             Vector3 position, float force, bool enablePhysicsOnDrop)
         {
             _dropHandler.DropItem

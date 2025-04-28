@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.Localization.Settings;
-using Random = UnityEngine.Random;
 
 namespace LightHouse.Localization
 {
@@ -23,10 +21,7 @@ namespace LightHouse.Localization
     {
         void OnGUI()
         {
-            if (GUI.Button(new Rect(10, 10, 150, 100), LocalizationSettings.SelectedLocale.Identifier.CultureInfo.DisplayName))
-            {
-                LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[Random.Range(0, LocalizationSettings.AvailableLocales.Locales.Count)];
-            }
+
         }
 
         private void Update()

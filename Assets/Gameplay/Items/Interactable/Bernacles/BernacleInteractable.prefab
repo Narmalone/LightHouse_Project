@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5300036734717407280}
   - component: {fileID: 693412879452400399}
-  - component: {fileID: 7308030409166525900}
+  - component: {fileID: 5184746460937484856}
   m_Layer: 7
-  m_Name: Bernacle
+  m_Name: BernacleInteractable
   m_TagString: Barnacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 76836103847440592}
+  - {fileID: 2705975758640480654}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &693412879452400399
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: 
-  _detectionCollider: {fileID: 7308030409166525900}
+  _detectionCollider: {fileID: 5184746460937484856}
   <CanBeRaycasted>k__BackingField: 1
   <CanBeInteracted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
   _currentText: 
   _hasKeyInInventory: 0
   _hasKeyOnHands: 0
---- !u!65 &7308030409166525900
+--- !u!65 &5184746460937484856
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -76,9 +76,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!1001 &475766906158913339
+  m_Size: {x: 0.018488, y: 0.01274767, z: 0.018011909}
+  m_Center: {x: -0.0000026803464, y: 0.0030203115, z: -0.00005397387}
+--- !u!1001 &2451989961200166501
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -86,57 +86,57 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5300036734717407280}
     m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: -0.7071068
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: d0b3a3497c17f274f991acf03062bdd2,
+    - target: {fileID: 919132149155446097, guid: 475a7843a8b8ff249b8a94894f802a0d,
         type: 3}
       propertyPath: m_Name
       value: Bernacle_LD
@@ -145,10 +145,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d0b3a3497c17f274f991acf03062bdd2, type: 3}
---- !u!4 &76836103847440592 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: 475a7843a8b8ff249b8a94894f802a0d, type: 3}
+--- !u!4 &2705975758640480654 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d0b3a3497c17f274f991acf03062bdd2,
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 475a7843a8b8ff249b8a94894f802a0d,
     type: 3}
-  m_PrefabInstance: {fileID: 475766906158913339}
+  m_PrefabInstance: {fileID: 2451989961200166501}
   m_PrefabAsset: {fileID: 0}

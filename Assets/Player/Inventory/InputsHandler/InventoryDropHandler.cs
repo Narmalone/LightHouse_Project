@@ -1,7 +1,6 @@
 using LightHouse.Handlers;
 using LightHouse.Inputs;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 namespace LightHouse.Inventory
 {

@@ -1,0 +1,86 @@
+using System;
+using UnityEngine;
+using UnityEngine.UIElements;
+using System.Collections;
+
+namespace LightHouse.Game.Options
+{
+    public class ConfirmationPopupController : MonoBehaviour
+    {
+        [Header("UI Document")]
+        [SerializeField] private UIDocument uiDocument;
+
+        [Header("Timing")]
+        [SerializeField] private float timeoutSeconds = 15f;
+
+        private VisualElement popup;
+        private Button confirmButton;
+        private Button cancelButton;
+        private Label confirmationMessage;
+
+        private Action onConfirm;
+        private Action onCancel;
+        private Coroutine countdownCoroutine;
+
+        private void Awake()
+        {
+            popup = uiDocument.rootVisualElement.Q<VisualElement>("ConfirmationPopup");
+            confirmButton = popup.Q<Button>("ConfirmButton");
+            cancelButton = popup.Q<Button>("CancelButton");
+            confirmationMessage = popup.Q<Label>("ConfirmationMessage");
+
+            popup.style.display = DisplayStyle.None;
+
+            confirmButton.clicked += ConfirmClicked;
+            cancelButton.clicked += CancelClicked;
+        }
+
+        public void Show(Action confirmAction, Action cancelAction)
+        {
+            onConfirm = confirmAction;
+            onCancel = cancelAction;
+            popup.style.display = DisplayStyle.Flex;
+
+            if (countdownCoroutine != null)
+            {
+                StopCoroutine(countdownCoroutine);
+            }
+            countdownCoroutine = StartCoroutine(AutoCancelCoroutine());
+        }
+
+        public void Hide()
+        {
+            popup.style.display = DisplayStyle.None;
+
+            if (countdownCoroutine != null)
+            {
+                StopCoroutine(countdownCoroutine);
+                countdownCoroutine = null;
+            }
+        }
+
+        private void ConfirmClicked()
+        {
+            onConfirm?.Invoke();
+            Hide();
+        }
+
+        private void CancelClicked()
+        {
+            onCancel?.Invoke();
+            Hide();
+        }
+
+        private IEnumerator AutoCancelCoroutine()
+        {
+            float timer = timeoutSeconds;
+            while (timer > 0)
+            {
+                timer -= Time.deltaTime;
+                yield return null;
+            }
+
+            CancelClicked();
+        }
+    }
+}
