@@ -22,7 +22,6 @@ namespace LightHouse.Game.Options
 
         public bool HasChanged()
         {
-            Debug.Log(currentVSyncCount != selectedVSyncCount);
             return currentVSyncCount != selectedVSyncCount;
         }
 
