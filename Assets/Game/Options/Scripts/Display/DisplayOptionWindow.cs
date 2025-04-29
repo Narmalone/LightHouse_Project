@@ -8,7 +8,7 @@ namespace LightHouse.Game.Options
     public class DisplayOptionsWindow : OptionWindowBase
     {
         #region FIELDS
-        public NavigationButton NavButton;
+        public OptionsNavigationButton NavButton;
 
         protected LocalizedStringDatabase_Options_Display _localizedDB;
         private ResolutionDropdownController resolutionController;

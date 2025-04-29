@@ -18,27 +18,30 @@ namespace LightHouse.Game.Options
         [SerializeField] private LocalizedStringDatabase_Options_Display _displayTextsDB;
         [SerializeField] private LocalizedStringDatabase_Options_Languages _languagesTextsDB;
 
-        private VisualElement root;
+        private VisualElement _rootOptions;
 
         private Dictionary<OptionCategory, PanelData> panelsByCategory;
         private OptionCategory currentCategory = OptionCategory.Display;
 
-        private Button _applySttingsBtn;
         private DisplayOptionsWindow displayOptionsWindow;
         private LanguageOptionWindow languageOptionWindow;
 
-        private List<NavigationButton> navigationButtons;
+        private List<OptionsNavigationButton> navigationButtons;
 
         public event Action OnBackCliqued;
+        private Button _applySttingsBtn;
 
         private Button backbutton;
 
+        private OptionCategory pendingTargetCategory;
+        private bool navigationPending;
+
         private void Awake()
         {
-            root = optionsDocument.rootVisualElement.Q<VisualElement>("Root_Options");
+            _rootOptions = optionsDocument.rootVisualElement.Q<VisualElement>("Root_Options");
 
-            _applySttingsBtn = root.Q<Button>("ApplyButton");
-            backbutton = root.Q<Button>("BackButton");
+            _applySttingsBtn = _rootOptions.Q<Button>("ApplyButton");
+            backbutton = _rootOptions.Q<Button>("BackButton");
             backbutton.clicked += Backbutton_clicked;
             _applySttingsBtn.clicked += ApplySettingsCliqued;
 
@@ -46,8 +49,8 @@ namespace LightHouse.Game.Options
 
             DisplaysSetting.OnDisplayScreenChanged += DisplaysSetting_OnDisplayScreenChanged;
 
-            displayOptionsWindow = new DisplayOptionsWindow(root, confirmationPopupController, _displayTextsDB);
-            languageOptionWindow = new LanguageOptionWindow(root, confirmationPopupController, _languagesTextsDB);
+            displayOptionsWindow = new DisplayOptionsWindow(_rootOptions, confirmationPopupController, _displayTextsDB);
+            languageOptionWindow = new LanguageOptionWindow(_rootOptions, confirmationPopupController, _languagesTextsDB);
 
             DisplaySettingManager.OnDisplayChanged += RefreshDisplayOptionsUI;
 
@@ -99,7 +102,7 @@ namespace LightHouse.Game.Options
 
         private void OnDestroy()
         {
-            foreach(NavigationButton navButton in navigationButtons)
+            foreach(OptionsNavigationButton navButton in navigationButtons)
             {
                 navButton.Dispose();
             }
@@ -116,13 +119,13 @@ namespace LightHouse.Game.Options
 
         private void InitializeNavigationButtons()
         {
-            navigationButtons = new List<NavigationButton>
+            navigationButtons = new List<OptionsNavigationButton>
             {
-                 new NavigationButton(root.Q<Button>("DisplayButton"), OptionCategory.Display, this, _displayTextsDB.Section_Name),
-                 new NavigationButton(root.Q<Button>("GraphicsButton"), OptionCategory.Graphics, this, null),
-                 new NavigationButton(root.Q<Button>("AudioButton"), OptionCategory.Audio, this, null),
-                 new NavigationButton(root.Q<Button>("LanguageButton"), OptionCategory.Language, this, _languagesTextsDB.Section_Name),
-                 new NavigationButton(root.Q<Button>("InputButton"), OptionCategory.Input, this, null),
+                 new OptionsNavigationButton(_rootOptions.Q<Button>("DisplayButton"), OptionCategory.Display, this, _displayTextsDB.Section_Name),
+                 new OptionsNavigationButton(_rootOptions.Q<Button>("GraphicsButton"), OptionCategory.Graphics, this, null),
+                 new OptionsNavigationButton(_rootOptions.Q<Button>("AudioButton"), OptionCategory.Audio, this, null),
+                 new OptionsNavigationButton(_rootOptions.Q<Button>("LanguageButton"), OptionCategory.Language, this, _languagesTextsDB.Section_Name),
+                 new OptionsNavigationButton(_rootOptions.Q<Button>("InputButton"), OptionCategory.Input, this, null),
             };
         }
 
@@ -147,11 +150,11 @@ namespace LightHouse.Game.Options
         {
             panelsByCategory = new Dictionary<OptionCategory, PanelData>
             {
-                { OptionCategory.Display, new PanelData(root.Q<VisualElement>("DisplayPanel"), displayOptionsWindow) },
-                { OptionCategory.Graphics, new PanelData(root.Q<VisualElement>("GraphicsPanel"), null) },
-                { OptionCategory.Audio, new PanelData(root.Q<VisualElement>("AudioPanel"), null) },
-                { OptionCategory.Language, new PanelData(root.Q<VisualElement>("LanguagePanel"), languageOptionWindow) },
-                { OptionCategory.Input, new PanelData(root.Q<VisualElement>("InputPanel"), null) }
+                { OptionCategory.Display, new PanelData(_rootOptions.Q<VisualElement>("DisplayPanel"), displayOptionsWindow) },
+                { OptionCategory.Graphics, new PanelData(_rootOptions.Q<VisualElement>("GraphicsPanel"), null) },
+                { OptionCategory.Audio, new PanelData(_rootOptions.Q<VisualElement>("AudioPanel"), null) },
+                { OptionCategory.Language, new PanelData(_rootOptions.Q<VisualElement>("LanguagePanel"), languageOptionWindow) },
+                { OptionCategory.Input, new PanelData(_rootOptions.Q<VisualElement>("InputPanel"), null) }
             };
         }
 
@@ -164,9 +167,6 @@ namespace LightHouse.Game.Options
                     pannelData.Panel.style.display = DisplayStyle.None;
             }
         }
-
-        private OptionCategory pendingTargetCategory;
-        private bool navigationPending;
 
         public void NavigateTo(OptionCategory category, bool forcePerform = false)
         {

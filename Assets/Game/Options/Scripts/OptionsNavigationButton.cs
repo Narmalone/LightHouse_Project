@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace LightHouse.Game.Options
 {
-    public class NavigationButton
+    public class OptionsNavigationButton
     {
         private readonly Button button;
         private readonly OptionCategory targetCategory;
@@ -13,7 +13,7 @@ namespace LightHouse.Game.Options
         public Button Button => button;
         public OptionCategory TargetCategory => targetCategory;
 
-        public NavigationButton(Button button, OptionCategory targetCategory, OptionsMenuController controller, LocalizedString languageText)
+        public OptionsNavigationButton(Button button, OptionCategory targetCategory, OptionsMenuController controller, LocalizedString languageText)
         {
             this.button = button;
             this.targetCategory = targetCategory;
