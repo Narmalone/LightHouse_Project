@@ -1,0 +1,14 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="Options" src="project://database/Assets/Game/Options/UI/Template/Options.uxml?fileID=9197481963319205126&amp;guid=4813f050e15359c4db926009416529bc&amp;type=3#Options" />
+    <Style src="project://database/Assets/Game/PauseMenu/PauseMenu.uss?fileID=7433441132597879392&amp;guid=cc2059b2f8db96e4bacd319637e923cd&amp;type=3#PauseMenu" />
+    <ui:VisualElement name="RootParent" style="flex-grow: 1;">
+        <ui:VisualElement name="PauseMenu" class="pause-menu" style="justify-content: center; display: none;">
+            <ui:Label text="Pause" class="pause-title" />
+            <ui:Button name="ResumeButton" text="Reprendre" class="pause-button" />
+            <ui:Button name="OptionsButton" text="Options" class="pause-button" />
+            <ui:Button name="MainMenuButton" text="Menu Principal" class="pause-button" />
+            <ui:Button name="QuitButton" text="Quitter le Jeu" class="pause-button quit" />
+        </ui:VisualElement>
+        <ui:Instance template="Options" name="OptionsContainer" style="display: none; overflow: visible; height: 1440px;" />
+    </ui:VisualElement>
+</ui:UXML>
