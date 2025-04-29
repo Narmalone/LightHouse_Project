@@ -29,7 +29,6 @@ namespace LightHouse.Items.Interactable
         [SerializeField] protected LocalizedString _neededKey;
         protected LocalizedString _openText => _interactionTextsDB.Open;
         protected LocalizedString _pressToAction => _interactionTextsDB.Press_To_Action;
-        protected LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
         protected LocalizedString _closeText => _interactionTextsDB.Close;
         protected LocalizedString _unlockText => _interactionTextsDB.Unlock;
 
