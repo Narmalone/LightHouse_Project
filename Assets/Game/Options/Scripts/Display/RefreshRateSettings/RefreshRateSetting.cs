@@ -18,6 +18,11 @@ namespace LightHouse.Game.Options
             selectedRefreshRate = new RefreshRate { numerator = refreshRate, denominator = 1 };
         }
 
+        public uint GetCurrentSelectedRefreshRate()
+        {
+            return (uint)selectedRefreshRate.value;
+        }
+
         public bool HasChanged()
         {
             return (float)Mathf.Abs((float)initialRefreshRate.value - (float)selectedRefreshRate.value) > 0.5f;

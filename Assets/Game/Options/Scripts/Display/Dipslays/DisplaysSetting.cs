@@ -37,12 +37,12 @@ namespace LightHouse.Game.Options
 
         public bool HasChanged()
         {
-            Debug.Log(currentDisplay != selectedDisplay);
             return currentDisplay != selectedDisplay;
         }
 
         public void Apply()
         {
+            Debug.Log("apply");
             if (selectedDisplay < Display.displays.Length)
             {
                 // 🔥 Avant de bouger, sauver où on était !

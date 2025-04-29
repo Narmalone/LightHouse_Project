@@ -31,6 +31,7 @@ namespace LightHouse.Game.Options
 
         public void UpdateLanguage()
         {
+            dropdown.label = _displayName.GetLocalizedString();
             RefreshDropdown();
         }
 

@@ -767,7 +767,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 165790185}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6209,7 +6209,7 @@ GameObject:
   - component: {fileID: 933252567}
   - component: {fileID: 933252568}
   m_Layer: 0
-  m_Name: MainUi
+  m_Name: PauseMenuUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6262,10 +6262,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e44f0199ad5d92c408f027c4defe5dc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionsDocument: {fileID: 933252565}
-  confirmationPopupController: {fileID: 165790189}
+  _pauseMenuDocument: {fileID: 933252565}
+  _confirmationPopUpController: {fileID: 165790189}
   _displayTextsDB: {fileID: 11400000, guid: cbb1d2ac893c7ce499888dc5311e5571, type: 2}
+  _graphismsTextsDB: {fileID: 11400000, guid: 57eba836d15256c40b41363755bd23f7, type: 2}
   _languagesTextsDB: {fileID: 11400000, guid: 66b1b9f8544558a4cb3e68b12581608e, type: 2}
+  _mouseKeyboardTextsDB: {fileID: 11400000, guid: 5a34cb197e377f449998e112e3152b8d,
+    type: 2}
+  _soundsTextsDB: {fileID: 11400000, guid: 4de4d122640c091498dfad0b8131b128, type: 2}
 --- !u!114 &933252568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17943,5 +17947,5 @@ SceneRoots:
   - {fileID: 1587403257}
   - {fileID: 1078448131}
   - {fileID: 933252564}
-  - {fileID: 165790188}
   - {fileID: 1209790113}
+  - {fileID: 165790188}

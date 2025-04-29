@@ -72,9 +72,16 @@ namespace LightHouse.Game.Options
         {
             if (uint.TryParse(value.Replace(" Hz", ""), out uint hz))
             {
-                setting.SetSelectedRefreshRate(hz);
+                // Seulement modifier si la valeur a VRAIMENT changé
+                uint currentHz = (uint)setting.GetCurrentSelectedRefreshRate();
+
+                if (Mathf.Abs(currentHz - hz) > 1)
+                {
+                    setting.SetSelectedRefreshRate(hz);
+                }
             }
         }
+
 
         public void UpdateLanguage()
         {

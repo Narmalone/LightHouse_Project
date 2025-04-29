@@ -121,6 +121,7 @@ namespace LightHouse.Game.Options
         {
             foreach (IOptionSetting setting in optionSettings) 
             {
+                Debug.Log(setting.GetType().Name + " " + setting.HasChanged());
                 if (setting.HasChanged()) return true;
             }
             return false; 

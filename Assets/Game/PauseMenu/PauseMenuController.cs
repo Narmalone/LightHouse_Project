@@ -16,12 +16,12 @@ namespace LightHouse.Game.Options
         Options
     }
 
-    public class LightHouseButton
+    public class LocalizedButton
     {
         public Button Button;
         public LocalizedString ButtonName;
 
-        public LightHouseButton(Button target, LocalizedString buttonName)
+        public LocalizedButton(Button target, LocalizedString buttonName)
         {
             Button = target;
             ButtonName = buttonName;
@@ -41,21 +41,21 @@ namespace LightHouse.Game.Options
         [SerializeField] private OptionsMenuController _optionsMenuController;
 
         public UiState State = UiState.None;
-        private VisualElement rootMenu;
+        private VisualElement _rootMenu;
         private VisualElement _pauseMenuRoot;
         private VisualElement _optionsMenuRoot;
 
-        private LightHouseButton _resumeButton;
-        private LightHouseButton _optionsButton;
-        private LightHouseButton _mainMenuButton;
-        private LightHouseButton _quitButton;
+        private LocalizedButton _resumeButton;
+        private LocalizedButton _optionsButton;
+        private LocalizedButton _mainMenuButton;
+        private LocalizedButton _quitButton;
 
         #region MONO CALLBACKS
         private void Awake()
         {
-            rootMenu = _pauseMenuDocument.rootVisualElement;
-            _pauseMenuRoot = rootMenu.Q<VisualElement>("PauseMenu");
-            _optionsMenuRoot = rootMenu.Q<VisualElement>("OptionsContainer");
+            _rootMenu = _pauseMenuDocument.rootVisualElement;
+            _pauseMenuRoot = _rootMenu.Q<VisualElement>("PauseMenu");
+            _optionsMenuRoot = _rootMenu.Q<VisualElement>("OptionsContainer");
             LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
             SearchAndInitializeButtons();
         }
@@ -92,24 +92,24 @@ namespace LightHouse.Game.Options
         #region INIT
         private void SearchAndInitializeButtons()
         {
-            _resumeButton = new LightHouseButton
+            _resumeButton = new LocalizedButton
             (
-                rootMenu.Q<Button>("ResumeButton"),
+                _rootMenu.Q<Button>("ResumeButton"),
                 null
             );
-            _optionsButton = new LightHouseButton
+            _optionsButton = new LocalizedButton
             (
-                rootMenu.Q<Button>("OptionsButton"),
+                _rootMenu.Q<Button>("OptionsButton"),
                 null
             );
-            _mainMenuButton = new LightHouseButton
+            _mainMenuButton = new LocalizedButton
             (
-                rootMenu.Q<Button>("MainMenuButton"),
+                _rootMenu.Q<Button>("MainMenuButton"),
                 null
             );
-            _quitButton = new LightHouseButton
+            _quitButton = new LocalizedButton
             (
-                rootMenu.Q<Button>("QuitButton"),
+                _rootMenu.Q<Button>("QuitButton"),
                 null
             );
 
@@ -169,7 +169,7 @@ namespace LightHouse.Game.Options
         public void HideOptionsMenu()
         {
             _optionsMenuRoot.style.display = DisplayStyle.None;
-            _optionsMenuController.confirmationPopupController.Hide();
+            _optionsMenuController._confirmationPopUpController.Hide();
         }
 
         public void ShowOptionsMenu()
