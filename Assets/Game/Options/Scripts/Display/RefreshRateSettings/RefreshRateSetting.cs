@@ -13,10 +13,15 @@ namespace LightHouse.Game.Options
             selectedRefreshRate = initialRefreshRate;
         }
 
-        public void SetSelectedRefreshRate(uint refreshRate)
+        public void SetSelectedRefreshRate(float refreshRate)
         {
-            selectedRefreshRate = new RefreshRate { numerator = refreshRate, denominator = 1 };
+            selectedRefreshRate = new RefreshRate
+            {
+                numerator = (uint)(refreshRate * 1000), // ou mieux : stocker float/double proprement
+                denominator = 1000
+            };
         }
+
 
         public uint GetCurrentSelectedRefreshRate()
         {

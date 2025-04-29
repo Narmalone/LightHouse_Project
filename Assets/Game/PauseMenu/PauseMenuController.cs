@@ -1,5 +1,6 @@
 using System;
 using LightHouse.Inputs;
+using LightHouse.Localization;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
@@ -39,6 +40,7 @@ namespace LightHouse.Game.Options
     {
         [SerializeField] private UIDocument _pauseMenuDocument;
         [SerializeField] private OptionsMenuController _optionsMenuController;
+        [SerializeField] private LocalizedStringDatabase_Menu_Pause _pauseMenuTextsDB;
 
         public UiState State = UiState.None;
         private VisualElement _rootMenu;
@@ -95,22 +97,22 @@ namespace LightHouse.Game.Options
             _resumeButton = new LocalizedButton
             (
                 _rootMenu.Q<Button>("ResumeButton"),
-                null
+                _pauseMenuTextsDB.Resume
             );
             _optionsButton = new LocalizedButton
             (
                 _rootMenu.Q<Button>("OptionsButton"),
-                null
+                _pauseMenuTextsDB.Options
             );
             _mainMenuButton = new LocalizedButton
             (
                 _rootMenu.Q<Button>("MainMenuButton"),
-                null
+                _pauseMenuTextsDB.Main_Menu
             );
             _quitButton = new LocalizedButton
             (
                 _rootMenu.Q<Button>("QuitButton"),
-                null
+                _pauseMenuTextsDB.Quit_Game
             );
 
             RegisterCallbacks();
