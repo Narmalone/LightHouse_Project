@@ -16,5 +16,7 @@ namespace LightHouse.Localization
 		public LocalizedString Jerrican;
 		public LocalizedString Light_On;
 		public LocalizedString Light_Off;
+		public LocalizedString Scrapper;
+		public LocalizedString Bernacle;
 	}
 }

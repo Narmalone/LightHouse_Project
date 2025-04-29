@@ -11,11 +11,6 @@ namespace LightHouse.Items.Interactable
     public class BernacleInteractable : IDUseItemTracker, IDestroyable
     {
         public event Action OnDestroyed;
-
-        public void OnBernacleScrapped()
-        {
-
-        }
         protected override void OnDestroy()
         {
             base.OnDestroy();

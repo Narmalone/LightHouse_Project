@@ -39,12 +39,17 @@ namespace LightHouse.Items.Inventory
 
         public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
 
+        protected bool _textsHasBeenInitialized = false;
 #pragma warning disable
         public event Action<string> OnNameUpdated;
+
         #endregion
 
         #region GET METHODS
-        public virtual string GetName() => _name;
+        public virtual string GetName()
+        {
+            return _name;
+        }
         public virtual GameObject GetGameObject() => this.gameObject;
         public virtual Collider GetCollider() => _detectionCollider;
         public virtual Rigidbody GetRigidBody() => _rb;
@@ -60,6 +65,17 @@ namespace LightHouse.Items.Inventory
             InputManager.OnInitialized += InputManager_OnInitialized;
         }
 
+        private void Start()
+        {
+            //means that the item has been instantiated
+            if (!_textsHasBeenInitialized)
+            {
+                UpdateNameText();
+                UpdatePickupText();
+                _textsHasBeenInitialized = true;
+            }
+        }
+
         protected virtual void OnDestroy()
         {
             LocalizationSettings.SelectedLocaleChanged -= LocalizationSettings_SelectedLocaleChanged;
@@ -73,6 +89,7 @@ namespace LightHouse.Items.Inventory
         {
             UpdateNameText();
             UpdatePickupText();
+            _textsHasBeenInitialized = true;
         }
         #endregion
 
@@ -102,29 +119,11 @@ namespace LightHouse.Items.Inventory
         protected async virtual void UpdatePickupText()
         {
             string input = InputManager.Pickup_Bind_Name;
-            LocalizedString actionString = _pickupText;
-
-            // Resolve action async
-            AsyncOperationHandle<string> actionTextOp = actionString.GetLocalizedStringAsync();
-            await actionTextOp.Task;
-
-            //we make a temp bcs a LocalizedString are shared between all instances, even we don't have multiple
-            //interactable objects displayed at the same time it's more safe, the performances are negligeable.
-            LocalizedString composed = new LocalizedString
-            {
-                TableReference = _pressToAction.TableReference,
-                TableEntryReference = _pressToAction.TableEntryReference,
-                Arguments = new object[]
-                {
-                    new { key = input, action = actionTextOp.Result }
-                }
-            };
-
-            // Resolve final string
-            AsyncOperationHandle<string> finalTextOp = composed.GetLocalizedStringAsync();
-            await finalTextOp.Task;
-
-            _currentPickupText = finalTextOp.Result;
+            _currentPickupText = await InteractionTextBuilder.Build(
+                _pickupText,
+                input,
+                _pressToAction
+            );
         }
         #endregion
     }

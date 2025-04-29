@@ -198,6 +198,8 @@ namespace LightHouse.Inventory
             {
                 if (!ItemStack_TMP.isActiveAndEnabled) SetEnableItemStackCountText(true);
                 UpdateItemStackCount();
+                Debug.Log("is stackable");
+                Debug.Log(ItemStack_TMP.isActiveAndEnabled, ItemStack_TMP.gameObject);
             }
 
             if (SlotDatas.HasItem)
@@ -223,7 +225,6 @@ namespace LightHouse.Inventory
             if (itm != null)
             {
                 SetItemNameText(itm.GetName());
-
             }
             if (SlotDatas.TotalItemsInSlots > 1)
             {
