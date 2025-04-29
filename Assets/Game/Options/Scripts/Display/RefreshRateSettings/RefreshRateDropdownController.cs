@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using System.Linq; // Ajout important pour le tri
 using LightHouse.Localization;
 
 namespace LightHouse.Game.Options
@@ -28,22 +29,44 @@ namespace LightHouse.Game.Options
                 return;
             }
 
-            List<string> rates = new();
+            int maxWidth = Display.main.systemWidth;
+            int maxHeight = Display.main.systemHeight;
+
+            HashSet<uint> rates = new();
+
             foreach (var res in Screen.resolutions)
             {
-                string hz = $"{res.refreshRateRatio.value} Hz";
-                if (!rates.Contains(hz))
-                    rates.Add(hz);
+                if (res.width <= maxWidth && res.height <= maxHeight)
+                {
+                    rates.Add((uint)res.refreshRateRatio.value);
+                }
             }
 
-            dropdown.choices = rates;
-            string currentHz = $"{Screen.currentResolution.refreshRateRatio.value} Hz";
+            // Force ajouter la fréquence actuelle si elle n'existe pas
+            uint currentRefreshRate = (uint)Screen.currentResolution.refreshRateRatio.value;
+            if (!rates.Contains(currentRefreshRate))
+            {
+                Debug.Log($"[RefreshRateDropdown] Adding current refresh rate: {currentRefreshRate} Hz");
+                rates.Add(currentRefreshRate);
+            }
 
-            dropdown.value = rates.Contains(currentHz) ? currentHz : rates[0];
+            List<string> sortedRates = rates.OrderBy(r => r).Select(r => $"{r} Hz").ToList();
+
+            if (sortedRates.Count == 0)
+            {
+                sortedRates.Add($"{currentRefreshRate} Hz");
+            }
+
+            dropdown.choices = sortedRates;
+
+            string currentHz = $"{currentRefreshRate} Hz";
+
+            dropdown.value = sortedRates.Contains(currentHz) ? currentHz : sortedRates[sortedRates.Count - 1];
             UpdateSettingFromValue(dropdown.value);
 
             dropdown.RegisterValueChangedCallback(evt => UpdateSettingFromValue(evt.newValue));
         }
+
 
         private void UpdateSettingFromValue(string value)
         {

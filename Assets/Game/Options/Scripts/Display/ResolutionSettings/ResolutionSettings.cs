@@ -15,7 +15,10 @@ namespace LightHouse.Game.Options
             initialResolution = new Vector2Int(Screen.width, Screen.height);
             currentResolution = initialResolution;
             CurrentResolution = initialResolution;
-            selectedResolution = initialResolution;
+            selectedResolution = initialResolution; // <-- Pas de problème ici
+
+            // Ajoute ce log pour debug :
+            Debug.Log($"[ResolutionSetting] Init with {initialResolution.x}x{initialResolution.y}");
         }
 
         public void SetSelectedResolution(Vector2Int resolution)
@@ -25,7 +28,7 @@ namespace LightHouse.Game.Options
 
         public bool HasChanged()
         {
-            return !currentResolution.Equals(selectedResolution);
+            return currentResolution != selectedResolution;
         }
 
         public void Apply()

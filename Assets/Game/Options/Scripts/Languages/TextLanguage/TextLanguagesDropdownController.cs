@@ -12,12 +12,16 @@ namespace LightHouse.Game.Options
 {
     public class TextLanguagesDropdownController
     {
+        private TextLanguageSetting _textLanguageSetting;
         private readonly DropdownField dropdown;
         private LocalizedString _dropdownName;
+
+        public TextLanguageSetting Setting => _textLanguageSetting;
         public TextLanguagesDropdownController(DropdownField dropdown, LocalizedString dropdownName)
         {
             this.dropdown = dropdown;
             _dropdownName = dropdownName;
+            _textLanguageSetting = new TextLanguageSetting();
         }
 
         public void Initialize()
@@ -31,10 +35,11 @@ namespace LightHouse.Game.Options
             int selectedIndex = dropdown.index;
             if (selectedIndex >= 0 && selectedIndex < LocalizationSettings.AvailableLocales.Locales.Count)
             {
-                LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[selectedIndex];
-                //Debug.Log($"Selected new locale: {LocalizationSettings.SelectedLocale.Identifier.Code}");
+                var selectedLocale = LocalizationSettings.AvailableLocales.Locales[selectedIndex];
+                _textLanguageSetting.SetSelectedLocale(selectedLocale); // <--- important !
             }
         }
+
 
         public void InitLocalization()
         {

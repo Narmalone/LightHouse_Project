@@ -7,6 +7,7 @@ namespace LightHouse.Game.Options
     {
         protected VisualElement root;
         protected ConfirmationPopupController confirmationPopupController;
+        protected IOptionSetting[] optionSettings;
 
         public OptionWindowBase(VisualElement rootElement, ConfirmationPopupController confirmationPopUp)
         {

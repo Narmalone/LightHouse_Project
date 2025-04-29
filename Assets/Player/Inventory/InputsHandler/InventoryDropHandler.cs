@@ -47,7 +47,7 @@ namespace LightHouse.Inventory
             if (enablePhysicsOnDrop)
             {
                 Rigidbody rb = item.GetRigidBody();
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
                 rb.position = finalPos; //IMPORTANT LINE, FORCE THE PHYSICS TO UPDATE WHEN OBJECT RE-ENABLED
                                         //EVEN THE MOVE.POSITION DOES NOT WORK
                 rb.angularVelocity = Vector3.zero;
@@ -73,13 +73,13 @@ namespace LightHouse.Inventory
             Vector3 start = target.position;
             float sphereRadius = _securityOverlapSphereRadius; // Ajuste la taille en fonction des objets
 
-            // 1. Vérifier si un obstacle est proche avec un OverlapSphere
+            // 1. Vï¿½rifier si un obstacle est proche avec un OverlapSphere
             Collider[] colliders = Physics.OverlapSphere(start, sphereRadius, _securityObstacleMasks);
             DropOverlappingColliders = colliders;
             if (colliders.Length > lengthToSafePos)
             {
-                //Vector3 adjustedPosition = start - target.forward * 0.5f; // Reculer légèrement pour ne pas être dans l'obstacle
-                Vector3 adjustedPosition = PlayerHandlerData.MainPlayer.Character.transform.position + Vector3.up; // Reculer légèrement pour ne pas être dans l'obstacle
+                //Vector3 adjustedPosition = start - target.forward * 0.5f; // Reculer lï¿½gï¿½rement pour ne pas ï¿½tre dans l'obstacle
+                Vector3 adjustedPosition = PlayerHandlerData.MainPlayer.Character.transform.position + Vector3.up; // Reculer lï¿½gï¿½rement pour ne pas ï¿½tre dans l'obstacle
                 Debug.DrawRay(start, -target.forward * 0.5f, Color.yellow, 5.0f);
                 Debug.Log("Adjusting position due to overlap result");
                 return adjustedPosition;

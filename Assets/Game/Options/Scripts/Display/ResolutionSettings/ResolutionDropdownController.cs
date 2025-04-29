@@ -62,9 +62,11 @@ namespace LightHouse.Game.Options
             var parts = value.Split('x');
             if (parts.Length == 2 && int.TryParse(parts[0], out int w) && int.TryParse(parts[1], out int h))
             {
-                setting.SetSelectedResolution(new Vector2Int(w, h));
+                Vector2Int parsedResolution = new Vector2Int(w, h);
+                setting.SetSelectedResolution(parsedResolution);
             }
         }
+
 
         public void Apply()
         {

@@ -14,7 +14,7 @@ namespace LightHouse.Game.Options
     {
         [Header("UI Document")]
         [SerializeField] private UIDocument optionsDocument;
-        [SerializeField] private ConfirmationPopupController confirmationPopupController;
+        [SerializeField] public ConfirmationPopupController confirmationPopupController;
         [SerializeField] private LocalizedStringDatabase_Options_Display _displayTextsDB;
         [SerializeField] private LocalizedStringDatabase_Options_Languages _languagesTextsDB;
 
@@ -29,11 +29,17 @@ namespace LightHouse.Game.Options
 
         private List<NavigationButton> navigationButtons;
 
+        public event Action OnBackCliqued;
+
+        private Button backbutton;
+
         private void Awake()
         {
-            root = optionsDocument.rootVisualElement;
+            root = optionsDocument.rootVisualElement.Q<VisualElement>("Root_Options");
 
             _applySttingsBtn = root.Q<Button>("ApplyButton");
+            backbutton = root.Q<Button>("BackButton");
+            backbutton.clicked += Backbutton_clicked;
             _applySttingsBtn.clicked += ApplySettingsCliqued;
 
             LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
@@ -51,14 +57,14 @@ namespace LightHouse.Game.Options
 
         }
 
+        private void Backbutton_clicked()
+        {
+            OnBackCliqued?.Invoke();
+        }
+
         private void RefreshDisplayOptionsUI()
         {
             displayOptionsWindow.RefreshOnlyUI();
-        }
-
-        private void OnGUI()
-        {
-            GUI.Label(new Rect(20, 600, 300, 100), DisplaysSetting.SSelectedDisplay.ToString());
         }
 
         private void DisplaysSetting_OnDisplayScreenChanged()
@@ -100,19 +106,8 @@ namespace LightHouse.Game.Options
             _applySttingsBtn.clicked -= ApplySettingsCliqued;
             LocalizationSettings.SelectedLocaleChanged -= LocalizationSettings_SelectedLocaleChanged;
             DisplaySettingManager.OnDisplayChanged -= RefreshDisplayOptionsUI;
+            backbutton.clicked -= Backbutton_clicked;
         }
-
-        void OnApplicationQuit()
-        {
-            
-
-/*#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-    System.Diagnostics.Process.GetCurrentProcess().Kill();
-#endif*/
-        }
-
 
         private void LocalizationSettings_SelectedLocaleChanged(UnityEngine.Localization.Locale obj)
         {

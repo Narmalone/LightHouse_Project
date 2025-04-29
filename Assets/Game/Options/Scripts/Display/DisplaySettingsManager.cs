@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 using System;
 
 namespace LightHouse.Game.Options

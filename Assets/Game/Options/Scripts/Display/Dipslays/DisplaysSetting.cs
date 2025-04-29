@@ -37,6 +37,7 @@ namespace LightHouse.Game.Options
 
         public bool HasChanged()
         {
+            Debug.Log(currentDisplay != selectedDisplay);
             return currentDisplay != selectedDisplay;
         }
 

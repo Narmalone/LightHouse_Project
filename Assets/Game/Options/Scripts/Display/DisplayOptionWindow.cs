@@ -1,6 +1,7 @@
 using UnityEngine.UIElements;
 using LightHouse.Localization;
 using System;
+using UnityEngine;
 
 namespace LightHouse.Game.Options
 {
@@ -16,8 +17,6 @@ namespace LightHouse.Game.Options
         private VSyncToggleController vsyncToggleController;
         private RefreshRateDropdownController refreshRateDropdownController;
         private FrameRateDropdownController frameRateDropdownController;
-
-        protected IOptionSetting[] optionsSettings;
         #endregion
 
         public DisplayOptionsWindow(VisualElement root, ConfirmationPopupController confirmationPopup, LocalizedStringDatabase_Options_Display optionDB) : base(root, confirmationPopup)
@@ -30,7 +29,7 @@ namespace LightHouse.Game.Options
         public void UpdateAllTextsLanguage()
         {
             resolutionController.UpdateLanguage();
-            //displaysController.UpdateLanguage();
+            displaysController.UpdateLanguage();
             displayModeController.UpdateLanguage();
             vsyncToggleController.UpdateLanguage();
             refreshRateDropdownController.UpdateLanguage();
@@ -49,7 +48,8 @@ namespace LightHouse.Game.Options
             displaysController = new DisplaysDropdownController
             (
                 root.Q<DropdownField>("DisplaysDropdown"),
-                confirmationPopupController
+                confirmationPopupController,
+                _localizedDB.Display
             );
 
             displayModeController = new DisplayModeDropdownController
@@ -79,6 +79,13 @@ namespace LightHouse.Game.Options
                 new FrameRateLimitSetting(),
                 _localizedDB
             );
+
+            optionSettings = new IOptionSetting[5];
+            optionSettings[0] = resolutionController.Setting;
+            optionSettings[1] = displayModeController.Setting;
+            optionSettings[2] = vsyncToggleController.Setting;
+            optionSettings[3] = refreshRateDropdownController.Setting;
+            optionSettings[4] = frameRateDropdownController.Setting;
         }
 
         public override void InitializeControllers()
@@ -89,36 +96,11 @@ namespace LightHouse.Game.Options
             vsyncToggleController.Initialize();
             refreshRateDropdownController.Initialize();
             frameRateDropdownController.Initialize();
-
-            optionsSettings = new IOptionSetting[5];
-            optionsSettings[0] = resolutionController.Setting;
-            //optionsSettings[1] = displaysController.Setting;
-            optionsSettings[1] = displayModeController.Setting;
-            optionsSettings[2] = vsyncToggleController.Setting;
-            optionsSettings[3] = refreshRateDropdownController.Setting;
-            optionsSettings[4] = frameRateDropdownController.Setting;
         }
-        public void RevertSettingsAndUI()
-        {
-            // 1. Annuler toutes les settings (valeurs internes)
-            foreach (var setting in optionsSettings)
-            {
-                setting.Revert();
-            }
-
-            // 2. Réinitialiser toutes les UI visuellement
-            resolutionController.Initialize();
-            displaysController.Initialize();
-            displayModeController.Initialize();
-            vsyncToggleController.Initialize();
-            refreshRateDropdownController.Initialize();
-            frameRateDropdownController.Initialize();
-        }
-
+       
         public override void RevertSettings()
         {
             resolutionController?.Revert();
-            //displaysController?.Revert();
             displayModeController?.Revert();
             vsyncToggleController?.Revert();
             refreshRateDropdownController?.Revert();
@@ -128,7 +110,7 @@ namespace LightHouse.Game.Options
         public override void ApplySettings()
         {
             resolutionController?.Apply();
-            //displaysController?.Apply();
+            displaysController?.Apply();
             displayModeController?.Apply();
             vsyncToggleController?.Apply();
             refreshRateDropdownController?.Apply();
@@ -137,17 +119,17 @@ namespace LightHouse.Game.Options
 
         public override bool HasChanges()
         {
-            foreach (IOptionSetting setting in optionsSettings) 
+            foreach (IOptionSetting setting in optionSettings) 
             {
                 if (setting.HasChanged()) return true;
             }
             return false; 
         }
 
-        internal void RefreshOnlyUI()
+        public void RefreshOnlyUI()
         {
             // 1. Annuler toutes les settings (valeurs internes)
-            foreach (var setting in optionsSettings)
+            foreach (var setting in optionSettings)
             {
                 setting.Revert();
             }

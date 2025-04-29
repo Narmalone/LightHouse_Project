@@ -15,12 +15,12 @@ namespace LightHouse.Game.Options
 
         public void SetSelectedRefreshRate(uint refreshRate)
         {
-            selectedRefreshRate.numerator = refreshRate;
+            selectedRefreshRate = new RefreshRate { numerator = refreshRate, denominator = 1 };
         }
 
         public bool HasChanged()
         {
-            return !initialRefreshRate.Equals(selectedRefreshRate);
+            return (float)Mathf.Abs((float)initialRefreshRate.value - (float)selectedRefreshRate.value) > 0.5f;
         }
 
         public void Apply()
@@ -28,7 +28,6 @@ namespace LightHouse.Game.Options
             Resolution current = Screen.currentResolution;
             Screen.SetResolution(current.width, current.height, Screen.fullScreenMode, selectedRefreshRate);
             initialRefreshRate = selectedRefreshRate;
-            Debug.Log("refresh rate applied");
         }
 
         public void Revert()

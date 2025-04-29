@@ -17,11 +17,18 @@ namespace LightHouse.Game.Options
 
         public override void ApplySettings()
         {
-            
+            foreach(var option in optionSettings)
+            {
+                option.Apply();
+            }
         }
 
         public override bool HasChanges()
         {
+            foreach (IOptionSetting setting in optionSettings)
+            {
+                if (setting.HasChanged()) return true;
+            }
             return false;
         }
 
@@ -29,11 +36,17 @@ namespace LightHouse.Game.Options
         {
             languageDropdownController = new TextLanguagesDropdownController(root.Q<DropdownField>("LanguageDropdown"), languagesTextsDB.Text_Languages);
             languageDropdownController.Initialize();
+
+            optionSettings = new IOptionSetting[1];
+            optionSettings[0] = languageDropdownController.Setting;
         }
 
         public override void RevertSettings()
         {
-            
+            foreach (var option in optionSettings)
+            {
+                option.Revert();
+            }
         }
 
         public void UpdateAllTextsLanguage()

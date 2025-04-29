@@ -6,6 +6,7 @@ using LightHouse.Handlers;
 
 namespace LightHouse.KinematicCharacterController
 {
+
     [DefaultExecutionOrder(-20)]
     public class Player : MonoBehaviour
     {
@@ -50,7 +51,6 @@ namespace LightHouse.KinematicCharacterController
         private void Start()
         {
             PlayerHandlerData.InitializeHandlerData(this);
-            Cursor.lockState = CursorLockMode.Locked;
             InputManager.InputManagerInitialized();
             _playerCharacter.Initialize();
             _playerCamera.SetFollowTransform(_playerCharacter.GetCameraTarget());
@@ -78,13 +78,9 @@ namespace LightHouse.KinematicCharacterController
 
         private void OnDestroy()
         {
-            
-        }
-
-        private void OnApplicationQuit()
-        {
             InputManager.DisposePlayerInputActions();
             _inputActions.Dispose();
+            PlayerHandlerData.Dispose();
         }
 
         private void HandleCharacterInput()
