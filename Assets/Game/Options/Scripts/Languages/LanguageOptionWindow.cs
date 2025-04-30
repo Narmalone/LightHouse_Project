@@ -43,10 +43,7 @@ namespace LightHouse.Game.Options
 
         public override void RevertSettings()
         {
-            foreach (var option in optionSettings)
-            {
-                option.Revert();
-            }
+            languageDropdownController.Revert();
         }
 
         public void UpdateAllTextsLanguage()

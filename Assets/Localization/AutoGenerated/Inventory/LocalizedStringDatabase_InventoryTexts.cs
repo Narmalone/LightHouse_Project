@@ -18,5 +18,6 @@ namespace LightHouse.Localization
 		public LocalizedString Light_Off;
 		public LocalizedString Scrapper;
 		public LocalizedString Bernacle;
+		public LocalizedString Key_Shed;
 	}
 }

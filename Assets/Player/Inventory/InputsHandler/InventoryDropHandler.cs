@@ -123,7 +123,7 @@ namespace LightHouse.Inventory
                 DropItem
                 (
                     slotID: SlotManager.CurrentSelectedSlot.SlotDatas.SlotID,
-                    itemGlobalID: SlotManager.CurrentSelectedSlot.SlotDatas.ItemGlobalID,
+                    itemGlobalID: (ushort)SlotManager.CurrentSelectedSlot.SlotDatas.ItemGlobalID,
                     specificID: SlotManager.CurrentSelectedSlot.SlotDatas.ItemSpecificIds[0],
                     pos: _inventoryTarget.position,
                     force: _dropPower,
@@ -144,7 +144,7 @@ namespace LightHouse.Inventory
                 DropItem
                 (
                     slotID: SlotManager.CurrentSelectedSlot.SlotDatas.SlotID,
-                    itemGlobalID: SlotManager.CurrentSelectedSlot.SlotDatas.ItemGlobalID,
+                    itemGlobalID: (ushort)SlotManager.CurrentSelectedSlot.SlotDatas.ItemGlobalID,
                     specificID: SlotManager.CurrentSelectedSlot.SlotDatas.ItemSpecificIds[0],
                     pos: _inventoryTarget.position,
                     force: 0.0f,

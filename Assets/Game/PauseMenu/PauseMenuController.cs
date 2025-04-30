@@ -122,7 +122,7 @@ namespace LightHouse.Game.Options
         #region REGISTER / UNREGISTER
         private void RegisterCallbacks()
         {
-            _optionsMenuController.OnBackCliqued += OptionsMenuController_OnBackCliqued;
+            _optionsMenuController.OnBackClicked += OptionsMenuController_OnBackCliqued;
             _resumeButton.Button.clicked += Resume_Button_clicked;
             _mainMenuButton.Button.clicked += MainMenuCliqued;
             _optionsButton.Button.clicked += Options_Button_Clicked;
@@ -131,7 +131,7 @@ namespace LightHouse.Game.Options
 
         private void UnregisterCallbacks()
         {
-            _optionsMenuController.OnBackCliqued -= OptionsMenuController_OnBackCliqued;
+            _optionsMenuController.OnBackClicked -= OptionsMenuController_OnBackCliqued;
             _resumeButton.Button.clicked -= Resume_Button_clicked;
             _mainMenuButton.Button.clicked -= MainMenuCliqued;
             _optionsButton.Button.clicked -= Options_Button_Clicked;
@@ -171,7 +171,7 @@ namespace LightHouse.Game.Options
         public void HideOptionsMenu()
         {
             _optionsMenuRoot.style.display = DisplayStyle.None;
-            _optionsMenuController._confirmationPopUpController.Hide();
+            _optionsMenuController.ConfirmationPopupController.Hide();
         }
 
         public void ShowOptionsMenu()

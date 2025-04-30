@@ -18,7 +18,7 @@ public class AudioManager : MonoBehaviour
         AudioHandlerData.Clear();
     }
 
-    private AudioSource PlayTempClip(AudioClip clip, Transform parent, float volume, float spatialBlend, float pitch = 1.0f)
+    private AudioSource PlayClip(AudioClip clip, Transform parent, float volume, bool loop, float spatialBlend, float pitch = 1.0f)
     {
         GameObject tempGO = new GameObject("TempAudio2D");
         if (spatialBlend != 0.0f)
@@ -28,6 +28,7 @@ public class AudioManager : MonoBehaviour
         }
         AudioSource source = tempGO.AddComponent<AudioSource>();
         source.clip = clip;
+        source.loop = loop;
         source.volume = volume;
         source.spatialBlend = spatialBlend; // 0 = 2D, 1 = 3D
         source.Play();
@@ -64,7 +65,7 @@ public class AudioManager : MonoBehaviour
         }
 
         // Lecture du clip à la position spécifiée
-        return PlayTempClip(clip, parent, music.volume, music._spatialBlend);
+        return PlayClip(clip, parent, music.volume, music.loop, music._spatialBlend);
     }
 
 
@@ -84,7 +85,7 @@ public class AudioManager : MonoBehaviour
             return null;
         }
 
-        return PlayTempClip(clip, parent, ambiance.volume, ambiance._spatialBlend);
+        return PlayClip(clip, parent, ambiance.volume, ambiance.loop, ambiance._spatialBlend);
     }
 
 
@@ -104,7 +105,7 @@ public class AudioManager : MonoBehaviour
             return null;
         }
         // Lecture du clip à la position spécifiée
-        return PlayTempClip(clip, parent, effect.volume, effect._spatialBlend);
+        return PlayClip(clip, parent, effect.volume, effect.loop, effect._spatialBlend);
     }
 
     public AudioSource PlayRandomEffect(Vector3 pos, EffectsAudioName category)

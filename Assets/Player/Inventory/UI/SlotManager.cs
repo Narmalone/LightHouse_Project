@@ -171,7 +171,7 @@ namespace LightHouse.Inventory
         {
             item = null;
             if (IsIndexInvalid(CurrentSlotIndex) || CurrentSelectedSlot == null || !CurrentSelectedSlot.SlotDatas.HasItem) return false;
-            if (CurrentSelectedSlot.SlotDatas.TryGetItemInSlot(CurrentSelectedSlot.SlotDatas.ItemGlobalID, CurrentSelectedSlot.SlotDatas.ItemSpecificIds[0], out item))
+            if (CurrentSelectedSlot.SlotDatas.TryGetItemInSlot((ushort)CurrentSelectedSlot.SlotDatas.ItemGlobalID, CurrentSelectedSlot.SlotDatas.ItemSpecificIds[0], out item))
             {
                 return true;
             }

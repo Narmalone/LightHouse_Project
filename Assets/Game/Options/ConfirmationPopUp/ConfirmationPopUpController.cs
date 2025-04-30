@@ -16,7 +16,7 @@ namespace LightHouse.Game.Options
         private VisualElement popup;
         private Button confirmButton;
         private Button cancelButton;
-        private Label confirmationMessage;
+        private Label _confirmationTimePopup;
 
         private Action onConfirm;
         private Action onCancel;
@@ -27,7 +27,7 @@ namespace LightHouse.Game.Options
             popup = uiDocument.rootVisualElement.Q<VisualElement>("ConfirmationPopup");
             confirmButton = popup.Q<Button>("ConfirmButton");
             cancelButton = popup.Q<Button>("CancelButton");
-            confirmationMessage = popup.Q<Label>("ConfirmationMessage");
+            _confirmationTimePopup = popup.Q<Label>("ConfirmationTime");
 
             popup.style.display = DisplayStyle.None;
 
@@ -76,6 +76,7 @@ namespace LightHouse.Game.Options
             float timer = timeoutSeconds;
             while (timer > 0)
             {
+                _confirmationTimePopup.text = (uint)timer + "s";
                 timer -= Time.deltaTime;
                 yield return null;
             }

@@ -7,187 +7,220 @@ using UnityEngine.UIElements;
 
 namespace LightHouse.Game.Options
 {
-
     public class OptionsMenuController : MonoBehaviour
     {
-        public event Action OnBackCliqued;
+        public event Action OnBackClicked;
 
-        [Header("UI Document")]
+        [Header("UI References")]
         [SerializeField] private UIDocument _pauseMenuDocument;
-        [SerializeField] public ConfirmationPopupController _confirmationPopUpController;
+        [SerializeField] private ConfirmationPopupController _confirmationPopUpController;
+
+        [Header("Localization Databases")]
         [SerializeField] private LocalizedStringDatabase_Options_Display _displayTextsDB;
         [SerializeField] private LocalizedStringDatabase_Options_Graphisms _graphismsTextsDB;
         [SerializeField] private LocalizedStringDatabase_Options_Languages _languagesTextsDB;
         [SerializeField] private LocalizedStringDatabase_Options_MouseKeyboard _mouseKeyboardTextsDB;
         [SerializeField] private LocalizedStringDatabase_Options_Sounds _soundsTextsDB;
 
-        private Dictionary<OptionCategory, PanelData> _pannelsByCategory;
-        private OptionCategory _currentOpenCategory = OptionCategory.Display;
-        //Navigation Buttons
-        private List<OptionsNavigationButton> _optionNavigationButtons;
-
-        //Option Controllers
-        private DisplayOptionsWindow displayOptionsWindow;
-        private LanguageOptionWindow languageOptionWindow;
-
+        // UI Elements
         private VisualElement _rootOptions;
-        private Button _applySettingsButton; //to doo transformer en LocalizedButton
-        private Button _optionToPauseButton; //to do transformer en localized button
+        private Button _applySettingsButton;
+        private Button _backButton;
 
-        private OptionCategory pendingTargetCategory;
-        private bool navigationPending;
+        // Internal State
+        private Dictionary<OptionCategory, PanelData> _panelsByCategory;
+        private List<OptionsNavigationButton> _optionNavigationButtons;
+        private OptionCategory _currentOpenCategory = OptionCategory.Display;
+        private OptionCategory _pendingTargetCategory;
+        private bool _navigationPending;
 
-        #region MONO CALLBACKS
+        // Option Windows
+        private DisplayOptionsWindow _displayOptionsWindow;
+        private LanguageOptionWindow _languageOptionWindow;
+
+        public ConfirmationPopupController ConfirmationPopupController => _confirmationPopUpController;
+
+        #region Unity Callbacks
+
         private void Awake()
         {
-            _rootOptions = _pauseMenuDocument.rootVisualElement.Q<VisualElement>("Root_Options");
-
-            _applySettingsButton = _rootOptions.Q<Button>("ApplyButton");
-            _optionToPauseButton = _rootOptions.Q<Button>("BackButton");
-            _optionToPauseButton.clicked += Backbutton_clicked;
-            _applySettingsButton.clicked += ApplySettingsCliqued;
-
-            LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
-
-            DisplaysSetting.OnDisplayScreenChanged += DisplaysSetting_OnDisplayScreenChanged;
-
-            displayOptionsWindow = new DisplayOptionsWindow(_rootOptions, _confirmationPopUpController, _displayTextsDB);
-            languageOptionWindow = new LanguageOptionWindow(_rootOptions, _confirmationPopUpController, _languagesTextsDB);
-
-            DisplaySettingManager.OnDisplayChanged += RefreshDisplayOptionsUI;
-
-            InitializePanels();
+            InitializeUIReferences();
+            InitializeOptionWindows();
             InitializeNavigationButtons();
+            InitializePanels();
             HideAllPanels();
-
+            SubscribeToEvents();
         }
+
         private void Start()
         {
             UpdateAllTextsLanguage();
-            NavigateTo(OptionCategory.Display, true);
-        }
-        #endregion
-
-        private void Backbutton_clicked()
-        {
-            OnBackCliqued?.Invoke();
-        }
-
-        private void RefreshDisplayOptionsUI()
-        {
-            displayOptionsWindow.RefreshOnlyUI();
-        }
-
-        private void DisplaysSetting_OnDisplayScreenChanged()
-        {
-            if (DisplaysSetting.IsRevertingDisplay)
-            {
-                Debug.Log("Display reverted, pas de reinitialisation !");
-                return;
-            }
-
-            displayOptionsWindow.InitializeControllers();
-            displayOptionsWindow.ApplySettings();
-        }
-
-
-        private void ApplySettingsCliqued()
-        {
-            _confirmationPopUpController.Show(ApplyConfirmed, ApplyCanceled);
-        }
-
-        private void ApplyCanceled()
-        {
-            //cancel change on the current pannel
-            _pannelsByCategory[_currentOpenCategory].Window.RevertSettings();
-        }
-
-        private void ApplyConfirmed()
-        {
-            //Apply changes on the current pannel
-            _pannelsByCategory[_currentOpenCategory].Window.ApplySettings();
+            NavigateTo(OptionCategory.Display, forcePerform: true);
         }
 
         private void OnDestroy()
         {
-            foreach(OptionsNavigationButton navButton in _optionNavigationButtons)
-            {
-                navButton.Dispose();
-            }
-            _applySettingsButton.clicked -= ApplySettingsCliqued;
-            LocalizationSettings.SelectedLocaleChanged -= LocalizationSettings_SelectedLocaleChanged;
-            DisplaySettingManager.OnDisplayChanged -= RefreshDisplayOptionsUI;
-            _optionToPauseButton.clicked -= Backbutton_clicked;
+            UnsubscribeFromEvents();
+            DisposeNavigationButtons();
         }
 
-        private void LocalizationSettings_SelectedLocaleChanged(UnityEngine.Localization.Locale obj)
+        #endregion
+
+        #region Initialization
+
+        private void InitializeUIReferences()
         {
-            UpdateAllTextsLanguage();
+            _rootOptions = _pauseMenuDocument.rootVisualElement.Q<VisualElement>("Root_Options");
+
+            _applySettingsButton = _rootOptions.Q<Button>("ApplyButton");
+            _backButton = _rootOptions.Q<Button>("BackButton");
+
+            _applySettingsButton.clicked += OnApplySettingsClicked;
+            _backButton.clicked += OnBackButtonClicked;
+        }
+
+        private void InitializeOptionWindows()
+        {
+            _displayOptionsWindow = new DisplayOptionsWindow(_rootOptions, _confirmationPopUpController, _displayTextsDB);
+            _languageOptionWindow = new LanguageOptionWindow(_rootOptions, _confirmationPopUpController, _languagesTextsDB);
         }
 
         private void InitializeNavigationButtons()
         {
             _optionNavigationButtons = new List<OptionsNavigationButton>
             {
-                 new OptionsNavigationButton(_rootOptions.Q<Button>("DisplayButton"), OptionCategory.Display, this, _displayTextsDB.Section_Name),
-                 new OptionsNavigationButton(_rootOptions.Q<Button>("GraphicsButton"), OptionCategory.Graphics, this, _graphismsTextsDB.Section_Name),
-                 new OptionsNavigationButton(_rootOptions.Q<Button>("AudioButton"), OptionCategory.Audio, this, _soundsTextsDB.Section_Name),
-                 new OptionsNavigationButton(_rootOptions.Q<Button>("LanguageButton"), OptionCategory.Language, this, _languagesTextsDB.Section_Name),
-                 new OptionsNavigationButton(_rootOptions.Q<Button>("InputButton"), OptionCategory.Input, this, _mouseKeyboardTextsDB.Section_Name),
+                new OptionsNavigationButton(_rootOptions.Q<Button>("DisplayButton"), OptionCategory.Display, this, _displayTextsDB.Section_Name),
+                new OptionsNavigationButton(_rootOptions.Q<Button>("GraphicsButton"), OptionCategory.Graphics, this, _graphismsTextsDB.Section_Name),
+                new OptionsNavigationButton(_rootOptions.Q<Button>("AudioButton"), OptionCategory.Audio, this, _soundsTextsDB.Section_Name),
+                new OptionsNavigationButton(_rootOptions.Q<Button>("LanguageButton"), OptionCategory.Language, this, _languagesTextsDB.Section_Name),
+                new OptionsNavigationButton(_rootOptions.Q<Button>("InputButton"), OptionCategory.Input, this, _mouseKeyboardTextsDB.Section_Name),
             };
-        }
-
-        private void UpdateAllTextsLanguage()
-        {
-            foreach (var button in _optionNavigationButtons) 
-            {
-                button.UpdateLocalizedText();    
-            }
-            displayOptionsWindow.UpdateAllTextsLanguage();
-            languageOptionWindow.UpdateAllTextsLanguage();
-
         }
 
         private void InitializePanels()
         {
-            _pannelsByCategory = new Dictionary<OptionCategory, PanelData>
+            _panelsByCategory = new Dictionary<OptionCategory, PanelData>
             {
-                { OptionCategory.Display, new PanelData(_rootOptions.Q<VisualElement>("DisplayPanel"), displayOptionsWindow) },
+                { OptionCategory.Display, new PanelData(_rootOptions.Q<VisualElement>("DisplayPanel"), _displayOptionsWindow) },
                 { OptionCategory.Graphics, new PanelData(_rootOptions.Q<VisualElement>("GraphicsPanel"), null) },
                 { OptionCategory.Audio, new PanelData(_rootOptions.Q<VisualElement>("AudioPanel"), null) },
-                { OptionCategory.Language, new PanelData(_rootOptions.Q<VisualElement>("LanguagePanel"), languageOptionWindow) },
+                { OptionCategory.Language, new PanelData(_rootOptions.Q<VisualElement>("LanguagePanel"), _languageOptionWindow) },
                 { OptionCategory.Input, new PanelData(_rootOptions.Q<VisualElement>("InputPanel"), null) }
             };
         }
 
-
-        private void HideAllPanels()
+        private void SubscribeToEvents()
         {
-            foreach (var pannelData in _pannelsByCategory.Values)
+            LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+            DisplaysSetting.OnDisplayScreenChanged += OnDisplayScreenChanged;
+            DisplaySettingManager.OnDisplayChanged += RefreshDisplayOptionsUI;
+        }
+
+        private void UnsubscribeFromEvents()
+        {
+            LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+            DisplaysSetting.OnDisplayScreenChanged -= OnDisplayScreenChanged;
+            DisplaySettingManager.OnDisplayChanged -= RefreshDisplayOptionsUI;
+
+            _applySettingsButton.clicked -= OnApplySettingsClicked;
+            _backButton.clicked -= OnBackButtonClicked;
+        }
+
+        private void DisposeNavigationButtons()
+        {
+            foreach (var navButton in _optionNavigationButtons)
             {
-                if (pannelData != null && pannelData.Panel != null)
-                    pannelData.Panel.style.display = DisplayStyle.None;
+                navButton.Dispose();
             }
         }
 
-        #region NAVIGATION
+        #endregion
+
+        #region UI Updates
+
+        private void UpdateAllTextsLanguage()
+        {
+            foreach (var button in _optionNavigationButtons)
+            {
+                button.UpdateLocalizedText();
+            }
+
+            _displayOptionsWindow.UpdateAllTextsLanguage();
+            _languageOptionWindow.UpdateAllTextsLanguage();
+        }
+
+        private void RefreshDisplayOptionsUI()
+        {
+            _displayOptionsWindow.RefreshOnlyUI();
+        }
+
+        private void HideAllPanels()
+        {
+            foreach (var panelData in _panelsByCategory.Values)
+            {
+                panelData.Panel.SetDisplayStyle(DisplayStyle.None);
+            }
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void OnApplySettingsClicked()
+        {
+            _confirmationPopUpController.Show(ApplyConfirmed, ApplyCanceled);
+        }
+
+        private void OnBackButtonClicked()
+        {
+            OnBackClicked?.Invoke();
+        }
+
+        private void OnLocaleChanged(UnityEngine.Localization.Locale obj)
+        {
+            UpdateAllTextsLanguage();
+        }
+
+        private void OnDisplayScreenChanged()
+        {
+            if (DisplaysSetting.IsRevertingDisplay)
+            {
+                Debug.Log("[OptionsMenuController] Display reverted, skipping reinitialization.");
+                return;
+            }
+
+            _displayOptionsWindow.InitializeControllers();
+            _displayOptionsWindow.ApplySettings();
+        }
+
+        #endregion
+
+        #region Apply / Cancel
+
+        private void ApplyConfirmed()
+        {
+            _panelsByCategory[_currentOpenCategory].Window?.ApplySettings();
+        }
+
+        private void ApplyCanceled()
+        {
+            _panelsByCategory[_currentOpenCategory].Window?.RevertSettings();
+        }
+
+        #endregion
+
+        #region Navigation
+
         public void NavigateTo(OptionCategory category, bool forcePerform = false)
         {
-            if (!forcePerform)
+            if (!forcePerform && _panelsByCategory[_currentOpenCategory].Window?.HasChanges() == true)
             {
-                OptionWindowBase currentWindow = _pannelsByCategory[_currentOpenCategory].Window;
-                if (currentWindow != null)
-                {
-                    if (currentWindow.HasChanges())
-                    {
-                        pendingTargetCategory = category;
-                        navigationPending = true;
-                        _confirmationPopUpController.Show(OnConfirmNavigation, OnCancelNavigation);
-                        return;
-                    }
-                }
+                _pendingTargetCategory = category;
+                _navigationPending = true;
+                _confirmationPopUpController.Show(OnConfirmNavigation, OnCancelNavigation);
+                return;
             }
-            // else direct navigation
+
             PerformNavigation(category);
         }
 
@@ -195,40 +228,48 @@ namespace LightHouse.Game.Options
         {
             HideAllPanels();
 
-            if (_pannelsByCategory.TryGetValue(category, out var pannelData) && pannelData.Panel != null)
+            if (_panelsByCategory.TryGetValue(category, out var panelData) && panelData.Panel != null)
             {
-                pannelData.Panel.style.display = DisplayStyle.Flex;
+                panelData.Panel.SetDisplayStyle(DisplayStyle.Flex);
                 _currentOpenCategory = category;
             }
             else
             {
-                Debug.LogWarning($"[OptionsMenuController] Aucun panel trouvé pour la catégorie {category}");
+                Debug.LogWarning($"[OptionsMenuController] No panel found for category: {category}");
             }
         }
 
         private void OnConfirmNavigation()
         {
-            OptionWindowBase currentWindow = _pannelsByCategory[_currentOpenCategory].Window;
-            currentWindow?.ApplySettings();
+            _panelsByCategory[_currentOpenCategory].Window?.ApplySettings();
 
-            if (navigationPending)
+            if (_navigationPending)
             {
-                navigationPending = false;
-                PerformNavigation(pendingTargetCategory);
+                _navigationPending = false;
+                PerformNavigation(_pendingTargetCategory);
             }
         }
 
         private void OnCancelNavigation()
         {
-            OptionWindowBase currentWindow = _pannelsByCategory[_currentOpenCategory].Window;
-            currentWindow?.RevertSettings();
+            _panelsByCategory[_currentOpenCategory].Window?.RevertSettings();
 
-            if (navigationPending)
+            if (_navigationPending)
             {
-                navigationPending = false;
-                PerformNavigation(pendingTargetCategory);
+                _navigationPending = false;
+                PerformNavigation(_pendingTargetCategory);
             }
         }
+
         #endregion
+    }
+
+    internal static class VisualElementExtensions
+    {
+        public static void SetDisplayStyle(this VisualElement element, DisplayStyle style)
+        {
+            if (element != null)
+                element.style.display = style;
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace LightHouse.Inventory
         /// <summary>
         /// Which item is stored in the slot <see cref="ItemDatabase"/>
         /// </summary>
-        public ushort ItemGlobalID;
+        public short ItemGlobalID;
 
         /// <summary>
         /// A list of "Specific IDS", attribuated by the <see cref="PoolManager.InventoryItemPools"/> to directly 
@@ -71,7 +71,7 @@ namespace LightHouse.Inventory
         {
             item = null;
             if (ItemSpecificIds.Count <= 0) return false;
-            return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, ItemSpecificIds[0], out item);
+            return PoolManager.GetWithoutRemovingFromPool((ushort)ItemGlobalID, ItemSpecificIds[0], out item);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace LightHouse.Inventory
             if (ItemSpecificIds.Count <= 0 || ItemGlobalID != globalID) return false;
             if (ItemSpecificIds.Contains(specificID))
             {
-                return PoolManager.GetWithoutRemovingFromPool(ItemGlobalID, specificID, out item);
+                return PoolManager.GetWithoutRemovingFromPool((ushort)ItemGlobalID, specificID, out item);
             }
             return false;
         }
@@ -129,7 +129,7 @@ namespace LightHouse.Inventory
 
         public void AddItemDatasToSlot(IInventoryItem item)
         {
-            SlotDatas.ItemGlobalID = item.GlobalItemID;
+            SlotDatas.ItemGlobalID = (short)item.GlobalItemID;
             SlotDatas.ItemSpecificIds.Add(item.ItemSpecificID);
             SlotDatas.ItemSprite = item.ItemSprite;
             RefreshUIWithCurrentDatas();
@@ -143,6 +143,10 @@ namespace LightHouse.Inventory
             if (!SlotDatas.ItemSpecificIds.Contains(specificID)) return;
             SlotDatas.ItemSpecificIds.Remove(specificID);
             RefreshUIWithCurrentDatas();
+            if (SlotDatas.TotalItemsInSlots <= 0)
+            {
+                SlotDatas.ItemGlobalID = -1;
+            }
         }
 
         #endregion
@@ -193,13 +197,11 @@ namespace LightHouse.Inventory
         #region Refresh UI On Add or Removed Item
         public void RefreshUIWithCurrentDatas()
         {
-            IInventoryItem item = _itemDatabase.Get(SlotDatas.ItemGlobalID);
+            IInventoryItem item = _itemDatabase.Get((ushort)SlotDatas.ItemGlobalID);
             if(item is IInventoryStackable)
             {
                 if (!ItemStack_TMP.isActiveAndEnabled) SetEnableItemStackCountText(true);
                 UpdateItemStackCount();
-                Debug.Log("is stackable");
-                Debug.Log(ItemStack_TMP.isActiveAndEnabled, ItemStack_TMP.gameObject);
             }
 
             if (SlotDatas.HasItem)

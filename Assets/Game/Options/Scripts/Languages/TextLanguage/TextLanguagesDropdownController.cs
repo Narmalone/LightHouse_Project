@@ -71,5 +71,13 @@ namespace LightHouse.Game.Options
             return char.ToUpper(input[0]) + input.Substring(1);
         }
 
+        public void Revert()
+        {
+            if (_textLanguageSetting.HasChanged())
+            {
+                _textLanguageSetting.Revert();
+                Initialize();
+            }
+        }
     }
 }
