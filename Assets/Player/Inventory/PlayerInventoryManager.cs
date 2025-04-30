@@ -12,6 +12,7 @@ namespace LightHouse.KinematicCharacterController
     public class PlayerInventoryManager : MonoBehaviour
     {
         #region SERILIAZED FIELDS
+        [SerializeField] private UnifiedRaycastSystem _raycastSystem;
         [Header("Inventory Settings")]
         [SerializeField] private byte _inventoryCapacity = 4;
         [SerializeField] private float _grabAndDropItemRange = 1.5f;
@@ -19,13 +20,6 @@ namespace LightHouse.KinematicCharacterController
         [Header("Inventory References")]
         [SerializeField] private ItemDatabase _itemDatabase;
         [SerializeField] private Transform _inventoryTarget = null;
-
-        [Header("Raycast")]
-        [SerializeField] private Camera _playerCamera; //automatically attribuated from player ?
-        [SerializeField] private float _raycastDetectionRange = 3.0f; //automatically attribuated from player ?
-        [SerializeField] private LayerMask _inventoryItemsMask = 1 << 6;
-        [SerializeField] private LayerMask _blockingLayers = 1 << 6;
-        [SerializeField] private QueryTriggerInteraction _inventoryRaycastQti = QueryTriggerInteraction.Ignore;
 
         [Header("Drop Settings")]
         [SerializeField] private float _maxDropPower = 10f;
@@ -69,7 +63,6 @@ namespace LightHouse.KinematicCharacterController
 
         private void Update()
         {
-            _inventoryRaycastDetector.UpdateRay();
             if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
                 AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen);
 
@@ -118,13 +111,7 @@ namespace LightHouse.KinematicCharacterController
             _useFromInventoryHandler = new InventoryUseItemHandler(_inventoryUiController);
             _dropHandler = new InventoryDropHandler(_inventoryUiController, _inventoryTarget, _maxDropPower, _dropPowerCurve, _securityObstacleMasks, _securityOverlapSphereRadius);
 
-            _inventoryRaycastDetector = new RaycastDetector<IInventoryItem>(
-                _playerCamera,
-                _raycastDetectionRange,
-                _inventoryItemsMask,
-                _blockingLayers,
-                _inventoryRaycastQti
-            );
+            _inventoryRaycastDetector = _raycastSystem.InventoryDetector;
             _inventoryRaycastDetector.OnDetected += HandleItemDetected;
             _inventoryRaycastDetector.OnItemLost += ResetSeenObject;
 

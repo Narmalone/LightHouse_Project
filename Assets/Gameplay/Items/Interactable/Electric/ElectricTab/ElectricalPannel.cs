@@ -7,6 +7,7 @@ namespace LightHouse.Items
 {
     public class ElectricalPannel : MonoBehaviour
     {
+        [SerializeField] private InteractableSwitchRotate _electricDoor;
         [SerializeField] private SingleRaycastedItemName _enableElectricityFirst;
         [SerializeField] private ElectricalSwitch[] _switchesOnPannel;
 
@@ -46,11 +47,15 @@ namespace LightHouse.Items
 
         public void OnEnablePannelInteractibility()
         {
+            _electricDoor.CanBeInteracted = true;
+            _electricDoor.CanBeRaycasted = true;
             _enableElectricityFirst.gameObject.SetActive(false);
         }
 
         public void OnDisablePannelInteractibility()
         {
+            _electricDoor.CanBeInteracted = false;
+            _electricDoor.CanBeRaycasted = false;
             _enableElectricityFirst.gameObject.SetActive(true);
         }
 

@@ -13,15 +13,11 @@ namespace LightHouse.KinematicCharacterController
         public static Action ForceUpdateTarget;
         #region FIELDS
         [Header("Settings")]
-        [SerializeField] private Camera _playerCamera;
-        [SerializeField] private float _raycastDistance = 3.0f;
-        [SerializeField] private LayerMask _targetLayersLayer;
-        [SerializeField] private LayerMask _blockingLayer;
-        [SerializeField] private QueryTriggerInteraction _triggerInteraction;
         [SerializeField] private CanvasInteraction _interactionCanvas;
 
         //controllers s
         private RaycastInteractionHandler _interactionHandler;
+        [SerializeField] private UnifiedRaycastSystem _unifiedRaycastSystem;
         private RaycastDetector<IInteractable> _raycastInteractable;
         #endregion
 
@@ -30,9 +26,7 @@ namespace LightHouse.KinematicCharacterController
         {
             _interactionHandler = new RaycastInteractionHandler(_interactionCanvas);
 
-            _raycastInteractable = new RaycastDetector<IInteractable>(
-                _playerCamera, _raycastDistance, _targetLayersLayer, _blockingLayer, _triggerInteraction
-            );
+            _raycastInteractable = _unifiedRaycastSystem.InteractableDetector;
 
             _raycastInteractable.OnDetected += interactable => _interactionHandler.SetTarget(interactable);
             _raycastInteractable.OnItemDestroyed += () => _interactionHandler.SetTarget(null);
@@ -41,7 +35,6 @@ namespace LightHouse.KinematicCharacterController
 
         private void Update()
         {
-            _raycastInteractable.UpdateRay();
             _interactionHandler.Update(); // For UI animations, etc.
         }
 

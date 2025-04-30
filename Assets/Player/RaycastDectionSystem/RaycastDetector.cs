@@ -17,21 +17,38 @@ namespace LightHouse.Items.Detection
         {
         }
 
-        protected override void HandleNewObject(GameObject go)
+        public void ProcessRaycastHit(RaycastHit hit)
         {
-            if (_lastSeenObject == go)
-                return;
-            _lastSeenObject = go;
-            go.TryGetComponent(out _lastSeenComponent); //try to get the target component
-            //if we have something it's bcs its in the good layer
+            // Si déjà une cible trouvée, on ignore les autres (comme dans UpdateRay)
             if (_lastSeenComponent != null)
+                return;
+
+            // Check de layer masque ?
+            if (((1 << hit.collider.gameObject.layer) & _targetMasks) == 0)
+                return;
+
+
+            GameObject go = hit.collider.gameObject;
+
+            if (ItemRegistry.IsMarked(hit.collider, out GameObject markedObj))
+                go = markedObj;
+
+            go.TryGetComponent(out T component);
+            if (component != null)
             {
-                OnDetected?.Invoke(_lastSeenComponent);
-                if(_lastSeenComponent is IDestroyable destroy)
-                {
-                    destroy.OnDestroyed += Destroy_OnDestroyed;
-                }
+                _lastSeenObject = go;
+                _lastSeenComponent = component;
+
+                OnDetected?.Invoke(component);
+
+                if (component is IDestroyable destroyable)
+                    destroyable.OnDestroyed += Destroy_OnDestroyed;
             }
+        }
+        public void FinishFrame()
+        {
+            if (_lastSeenComponent != null)
+                ResetSeenObject();
         }
 
         private void Destroy_OnDestroyed()
@@ -42,14 +59,15 @@ namespace LightHouse.Items.Detection
         protected override void ResetSeenObject()
         {
             base.ResetSeenObject();
-            if (_lastSeenComponent != null)
+
+            if(_lastSeenComponent != null)
             {
+                if (_lastSeenComponent is IDestroyable destroyable)
+                    destroyable.OnDestroyed -= Destroy_OnDestroyed;
+
                 _lastSeenComponent = null;
-                if (_lastSeenComponent is IDestroyable destroy)
-                {
-                    destroy.OnDestroyed -= Destroy_OnDestroyed;
-                }
             }
         }
+
     }
 }

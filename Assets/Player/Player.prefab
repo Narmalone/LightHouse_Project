@@ -557,6 +557,7 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
@@ -1051,6 +1052,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8674682485748669005}
   - component: {fileID: 518771032426155933}
+  - component: {fileID: 4453206468429886752}
   - component: {fileID: 5860776069107868818}
   - component: {fileID: 8588254507179195592}
   - component: {fileID: 4390841736390168758}
@@ -1105,6 +1107,33 @@ MonoBehaviour:
   _enableSprintInput: 1
   _enableJumpInput: 1
   _enableCrouchInput: 1
+--- !u!114 &4453206468429886752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3576453257779527103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aae6a5b51a151842922e1aad462a8e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 7457726863973231117}
+  _raycastDistance: 3
+  _blockingLayers:
+    serializedVersion: 2
+    m_Bits: 193
+  _qti: 1
+  _interactableLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  _inventoryLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  _nameLayers:
+    serializedVersion: 2
+    m_Bits: 192
 --- !u!114 &5860776069107868818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1117,19 +1146,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f503aebfbefb0a54daa5eac5715d4019, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _raycastSystem: {fileID: 4453206468429886752}
   _inventoryCapacity: 4
   _grabAndDropItemRange: 1.5
   _itemDatabase: {fileID: 11400000, guid: eec9f4e4453518e4bb148827b9312144, type: 2}
   _inventoryTarget: {fileID: 1259359992558668386}
-  _playerCamera: {fileID: 7457726863973231117}
-  _raycastDetectionRange: 3
-  _inventoryItemsMask:
-    serializedVersion: 2
-    m_Bits: 64
-  _blockingLayers:
-    serializedVersion: 2
-    m_Bits: 193
-  _inventoryRaycastQti: 1
   _maxDropPower: 10
   _dropPowerCurve:
     serializedVersion: 2
@@ -1173,16 +1194,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c2ddc3f33fecc48b519485a1f2b93b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerCamera: {fileID: 7457726863973231117}
-  _raycastDistance: 3
-  _targetLayersLayer:
-    serializedVersion: 2
-    m_Bits: 192
-  _blockingLayers:
-    serializedVersion: 2
-    m_Bits: 193
-  _triggerInteraction: 1
   _interactionCanvas: {fileID: 5442988119189176741}
+  _unifiedRaycastSystem: {fileID: 4453206468429886752}
 --- !u!114 &4390841736390168758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1195,16 +1208,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bddcef2be503a514885b27053c576bb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerCamera: {fileID: 7457726863973231117}
-  _raycastDistance: 3
-  _targetLayersLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  _blockingLayer:
-    serializedVersion: 2
-    m_Bits: 193
-  _triggerInteraction: 1
   _interactionCanvas: {fileID: 5442988119189176741}
+  _unifiedRaycastSystem: {fileID: 4453206468429886752}
 --- !u!114 &7906979379660786359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1775,6 +1780,13 @@ MonoBehaviour:
   deepLearningSuperSamplingUseCustomAttributes: 0
   deepLearningSuperSamplingUseOptimalSettings: 1
   deepLearningSuperSamplingSharpening: 0
+  allowFidelityFX2SuperResolution: 1
+  fidelityFX2SuperResolutionUseCustomQualitySettings: 0
+  fidelityFX2SuperResolutionQuality: 0
+  fidelityFX2SuperResolutionUseCustomAttributes: 0
+  fidelityFX2SuperResolutionUseOptimalSettings: 1
+  fidelityFX2SuperResolutionEnableSharpening: 0
+  fidelityFX2SuperResolutionSharpening: 0
   fsrOverrideSharpness: 0
   fsrSharpness: 0.92
   exposureTarget: {fileID: 0}
