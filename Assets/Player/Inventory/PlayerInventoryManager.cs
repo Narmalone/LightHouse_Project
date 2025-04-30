@@ -74,8 +74,8 @@ namespace LightHouse.KinematicCharacterController
 
         private void LateUpdate()
         {
-            _inventoryTarget.position = _inventoryRaycastDetector.RayOrigin + (_inventoryRaycastDetector.RayDirection.normalized * _grabAndDropItemRange);
-            _inventoryTarget.rotation = Quaternion.LookRotation(_inventoryRaycastDetector.RayDirection.normalized);
+            _inventoryTarget.position = UnifiedRaycastSystem.RayOrigin + (UnifiedRaycastSystem.RayDirection.normalized * _grabAndDropItemRange);
+            _inventoryTarget.rotation = Quaternion.LookRotation(UnifiedRaycastSystem.RayDirection.normalized);
         }
 
         private void OnDrawGizmos()

@@ -18,10 +18,6 @@ namespace LightHouse.Items.Detection
         protected LayerMask _blockingLayers = ~0;
         protected QueryTriggerInteraction _queryTriggerInteraction = QueryTriggerInteraction.Ignore;
 
-        //Ray infos
-        public Vector3 RayOrigin { get; private set; }
-        public Vector3 RayDirection { get; private set; }
-
         protected GameObject _lastSeenObject;
         public GameObject LastSeenObject => _lastSeenObject;
         #endregion

@@ -103,8 +103,8 @@ namespace LightHouse.Items.Grabable
         {
             if (!_isGrabbed || _targetPoint == null) return;
 
-            _grabRayOrigin = _inventoryRaycastDetector.RayOrigin;
-            Vector3 fullDirection = _inventoryRaycastDetector.RayDirection.normalized;
+            _grabRayOrigin = UnifiedRaycastSystem.RayOrigin;
+            Vector3 fullDirection = UnifiedRaycastSystem.RayDirection.normalized;
             Vector3 targetPos = _grabRayOrigin + (fullDirection * _objectAtRange) + _offsetPos;
             Vector3 toTarget = targetPos - _rb.position;
             float dist = toTarget.magnitude;

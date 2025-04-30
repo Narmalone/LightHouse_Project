@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class UnifiedRaycastSystem : MonoBehaviour
 {
+    public static Vector3 RayOrigin;
+    public static Vector3 RayDirection;
     [SerializeField] private Camera _camera;
     [SerializeField] private float _raycastDistance;
     [SerializeField] private LayerMask _blockingLayers;
@@ -35,6 +37,8 @@ public class UnifiedRaycastSystem : MonoBehaviour
         Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
         var hits = Physics.RaycastAll(ray, _raycastDistance, _blockingLayers, _qti);
         Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        RayOrigin = ray.origin;
+        RayDirection = ray.direction;
 
         LayerMask combinedTargetMask = _nameLayers | _interactableLayers | _inventoryLayers;
         bool anyDetected = false;
