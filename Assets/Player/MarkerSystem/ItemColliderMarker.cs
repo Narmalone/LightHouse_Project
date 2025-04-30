@@ -16,6 +16,9 @@ public class ItemColliderMarker : MonoBehaviour
 
     private void Awake()
     {
+        if (col == null)
+            col = GetComponent<Collider>();
+
         ItemRegistry.Register(col, TargetComponent);
     }
 
