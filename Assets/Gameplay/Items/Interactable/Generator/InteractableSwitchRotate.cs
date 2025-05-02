@@ -97,7 +97,9 @@ namespace LightHouse.Items.Interactable
         public void GoToTarget()
         {
             _startRotation = _targetToRotate.localRotation;
-            _currentTarget = Quaternion.Euler(_rotationDelta);
+            Quaternion deltaRotation = Quaternion.Euler(_rotationDelta);
+            _currentTarget = _startRotation * deltaRotation;
+
             _rotationTimer = 0f;
             _timer.ResetTimer();
             _timer.StartTimer();

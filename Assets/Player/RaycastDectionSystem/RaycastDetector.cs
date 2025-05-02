@@ -27,15 +27,11 @@ namespace LightHouse.Items.Detection
                 go = markedObj;
 
             _lastSeenObject = go;
-
-
             go.TryGetComponent(out T component);
             if (component != null)
             {
                 _lastSeenComponent = component;
-
                 OnDetected?.Invoke(component);
-
                 if (component is IDestroyable destroyable)
                     destroyable.OnDestroyed += Destroy_OnDestroyed;
             }

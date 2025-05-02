@@ -11,6 +11,8 @@ namespace LightHouse.Items.Interactable
         [SerializeField] private SingleRaycastedItemName _enableElectricityFirst;
         [SerializeField] private ElectricalSwitch[] _switchesOnPannel;
 
+        public InteractableSwitchRotate ElectricDoor => _electricDoor;
+        public SingleRaycastedItemName EnableElectricityFirstCollider => _enableElectricityFirst;
         public event Action<bool, ElectricityZones, ElectricZoneData> OnSwitchElectricityChanged;
 
         #region MONO'S CALLBACK
