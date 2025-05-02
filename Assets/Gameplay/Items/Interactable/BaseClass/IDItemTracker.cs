@@ -19,8 +19,10 @@ namespace LightHouse.Items.Interactable
         [SerializeField] protected LocalizedString _missingItemInInventoryTxt => _interactionTextsDB.Need_Item;
         [SerializeField] protected LocalizedString _needItemOnHandsTxt => _interactionTextsDB.Need_Item_In_Hands;
         [SerializeField] protected LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
+        [SerializeField] protected LocalizedString _itemNeededName;
 
-        [SerializeField] protected string _currentText;
+        [SerializeField] protected string _currentItemNeededName;
+        [SerializeField] protected string _currentInteractionText;
 
         [Header("Read Only / Debug purposes")]
         [SerializeField] protected bool _hasKeyInInventory = false;
@@ -28,16 +30,18 @@ namespace LightHouse.Items.Interactable
         #endregion
         
         #region MONO'S CALLBACK
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();   
             InventoryHandlerData.OnSelectedItemChanged += InventoryHandlerData_OnSelectedItemChanged;
             InventoryHandlerData.OnItemDropped += InventoryHandlerData_OnItemDropped;
             LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
-
+            _currentItemNeededName = _itemNeededName.GetLocalizedString();
         }
 
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             InventoryHandlerData.OnSelectedItemChanged -= InventoryHandlerData_OnSelectedItemChanged;
             InventoryHandlerData.OnItemDropped -= InventoryHandlerData_OnItemDropped;
             LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
@@ -46,7 +50,10 @@ namespace LightHouse.Items.Interactable
 
         #region LOCALIZATION
         protected virtual void OnLocaleChanged(Locale locale)
-            => UpdateInteractionText();
+        {
+            _currentItemNeededName = _itemNeededName.GetLocalizedString();
+            UpdateInteractionText();
+        }
 
         protected virtual void UpdateInteractionText()
         {
@@ -55,13 +62,13 @@ namespace LightHouse.Items.Interactable
             if (!_hasKeyInInventory)
             {
                 var rawString = _missingItemInInventoryTxt;
-                rawString.Arguments = new object[] { new { key = _itemNeeded.ToString() } };
+                rawString.Arguments = new object[] { new { key = _currentItemNeededName } };
                 ResolveAndSetText(rawString);
             }
             else if (_hasKeyInInventory && !_hasKeyOnHands)
             {
                 var rawString = _needItemOnHandsTxt;
-                rawString.Arguments = new object[] { new { key = _itemNeeded.ToString() } };
+                rawString.Arguments = new object[] { new { key = _currentItemNeededName } };
                 ResolveAndSetText(rawString);
             }
             else
@@ -77,7 +84,7 @@ namespace LightHouse.Items.Interactable
         {
             str.StringChanged += result =>
             {
-                _currentText = result;
+                _currentInteractionText = result;
                 if (IsItemRaycasted)
                     InvokeInteractionDescriptionUpdated();
             };
@@ -92,7 +99,7 @@ namespace LightHouse.Items.Interactable
                 wrapperTemplate: wrapper
             );
 
-            _currentText = finalText;
+            _currentInteractionText = finalText;
             if (IsItemRaycasted)
                 InvokeInteractionDescriptionUpdated();
         }
@@ -101,7 +108,7 @@ namespace LightHouse.Items.Interactable
 
         #region IInteractable
         public override string GetInteractionName()
-            =>  _currentText;
+            =>  _currentInteractionText;
 
         public override void Interact() => InvokeObjectInteracted();
 

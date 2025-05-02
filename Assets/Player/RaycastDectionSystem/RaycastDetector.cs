@@ -19,24 +19,19 @@ namespace LightHouse.Items.Detection
 
         public void ProcessRaycastHit(RaycastHit hit)
         {
-            // Si déjà une cible trouvée, on ignore les autres (comme dans UpdateRay)
-            if (_lastSeenComponent != null)
-                return;
-
-            // Check de layer masque ?
-            if (((1 << hit.collider.gameObject.layer) & _targetMasks) == 0)
-                return;
-
-
             GameObject go = hit.collider.gameObject;
+
+            if (go == _lastSeenObject) return;
 
             if (ItemRegistry.IsMarked(hit.collider, out GameObject markedObj))
                 go = markedObj;
 
+            _lastSeenObject = go;
+
+
             go.TryGetComponent(out T component);
             if (component != null)
             {
-                _lastSeenObject = go;
                 _lastSeenComponent = component;
 
                 OnDetected?.Invoke(component);

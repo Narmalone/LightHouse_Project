@@ -1,103 +1,99 @@
 ﻿using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
-using System.Linq; // Ajout important pour le tri
+using System.Linq;
 using LightHouse.Localization;
 
 namespace LightHouse.Game.Options
 {
     public class RefreshRateDropdownController
     {
-        private readonly DropdownField dropdown;
-        private readonly RefreshRateSetting setting;
-        private LocalizedStringDatabase_Options_Display optionsDB;
+        private readonly DropdownField _dropdown;
+        private readonly RefreshRateSetting _setting;
+        private LocalizedStringDatabase_Options_Display _optionTextsDB;
 
-        public RefreshRateSetting Setting => setting;
+        private List<float> _uniqueRates = new();
+
+        public RefreshRateSetting Setting => _setting;
 
         public RefreshRateDropdownController(DropdownField dropdown, RefreshRateSetting setting, LocalizedStringDatabase_Options_Display optionsDb)
         {
-            this.dropdown = dropdown;
-            this.setting = setting;
-            this.optionsDB = optionsDb;
+            this._dropdown = dropdown;
+            this._setting = setting;
+            this._optionTextsDB = optionsDb;
         }
 
         public void Initialize()
         {
-            if (dropdown == null)
+            if (_dropdown == null)
             {
-                Debug.LogError("DropdownField is null for RefreshRateDropdownController!");
+                Debug.LogError("[RefreshRateDropdown] DropdownField is null!");
                 return;
             }
 
+            _uniqueRates.Clear();
+
             int maxWidth = Display.main.systemWidth;
             int maxHeight = Display.main.systemHeight;
-
-            HashSet<double> rates = new();
 
             foreach (var res in Screen.resolutions)
             {
                 if (res.width <= maxWidth && res.height <= maxHeight)
                 {
-                    rates.Add(res.refreshRateRatio.value); // 👈 NE PAS CASTER EN UINT
+                    float rate = (float)res.refreshRateRatio.value;
+                    if (!_uniqueRates.Any(existing => Mathf.Abs(existing - rate) < 0.01f))
+                    {
+                        _uniqueRates.Add(rate);
+                    }
                 }
             }
 
-            // Ajouter la fréquence actuelle si absente
-            double currentRefreshRate = Screen.currentResolution.refreshRateRatio.value;
-            if (!rates.Any(rate => Mathf.Abs((float)(rate - currentRefreshRate)) < 0.01f))
+            float currentRate = (float)Screen.currentResolution.refreshRateRatio.value;
+            if (!_uniqueRates.Any(r => Mathf.Abs(r - currentRate) < 0.01f))
             {
-                Debug.Log($"[RefreshRateDropdown] Adding current refresh rate: {currentRefreshRate:F3} Hz");
-                rates.Add(currentRefreshRate);
+                Debug.Log($"[RefreshRateDropdown] Adding current refresh rate: {currentRate:F2} Hz");
+                _uniqueRates.Add(currentRate);
             }
 
-            List<string> sortedRates = rates
-                .OrderBy(r => r)
-                .Select(r => $"{r:F2} Hz") // 👈 Formater proprement 59.94 etc.
-                .ToList();
+            _uniqueRates = _uniqueRates.OrderBy(r => r).ToList();
 
-            if (sortedRates.Count == 0)
-            {
-                sortedRates.Add($"{currentRefreshRate:F2} Hz");
-            }
+            List<string> rateStrings = _uniqueRates.Select(r => $"{r:F2} Hz").ToList();
+            _dropdown.choices = rateStrings;
 
-            dropdown.choices = sortedRates;
+            string currentHz = $"{(float)Screen.currentResolution.refreshRateRatio.value:F2} Hz";
+            _dropdown.SetValueWithoutNotify(rateStrings.Contains(currentHz) ? currentHz : rateStrings.Last());
 
-            string currentHz = $"{currentRefreshRate:F2} Hz";
-
-            dropdown.value = sortedRates.Contains(currentHz) ? currentHz : sortedRates[sortedRates.Count - 1];
-            UpdateSettingFromValue(dropdown.value);
-
-            dropdown.RegisterValueChangedCallback(evt => UpdateSettingFromValue(evt.newValue));
+            UpdateSettingFromValue(_dropdown.value);
+            _dropdown.RegisterValueChangedCallback(evt => UpdateSettingFromValue(evt.newValue));
         }
 
         private void UpdateSettingFromValue(string value)
         {
-            if (value != null && value.Contains("Hz"))
+            if (!string.IsNullOrEmpty(value) && value.EndsWith("Hz"))
             {
                 if (float.TryParse(value.Replace(" Hz", ""), out float hz))
                 {
-                    setting.SetSelectedRefreshRate(hz);
+                    _setting.SetSelectedRefreshRate(hz);
                 }
             }
         }
 
-
-
         public void UpdateLanguage()
         {
-            dropdown.label = optionsDB.Refresh_Rate.GetLocalizedString();
+            _dropdown.label = _optionTextsDB.Refresh_Rate.GetLocalizedString();
         }
 
         public void Apply()
         {
-            if (setting.HasChanged()) setting.Apply();
+            if (_setting.HasChanged())
+                _setting.Apply();
         }
 
         public void Revert()
         {
-            if (setting.HasChanged())
+            if (_setting.HasChanged())
             {
-                setting.Revert();
+                _setting.Revert();
                 Initialize();
             }
         }

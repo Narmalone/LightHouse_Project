@@ -6,7 +6,7 @@ using LightHouse.Electricity;
 using UnityEngine.Localization;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace LightHouse.Items
+namespace LightHouse.Items.Interactable
 {
     public class ElectricalSwitch : InteractableSwitchRotate, IInteractable
     {

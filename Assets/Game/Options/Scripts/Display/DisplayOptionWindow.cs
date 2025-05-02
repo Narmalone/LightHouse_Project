@@ -128,13 +128,11 @@ namespace LightHouse.Game.Options
 
         public void RefreshOnlyUI()
         {
-            // 1. Annuler toutes les settings (valeurs internes)
             foreach (var setting in optionSettings)
             {
                 setting.Revert();
             }
 
-            // 2. Réinitialiser toutes les UI visuellement
             resolutionController.Initialize();
             displaysController.Initialize();
             displayModeController.Initialize();

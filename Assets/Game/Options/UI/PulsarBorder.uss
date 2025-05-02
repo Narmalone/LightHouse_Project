@@ -1,0 +1,17 @@
+.pulsing-border {
+    border-width: 2px;
+    border-color: #d92e2e;
+    animation-name: pulse;
+    animation-duration: 1.2s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes pulse {
+    0% {
+        border-color: #d92e2e;
+    }
+    100% {
+        border-color: #ff0000;
+    }
+}

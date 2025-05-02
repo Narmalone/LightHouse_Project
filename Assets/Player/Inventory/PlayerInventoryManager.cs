@@ -3,6 +3,7 @@ using LightHouse.Interactions;
 using UnityEngine;
 using LightHouse.Items.Detection;
 using LightHouse.Inventory;
+using LightHouse.Game.BootStrap;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -52,17 +53,15 @@ namespace LightHouse.KinematicCharacterController
         private GameObject _lastObjectSeen;
         private IInventoryItem _lastInventoryItemSeen;
 
+        private bool _isInitialized = false;
         #endregion
 
         #region MONO CALLBACKS
         private void Awake() => Initialize();
-        private void Start()
-        {
-            InventoryHandlerData.Initialize(_inventoryUiController, _inventoryTarget);
-        }
 
         private void Update()
         {
+            if (!_isInitialized) return;
             if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
                 AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen);
 
@@ -74,6 +73,7 @@ namespace LightHouse.KinematicCharacterController
 
         private void LateUpdate()
         {
+            if (!_isInitialized) return;
             _inventoryTarget.position = UnifiedRaycastSystem.RayOrigin + (UnifiedRaycastSystem.RayDirection.normalized * _grabAndDropItemRange);
             _inventoryTarget.rotation = Quaternion.LookRotation(UnifiedRaycastSystem.RayDirection.normalized);
         }
@@ -91,6 +91,7 @@ namespace LightHouse.KinematicCharacterController
             SlotManager.Clear();
             InventoryHandlerData.Reset();
             PoolManager.Clear();
+            BootStrap.OnGameAssetsLoaded -= GameInitiator_OnGameSceneInitialized;
         }
 
         #endregion
@@ -98,10 +99,18 @@ namespace LightHouse.KinematicCharacterController
         #region INITIALIZE METHODS
         private void Initialize()
         {
+            InventoryHandlerData.SetInventoryTarget(_inventoryTarget);
             RegisterInputs();
             _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
             SlotManager.Initialize(_slots);
             InitializeControllers();
+            BootStrap.OnGameAssetsLoaded += GameInitiator_OnGameSceneInitialized;
+        }
+
+        private void GameInitiator_OnGameSceneInitialized()
+        {
+            InventoryHandlerData.Initialized();
+            _isInitialized = true;
         }
 
         private void InitializeControllers()

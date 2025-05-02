@@ -64,11 +64,17 @@ namespace LightHouse.Game.Options
         private void RefreshDropdown()
         {
             List<string> fpsChoices = new();
-            foreach (var option in frameRateOptions)
+            for(int i = 0; i < frameRateOptions.Count; i++)
             {
-                fpsChoices.Add($"{option.Name} FPS");
+                if(i == frameRateOptions.Count - 1)
+                {
+                    fpsChoices.Add($"{frameRateOptions[i].Name}");
+                }
+                else
+                {
+                    fpsChoices.Add($"{frameRateOptions[i].Name} FPS");
+                }
             }
-
             dropdown.UpdateChoices(fpsChoices);
 
             string currentFPS = Application.targetFrameRate > 0 ? $"{Application.targetFrameRate}" : optionsDB.FPS_Unlimited.GetLocalizedString();

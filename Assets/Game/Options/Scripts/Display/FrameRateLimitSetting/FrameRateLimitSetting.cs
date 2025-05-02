@@ -27,7 +27,6 @@ namespace LightHouse.Game.Options
         {
             Application.targetFrameRate = selectedTargetFPS;
             initialTargetFPS = selectedTargetFPS;
-            Debug.Log("frame limit applied");
         }
 
         public void Revert()

@@ -16,6 +16,8 @@ namespace LightHouse.Items.Inventory
 
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+
+#pragma warning disable
         public event Action<string> UseTextSlotChanged;
 
         public void InvokeOnCanBeUsedFromInventoryChanged()

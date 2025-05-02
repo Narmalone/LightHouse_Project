@@ -11,20 +11,20 @@ namespace LightHouse.Items.Inventory
         [SerializeField] private ushort _maxStack = 10;
         public ushort MaxStack => _maxStack;
 
-        public int CurrentStack { get; set; } = 1;
-
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+
+#pragma warning disable
         public event Action<string> UseTextSlotChanged;
 
         public void InvokeOnCanBeUsedFromInventoryChanged()
         {
-            
+            CanBeUsedFromInventoryChanged?.Invoke(this.GlobalItemID, this.ItemSpecificID);
         }
 
         public void UseFromInventory()
         {
-            
+            OnItemUsed?.Invoke();
         }
 
         public string UseTextSlot()

@@ -1,6 +1,10 @@
 using UnityEngine;
 
-public class TagSelectorAttribute : PropertyAttribute
+namespace LightHouse.CustomAttributes
 {
-    
+    public class TagSelectorAttribute : PropertyAttribute
+    {
+
+    }
+
 }

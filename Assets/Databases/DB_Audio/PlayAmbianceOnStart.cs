@@ -4,19 +4,9 @@ using UnityEngine;
 public class PlayAmbianceOnStart : MonoBehaviour
 {
     public AmbianceAudioName Category;
-
-    private void Awake()
-    {
-        AudioHandlerData.OnAudioManagerInitialized += AudioHandlerData_OnAudioManagerInitialized;
-    }
-
-    private void OnDestroy()
-    {
-        AudioHandlerData.OnAudioManagerInitialized -= AudioHandlerData_OnAudioManagerInitialized;
-    }
-
-    private void AudioHandlerData_OnAudioManagerInitialized()
+    private void Start()
     {
         AudioHandlerData.AudioManager.PlayAmbiance(this.transform, Category);
+
     }
 }

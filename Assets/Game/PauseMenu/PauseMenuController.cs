@@ -1,4 +1,3 @@
-using System;
 using LightHouse.Inputs;
 using LightHouse.Localization;
 using UnityEngine;
@@ -9,7 +8,7 @@ using UnityEngine.UIElements;
 namespace LightHouse.Game.Options
 {
     #region ENUMS / CUSTOM LOCALIZED
-    public enum UiState
+    public enum UiPauseState
     {
         None,
         Menu,
@@ -38,11 +37,12 @@ namespace LightHouse.Game.Options
 
     public class PauseMenuController : MonoBehaviour
     {
+        #region FIELDS
         [SerializeField] private UIDocument _pauseMenuDocument;
         [SerializeField] private OptionsMenuController _optionsMenuController;
         [SerializeField] private LocalizedStringDatabase_Menu_Pause _pauseMenuTextsDB;
 
-        public UiState State = UiState.None;
+        public UiPauseState State = UiPauseState.None;
         private VisualElement _rootMenu;
         private VisualElement _pauseMenuRoot;
         private VisualElement _optionsMenuRoot;
@@ -51,33 +51,26 @@ namespace LightHouse.Game.Options
         private LocalizedButton _optionsButton;
         private LocalizedButton _mainMenuButton;
         private LocalizedButton _quitButton;
+        #endregion
 
         #region MONO CALLBACKS
         private void Awake()
         {
             _rootMenu = _pauseMenuDocument.rootVisualElement;
             _pauseMenuRoot = _rootMenu.Q<VisualElement>("PauseMenu");
-            _optionsMenuRoot = _rootMenu.Q<VisualElement>("OptionsContainer");
+            _optionsMenuRoot = _rootMenu.Q<VisualElement>("Options_Root");
             LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
             SearchAndInitializeButtons();
         }
 
-        private void LocalizationSettings_SelectedLocaleChanged(Locale obj)
-        {
-            //_optionsMenuController.OnBackCliqued.UpdateLanguageButtonLabel();
-            _resumeButton.UpdateLanguageButtonLabel();
-            _optionsButton.UpdateLanguageButtonLabel();
-            _mainMenuButton.UpdateLanguageButtonLabel();
-            _quitButton.UpdateLanguageButtonLabel();
-        }
-
         private void LateUpdate()
         {
+            if (!InputManager.IsInitialized) return;
             if (InputManager.Player.PauseMenu.WasPerformedThisFrame())
             {
-                if (State == UiState.Pause)
+                if (State == UiPauseState.Pause)
                     PauseToNone();
-                else if (State == UiState.Options)
+                else if (State == UiPauseState.Options)
                     OptionsToPause();
                 else
                     NoneToPause();
@@ -119,6 +112,17 @@ namespace LightHouse.Game.Options
         }
         #endregion
 
+        #region LOCALIZATION
+        private void LocalizationSettings_SelectedLocaleChanged(Locale obj)
+        {
+            //_optionsMenuController.OnBackCliqued.UpdateLanguageButtonLabel();
+            _resumeButton.UpdateLanguageButtonLabel();
+            _optionsButton.UpdateLanguageButtonLabel();
+            _mainMenuButton.UpdateLanguageButtonLabel();
+            _quitButton.UpdateLanguageButtonLabel();
+        }
+        #endregion
+
         #region REGISTER / UNREGISTER
         private void RegisterCallbacks()
         {
@@ -140,8 +144,6 @@ namespace LightHouse.Game.Options
         #endregion
 
         #region BUTTONS CLICKED
-
-
         private void Resume_Button_clicked()
         {
             PauseToNone();
@@ -157,7 +159,7 @@ namespace LightHouse.Game.Options
 
         private void MainMenuCliqued()
         {
-            throw new NotImplementedException();
+            LightHouse.Game.BootStrap.BootStrap.Instance.ReturnToMenu();
         }
 
         private void Quit_Button_clicked()
@@ -194,28 +196,28 @@ namespace LightHouse.Game.Options
         public void PauseToNone()
         {
             HidePauseMenu();
-            State = UiState.None;
+            State = UiPauseState.None;
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             UnityEngine.Cursor.visible = false;
         }
 
         public void PauseToOptions()
         {
-            State = UiState.Options;
+            State = UiPauseState.Options;
             HidePauseMenu();
             ShowOptionsMenu();
         }
 
         public void OptionsToPause()
         {
-            State = UiState.Pause;
+            State = UiPauseState.Pause;
             HideOptionsMenu();
             ShowPauseMenu();
         }
 
         public void NoneToPause()
         {
-            State = UiState.Pause;
+            State = UiPauseState.Pause;
             ShowPauseMenu();
             UnityEngine.Cursor.lockState = CursorLockMode.None;
             UnityEngine.Cursor.visible = true;

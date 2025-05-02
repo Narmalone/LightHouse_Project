@@ -25,6 +25,8 @@ namespace LightHouse.Items.Inventory
         #region IInventory Fields
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+
+#pragma warning disable
         public event Action<string> UseTextSlotChanged;
         #endregion
 

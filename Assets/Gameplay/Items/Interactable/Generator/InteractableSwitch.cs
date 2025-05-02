@@ -6,7 +6,7 @@ using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace LightHouse.Items
+namespace LightHouse.Items.Interactable
 {
     public class InteractableSwitch : InteractableItemBase, IInteractable
     {
@@ -25,15 +25,17 @@ namespace LightHouse.Items
         #endregion
 
         #region MONO CALLBACKS
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
             InputManager.OnInitialized += InputManager_OnInputManagerInitialized;
             InitializeLocalization();
         }
 
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
             InputManager.OnInitialized -= InputManager_OnInputManagerInitialized;
         }
@@ -117,6 +119,11 @@ namespace LightHouse.Items
             _isSwitchOn = !_isSwitchOn;
             UpdateInteractionText();
             InvokeObjectInteracted();
+        }
+
+        protected override void OnGameInitialized()
+        {
+            
         }
         #endregion
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 namespace LightHouse.Inventory
 {
@@ -28,6 +29,7 @@ namespace LightHouse.Inventory
         public static event Action<IInventoryItem> OnItemAddedToInventory;
         public static event Action<IInventoryItem> OnItemDropped;
         public static event Action OnInitialized;
+        public static bool IsInitialized { get; private set; } = false;
 
         public static event Action OnGrabObjectChanged;
 
@@ -38,13 +40,19 @@ namespace LightHouse.Inventory
         #endregion
 
         #region INIT & RESET
-        public static void Initialize(InventoryUIController uiController, Transform inventoryTargetPosition)
+        public static void SetInventoryTarget(Transform inventoryTargetPosition)
         {
             InventoryTargetPosition = inventoryTargetPosition;
+        }
+
+        public static void Initialized()
+        {
             OnInitialized?.Invoke();
+            IsInitialized = true;
         }
         public static void Reset()
         {
+            IsInitialized = false;
             OnGrabObjectChanged = null;
             OnSelectedItemChanged = null;
             OnItemAddedToInventory = null;

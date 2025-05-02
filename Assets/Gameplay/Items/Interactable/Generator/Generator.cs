@@ -48,10 +48,6 @@ namespace LightHouse.Items.Interactable
             Initialize();
         }
 
-        private void Start()
-        {
-        }
-
         private void Update()
         {
             if (_isGeneratorOn)

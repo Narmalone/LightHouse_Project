@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using LightHouse.Electricity;
 
-namespace LightHouse.Items
+namespace LightHouse.Items.Interactable
 {
     public class ElectricalPannel : MonoBehaviour
     {

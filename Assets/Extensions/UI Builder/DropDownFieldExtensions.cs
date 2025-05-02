@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace LightHouse.UIExtensions
@@ -31,7 +32,6 @@ namespace LightHouse.UIExtensions
             {
                 dropdown.SetValueWithoutNotify(string.Empty);
             }
-
             dropdown.MarkDirtyRepaint();
         }
     }

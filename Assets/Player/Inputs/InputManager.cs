@@ -7,6 +7,7 @@ namespace LightHouse.Inputs
     public static class InputManager
     {
         public static event Action OnInitialized;
+        public static bool IsInitialized { get; private set; } = false; 
         public static event Action OnInputManagerWillClear;
         private static PlayerInputActions _player_Input_Actions;
         public static PlayerInputActions PLAYER_INPUTS_ACTIONS => _player_Input_Actions;
@@ -58,11 +59,13 @@ namespace LightHouse.Inputs
         public static void InputManagerInitialized()
         {
             OnInitialized?.Invoke();
+            IsInitialized = true;
         }
 
         public static void DisposePlayerInputActions()
         {
-            OnInputManagerWillClear?.Invoke(); 
+            OnInputManagerWillClear?.Invoke();
+            IsInitialized = false;
             _player_Input_Actions = null;
         }
 

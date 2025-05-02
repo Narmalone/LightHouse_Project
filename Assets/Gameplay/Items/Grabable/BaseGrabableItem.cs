@@ -16,7 +16,7 @@ using UnityEngine.Localization.Settings;
 using UnityEngine.ResourceManagement.AsyncOperations;
 #endregion
 
-namespace LightHouse.Items.Grabable
+namespace LightHouse.Items.Interactable
 {
     [RequireComponent(typeof(Rigidbody))]
     public class BaseGrabableItem : InteractableItemBase, IInteractable, IItemCallback
@@ -84,8 +84,9 @@ namespace LightHouse.Items.Grabable
         #endregion
 
         #region MONO CALLBACK
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _baseMass = _rb.mass;
             PlayerGrabableItems.OnPlayerGrabableInitialized += PlayerGrabableItems_OnPlayerGrabableInitialized;
             PlayerHandlerData.OnHandlerInitialized += PlayerHandlerData_OnHandlerInitialized;
@@ -110,13 +111,13 @@ namespace LightHouse.Items.Grabable
             float dist = toTarget.magnitude;
 
             if (dist < 0.01f)
-                _rb.velocity = Vector3.zero;
+                _rb.linearVelocity = Vector3.zero;
             else
-                _rb.velocity = Vector3.ClampMagnitude(toTarget * _moveForce * Time.fixedDeltaTime, _maxClampedVelocity);
+                _rb.linearVelocity = Vector3.ClampMagnitude(toTarget * _moveForce * Time.fixedDeltaTime, _maxClampedVelocity);
 
             if (dist >= _maxItemRangeToAutomaticRelease)
             {
-                _rb.velocity = Vector3.zero;
+                _rb.linearVelocity = Vector3.zero;
                 Release();
                 return;
             }
@@ -127,8 +128,9 @@ namespace LightHouse.Items.Grabable
             _rb.MoveRotation(smoothedRotation);
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             PlayerGrabableItems.OnPlayerGrabableInitialized -= PlayerGrabableItems_OnPlayerGrabableInitialized;
             PlayerHandlerData.OnHandlerInitialized -= PlayerHandlerData_OnHandlerInitialized;
             LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
@@ -225,6 +227,11 @@ namespace LightHouse.Items.Grabable
         {
             if(_targetPoint == null)
                 _targetPoint = obj.PlayerGrabableItemsParent;
+        }
+
+        protected override void OnGameInitialized()
+        {
+            
         }
         #endregion
     }

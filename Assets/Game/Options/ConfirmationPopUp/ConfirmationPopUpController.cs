@@ -10,9 +10,6 @@ namespace LightHouse.Game.Options
         [Header("UI Document")]
         [SerializeField] private UIDocument uiDocument;
 
-        [Header("Timing")]
-        [SerializeField] private float timeoutSeconds = 15f;
-
         private VisualElement popup;
         private Button confirmButton;
         private Button cancelButton;
@@ -22,9 +19,9 @@ namespace LightHouse.Game.Options
         private Action onCancel;
         private Coroutine countdownCoroutine;
 
-        private void Awake()
+        private void Start()
         {
-            popup = uiDocument.rootVisualElement.Q<VisualElement>("ConfirmationPopup");
+            popup = uiDocument.rootVisualElement.Q<VisualElement>("Root_Confirmation");
             confirmButton = popup.Q<Button>("ConfirmButton");
             cancelButton = popup.Q<Button>("CancelButton");
             _confirmationTimePopup = popup.Q<Label>("ConfirmationTime");

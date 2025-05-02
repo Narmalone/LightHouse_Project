@@ -32,11 +32,17 @@ namespace LightHouse.Game.Options
             int maxWidth = Display.main.systemWidth;
             int maxHeight = Display.main.systemHeight;
 
+            HashSet<string> seen = new();
             foreach (var res in Screen.resolutions)
             {
                 if (res.width <= maxWidth && res.height <= maxHeight)
                 {
-                    resolutions.Add($"{res.width}x{res.height}");
+                    string formatted = $"{res.width}x{res.height}";
+                    if (!seen.Contains(formatted))
+                    {
+                        seen.Add(formatted);
+                        resolutions.Add(formatted);
+                    }
                 }
             }
 

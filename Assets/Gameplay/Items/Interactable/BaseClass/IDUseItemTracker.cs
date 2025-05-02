@@ -66,6 +66,11 @@ namespace LightHouse.Items.Interactable
 
         public void SubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed += Usable_OnItemUsed;
         public void UnsubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed -= Usable_OnItemUsed;
+
+        protected override void OnGameInitialized()
+        {
+            
+        }
     }
 }
 

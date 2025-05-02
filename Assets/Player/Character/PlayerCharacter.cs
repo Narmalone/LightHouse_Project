@@ -133,6 +133,16 @@ namespace LightHouse.KinematicCharacterController
             get => _currentSpeed;
         }
 
+        public void SetPosition(Vector3 pos)
+        {
+            Motor.SetPosition(pos);
+        }
+
+        public void SetRotation(Quaternion rot)
+        {
+            Motor.SetRotation(rot);
+        }
+
         public void Initialize()
         {
             _motor.CharacterController = this;

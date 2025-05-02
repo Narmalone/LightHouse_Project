@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LightHouse.Localization;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UIElements;
 
@@ -9,6 +11,7 @@ namespace LightHouse.Game.Options
 {
     public class OptionsMenuController : MonoBehaviour
     {
+        #region FIELDS
         public event Action OnBackClicked;
 
         [Header("UI References")]
@@ -21,6 +24,8 @@ namespace LightHouse.Game.Options
         [SerializeField] private LocalizedStringDatabase_Options_Languages _languagesTextsDB;
         [SerializeField] private LocalizedStringDatabase_Options_MouseKeyboard _mouseKeyboardTextsDB;
         [SerializeField] private LocalizedStringDatabase_Options_Sounds _soundsTextsDB;
+
+        [SerializeField] private Color _dropdownControllersBackground; //1D1D2A
 
         // UI Elements
         private VisualElement _rootOptions;
@@ -37,10 +42,56 @@ namespace LightHouse.Game.Options
         // Option Windows
         private DisplayOptionsWindow _displayOptionsWindow;
         private LanguageOptionWindow _languageOptionWindow;
+        #endregion
 
+        #region PROPERTIES
         public ConfirmationPopupController ConfirmationPopupController => _confirmationPopUpController;
+        #endregion
 
         #region Unity Callbacks
+
+        private void RegisterDropdowns(DropdownField dropdown)
+        {
+            // Attente de l'ouverture du menu dropdown
+            dropdown.RegisterCallback<PointerDownEvent>(_ =>
+            {
+                // Petit délai pour laisser Unity créer le menu popup
+                // Ensuite, on parcourt les éléments flottants
+                dropdown.schedule.Execute(() =>
+                {
+                    var pan = _rootOptions.panel.visualTree;
+                    var dropDownScroll = pan.Q<ScrollView>();
+                    if (dropDownScroll == null) return;
+                    dropDownScroll.style.backgroundColor = _dropdownControllersBackground;
+                    dropDownScroll.style.color = Color.white;
+                    var dropDownElements = dropDownScroll.Query<VisualElement>().Class("unity-base-dropdown__item");
+                    List<VisualElement> elementsList = dropDownElements.ToList();
+
+                    //Debug.Log(dropdown.choices.Count);
+                    for (int i = 0; i < dropdown.choices.Count; i++)
+                    {
+                        if (i == dropdown.index)
+                        {
+                            //Debug.Log(dropdown.choices[i]);
+                            //if (elementsList.Count < dropdown.choices.Count) return;
+                            elementsList[i].style.color = Color.yellow;
+                        }
+
+                    }
+                }).ExecuteLater(10); // 10ms environ
+            });
+        }
+
+        void OnEnable()
+        {
+
+            //var dropdown = _rootOptions.Q<DropdownField>("ResolutionDropdown");
+           
+       /*     RegisterDropdowns(_rootOptions.Q<DropdownField>("ResolutionDropdown"));
+            RegisterDropdowns(_rootOptions.Q<DropdownField>("DisplayModeDropdown"));
+            RegisterDropdowns(_rootOptions.Q<DropdownField>("ResolutionDropdown"));*/
+            
+        }
 
         private void Awake()
         {
@@ -54,6 +105,11 @@ namespace LightHouse.Game.Options
 
         private void Start()
         {
+            var dropdowns = _rootOptions.Query<DropdownField>().ToList();
+            foreach (var dropdown in dropdowns)
+            {
+                RegisterDropdowns(dropdown);
+            }
             UpdateAllTextsLanguage();
             NavigateTo(OptionCategory.Display, forcePerform: true);
         }
@@ -70,7 +126,7 @@ namespace LightHouse.Game.Options
 
         private void InitializeUIReferences()
         {
-            _rootOptions = _pauseMenuDocument.rootVisualElement.Q<VisualElement>("Root_Options");
+            _rootOptions = _pauseMenuDocument.rootVisualElement.Q<VisualElement>("Options_Root");
 
             _applySettingsButton = _rootOptions.Q<Button>("ApplyButton");
             _backButton = _rootOptions.Q<Button>("BackButton");
@@ -135,6 +191,17 @@ namespace LightHouse.Game.Options
         }
 
         #endregion
+        private OptionsNavigationButton _lastSelectedButton;
+
+        public void HighlightSelectedButton(OptionsNavigationButton selected, bool value)
+        {
+            if(_lastSelectedButton != null)
+            {
+                _lastSelectedButton.SetSelected(false);
+            }
+            _lastSelectedButton = selected;
+            selected.SetSelected(value);
+        }
 
         #region UI Updates
 
@@ -233,11 +300,8 @@ namespace LightHouse.Game.Options
                 panelData.Panel.SetDisplayStyle(DisplayStyle.Flex);
                 _currentOpenCategory = category;
             }
-            else
-            {
-                Debug.LogWarning($"[OptionsMenuController] No panel found for category: {category}");
-            }
         }
+
 
         private void OnConfirmNavigation()
         {

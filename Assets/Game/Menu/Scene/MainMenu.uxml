@@ -4,20 +4,20 @@
     <ui:VisualElement name="MainMenu_Root" class="menu-root" style="background-image: url(&quot;project://database/Assets/Game/Menu/menuPlaceholder.jpg?fileID=2800000&amp;guid=16d57ed946a928642b9b2207e998e2f8&amp;type=3#menuPlaceholder&quot;); height: 100%; width: 100%; padding-left: 0; display: flex;">
         <ui:VisualElement name="PlayButton" class="menu-button">
             <ui:VisualElement class="menu-fill" />
-            <ui:Label text="PLAY" name="Label" class="menu-label" />
+            <ui:Label text="PLAY" name="PlayLabel" class="menu-label" />
         </ui:VisualElement>
         <ui:VisualElement name="SettinsButton" enabled="true" class="menu-button">
             <ui:VisualElement class="menu-fill" />
-            <ui:Label text="SETTINGS" class="menu-label" />
+            <ui:Label text="SETTINGS" name="SettingsLabel" class="menu-label" />
         </ui:VisualElement>
         <ui:VisualElement name="ExtrasButton" focusable="false" enabled="false" class="menu-button" style="visibility: visible;">
             <ui:VisualElement class="menu-fill" />
-            <ui:Label text="EXTRAS" selectable="false" class="menu-label" />
+            <ui:Label text="EXTRAS" selectable="false" name="ExtrasLabel" class="menu-label" />
         </ui:VisualElement>
         <ui:VisualElement name="QuitButtons" class="menu-button">
             <ui:VisualElement class="menu-fill" />
-            <ui:Label text="QUIT" class="menu-label" />
+            <ui:Label text="QUIT" name="QuitLabel" class="menu-label" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:Instance template="Options" name="Options_Root" style="width: 100%; height: 100%; display: none;" />
+    <ui:Instance template="Options" name="Options_Root" style="display: none; min-height: 100%;" />
 </ui:UXML>

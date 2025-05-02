@@ -1,15 +1,14 @@
 using LightHouse.Inputs;
 using UnityEngine;
-using LightHouse.Interactions;
-using LightHouse.Inventory;
 using LightHouse.Handlers;
+using LightHouse.Game.BootStrap;
 
 namespace LightHouse.KinematicCharacterController
 {
-
     [DefaultExecutionOrder(-20)]
     public class Player : MonoBehaviour
     {
+        #region FIELDS
         [Header("Character")]
         [SerializeField] private PlayerCharacter _playerCharacter;
 
@@ -32,37 +31,37 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private bool _enableJumpInput = true;
         [SerializeField] private bool _enableCrouchInput = true;
 
+        private bool _isInitialized = false;
         private PlayerInputActions _inputActions;
+        #endregion
 
-        //PROPERTIES
+        #region PROPERTIES
         public PlayerCharacter Character => _playerCharacter;
         public PlayerInventoryManager Inventory => _inventoryController;
         public PlayerInteractableManager Interactions => _interactions;
         public PlayerCamera PlayerCamera => _playerCamera;
         public CameraSpring CameraSpring => _cameraSpring;
         public CameraLean CameraLean => _cameraLean;
+        #endregion
+
+        #region UNITY LIFECYCLE
         private void Awake()
         {
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+            UnityEngine.Cursor.visible = false;
             _inputActions = new PlayerInputActions();
             _inputActions.Enable();
-            InputManager.SetPlayerInputActions(_inputActions);
-        }
-
-        private void Start()
-        {
-            PlayerHandlerData.InitializeHandlerData(this);
-            InputManager.InputManagerInitialized();
-
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
             _playerCharacter.Initialize();
             _playerCamera.SetFollowTransform(_playerCharacter.GetCameraTarget());
             _cameraSpring.Initialize();
             _cameraLean.Initialize();
+
+            BootStrap.OnGameAssetsLoaded += BootStrap_OnGameSceneInitialized;
         }
 
         private void Update()
         {
+            if (!_isInitialized) return;
             HandleCharacterInput();
             _playerCharacter.UpdateCapsuleMeshRoot(Time.deltaTime);
 
@@ -70,6 +69,7 @@ namespace LightHouse.KinematicCharacterController
 
         private void LateUpdate()
         {
+            if (!_isInitialized) return;
             HandleCameraInput();
 
             Transform camTarget = _playerCharacter.GetCameraTarget();
@@ -84,8 +84,26 @@ namespace LightHouse.KinematicCharacterController
             InputManager.DisposePlayerInputActions();
             _inputActions.Dispose();
             PlayerHandlerData.Dispose();
+            BootStrap.OnGameAssetsLoaded -= BootStrap_OnGameSceneInitialized;
         }
+        #endregion
 
+        #region BootStrap
+        private void BootStrap_OnGameSceneInitialized()
+        {
+            PlayerHandlerData.InitializeHandlerData(this);
+            InputManager.SetPlayerInputActions(_inputActions);
+            InputManager.InputManagerInitialized();
+
+            Character.SetPosition(GameWorldHandlerData.PlayerSpawnPoint.position);
+            Character.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
+            _cameraSpring.enabled = true;
+
+            _isInitialized = true;
+        }
+        #endregion
+
+        #region CHARACTER INPUTS
         private void HandleCharacterInput()
         {
             if (!_enableAllCharacterInputs) return;
@@ -116,10 +134,11 @@ namespace LightHouse.KinematicCharacterController
                : SprintInput.None;
             }
 
-            // Apply inputs to character
             _playerCharacter.SetInputs(ref characterInputs);
         }
+        #endregion
 
+        #region CAMERA INPUTS
         private void HandleCameraInput()
         {
             if (_enableCameraRotationInput)
@@ -127,18 +146,16 @@ namespace LightHouse.KinematicCharacterController
                 CameraInput cameraInput = new CameraInput() { Look = _inputActions.Player.Look.ReadValue<Vector2>() };
                 _playerCamera.UpdateWithInput(Time.deltaTime, cameraInput.Look);
             }
-            
         }
+        #endregion
 
-        private void HandleLean(float deltaTime, Vector3 acceleration, Vector3 up)
-        {
-            _cameraLean.UpdateLean(deltaTime, acceleration, up);
-        }
+        #region CAMERA LEAN
+        private void HandleLean(float deltaTime, Vector3 acceleration, Vector3 up) => _cameraLean.UpdateLean(deltaTime, acceleration, up);
+        #endregion
 
-        private void HandleSpring(float deltaTime, Vector3 up)
-        {
-            _cameraSpring.UpdateSpring(deltaTime, up);
-        }
+        #region CAMERA SPRING
+        private void HandleSpring(float deltaTime, Vector3 up) => _cameraSpring.UpdateSpring(deltaTime, up);
+        #endregion
     }
 
 }
