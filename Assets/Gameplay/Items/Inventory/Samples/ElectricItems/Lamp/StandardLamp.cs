@@ -13,6 +13,11 @@ public class StandardLamp : MonoBehaviour, IElectricItem
     [field: SerializeField] public ElectricityZones ItemZone { get; set; }
     [field: SerializeField] public float ElectricityCost { get; set; } = 10.0f;
 
+    private void Awake()
+    {
+        _light.gameObject.SetActive(false);
+    }
+
     private void Start()
     {
         //Important to register on start to let the manager subscribe to the event

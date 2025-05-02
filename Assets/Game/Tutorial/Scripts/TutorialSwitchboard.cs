@@ -3,41 +3,43 @@ using LightHouse.Items.Interactable;
 using LightHouse.Items.Inventory;
 using UnityEngine;
 
-public class TutorialSwitchboard : MonoBehaviour
+namespace LightHouse.Game.Tutorial
 {
-    [SerializeField] private Key _shedKey;
-    [SerializeField] private List<BernacleInteractable> _objetsToRemoveBeforeInteract;
-    [SerializeField] private ElectricalPannel _electricalPannel;
-
-    private void Awake()
+    public class TutorialSwitchboard : MonoBehaviour
     {
-        _electricalPannel.ElectricDoor.CanBeInteracted = false;
-        _electricalPannel.ElectricDoor.CanBeRaycasted = false;
-        _electricalPannel.EnableElectricityFirstCollider.GetCollider().enabled = false;
+        [SerializeField] private Key _shedKey;
+        [SerializeField] private List<BernacleInteractable> _objetsToRemoveBeforeInteract;
+        [SerializeField] private ElectricalPannel _electricalPannel;
 
-        _shedKey.GetCollider().enabled = false;
-        
-        foreach (var obj in _objetsToRemoveBeforeInteract)
+        private void Awake()
         {
-            obj.OnDestroyed += () =>
+            _electricalPannel.ElectricDoor.CanBeInteracted = false;
+            _electricalPannel.ElectricDoor.CanBeRaycasted = false;
+            _electricalPannel.EnableElectricityFirstCollider.GetCollider().enabled = false;
+
+            _shedKey.GetCollider().enabled = false;
+
+            foreach (var obj in _objetsToRemoveBeforeInteract)
             {
-                var re = _objetsToRemoveBeforeInteract.Find(x => x.transform.position == obj.transform.position);
-                _objetsToRemoveBeforeInteract.Remove(obj);
-                if(_objetsToRemoveBeforeInteract.Count <= 0)
+                obj.OnDestroyed += () =>
                 {
-                    OnBernaclesRemoved();
-                }
-                Debug.Log("he has been destroyed");
-            };
+                    BernacleInteractable removedBernacle = _objetsToRemoveBeforeInteract.Find(x => x.transform.position == obj.transform.position);
+                    _objetsToRemoveBeforeInteract.Remove(removedBernacle);
+                    if (_objetsToRemoveBeforeInteract.Count <= 0)
+                        OnBernaclesRemoved();
+
+                };
+            }
+        }
+
+        private void OnBernaclesRemoved()
+        {
+            _electricalPannel.EnableElectricityFirstCollider.GetCollider().enabled = true;
+            _shedKey.GetCollider().enabled = true;
+
+            _electricalPannel.ElectricDoor.CanBeInteracted = true;
+            _electricalPannel.ElectricDoor.CanBeRaycasted = true;
         }
     }
 
-    private void OnBernaclesRemoved()
-    {
-        _electricalPannel.EnableElectricityFirstCollider.GetCollider().enabled = true;
-        _shedKey.GetCollider().enabled = true;
-
-        _electricalPannel.ElectricDoor.CanBeInteracted = true;
-        _electricalPannel.ElectricDoor.CanBeRaycasted = true;
-    }
 }
