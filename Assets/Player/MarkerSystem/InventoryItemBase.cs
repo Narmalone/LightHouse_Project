@@ -46,10 +46,7 @@ namespace LightHouse.Items.Inventory
         #endregion
 
         #region GET METHODS
-        public virtual string GetName()
-        {
-            return _name;
-        }
+        public virtual string GetName() => _name;
         public virtual GameObject GetGameObject() => this.gameObject;
         public virtual Collider GetCollider() => _detectionCollider;
         public virtual Rigidbody GetRigidBody() => _rb;

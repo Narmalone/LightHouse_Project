@@ -20,7 +20,7 @@ namespace LightHouse.Interactions
 
         #region SET METHODS
         /// <summary>
-        /// Mainly used by <see cref="PlayerInteractableManager"/>, to display the current Item seen.
+        /// Mainly used by <see cref="UnifiedRaycastSystem"/>, to display the current Item seen.
         /// </summary>
         public void SetTarget(IItemName item)
         {
@@ -28,6 +28,7 @@ namespace LightHouse.Interactions
             {
                 _currentItemName.OnNameUpdated -= UpdateName;
                 _currentItemName.IsItemRaycasted = false;
+                if (_currentItemName is IItemCallback itemCallbackEnd) itemCallbackEnd.OnRaycastEnd();
             }
             _currentItemName = item;
             if (_currentItemName == null)
@@ -36,6 +37,8 @@ namespace LightHouse.Interactions
                 return;
             }
             _currentItemName.IsItemRaycasted = true;
+
+            if (_currentItemName is IItemCallback itemCallback) itemCallback.OnRaycastStart();
             _currentItemName.OnNameUpdated += UpdateName;
             UpdateName(_currentItemName.GetName());
         }

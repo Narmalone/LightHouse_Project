@@ -11,14 +11,18 @@ namespace LightHouse.Items.Inventory
     //You should use this class to make inventory with key for other objects
     public class Key : InventoryItemBase, IInventoryItemUsable
     {
+        #region LOCALIZATION FIELDS
         public LocalizedString _use => _interactionTextsDB.Use;
         public LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
 
         protected string _currentUseText;
 
+        #endregion
+
         #region SERIALIZED FIELDS
-        [Header("KEY Fields")]
-        [SerializeField] private bool _destroyOnUsed;
+        [Header(" --- KEY FIELDS --- ")]
+        [SerializeField] private bool _destroyOnUsed = true;
+        [SerializeField] private bool _dropItemOnUsed = true;
         [field: SerializeField] public bool CanBeUsedFromInventory { get; set; }
         #endregion
 
@@ -30,6 +34,7 @@ namespace LightHouse.Items.Inventory
         public event Action<string> UseTextSlotChanged;
         #endregion
 
+        #region LOCALIZATION
         protected async override void LocalizationSettings_SelectedLocaleChanged(Locale obj)
         {
             base.LocalizationSettings_SelectedLocaleChanged(obj);
@@ -50,14 +55,21 @@ namespace LightHouse.Items.Inventory
                 _holdToAction
             );
         }
+        #endregion
 
         #region IInventoryItem Functions
         public virtual void UseFromInventory()
         {
             OnItemUsed?.Invoke();
-            InvokeForceDropItemFromInventory(transform.position, 0.0f, false);
+            if (_dropItemOnUsed)
+            {
+                InvokeForceDropItemFromInventory(transform.position, 0.0f, false);
+            }
             if (_destroyOnUsed)
+            {
+                InvokeForceDropItemFromInventory(transform.position, 0.0f, false);
                 Destroy(this.gameObject);
+            }
         }
         public virtual string UseTextSlot() => _currentUseText;
         public void InvokeOnCanBeUsedFromInventoryChanged() => CanBeUsedFromInventoryChanged?.Invoke(this.GlobalItemID, this.ItemSpecificID);

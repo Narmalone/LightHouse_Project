@@ -1,5 +1,6 @@
 using LightHouse.Handlers;
 using LightHouse.Inputs;
+using LightHouse.Items;
 using UnityEngine;
 
 namespace LightHouse.Inventory
@@ -44,17 +45,16 @@ namespace LightHouse.Inventory
             Vector3 finalPos = GetAdjustedDropPosition(_inventoryTarget, pos);
             item.IsItemInInventory = false;
 
+
             if (enablePhysicsOnDrop)
             {
                 Rigidbody rb = item.GetRigidBody();
-                rb.linearVelocity = Vector3.zero;
-                rb.position = finalPos; //IMPORTANT LINE, FORCE THE PHYSICS TO UPDATE WHEN OBJECT RE-ENABLED
-                                        //EVEN THE MOVE.POSITION DOES NOT WORK
-                rb.angularVelocity = Vector3.zero;
+                float appliedForce = (finalPos == pos) ? force : 0f;
 
-                if (finalPos == pos)
-                    rb.AddForce(_inventoryTarget.forward * force, ForceMode.Impulse);
+                //IMPORTANT -> to force position, rotations and more for rigidbody we have to wait the next physic update
+                PhysicsDropQueueSystem.QueueDrop(rb, finalPos, Quaternion.identity, _inventoryTarget.forward, appliedForce);
             }
+
 
             item.GetGameObject().transform.SetParent(null);
             _slots[slotID].RemoveItemFromSlot(item.ItemSpecificID);
@@ -80,7 +80,6 @@ namespace LightHouse.Inventory
             {
                 //Vector3 adjustedPosition = start - target.forward * 0.5f; // Reculer l�g�rement pour ne pas �tre dans l'obstacle
                 Vector3 adjustedPosition = PlayerHandlerData.MainPlayer.Character.transform.position + Vector3.up; // Reculer l�g�rement pour ne pas �tre dans l'obstacle
-                Debug.DrawRay(start, -target.forward * 0.5f, Color.yellow, 5.0f);
                 Debug.Log("Adjusting position due to overlap result");
                 return adjustedPosition;
             }

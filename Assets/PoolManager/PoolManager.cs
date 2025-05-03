@@ -23,7 +23,6 @@ public static class PoolManager
         if (InventoryItemPools[globalID].Count == 0) return null;
 
         IInventoryItem findedItem = null;
-        //findedItem = InventoryItemPools[globalID][0];
         findedItem = InventoryItemPools[globalID].Find(x => x.ItemSpecificID == itemSpecificID);
 
         if (findedItem != null)

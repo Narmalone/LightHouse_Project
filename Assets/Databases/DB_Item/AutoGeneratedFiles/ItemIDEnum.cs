@@ -8,9 +8,10 @@ namespace LightHouse.Inventory
         Hammer = 4,
         FlashLight = 5,
         Nail = 6,
-        Scraper = 7,
+        Scrapper = 7,
         BernacleInventory = 8,
         MainEntranceKey = 9,
-        ShedKey = 10,
+        Bucket = 10,
+        Mop = 11,
     }
 }

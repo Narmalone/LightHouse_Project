@@ -23,7 +23,6 @@ public class RaycastInteractionHandler
         if (_currentInteractable != null)
         {
             _currentInteractable.OnInteractionNameChanged -= UpdateInteractionText;
-            if (_currentInteractable is IItemCallback interacCallback) interacCallback.OnRaycastEnd();
         }
 
         _currentInteractable = interactable;
@@ -34,7 +33,6 @@ public class RaycastInteractionHandler
             return;
         }
 
-        if (interactable is IItemCallback interactableCallback) interactableCallback.OnRaycastStart();
         _currentInteractable.OnInteractionNameChanged += UpdateInteractionText;
         UpdateInteractionText();
     }

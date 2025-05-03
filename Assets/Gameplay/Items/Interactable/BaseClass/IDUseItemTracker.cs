@@ -18,17 +18,8 @@ namespace LightHouse.Items.Interactable
                 _inventoryItemUsable = null;
             }
 
-            if (IsItemRaycasted)
-            {
-                /*InvokeNameUpdated();
-                InvokeInteractionDescriptionUpdated();*/
-            }
-
-            // Si on n’a rien en main ou cast impossible
             if (!_hasKeyOnHands || itm == null)
-            {
                 return;
-            }
             if (itm is IInventoryItemUsable usable)
             {
                 _inventoryItemUsable = usable;
@@ -64,8 +55,8 @@ namespace LightHouse.Items.Interactable
             usable.InvokeOnCanBeUsedFromInventoryChanged();
         }
 
-        public void SubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed += Usable_OnItemUsed;
-        public void UnsubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed -= Usable_OnItemUsed;
+        protected virtual void SubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed += Usable_OnItemUsed;
+        protected virtual void UnsubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed -= Usable_OnItemUsed;
 
         protected override void OnGameInitialized()
         {
