@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using LightHouse.Items.Inventory;
 using LightHouse.Items.Interactable;
+using LightHouse.Items;
 
 namespace LightHouse.CustomEditors
 {

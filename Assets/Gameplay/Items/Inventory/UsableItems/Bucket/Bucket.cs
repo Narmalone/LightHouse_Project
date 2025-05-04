@@ -7,8 +7,15 @@ namespace LightHouse.Items.Inventory
     public class Bucket : Key, IItemCallback
     {
         [Header(" --- BUCKET --- ")]
-        [SerializeField] private IDUseItemTracker _mopTracker;
+        [SerializeField] private MopBucketWetItemTracker _mopTracker;
+
+        [SerializeField] private ItemColliderMarker _itemColliderMarker;
         public bool IsFilledWithWater = false;
+
+        private void Start()
+        {
+            _mopTracker.gameObject.SetActive(false);
+        }
 
         public void OnRaycastEnd()
         {
@@ -22,6 +29,8 @@ namespace LightHouse.Items.Inventory
         {
             if (IsFilledWithWater)
             {
+                _itemColliderMarker.TargetComponent = _mopTracker.gameObject;
+                _itemColliderMarker.RegisterToItem();
                 if (!_mopTracker.gameObject.activeInHierarchy)
                     _mopTracker.gameObject.SetActive(true);
             }

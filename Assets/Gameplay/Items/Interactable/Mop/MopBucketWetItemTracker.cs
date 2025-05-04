@@ -24,7 +24,7 @@ namespace LightHouse.Items.Interactable
                 _inventoryItemUsable = usable;
                 if(_inventoryItemUsable is Mop mop)
                 {
-                    if (mop.IsWet)
+                    if (mop._mopUseCount >= mop._mopMaxUseCount)
                     {
                         return;
                     }

@@ -79,7 +79,6 @@ GameObject:
   - component: {fileID: 6942869989316835057}
   - component: {fileID: 5944692832475150601}
   - component: {fileID: 1098852156151104289}
-  - component: {fileID: 7200467503791612663}
   m_Layer: 0
   m_Name: Bucket
   m_TagString: Untagged
@@ -141,6 +140,7 @@ MonoBehaviour:
   _dropItemOnUsed: 0
   <CanBeUsedFromInventory>k__BackingField: 0
   _mopTracker: {fileID: 4820647316784879464}
+  _itemColliderMarker: {fileID: 8502226112646030752}
   IsFilledWithWater: 0
   references:
     version: 2
@@ -172,20 +172,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7200467503791612663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8389306771688507654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41164f2e1f2985a4ebe2691c08de4cbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bucketKey: {fileID: 5944692832475150601}
-  _bucketWetItemTracker: {fileID: 4820647316784879464}
 --- !u!1001 &8458379039165199605
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -292,7 +278,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemRole: 0
-  TargetComponent: {fileID: 6014957601973129413}
+  TargetComponent: {fileID: 8389306771688507654}
+  col: {fileID: 2580052491983895410}
 --- !u!65 &2580052491983895410
 BoxCollider:
   m_ObjectHideFlags: 0
