@@ -48,6 +48,8 @@ namespace LightHouse.Game.BootStrap
 
         private readonly Dictionary<string, Scene> loadedScenes = new();
 
+        private readonly Dictionary<string, List<GameObject>> preloadedAssets = new();
+
         #endregion
 
         #region ▌Unity Lifecycle
@@ -63,20 +65,26 @@ namespace LightHouse.Game.BootStrap
             loadingScreen.Show();
             loadingScreen.SetProgress(0f);
 
-            foreach (var rule in initialLoadRules)
+            foreach (AddressableLoadRule rule in initialLoadRules)
             {
-                yield return LoadAssetsIntoScene(rule.label, rule.sceneName);
-                yield return new WaitForSeconds(0.2f);
+                yield return PreloadAssets(rule.label, rule.sceneName);
             }
+
+            InstantiateAssetsForScene(_sceneNameBootStrap);
 
             yield return LoadScenesByLabel(_sceneMenuLabel);
             SceneManager.SetActiveScene(loadedScenes[_sceneNameMenu]);
 
-            foreach (var rule in menuLoadRules)
+            foreach (AddressableLoadRule rule in menuLoadRules)
             {
-                yield return LoadAssetsIntoScene(rule.label, rule.sceneName);
-                yield return new WaitForSeconds(0.2f);
+                yield return PreloadAssets(rule.label, rule.sceneName);
             }
+
+            foreach (AddressableLoadRule rule in gameLoadRules)
+            {
+                yield return PreloadAssets(rule.label, rule.sceneName);
+            }
+            InstantiateAssetsForScene(_sceneNameMenu);
 
             loadingScreen.Hide();
         }
@@ -101,9 +109,12 @@ namespace LightHouse.Game.BootStrap
         {
             loadingScreen.Show();
             loadingScreen.SetProgress(0f);
+            loadingScreen.SetProgressName("Retour au Bootstrap");
 
+            // Revenir à la scène Bootstrap
             SceneManager.SetActiveScene(loadedScenes[_sceneNameBootStrap]);
 
+            // Décharger le menu
             if (loadedScenes.TryGetValue(_sceneNameMenu, out var menuScene))
             {
                 var unloadHandle = SceneManager.UnloadSceneAsync(menuScene);
@@ -113,6 +124,8 @@ namespace LightHouse.Game.BootStrap
                 loadedScenes.Remove(_sceneNameMenu);
             }
 
+            // Charger la scène de jeu
+            loadingScreen.SetProgressName("Chargement de la scène de jeu");
             yield return LoadScenesByLabel(_sceneGameLabel);
 
             if (loadedScenes.TryGetValue(_sceneNameGame, out var gameScene))
@@ -120,16 +133,16 @@ namespace LightHouse.Game.BootStrap
                 SceneManager.SetActiveScene(gameScene);
             }
 
-            foreach (var rule in gameLoadRules)
-            {
-                yield return LoadAssetsIntoScene(rule.label, rule.sceneName);
-            }
+            // Instancier les assets préchargés de la scène de jeu
+            loadingScreen.SetProgressName("Initialisation des assets de jeu");
+            InstantiateAssetsForScene(_sceneNameGame);
 
             OnGameAssetsLoaded?.Invoke();
 
             yield return new WaitForSeconds(0.5f);
             loadingScreen.Hide();
         }
+
 
         #endregion
 
@@ -138,6 +151,7 @@ namespace LightHouse.Game.BootStrap
         {
             loadingScreen.Show();
             loadingScreen.SetProgress(0f);
+            loadingScreen.SetProgressName("Retour au Bootstrap");
 
             SceneManager.SetActiveScene(loadedScenes[_sceneNameBootStrap]);
 
@@ -152,6 +166,7 @@ namespace LightHouse.Game.BootStrap
             }
 
             // Charger la scène du menu
+            loadingScreen.SetProgressName("Chargement du menu");
             yield return LoadScenesByLabel(_sceneMenuLabel);
 
             if (loadedScenes.TryGetValue(_sceneNameMenu, out var menuScene))
@@ -159,16 +174,14 @@ namespace LightHouse.Game.BootStrap
                 SceneManager.SetActiveScene(menuScene);
             }
 
-            // Recharger les assets du menu
-            foreach (var rule in menuLoadRules)
-            {
-                yield return LoadAssetsIntoScene(rule.label, rule.sceneName);
-                yield return new WaitForSeconds(0.2f);
-            }
+            // Instancier les assets préchargés du menu
+            loadingScreen.SetProgressName("Initialisation du menu");
+            InstantiateAssetsForScene(_sceneNameMenu);
 
             yield return new WaitForSeconds(0.5f);
             loadingScreen.Hide();
         }
+
         #endregion
 
         #region ▌Scene Loading
@@ -189,14 +202,8 @@ namespace LightHouse.Game.BootStrap
 
         #region ▌Asset Loading
 
-        private IEnumerator LoadAssetsIntoScene(string label, string sceneName)
+        private IEnumerator PreloadAssets(string label, string sceneName)
         {
-            if (!loadedScenes.TryGetValue(sceneName, out var scene) || !scene.IsValid())
-            {
-                Debug.LogError($"[BootStrap] Scène cible '{sceneName}' non chargée ou invalide.");
-                yield break;
-            }
-
             var locationsHandle = Addressables.LoadResourceLocationsAsync(label, typeof(GameObject));
             yield return locationsHandle;
 
@@ -207,6 +214,7 @@ namespace LightHouse.Game.BootStrap
             }
 
             var locations = locationsHandle.Result;
+            var list = new List<GameObject>();
             int total = locations.Count;
             int loaded = 0;
 
@@ -218,25 +226,38 @@ namespace LightHouse.Game.BootStrap
                 var loadHandle = Addressables.LoadAssetAsync<GameObject>(location);
                 yield return loadHandle;
 
-                if (loadHandle.Status != AsyncOperationStatus.Succeeded)
+                if (loadHandle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    Debug.LogError($"[BootStrap] Échec du chargement de l'asset '{location.PrimaryKey}' pour le label '{label}'");
-                    continue;
+                    list.Add(loadHandle.Result);
+                    loaded++;
+                }
+                else
+                {
+                    Debug.LogWarning($"[BootStrap] Échec du preload de l'asset '{location.PrimaryKey}'");
                 }
 
-                var prefab = loadHandle.Result;
-                var instance = Instantiate(prefab);
-                SceneManager.MoveGameObjectToScene(instance, scene);
-                instance.SetActive(true);
-
-                yield return null;
-
-                loaded++;
                 loadingScreen.SetProgress((float)loaded / total);
                 yield return null;
             }
+
+            if (!preloadedAssets.ContainsKey(sceneName))
+                preloadedAssets[sceneName] = new List<GameObject>();
+
+            preloadedAssets[sceneName].AddRange(list);
         }
 
+        private void InstantiateAssetsForScene(string sceneName)
+        {
+            if (!preloadedAssets.TryGetValue(sceneName, out var prefabs)) return;
+            if (!loadedScenes.TryGetValue(sceneName, out var scene)) return;
+
+            foreach (var prefab in prefabs)
+            {
+                var instance = Instantiate(prefab);
+                SceneManager.MoveGameObjectToScene(instance, scene);
+                instance.SetActive(true);
+            }
+        }
         #endregion
     }
 }
