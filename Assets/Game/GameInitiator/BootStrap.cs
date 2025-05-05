@@ -138,8 +138,6 @@ namespace LightHouse.Game.BootStrap
             InstantiateAssetsForScene(_sceneNameGame);
 
             OnGameAssetsLoaded?.Invoke();
-
-            yield return new WaitForSeconds(0.5f);
             loadingScreen.Hide();
         }
 
