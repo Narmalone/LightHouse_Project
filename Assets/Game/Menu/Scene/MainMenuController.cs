@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UIElements;
 using LightHouse.Localization;
-using LightHouse.Game.BootStrap;
+using LightHouse.Audio;
 
 namespace LightHouse.Game.Menu
 {

@@ -2,6 +2,7 @@ using LightHouse.Handlers;
 using LightHouse.Inputs;
 using LightHouse.Items;
 using UnityEngine;
+using LightHouse.Audio;
 
 namespace LightHouse.Inventory
 {

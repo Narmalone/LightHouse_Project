@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using LightHouse.Localization;
 using UnityEngine.Localization;
+using LightHouse.Audio;
 
 namespace LightHouse.Items.Inventory
 {

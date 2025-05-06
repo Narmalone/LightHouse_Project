@@ -1,4 +1,4 @@
-using LightHouse.Items.Interactable;
+using LightHouse.Audio;
 using LightHouse.Items.Inventory;
 using System;
 using System.Collections;

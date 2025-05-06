@@ -1,3 +1,5 @@
+using LightHouse.Audio;
+
 namespace LightHouse.Inventory
 {
     public class InventoryPickupHandler
