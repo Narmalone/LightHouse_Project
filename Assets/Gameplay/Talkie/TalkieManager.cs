@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using LightHouse.Audio;
@@ -78,10 +78,15 @@ namespace LightHouse.Game.Talkie
             _isPlaying = false;
         }
 
-        private IEnumerator DisplayRadioText(string text, float audioDuration)
+        private IEnumerator DisplayRadioText(string fullText, float audioDuration, float charDelay = 0.06f)
         {
-            _radioTMP.text = text;
+            _radioTMP.text = "";
             _radioDialog.alpha = 0f;
+
+            float remainingDisplayTime = Mathf.Max(displayDuration, audioDuration) - (fullText.Length * charDelay);
+
+            WaitForSeconds textWFS = new WaitForSeconds(charDelay);
+            WaitForSeconds remainDisplayTimeWTS = new WaitForSeconds(remainingDisplayTime);
 
             float t = 0f;
             while (t < fadeDuration)
@@ -92,8 +97,16 @@ namespace LightHouse.Game.Talkie
             }
             _radioDialog.alpha = 1f;
 
-            yield return new WaitForSeconds(Mathf.Max(displayDuration, audioDuration));
+            for (int i = 0; i <= fullText.Length; i++)
+            {
+                _radioTMP.text = fullText.Substring(0, i);
+                yield return textWFS;
+            }
 
+            if (remainingDisplayTime > 0)
+                yield return remainDisplayTimeWTS;
+
+            // Fade-out
             t = 0f;
             while (t < fadeDuration)
             {
@@ -105,5 +118,9 @@ namespace LightHouse.Game.Talkie
             _radioDialog.alpha = 0f;
             _radioTMP.text = "";
         }
+
+
+
+
     }
 }
