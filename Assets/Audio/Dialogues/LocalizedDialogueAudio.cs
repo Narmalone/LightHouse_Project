@@ -7,30 +7,45 @@ namespace LightHouse.Audio
     [CreateAssetMenu(fileName = "LocalizedDialogue_", menuName = "LightHouse/Audio/Localized Dialogue")]
     public class LocalizedDialogueAudio : ScriptableObject
     {
-        public LocalizedAudioClip clip;
-        public LocalizedString subtitle;
-        public string currentSubtitle;
-        public AudioClip currentAudio;
+        [Header(" --- LOCALIZED REFERENCES --- ")]
+        public LocalizedAudioClip LocalizedClip;
+        public LocalizedString LocalizedSubtitle;
 
-        public float volume = 1f;
-        public bool loop = false;
-        public float spatialBlend = 0f;
+        [Header(" --- AUDIO CONFIG ---")]
+        public float Volume = 1f;
+        public bool Loop = false;
+        public float SpatialBlend = 0f;
+
+        [Header(" --- TEXT CONFIG ---")]
+        [Tooltip("Durée estimée si aucun AudioClip n'est fourni")]
+        public float FallbackDuration = 3f;
+        [Range(0, 0.2f), Tooltip("Mettre à 0 pour juste afficher le texte ")] public float CharDelay = 0.04f;
+
+        [Header(" --- DEBUG ONLY DO NOT SET --- ")]
+        public string CurrentSubtitleText;
+        public AudioClip CurrentAudioClip;
         public DialogueAudioName Category;
 
         public void Register()
         {
-            clip.AssetChanged += Clip_AssetChanged;
-            subtitle.StringChanged += Subtitle_StringChanged;
+            LocalizedClip.AssetChanged += Clip_AssetChanged;
+            LocalizedSubtitle.StringChanged += Subtitle_StringChanged;
         }
 
         public void Unregister()
         {
-            clip.AssetChanged -= Clip_AssetChanged;
-            subtitle.StringChanged -= Subtitle_StringChanged;
+            LocalizedClip.AssetChanged -= Clip_AssetChanged;
+            LocalizedSubtitle.StringChanged -= Subtitle_StringChanged;
         }
 
-        private void Subtitle_StringChanged(string value) => currentSubtitle = value;
-        private void Clip_AssetChanged(AudioClip value) => currentAudio = value;
+        private void Subtitle_StringChanged(string value) => CurrentSubtitleText = value;
+        private void Clip_AssetChanged(AudioClip value) => CurrentAudioClip = value;
+
+        public float GetDisplayDuration()
+        {
+            return CurrentAudioClip != null ? CurrentAudioClip.length : FallbackDuration;
+        }
+
     }
 
 

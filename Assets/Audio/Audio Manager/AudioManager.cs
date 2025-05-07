@@ -160,7 +160,7 @@ namespace LightHouse.Audio
                 return null;
             }
 
-            var clip = dialogue.currentAudio;
+            var clip = dialogue.CurrentAudioClip;
             if (clip == null)
             {
                 Debug.LogWarning($"[AudioManager] Aucun clip pour le dialogue '{category}' !");
@@ -168,12 +168,29 @@ namespace LightHouse.Audio
             }
 
             source.clip = clip;
-            source.loop = dialogue.loop;
+            source.loop = dialogue.Loop;
             //source.pitch = dialogue.pitch;
-            source.volume = dialogue.volume;
-            source.spatialBlend = dialogue.spatialBlend; // 0 = 2D, 1 = 3D
+            source.volume = dialogue.Volume;
+            source.spatialBlend = dialogue.SpatialBlend; // 0 = 2D, 1 = 3D
             source.Play();
             return dialogue;
+        }
+
+        public void PlayDialogueAt(AudioSource source, LocalizedDialogueAudio dialogue)
+        {
+            var clip = dialogue.CurrentAudioClip;
+            if (clip == null)
+            {
+                Debug.LogWarning($"[AudioManager] Aucun clip pour le dialogue '{dialogue.Category}' !");
+                return;
+            }
+
+            source.clip = clip;
+            source.loop = dialogue.Loop;
+            //source.pitch = dialogue.pitch;
+            source.volume = dialogue.Volume;
+            source.spatialBlend = dialogue.SpatialBlend; // 0 = 2D, 1 = 3D
+            source.Play();
         }
 
 

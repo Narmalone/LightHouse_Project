@@ -9,13 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43d2dcc343b46e74480783e01ea96f1f, type: 3}
+  m_Script: {fileID: 11500000, guid: 7856e2ea4fd4d77429895c784383d146, type: 3}
   m_Name: Tutorial_Test
   m_EditorClassIdentifier: 
-  AudioClips:
-  - {fileID: 11400000, guid: 1343abbf69edef9449a6b0f959d376fa, type: 2}
-  Sentences:
-  - m_TableReference:
+  LocalizedClip:
+    m_TableReference:
+      m_TableCollectionName: GUID:4eba871849ce5ef4caf2a8b3d5afcad7
+    m_TableEntryReference:
+      m_KeyId: 169651347456
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+  LocalizedSubtitle:
+    m_TableReference:
       m_TableCollectionName: GUID:b38a2678b34936347914061fb5e25130
     m_TableEntryReference:
       m_KeyId: 1673858785280
@@ -23,8 +29,14 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  Delay: 0
-  AdditionnalTimeAtEndOfDialogue: 0.3
+  Volume: 1
+  Loop: 0
+  SpatialBlend: 0
+  FallbackDuration: 3
+  CharDelay: 0.04
+  CurrentSubtitleText: "Ceci est un test en fran\xE7ais 1..2..3"
+  CurrentAudioClip: {fileID: 8300000, guid: ad51a06c2ebb5bc4aae4b4fced071fd0, type: 3}
+  Category: 1
   references:
     version: 2
     RefIds: []

@@ -61,14 +61,26 @@ namespace LightHouse.Items.Interactable
             base.Interact();
             if (_isSwitchOn)
             {
+                EnableGenerator();
                 _enableBlink = false;
                 ApplyMaterialProperties(_baseEmissionIntensity, _enabledColor);
             }
             else
             {
+                DisableGenerator();
                 _blinkTimer = 0.0f;
                 _enableBlink = true;
             }
+        }
+
+        public void EnableGenerator()
+        {
+
+        }
+
+        public void DisableGenerator()
+        {
+
         }
     }
 

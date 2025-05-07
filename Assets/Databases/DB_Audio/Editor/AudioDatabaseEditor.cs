@@ -23,10 +23,10 @@ namespace LightHouse.CustomEditors
 
             if (GUILayout.Button("Find Assets & Refresh"))
             {
-                var ambiances = FindAmbiancesAssets();
-                var effects = FindEffectsAssets();
-                var musics = FindMusicsAssets();
-                var dialogues = FindDialoguesAssets();
+                var ambiances = FindAmbiancesAssets(audioDatabase.Ambiances);
+                var effects = FindEffectsAssets(audioDatabase.Effects);
+                var musics = FindMusicsAssets(audioDatabase.Musics);
+                var dialogues = FindDialoguesAssets(audioDatabase.Dialogues);
 
                 audioDatabase.Ambiances = ambiances;
                 audioDatabase.Effects = effects;
@@ -43,10 +43,10 @@ namespace LightHouse.CustomEditors
 
             if (GUILayout.Button("Only Refresh"))
             {
-                var ambiances = FindAmbiancesAssets();
-                var effects = FindEffectsAssets();
-                var musics = FindMusicsAssets();
-                var dialogues = FindDialoguesAssets();
+                var ambiances = FindAmbiancesAssets(audioDatabase.Ambiances);
+                var effects = FindEffectsAssets(audioDatabase.Effects);
+                var musics = FindMusicsAssets(audioDatabase.Musics);
+                var dialogues = FindDialoguesAssets(audioDatabase.Dialogues);
 
                 GenerateAmbiancesEnum(ambiances);
                 GenerateEffectsEnum(effects);
@@ -98,7 +98,7 @@ namespace LightHouse.CustomEditors
 
             foreach (var asset in dialogueAssets)
             {
-                string sanitized = AudioUtils.SanitizeName(GetEntryKey(asset.subtitle));
+                string sanitized = AudioUtils.SanitizeName(GetEntryKey(asset.LocalizedSubtitle));
                 if (Enum.TryParse(sanitized, out DialogueAudioName parsed))
                     asset.Category = parsed;
                 else
@@ -123,7 +123,7 @@ namespace LightHouse.CustomEditors
             var names = new List<string>();
             foreach (var asset in assets)
             {
-                string key = GetEntryKey(asset.subtitle);
+                string key = GetEntryKey(asset.LocalizedSubtitle);
                 if (!string.IsNullOrEmpty(key))
                 {
                     string cleanName = AudioUtils.SanitizeName(key);
@@ -137,7 +137,7 @@ namespace LightHouse.CustomEditors
 
         private void GenerateEnumFromAssets(string enumName, IEnumerable<string> rawNames)
         {
-            var names = new HashSet<string>();
+            var names = new HashSet<string>().ToList();
             foreach (var raw in rawNames)
             {
                 if (!string.IsNullOrEmpty(raw))
@@ -146,10 +146,7 @@ namespace LightHouse.CustomEditors
                     names.Add(clean);
                 }
             }
-
-            List<string> sortedNames = new(names);
-            sortedNames.Sort(StringComparer.OrdinalIgnoreCase);
-            GenerateEnumFile(enumName, BasePath + enumName + ".cs", sortedNames);
+            GenerateEnumFile(enumName, BasePath + enumName + ".cs", names);
         }
 
         private void GenerateEnumFile(string enumName, string filePath, List<string> entries)
@@ -196,23 +193,35 @@ namespace LightHouse.CustomEditors
             Debug.Log($"{enumName} généré avec succès !");
         }
 
-        private List<AmbianceAudio> FindAmbiancesAssets() => LoadAssets<AmbianceAudio>();
-        private List<EffectAudio> FindEffectsAssets() => LoadAssets<EffectAudio>();
-        private List<MusicAudio> FindMusicsAssets() => LoadAssets<MusicAudio>();
-        private List<LocalizedDialogueAudio> FindDialoguesAssets() => LoadAssets<LocalizedDialogueAudio>();
 
-        private List<T> LoadAssets<T>() where T : UnityEngine.Object
+        private List<AmbianceAudio> FindAmbiancesAssets(List<AmbianceAudio> existingInManager) => LoadAssets<AmbianceAudio>(existingInManager);
+        private List<EffectAudio> FindEffectsAssets(List<EffectAudio> existingInManager) => LoadAssets<EffectAudio>(existingInManager);
+        private List<MusicAudio> FindMusicsAssets(List<MusicAudio> existingInManager) => LoadAssets<MusicAudio>(existingInManager);
+        private List<LocalizedDialogueAudio> FindDialoguesAssets(List<LocalizedDialogueAudio> existingInManager) => LoadAssets<LocalizedDialogueAudio>(existingInManager);
+
+        private List<T> LoadAssets<T>(List<T> existingList) where T : UnityEngine.Object
         {
+            List<T> updatedList = new(existingList); // clone pour éviter de modifier directement
+            HashSet<string> existingPaths = new(existingList.Select(AssetDatabase.GetAssetPath));
+
             string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).Name}");
-            List<T> result = new();
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                T asset = AssetDatabase.LoadAssetAtPath<T>(path);
-                if (asset != null) result.Add(asset);
+                if (!existingPaths.Contains(path))
+                {
+                    T asset = AssetDatabase.LoadAssetAtPath<T>(path);
+                    if (asset != null)
+                    {
+                        updatedList.Add(asset);
+                        existingPaths.Add(path);
+                    }
+                }
             }
-            return result;
+
+            return updatedList;
         }
+
 
         private string GetEntryKey(LocalizedString localizedString)
         {
