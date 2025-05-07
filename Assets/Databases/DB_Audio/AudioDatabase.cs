@@ -27,9 +27,9 @@ namespace LightHouse.Audio
             return Effects.Find(e => e.Category == category);
         }
 
-      /*  public DialogueAudio GetDialogue(AudioDialogueName category)
+        public LocalizedDialogueAudio GetDialogue(DialogueAudioName category)
         {
             return Dialogues.Find(e => e.Category == category);
-        }*/
+        }
     }
 }

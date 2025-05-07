@@ -1,8 +1,6 @@
 // Auto-generated ScriptableObject for localization keys
 using LightHouse.Audio;
 using UnityEngine;
-using UnityEngine.Localization;
-using UnityEngine.Localization.Components;
 
 namespace LightHouse.Localization
 {
@@ -10,6 +8,6 @@ namespace LightHouse.Localization
 	public class LocalizedDatabase_Talkie_Audio : ScriptableObject
 	{
 		public LocalizedDialogueAudio TUTORIAL_TEST;
-		public LocalizedAsset<AudioClip> TUTORIAL_LONGSPEECH;
+		public LocalizedDialogueAudio TUTORIAL_LONGSPEECH;
 	}
 }
