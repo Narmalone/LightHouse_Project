@@ -100,7 +100,9 @@ namespace LightHouse.CustomEditors
             {
                 string sanitized = AudioUtils.SanitizeName(GetEntryKey(asset.LocalizedSubtitle));
                 if (Enum.TryParse(sanitized, out DialogueAudioName parsed))
+                {
                     asset.Category = parsed;
+                }
                 else
                     Debug.LogWarning($"[ApplySettings] Nom '{sanitized}' non trouvé dans l'enum DialogueAudioName");
 

@@ -1,69 +1,75 @@
 using System;
+using LightHouse.CustomAttributes;
 using UnityEngine;
 
-public class TriggerEvent : MonoBehaviour
+namespace LightHouse.Utilities
 {
-    public event Action<GameObject> OnEntered;
-    public event Action<GameObject> OnStaying;
-    public event Action<GameObject> OnExited;
-
-    [Header("Detection")]
-    [SerializeField] bool _useTriggerEnter = true;
-    [SerializeField] bool _useTriggerStay = false;
-    [SerializeField] bool _useTriggerExit = true;
-
-    [Header("Detection")]
-    [SerializeField] private bool _needMaskAndLayerToEvent = false;
-
-    [SerializeField] private LayerMask _targetsMasks;
-
-    [SerializeField] private string _targetTag;
-
-    private void OnTriggerEnter(Collider other)
+    public class TriggerEvent : MonoBehaviour
     {
-        if (!_useTriggerEnter) return;
-        if (GetConditions(other))
+        public event Action<GameObject> OnEntered;
+        public event Action<GameObject> OnStaying;
+        public event Action<GameObject> OnExited;
+
+        [Header("Detection")]
+        [SerializeField] bool _useTriggerEnter = true;
+        [SerializeField] bool _useTriggerStay = false;
+        [SerializeField] bool _useTriggerExit = true;
+
+        [Header("Detection")]
+        [SerializeField] private bool _needMaskAndLayerToEvent = false;
+
+        [SerializeField] private LayerMask _targetsMasks;
+
+        [SerializeField, TagSelector] private string _targetTag;
+
+        public Collider Colllider;
+
+        private void OnTriggerEnter(Collider other)
         {
-            OnEntered?.Invoke(other.gameObject);
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (!_useTriggerStay) return;
-
-        if (GetConditions(other))
-        {
-            OnStaying?.Invoke(other.gameObject);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (!_useTriggerExit) return;
-
-        if (GetConditions(other))
-        {
-            OnExited?.Invoke(other.gameObject);
-        }
-    }
-
-    private bool GetConditions(Collider other)
-    {
-        if (_needMaskAndLayerToEvent)
-        {
-            if ((_targetsMasks & (1 << other.gameObject.layer)) > 0 && other.CompareTag(_targetTag))
+            if (!_useTriggerEnter) return;
+            if (GetConditions(other))
             {
-                return true;
+                OnEntered?.Invoke(other.gameObject);
             }
         }
-        else
+
+        private void OnTriggerStay(Collider other)
         {
-            if ((_targetsMasks & (1 << other.gameObject.layer)) > 0 || other.CompareTag(_targetTag))
+            if (!_useTriggerStay) return;
+
+            if (GetConditions(other))
             {
-                return true;
+                OnStaying?.Invoke(other.gameObject);
             }
         }
-        return false;
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (!_useTriggerExit) return;
+
+            if (GetConditions(other))
+            {
+                OnExited?.Invoke(other.gameObject);
+            }
+        }
+
+        private bool GetConditions(Collider other)
+        {
+            if (_needMaskAndLayerToEvent)
+            {
+                if ((_targetsMasks & (1 << other.gameObject.layer)) > 0 && other.CompareTag(_targetTag))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if ((_targetsMasks & (1 << other.gameObject.layer)) > 0 || other.CompareTag(_targetTag))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

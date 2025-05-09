@@ -1,3 +1,4 @@
+using System;
 using LightHouse.Inventory;
 using UnityEngine;
 
@@ -5,6 +6,8 @@ namespace LightHouse.Items.Interactable
 {
     public class IDUseItemTracker : IDItemTracker
     {
+        public bool UnsubscribeToItemOnUse = true;
+        public event Action OnItemUsedOnMe;
         protected IInventoryItemUsable _inventoryItemUsable;
         protected override void CheckConditions()
         {
@@ -30,7 +33,8 @@ namespace LightHouse.Items.Interactable
 
         protected virtual void Usable_OnItemUsed()
         {
-            if (_inventoryItemUsable != null)
+            OnItemUsedOnMe?.Invoke();
+            if (UnsubscribeToItemOnUse && _inventoryItemUsable != null)
             {
                 ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
                 UnsubscribeToItem(_inventoryItemUsable);
@@ -57,11 +61,6 @@ namespace LightHouse.Items.Interactable
 
         protected virtual void SubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed += Usable_OnItemUsed;
         protected virtual void UnsubscribeToItem(IInventoryItemUsable usable) => usable.OnItemUsed -= Usable_OnItemUsed;
-
-        protected override void OnGameInitialized()
-        {
-            
-        }
     }
 }
 

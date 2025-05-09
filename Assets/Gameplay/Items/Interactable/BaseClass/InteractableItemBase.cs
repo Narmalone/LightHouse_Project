@@ -23,7 +23,7 @@ namespace LightHouse.Items.Interactable
             BootStrap.OnGameAssetsLoaded += OnGameInitialized;
         }
 
-        protected abstract void OnGameInitialized();
+        protected virtual void OnGameInitialized() { }
 
         protected virtual void OnDestroy()
         {

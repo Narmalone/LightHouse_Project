@@ -1,3 +1,4 @@
+using LightHouse.Utilities;
 using UnityEngine;
 
 namespace LightHouse.Interactions.Samples
