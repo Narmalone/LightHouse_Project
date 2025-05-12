@@ -20,6 +20,7 @@ namespace LightHouse.Items.Detection
         public void ProcessRaycastHit(RaycastHit hit)
         {
             GameObject go = hit.collider.gameObject;
+            if (go == _lastSeenObject) return;
 
             if (ItemRegistry.IsMarked(hit.collider, out GameObject markedObj))
                 go = markedObj;

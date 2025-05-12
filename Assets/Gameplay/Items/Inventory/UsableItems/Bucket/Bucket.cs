@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections;
-using LightHouse.Game.BootStrap;
+﻿using LightHouse.Game.BootStrap;
 using LightHouse.Handlers;
 using LightHouse.Interactions;
 using LightHouse.Inventory;
 using LightHouse.Items.Interactable;
-using LightHouse.KinematicCharacterController;
 using UnityEngine;
 
 namespace LightHouse.Items.Inventory
 {
-    public class Bucket : Key, IItemCallback, IInventoryItemCallback
+    public class Bucket : Key, IInventoryItemCallback
     {
         [Header(" --- BUCKET --- ")]
         [SerializeField] private MopBucketWetItemTracker _mopTracker;
 
         [SerializeField] private ItemColliderMarker _itemColliderMarker;
         public bool IsFilledWithWater = false;
-        private bool isMopShowed = false;
-
         private bool _isInitialized = false;
+
         protected override void Awake()
         {
             base.Awake();
-
-            _mopTracker.OnConditionChecked += OnConditionChecked;
             BootStrap.OnGameAssetsLoaded += BootStrap_OnGameAssetsLoaded;
         }
 
@@ -49,28 +43,10 @@ namespace LightHouse.Items.Inventory
             IgnoreMopColliderCollision();
         }
 
-        private void OnConditionChecked()
-        {
-            Debug.Log("Condition checked");
-        }
-
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            _mopTracker.OnConditionChecked -= OnConditionChecked;
             BootStrap.OnGameAssetsLoaded -= BootStrap_OnGameAssetsLoaded;
-        }
-
-        public void OnRaycastEnd() { }
-
-        public void OnRaycastStart()
-        {
-            Debug.Log("on raycast start");
-        }
-
-        public override void UseFromInventory()
-        {
-            base.UseFromInventory();
         }
 
         public void OnItemAddedToInventory()

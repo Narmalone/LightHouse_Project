@@ -1,6 +1,5 @@
 ﻿using LightHouse.Interactions;
 using LightHouse.Inventory;
-using System;
 using UnityEngine;
 
 namespace LightHouse.Items.Detection
@@ -12,7 +11,7 @@ namespace LightHouse.Items.Detection
         public static Transform CurrentHitedObjectPosition;
 
         [SerializeField] private Camera _camera;
-        [SerializeField] private float _raycastDistance;
+        [SerializeField] private float _raycastDistance = 5f;
         [SerializeField] private LayerMask _blockingLayers;
         [SerializeField] private QueryTriggerInteraction _qti;
 
@@ -38,9 +37,6 @@ namespace LightHouse.Items.Detection
         private void Update()
         {
             Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f));
-            var hits = Physics.RaycastAll(ray, _raycastDistance, _blockingLayers, _qti);
-            Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
             RayOrigin = ray.origin;
             RayDirection = ray.direction;
 
@@ -48,7 +44,7 @@ namespace LightHouse.Items.Detection
             bool interactableDetected = false;
             bool inventoryDetected = false;
 
-            foreach (var hit in hits)
+            if (Physics.Raycast(ray, out RaycastHit hit, _raycastDistance, _blockingLayers, _qti))
             {
                 int layer = hit.collider.gameObject.layer;
                 int layerMask = 1 << layer;
@@ -58,11 +54,9 @@ namespace LightHouse.Items.Detection
 
                 if (isBlocking && !isTarget)
                 {
-                    // Un obstacle non interactif bloque la vue
-                    break;
+                    // Objet non interactif qui bloque la vue
                 }
-
-                if (isTarget)
+                else
                 {
                     if ((_nameLayers.value & layerMask) != 0)
                     {
@@ -83,11 +77,9 @@ namespace LightHouse.Items.Detection
                     }
 
                     CurrentHitedObjectPosition = _itemNameDetector.LastSeenObject?.transform;
-                    break; // ✅ On arrête à la première cible détectée
                 }
             }
 
-            // Nettoyage par détecteur si non vu ce frame
             if (!nameDetected) _itemNameDetector.FinishFrame();
             if (!interactableDetected) _interactableDetector.FinishFrame();
             if (!inventoryDetected) _inventoryDetector.FinishFrame();
