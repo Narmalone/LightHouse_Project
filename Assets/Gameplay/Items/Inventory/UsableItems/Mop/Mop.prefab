@@ -168,7 +168,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 3c6d2a76e31b26f42a9ca74b0d47237e,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -203,7 +203,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemRole: 0
   TargetComponent: {fileID: 4822830045722021256}
-  col: {fileID: 5345570565710495459}
+  includeChildren: 1
+  _colliders:
+  - {fileID: 5345570565710495459}
 --- !u!64 &5345570565710495459
 MeshCollider:
   m_ObjectHideFlags: 0

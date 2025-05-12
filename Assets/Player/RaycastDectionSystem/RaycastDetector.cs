@@ -5,7 +5,7 @@ using UnityEngine;
 namespace LightHouse.Items.Detection
 {
     [System.Serializable]
-    public class RaycastDetector<T> : PlayerRaycastSystem where T : class
+    public class RaycastDetector<T> : CameraRaycastSystem where T : class
     {
         public Action<T> OnDetected;
         private T _lastSeenComponent;

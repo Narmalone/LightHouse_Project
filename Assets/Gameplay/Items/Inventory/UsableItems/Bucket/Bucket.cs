@@ -1,6 +1,5 @@
 ﻿using LightHouse.Game.BootStrap;
 using LightHouse.Handlers;
-using LightHouse.Interactions;
 using LightHouse.Inventory;
 using LightHouse.Items.Interactable;
 using UnityEngine;
@@ -55,6 +54,7 @@ namespace LightHouse.Items.Inventory
             {
                 col.enabled = false;
             }
+            _mopTracker.GetCollider().enabled = false;
         }
 
         public void OnItemRemovedFromInventory()
@@ -63,6 +63,7 @@ namespace LightHouse.Items.Inventory
             {
                 col.enabled = true;
             }
+            _mopTracker.GetCollider().enabled = true;
         }
     }
 

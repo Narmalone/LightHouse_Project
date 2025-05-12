@@ -1,11 +1,10 @@
-﻿using LightHouse.Utilities;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace LightHouse.Items.Detection
 {
     [System.Serializable]
-    public class PlayerRaycastSystem
+    public class CameraRaycastSystem
     {
         #region FIELDS & PROPERTIES
         public Action<GameObject> OnItemDetected;
@@ -23,7 +22,7 @@ namespace LightHouse.Items.Detection
         #endregion
 
         #region Constructor
-        public PlayerRaycastSystem(Camera cam, float distance, LayerMask masks, LayerMask blockingLayers, QueryTriggerInteraction qti)
+        public CameraRaycastSystem(Camera cam, float distance, LayerMask masks, LayerMask blockingLayers, QueryTriggerInteraction qti)
         {
             _camera = cam;
             _raycastDistance = distance;
@@ -33,12 +32,7 @@ namespace LightHouse.Items.Detection
         }
         #endregion
 
-        #region MONO'S CALLBACK
-       
-        #endregion
-
         #region RAYCAST METHODS
-
         protected virtual void ResetSeenObject()
         {
             if (_lastSeenObject != null)

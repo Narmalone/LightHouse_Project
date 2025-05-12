@@ -7,6 +7,7 @@ namespace LightHouse.Items.Interactable
 {
     public class MopBucketWetItemTracker : IDUseItemTracker
     {
+
         protected override void Usable_OnItemUsed()
         {
             base.Usable_OnItemUsed();

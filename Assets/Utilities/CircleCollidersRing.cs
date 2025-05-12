@@ -100,6 +100,9 @@ public class CircularColliderRing : MonoBehaviour
 #if UNITY_EDITOR
         if (!autoUpdate || Application.isPlaying) return;
 
+        // Ne rien faire si l'objet n'est pas dans la scène OU n'est pas dans le prefab context actif
+        if (!gameObject.scene.IsValid() && !UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage()?.IsPartOfPrefabContents(gameObject) == true)
+            return;
         if (_pendingUpdate) return;
         _pendingUpdate = true;
 

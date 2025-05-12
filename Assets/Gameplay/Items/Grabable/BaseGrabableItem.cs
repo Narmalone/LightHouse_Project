@@ -50,7 +50,7 @@ namespace LightHouse.Items.Interactable
         private Vector3 _grabRayOrigin;
         private Vector3 _grabRayDirection;
         private PlayerCharacter _playerCharacter;
-        private PlayerRaycastSystem _inventoryRaycastDetector;
+        private CameraRaycastSystem _inventoryRaycastDetector;
         #endregion
 
         #region IInteractable
