@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace LightHouse.Interactions
 {
     /// <summary>

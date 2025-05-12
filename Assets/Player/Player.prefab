@@ -1007,7 +1007,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8674682485748669005}
   - component: {fileID: 518771032426155933}
-  - component: {fileID: 4453206468429886752}
+  - component: {fileID: 4604400920179464832}
   - component: {fileID: 5860776069107868818}
   - component: {fileID: 8588254507179195592}
   - component: {fileID: 4390841736390168758}
@@ -1063,7 +1063,7 @@ MonoBehaviour:
   _enableSprintInput: 1
   _enableJumpInput: 1
   _enableCrouchInput: 1
---- !u!114 &4453206468429886752
+--- !u!114 &4604400920179464832
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1072,14 +1072,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3576453257779527103}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8aae6a5b51a151842922e1aad462a8e1, type: 3}
+  m_Script: {fileID: 11500000, guid: c6181d42aee9456478879c932ff30906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _camera: {fileID: 7457726863973231117}
   _raycastDistance: 3
   _blockingLayers:
     serializedVersion: 2
-    m_Bits: 201
+    m_Bits: 193
   _qti: 1
   _interactableLayers:
     serializedVersion: 2
@@ -1102,9 +1102,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f503aebfbefb0a54daa5eac5715d4019, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _raycastSystem: {fileID: 4453206468429886752}
+  _raycastSystem: {fileID: 4604400920179464832}
   _inventoryCapacity: 4
-  _grabAndDropItemRange: 0.7
+  _grabAndDropItemRange: 1
   _itemDatabase: {fileID: 11400000, guid: eec9f4e4453518e4bb148827b9312144, type: 2}
   _inventoryTarget: {fileID: 1259359992558668386}
   _maxDropPower: 10
@@ -1151,7 +1151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactionCanvas: {fileID: 5442988119189176741}
-  _unifiedRaycastSystem: {fileID: 4453206468429886752}
+  _unifiedRaycastSystem: {fileID: 4604400920179464832}
 --- !u!114 &4390841736390168758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1165,7 +1165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interactionCanvas: {fileID: 5442988119189176741}
-  _unifiedRaycastSystem: {fileID: 4453206468429886752}
+  _unifiedRaycastSystem: {fileID: 4604400920179464832}
 --- !u!114 &7906979379660786359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1609,7 +1609,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5630163784421652890}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000001693434, y: 0, z: 0.0000000015435737, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

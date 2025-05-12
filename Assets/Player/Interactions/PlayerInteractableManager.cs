@@ -17,7 +17,7 @@ namespace LightHouse.KinematicCharacterController
 
         //controllers s
         private RaycastInteractionHandler _interactionHandler;
-        [SerializeField] private UnifiedRaycastSystem _unifiedRaycastSystem;
+        [SerializeField] private ItemsDetectionSystem _unifiedRaycastSystem;
         private RaycastDetector<IInteractable> _raycastInteractable;
         #endregion
 
@@ -42,6 +42,7 @@ namespace LightHouse.KinematicCharacterController
         {
             _raycastInteractable.OnDetected -= interactable => _interactionHandler.SetTarget(interactable);
             _raycastInteractable.OnItemLost -= () => _interactionHandler.SetTarget(null);
+            _interactionHandler.OnDestroyed();
         }
         #endregion
     }

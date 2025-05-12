@@ -1,13 +1,13 @@
 using System;
 using LightHouse.Inventory;
-using UnityEngine;
 
 namespace LightHouse.Items.Interactable
 {
     public class IDUseItemTracker : IDItemTracker
     {
+        public Action OnConditionChecked;
+        public Action OnItemUsedOnMe;
         public bool UnsubscribeToItemOnUse = true;
-        public event Action OnItemUsedOnMe;
         protected IInventoryItemUsable _inventoryItemUsable;
         protected override void CheckConditions()
         {
@@ -22,13 +22,18 @@ namespace LightHouse.Items.Interactable
             }
 
             if (!_hasKeyOnHands || itm == null)
+            {
+                OnConditionChecked?.Invoke();
                 return;
+            }
+
             if (itm is IInventoryItemUsable usable)
             {
                 _inventoryItemUsable = usable;
                 SubscribeToItem(_inventoryItemUsable);
                 ChangeCanBeUsedFromInventory(_inventoryItemUsable, true);
             }
+            OnConditionChecked?.Invoke();
         }
 
         protected virtual void Usable_OnItemUsed()

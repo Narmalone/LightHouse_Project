@@ -67,6 +67,82 @@ Transform:
   - {fileID: 1604089941351180312}
   m_Father: {fileID: 7179348606424363834}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1207940915620528788
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1256589071070300971}
+  - component: {fileID: 2491732257853283835}
+  - component: {fileID: 4506119447600800997}
+  m_Layer: 7
+  m_Name: BarnaclesTalkie
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1256589071070300971
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207940915620528788}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 35.966, y: 2.413, z: -6.56}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7179348606424363834}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2491732257853283835
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207940915620528788}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4506119447600800997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207940915620528788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f098b33a48e4b494dbe3608c718a0322, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _itemName: 
+  _col: {fileID: 2491732257853283835}
+  <IsItemRaycasted>k__BackingField: 0
+  <CanBeRaycasted>k__BackingField: 1
+  _keys: []
+  _service: {fileID: 11400000, guid: 28ec02c10b621ff4f8f7eda93f509052, type: 2}
+  DialogueToPlay: 3
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1820488835937915906
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,6 +635,7 @@ Transform:
   - {fileID: 1519594353061448548}
   - {fileID: 3456787021086110286}
   - {fileID: 3571500202047740816}
+  - {fileID: 1256589071070300971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5189583616208960387
@@ -576,6 +653,7 @@ MonoBehaviour:
   _talkieRef: {fileID: 11400000, guid: 28ec02c10b621ff4f8f7eda93f509052, type: 2}
   _ropePlaceHolder: {fileID: 6629675014010541993}
   _mainEntranceDoorTrigger: {fileID: 3079930341072490098}
+  _switchBoardTutorial: {fileID: 8823743750242846986}
   _lockedDoor: {fileID: 3625026128553630706}
 --- !u!1 &7101379023194238488
 GameObject:

@@ -104,8 +104,8 @@ namespace LightHouse.Items.Interactable
         {
             if (!_isGrabbed || _targetPoint == null) return;
 
-            _grabRayOrigin = UnifiedRaycastSystem.RayOrigin;
-            Vector3 fullDirection = UnifiedRaycastSystem.RayDirection.normalized;
+            _grabRayOrigin = ItemsDetectionSystem.RayOrigin;
+            Vector3 fullDirection = ItemsDetectionSystem.RayDirection.normalized;
             Vector3 targetPos = _grabRayOrigin + (fullDirection * _objectAtRange) + _offsetPos;
             Vector3 toTarget = targetPos - _rb.position;
             float dist = toTarget.magnitude;

@@ -19,7 +19,6 @@ namespace LightHouse.Items
         [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
 
         [Header(" --- LOCALIZATION --- ")]
-        [SerializeField] protected LocalizedStringDatabase_InteractionTexts _interactionTexts;
         [SerializeField] protected LocalizedString[] _keys;
         protected LocalizedString _currentLocalizedString;
         #endregion
@@ -58,8 +57,7 @@ namespace LightHouse.Items
 
         protected virtual async void UpdateInteractionText()
         {
-            
-
+            if(_keys.Length == 0) return;
             // Résolution de toutes les chaînes de manière asynchrone
             string[] resolvedParts = new string[_keys.Length];
             for (int i = 0; i < _keys.Length; i++)

@@ -4,6 +4,7 @@ using LightHouse.CustomAttributes;
 using LightHouse.Handlers;
 using LightHouse.Inputs;
 using LightHouse.Inventory;
+using LightHouse.Items.Detection;
 using LightHouse.Items.Interactable;
 using LightHouse.Localization;
 using UnityEngine;
@@ -54,7 +55,8 @@ namespace LightHouse.Items.Inventory
 
         public void EmitRadius()
         {
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, _scrapRadius, _interactableItemsMasks, QueryTriggerInteraction.Ignore);
+            if (ItemsDetectionSystem.CurrentHitedObjectPosition == null) return;
+            Collider[] hitColliders = Physics.OverlapSphere(ItemsDetectionSystem.CurrentHitedObjectPosition.position, _scrapRadius, _interactableItemsMasks, QueryTriggerInteraction.Ignore);
             foreach (Collider hit in hitColliders)
             {
                 if (hit.CompareTag(_barnacleTag))
@@ -62,9 +64,9 @@ namespace LightHouse.Items.Inventory
                     BernacleInteractable barnacleComp = hit.GetComponent<BernacleInteractable>();
                     if (barnacleComp != null && barnacleComp.gameObject != this.gameObject)
                     {
-                        var obj = Instantiate(_itemDatabase.GetPrefab((ushort)_itemToAddInInventory));
-                        var s = obj.GetComponent<IInventoryItem>();
-                        PlayerHandlerData.MainPlayer.Inventory.AddItemToInventory(SlotManager.CurrentSlotIndex, s);
+                        GameObject prefab = Instantiate(_itemDatabase.GetPrefab((ushort)_itemToAddInInventory));
+                        IInventoryItem inventoryItem = prefab.GetComponent<IInventoryItem>();
+                        PlayerHandlerData.MainPlayer.Inventory.AddItemToInventory(SlotManager.CurrentSlotIndex, inventoryItem);
                         Destroy(barnacleComp.gameObject);
                     }
                 }                

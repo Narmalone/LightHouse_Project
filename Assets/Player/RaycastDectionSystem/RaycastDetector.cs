@@ -21,11 +21,10 @@ namespace LightHouse.Items.Detection
         {
             GameObject go = hit.collider.gameObject;
 
-            if (go == _lastSeenObject) return;
-
             if (ItemRegistry.IsMarked(hit.collider, out GameObject markedObj))
                 go = markedObj;
 
+            if (go == _lastSeenObject) return;
             _lastSeenObject = go;
             go.TryGetComponent(out T component);
             if (component != null)

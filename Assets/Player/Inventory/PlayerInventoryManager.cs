@@ -1,4 +1,4 @@
-using LightHouse.Inputs;
+﻿using LightHouse.Inputs;
 using LightHouse.Interactions;
 using UnityEngine;
 using LightHouse.Items.Detection;
@@ -13,7 +13,7 @@ namespace LightHouse.KinematicCharacterController
     public class PlayerInventoryManager : MonoBehaviour
     {
         #region SERILIAZED FIELDS
-        [SerializeField] private UnifiedRaycastSystem _raycastSystem;
+        [SerializeField] private ItemsDetectionSystem _raycastSystem;
         [Header("Inventory Settings")]
         [SerializeField] private byte _inventoryCapacity = 4;
         [SerializeField] private float _grabAndDropItemRange = 1.5f;
@@ -74,9 +74,26 @@ namespace LightHouse.KinematicCharacterController
         private void LateUpdate()
         {
             if (!_isInitialized) return;
-            _inventoryTarget.position = UnifiedRaycastSystem.RayOrigin + (UnifiedRaycastSystem.RayDirection.normalized * _grabAndDropItemRange);
-            _inventoryTarget.rotation = Quaternion.LookRotation(UnifiedRaycastSystem.RayDirection.normalized);
+
+            Vector3 origin = ItemsDetectionSystem.RayOrigin;
+            Vector3 direction = ItemsDetectionSystem.RayDirection.normalized;
+            float maxDistance = _grabAndDropItemRange;
+
+            Ray ray = new Ray(origin, direction);
+            if (Physics.Raycast(ray, out RaycastHit hit, maxDistance, _securityObstacleMasks, QueryTriggerInteraction.Ignore))
+            {
+                // Obstacle détecté → place l’objet juste avant le mur
+                _inventoryTarget.position = hit.point - direction * 0.2f; // recule légèrement pour éviter de toucher le mur
+            }
+            else
+            {
+                // Pas d’obstacle → place normalement à portée max
+                _inventoryTarget.position = origin + direction * maxDistance;
+            }
+
+            _inventoryTarget.rotation = Quaternion.LookRotation(direction);
         }
+
 
         private void OnDrawGizmos()
         {
@@ -171,7 +188,7 @@ namespace LightHouse.KinematicCharacterController
             }
             else
             {
-                Debug.Log("item non r�cup�r� inventaire plein");
+                Debug.Log("item non récupéré inventaire plein");
             }
         }
 

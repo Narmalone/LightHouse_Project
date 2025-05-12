@@ -5,6 +5,7 @@ using LightHouse.Inputs;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 using LightHouse.Localization;
+using System;
 
 namespace LightHouse.Items.Interactable
 {
@@ -27,6 +28,9 @@ namespace LightHouse.Items.Interactable
         [Header("Read Only / Debug purposes")]
         [SerializeField] protected bool _hasKeyInInventory = false;
         [SerializeField] protected bool _hasKeyOnHands = false;
+
+        public bool HasKeyInInventory => _hasKeyInInventory;
+        public bool HasKeyOnHands => _hasKeyOnHands;
         #endregion
         
         #region MONO'S CALLBACK
@@ -147,6 +151,10 @@ namespace LightHouse.Items.Interactable
 
         #region Check & Other Abstract functions
         protected abstract void CheckConditions();
+        public void ForceCheckConditions()
+        {
+            CheckConditions();
+        }
         #endregion
     }
 

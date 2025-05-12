@@ -12,7 +12,7 @@ namespace LightHouse.Items.Detection
         //Controllers
         private RaycastNameDisplayHandler _nameDisplayHandler;
 
-        [SerializeField] private UnifiedRaycastSystem _unifiedRaycastSystem;
+        [SerializeField] private ItemsDetectionSystem _unifiedRaycastSystem;
         private RaycastDetector<IItemName> _raycastItemName;
         #endregion
 
@@ -26,10 +26,6 @@ namespace LightHouse.Items.Detection
 
             _raycastItemName.OnDetected += item => _nameDisplayHandler.SetTarget(item);
             _raycastItemName.OnItemLost += () => _nameDisplayHandler.SetTarget(null);
-        }
-
-        private void Update()
-        {
         }
 
         private void OnDestroy()

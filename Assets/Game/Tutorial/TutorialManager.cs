@@ -11,6 +11,7 @@ namespace LightHouse.Game.Tutorial
         [SerializeField] private TalkieServiceReference _talkieRef;
         [SerializeField] private RopePlaceHolder _ropePlaceHolder;
         [SerializeField] private TriggerEvent _mainEntranceDoorTrigger;
+        [SerializeField] private TutorialSwitchboard _switchBoardTutorial;
 
         private bool _hasDoorBeenUnlockedForTheFirstTime = false;
         [SerializeField] private LockedDoor _lockedDoor;
@@ -20,6 +21,8 @@ namespace LightHouse.Game.Tutorial
             _ropePlaceHolder.OnItemUsedOnMe += RopePlaceHolder_OnObjectInteracted;
             _mainEntranceDoorTrigger.OnEntered += MainEntranceDoorTrigger_OnEntered;
             _lockedDoor.OnObjectInteracted += LockedDoor_OnObjectInteracted;
+            _switchBoardTutorial.OnAllBernaclesRemoved += SwitchBoardTutorial_OnAllBernaclesRemoved;
+            _switchBoardTutorial.ElectricalPannel.ElectricDoor.OnObjectInteracted += ElectricDoor_OnObjectInteracted;
         }
 
         private void Start()
@@ -34,11 +37,21 @@ namespace LightHouse.Game.Tutorial
             _mainEntranceDoorTrigger.OnEntered -= MainEntranceDoorTrigger_OnEntered;
             _ropePlaceHolder.OnItemUsedOnMe -= RopePlaceHolder_OnObjectInteracted;
             _lockedDoor.OnObjectInteracted -= LockedDoor_OnObjectInteracted;
+            _switchBoardTutorial.OnAllBernaclesRemoved -= SwitchBoardTutorial_OnAllBernaclesRemoved;
+            _switchBoardTutorial.ElectricalPannel.ElectricDoor.OnObjectInteracted -= ElectricDoor_OnObjectInteracted;
         }
 
         private void RopePlaceHolder_OnObjectInteracted()
         {
             _talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_EnterLighthouse);
+        }
+
+        private void LockedDoor_OnObjectInteracted()
+        {
+            if (_hasDoorBeenUnlockedForTheFirstTime) return;
+            _hasDoorBeenUnlockedForTheFirstTime = true;
+            _talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_ElectricCurrent);
+            _talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_ElectricCurrent_2);
         }
 
         private void MainEntranceDoorTrigger_OnEntered(GameObject obj)
@@ -49,12 +62,14 @@ namespace LightHouse.Game.Tutorial
             _mainEntranceDoorTrigger.Colllider.enabled = false;
         }
 
-        private void LockedDoor_OnObjectInteracted()
+        private void ElectricDoor_OnObjectInteracted()
         {
-            if (_hasDoorBeenUnlockedForTheFirstTime) return;
-            _hasDoorBeenUnlockedForTheFirstTime = true;
-            _talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_ElectricCurrent);
-            _talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_ElectricCurrent_2);
+            _talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_ElectricalPannel_3);
+        }
+
+        private void SwitchBoardTutorial_OnAllBernaclesRemoved()
+        {
+            //_talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_ElectricalPannel_3);
         }
     }
 

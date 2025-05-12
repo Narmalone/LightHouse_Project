@@ -163,7 +163,6 @@ namespace LightHouse.Items.Interactable
 
         public override void Interact()
         {
-            base.Interact();
             if (!_isUnLocked)
             {
                 if (AudioHandlerData.AudioManager != null)
@@ -175,6 +174,7 @@ namespace LightHouse.Items.Interactable
             else
                 Open();
             UpdateInteractionText();
+            InvokeObjectInteracted();
         }
 
         public virtual void OnDoorInteracted()

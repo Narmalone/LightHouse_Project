@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using LightHouse.Items.Interactable;
 using LightHouse.Items.Inventory;
@@ -7,9 +8,11 @@ namespace LightHouse.Game.Tutorial
 {
     public class TutorialSwitchboard : MonoBehaviour
     {
+        public event Action OnAllBernaclesRemoved;
         [SerializeField] private Key _shedKey;
         [SerializeField] private List<BernacleInteractable> _objetsToRemoveBeforeInteract;
         [SerializeField] private ElectricalPannel _electricalPannel;
+        public ElectricalPannel ElectricalPannel => _electricalPannel;
 
         private void Awake()
         {
@@ -39,6 +42,7 @@ namespace LightHouse.Game.Tutorial
 
             _electricalPannel.ElectricDoor.CanBeInteracted = true;
             _electricalPannel.ElectricDoor.CanBeRaycasted = true;
+            OnAllBernaclesRemoved?.Invoke();
         }
     }
 
