@@ -8,7 +8,7 @@ namespace LightHouse.Electricity
 {
     public enum ElectricityZones
     {
-        None, 
+        None,
         Maintenance,
         Kitchen,
         BedroomAndBathroom,
@@ -18,31 +18,27 @@ namespace LightHouse.Electricity
     }
 
     [Serializable]
-    public struct ElectricZoneData
+    public class ElectricZoneData
     {
         public ElectricityZones Zone;
-        public float PowerUsed;
-        public float MaxPower;
-        public bool IsElectricityOn;
+        public float PowerUsedWhenEnabled;
+        public bool IsEnabled;
         public List<IElectricItem> Items;
 
         public ElectricZoneData(ElectricityZones zone)
         {
             Zone = zone;
-            PowerUsed = 0f;
-            MaxPower = 100.0f;
-            IsElectricityOn = false;
+            PowerUsedWhenEnabled = 0f;
+            IsEnabled = false;
             Items = new List<IElectricItem>();
         }
 
         public float RecalculatePower()
         {
-            PowerUsed = 0f;
+            PowerUsedWhenEnabled = 0f;
             foreach (IElectricItem item in Items)
-            {
-                PowerUsed += item.ElectricityCost;
-            }
-            return PowerUsed;
+                PowerUsedWhenEnabled += item.ElectricityCost;
+            return PowerUsedWhenEnabled;
         }
     }
 
@@ -51,14 +47,15 @@ namespace LightHouse.Electricity
     {
         [SerializeField] private Generator _generator;
         [SerializeField] private ElectricalPannel _electricalPannel;
+        [SerializeField]
+        private ElectricityZoneSettings _zoneSettings;
 
         private Dictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
-#pragma warning disable
+
         [SerializeField] private float _maxTotalPower = 600.0f;
-#pragma warning disable
         [SerializeField] private float _currentTotalPower = 0.0f;
 
-        #region MONO'S Callback
+        #region MONO
         private void Awake()
         {
             Initialize();
@@ -69,12 +66,28 @@ namespace LightHouse.Electricity
         {
             UnregisterCallbacks();
         }
-
         #endregion
 
-        #region Registering & Unregistering Callbacks
+        #region Init
+        private void Initialize()
+        {
+            foreach (ElectricityZones zone in Enum.GetValues(typeof(ElectricityZones)))
+            {
+                if (!_electricZonesData.ContainsKey(zone))
+                    _electricZonesData[zone] = new ElectricZoneData(zone);
+            }
 
-        public void RegisterCallbacks()
+            float maxPower = 0f;
+            foreach(var zone in _zoneSettings.zonePowers)
+            {
+                maxPower += GetMaxPowerForZone(zone.Zone);
+            }
+            _maxTotalPower = maxPower;
+        }
+        #endregion
+
+        #region Callbacks
+        private void RegisterCallbacks()
         {
             _generator.OnGeneratorSwitchChanged += Generator_OnGeneratorSwitchChanged;
             _electricalPannel.OnSwitchElectricityChanged += ElectricalPannel_OnSwitchElectricityChanged;
@@ -82,151 +95,121 @@ namespace LightHouse.Electricity
             ElectricItemRegistry.OnElectricItemUnregister += ElectricItemRegistry_OnElectricItemUnregister;
         }
 
-        public void UnregisterCallbacks()
+        private void UnregisterCallbacks()
         {
             _generator.OnGeneratorSwitchChanged -= Generator_OnGeneratorSwitchChanged;
             _electricalPannel.OnSwitchElectricityChanged -= ElectricalPannel_OnSwitchElectricityChanged;
             ElectricItemRegistry.OnElectricItemRegister -= ElectricItemRegistry_OnElectricItemRegister;
             ElectricItemRegistry.OnElectricItemUnregister -= ElectricItemRegistry_OnElectricItemUnregister;
         }
-
         #endregion
 
-        #region INIT
-        private void Initialize()
+        #region Generator Events
+        private void Generator_OnGeneratorSwitchChanged(bool isOn)
         {
-            foreach (ElectricityZones zone in Enum.GetValues(typeof(ElectricityZones)))
-            {
-                if (!_electricZonesData.ContainsKey(zone))
-                {
-                    _electricZonesData[zone] = new ElectricZoneData(zone);
-                }
-            }
-        }
-
-        #endregion
-
-        #region  -- ITEMS CALLBACKS --
-
-        #region Generator Callbacks
-
-        private void Generator_OnGeneratorSwitchChanged(bool obj)
-        {
-            if (obj)
-            {
+            if (isOn)
                 _electricalPannel.OnEnablePannelInteractibility();
-            }
             else
-            {
                 _electricalPannel.OnDisablePannelInteractibility();
-            }
         }
-
         #endregion
 
-        #region Electrical Callbacks
-        private void ElectricalPannel_OnSwitchElectricityChanged(bool arg1, ElectricityZones zoneKey, ElectricZoneData datas)
+        #region Panel Events
+        /// <summary>
+        /// TO DO CHANGER l'INTEGRALITE DE LA FONCTION
+        /// </summary>
+        private void ElectricalPannel_OnSwitchElectricityChanged(bool state, ElectricityZones zoneKey, ElectricZoneData datas)
         {
-            if (!_electricZonesData.ContainsKey(zoneKey)) return;
+            if (!_electricZonesData.TryGetValue(zoneKey, out var zone))
+                return;
 
-            ElectricZoneData zone = _electricZonesData[zoneKey];
-            zone.IsElectricityOn = arg1;
-            _electricZonesData[zoneKey] = zone;
+            zone.IsEnabled = state;
 
-            foreach (IElectricItem target in zone.Items)
+            foreach (IElectricItem item in zone.Items)
             {
-                target.IsElectricityOn = arg1;
+                item.IsElectricityOn = state;
 
-                if (arg1)
-                    target.OnElectricityZoneEnabled();
-                else
-                    target.OnElectricityZoneDisabled();
+                if (state) item.OnElectricityZoneEnabled();
+                else item.OnElectricityZoneDisabled();
             }
         }
-
         #endregion
 
-        #region ElectricItemRegistry Callbacks
+        #region Item Registry Events
+        private void ElectricItemRegistry_OnElectricItemRegister(IElectricItem item)
+        {
+            AddItemToZone(item.ItemZone, item);
+            item.AddElectricityCostToManager += Obj_AddElectricityCostToManager;
+            item.RemoveElectricityCostToManager += Obj_RemoveElectricityCostToManager;
+        }
+
         private void ElectricItemRegistry_OnElectricItemUnregister(IElectricItem item)
         {
-            RemoveItemFromDictionnary(item.ItemZone, item);
+            RemoveItemFromZone(item.ItemZone, item);
             item.AddElectricityCostToManager -= Obj_AddElectricityCostToManager;
             item.RemoveElectricityCostToManager -= Obj_RemoveElectricityCostToManager;
         }
 
-        private void ElectricItemRegistry_OnElectricItemRegister(IElectricItem obj)
+        private void Obj_AddElectricityCostToManager(float power)
         {
-            AddItemToDictionnary(obj.ItemZone, obj);
-            obj.AddElectricityCostToManager += Obj_AddElectricityCostToManager;
-            obj.RemoveElectricityCostToManager += Obj_RemoveElectricityCostToManager;
+            // Implémenter si nécessaire
         }
 
-        private void Obj_RemoveElectricityCostToManager(float obj)
+        private void Obj_RemoveElectricityCostToManager(float power)
         {
-            
+            // Implémenter si nécessaire
         }
-
-        private void Obj_AddElectricityCostToManager(float obj)
-        {
-            
-        }
-
         #endregion
 
-        #endregion
-
-        #region Dictionnary
-        private void AddItemToDictionnary(ElectricityZones zone, IElectricItem item)
+        #region Zone Management
+        private void AddItemToZone(ElectricityZones zone, IElectricItem item)
         {
-            if (!_electricZonesData.ContainsKey(zone))
-                return;
-
-            ElectricZoneData data = _electricZonesData[zone];
+            if (!_electricZonesData.TryGetValue(zone, out var data)) return;
 
             if (!data.Items.Contains(item))
             {
                 data.Items.Add(item);
                 data.RecalculatePower();
-                _electricZonesData[zone] = data; 
             }
         }
 
-        private void RemoveItemFromDictionnary(ElectricityZones zone, IElectricItem item)
+        private void RemoveItemFromZone(ElectricityZones zone, IElectricItem item)
         {
-            if (!_electricZonesData.ContainsKey(zone))
-                return;
+            if (!_electricZonesData.TryGetValue(zone, out var data)) return;
 
-            ElectricZoneData data = _electricZonesData[zone];
-
-            if (data.Items.Contains(item))
+            if (data.Items.Remove(item))
             {
-                data.Items.Remove(item);
                 data.RecalculatePower();
-                _electricZonesData[zone] = data; 
             }
         }
-        private List<IElectricItem> GetAllItemsInZonze(ElectricityZones zone)
+
+        public List<IElectricItem> GetAllItemsInZone(ElectricityZones zone)
         {
-            return _electricZonesData.ContainsKey(zone) ? _electricZonesData[zone].Items : new List<IElectricItem>();
+            return _electricZonesData.TryGetValue(zone, out var data)
+                ? data.Items
+                : new List<IElectricItem>();
         }
 
         public float GetTotalPowerInZone(ElectricityZones zone)
         {
-            return _electricZonesData.ContainsKey(zone) ? _electricZonesData[zone].PowerUsed : 0f;
+            return _electricZonesData.TryGetValue(zone, out var data)
+                ? data.PowerUsedWhenEnabled
+                : 0f;
         }
 
-        public float GetCurrentTotalPower() 
+        public float GetCurrentTotalPower()
         {
-            float totalPower = 0f;
-            foreach (KeyValuePair<ElectricityZones, ElectricZoneData> kvp in _electricZonesData) 
-            {
-                totalPower += GetTotalPowerInZone(kvp.Key);
-            }
-            return totalPower;
+            float total = 0f;
+            foreach (var zone in _electricZonesData.Values)
+                total += zone.PowerUsedWhenEnabled;
+            return total;
         }
 
+        public float GetMaxPowerForZone(ElectricityZones zone)
+        {
+            return _zoneSettings != null ? _zoneSettings.GetMaxPower(zone) : 0f;
+        }
 
         #endregion
     }
-
 }

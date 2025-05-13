@@ -1,4 +1,3 @@
-using LightHouse.Inputs;
 using LightHouse.Interactions;
 using System;
 using UnityEngine;
@@ -10,7 +9,7 @@ namespace LightHouse.Items.Interactable
 {
     public class ElectricalSwitch : InteractableSwitchRotate, IInteractable
     {
-        [SerializeField] private ElectricZoneData _electricityZone = new ElectricZoneData();
+        [SerializeField] private ElectricZoneData _electricityZone = new ElectricZoneData(ElectricityZones.None);
         public ElectricZoneData ElectricityZone => _electricityZone;
         public event Action<ElectricalSwitch> OnSwitchInteracted;
 
