@@ -11,8 +11,8 @@ namespace LightHouse.Items.Samples
         [field: SerializeField] public bool IsElectricityOn { get; set; }
         [field: SerializeField] public ElectricityZones ItemZone { get; set; }
 
-        public event Action<float> AddElectricityCostToManager;
-        public event Action<float> RemoveElectricityCostToManager;
+        public event Action<ElectricityZones, float> AddElectricityCostToManager;
+        public event Action<ElectricityZones, float> RemoveElectricityCostToManager;
 
         public override string GetInteractionName()
         {
@@ -34,13 +34,13 @@ namespace LightHouse.Items.Samples
         public void OnElectricityZoneEnabled()
         {
             CanBeInteracted = true;
-            AddElectricityCostToManager?.Invoke(ElectricityCost);
+            AddElectricityCostToManager?.Invoke(ItemZone, ElectricityCost);
         }
 
         public void OnElectricityZoneDisabled()
         {
             CanBeInteracted = false;
-            RemoveElectricityCostToManager?.Invoke(ElectricityCost);
+            RemoveElectricityCostToManager?.Invoke(ItemZone, ElectricityCost);
         }
     }
 }

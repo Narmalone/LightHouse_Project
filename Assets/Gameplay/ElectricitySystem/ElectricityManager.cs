@@ -3,6 +3,7 @@ using LightHouse.Items;
 using System.Collections.Generic;
 using System;
 using LightHouse.Items.Interactable;
+using LightHouse.Collections;
 
 namespace LightHouse.Electricity
 {
@@ -21,24 +22,39 @@ namespace LightHouse.Electricity
     public class ElectricZoneData
     {
         public ElectricityZones Zone;
-        public float PowerUsedWhenEnabled;
+        public float CurrentPowerUsed;
         public bool IsEnabled;
         public List<IElectricItem> Items;
 
         public ElectricZoneData(ElectricityZones zone)
         {
             Zone = zone;
-            PowerUsedWhenEnabled = 0f;
+            CurrentPowerUsed = 0f;
             IsEnabled = false;
             Items = new List<IElectricItem>();
         }
 
         public float RecalculatePower()
         {
-            PowerUsedWhenEnabled = 0f;
+            CurrentPowerUsed = 0f;
             foreach (IElectricItem item in Items)
-                PowerUsedWhenEnabled += item.ElectricityCost;
-            return PowerUsedWhenEnabled;
+            {
+                CurrentPowerUsed += item.ElectricityCost;
+                Debug.Log(item.ToString() + " "+ item.ElectricityCost + " " + CurrentPowerUsed);
+            }
+            return CurrentPowerUsed;
+        }
+
+        public float RemovePower(float removeSomePower)
+        {
+            CurrentPowerUsed -= removeSomePower;
+            return CurrentPowerUsed;
+        }
+
+        public float AddPower(float addSomePower) 
+        {
+            CurrentPowerUsed += addSomePower;
+            return CurrentPowerUsed;
         }
     }
 
@@ -50,7 +66,8 @@ namespace LightHouse.Electricity
         [SerializeField]
         private ElectricityZoneSettings _zoneSettings;
 
-        private Dictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
+        //private Dictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
+        public SerializableDictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
 
         [SerializeField] private float _maxTotalPower = 600.0f;
         [SerializeField] private float _currentTotalPower = 0.0f;
@@ -76,13 +93,6 @@ namespace LightHouse.Electricity
                 if (!_electricZonesData.ContainsKey(zone))
                     _electricZonesData[zone] = new ElectricZoneData(zone);
             }
-
-            float maxPower = 0f;
-            foreach(var zone in _zoneSettings.zonePowers)
-            {
-                maxPower += GetMaxPowerForZone(zone.Zone);
-            }
-            _maxTotalPower = maxPower;
         }
         #endregion
 
@@ -150,14 +160,21 @@ namespace LightHouse.Electricity
             item.RemoveElectricityCostToManager -= Obj_RemoveElectricityCostToManager;
         }
 
-        private void Obj_AddElectricityCostToManager(float power)
+        private void Obj_AddElectricityCostToManager(ElectricityZones zone, float power)
         {
-            // Implémenter si nécessaire
+            if (!_electricZonesData.TryGetValue(zone, out var data)) return;
+            data.AddPower(power);
+            if (data.CurrentPowerUsed >= _zoneSettings.GetMaxPower(zone))
+            {
+                //Shutdown eveything
+                ShutDownElectricalPannel();
+            }
         }
 
-        private void Obj_RemoveElectricityCostToManager(float power)
+        private void Obj_RemoveElectricityCostToManager(ElectricityZones zone, float power)
         {
-            // Implémenter si nécessaire
+            if (!_electricZonesData.TryGetValue(zone, out var data)) return;
+            data.AddPower(power);
         }
         #endregion
 
@@ -169,7 +186,7 @@ namespace LightHouse.Electricity
             if (!data.Items.Contains(item))
             {
                 data.Items.Add(item);
-                data.RecalculatePower();
+                //data.RecalculatePower();
             }
         }
 
@@ -193,7 +210,7 @@ namespace LightHouse.Electricity
         public float GetTotalPowerInZone(ElectricityZones zone)
         {
             return _electricZonesData.TryGetValue(zone, out var data)
-                ? data.PowerUsedWhenEnabled
+                ? data.CurrentPowerUsed
                 : 0f;
         }
 
@@ -201,7 +218,7 @@ namespace LightHouse.Electricity
         {
             float total = 0f;
             foreach (var zone in _electricZonesData.Values)
-                total += zone.PowerUsedWhenEnabled;
+                total += zone.CurrentPowerUsed;
             return total;
         }
 
@@ -211,5 +228,15 @@ namespace LightHouse.Electricity
         }
 
         #endregion
+
+        public void ShutDownElectricalPannel()
+        {
+            _electricalPannel.DownAllSwitches();
+        }
+
+        public void ShutdownGenerator()
+        {
+
+        }
     }
 }

@@ -7,11 +7,11 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace LightHouse.Items.Interactable
 {
-    public class ElectricalSwitch : InteractableSwitchRotate, IInteractable
+    public class ElectricalPannelSwitch : InteractableSwitchRotate, IInteractable
     {
         [SerializeField] private ElectricZoneData _electricityZone = new ElectricZoneData(ElectricityZones.None);
         public ElectricZoneData ElectricityZone => _electricityZone;
-        public event Action<ElectricalSwitch> OnSwitchInteracted;
+        public event Action<ElectricalPannelSwitch> OnSwitchInteracted;
 
         [Header(" -- Localization Electric --")]
         [SerializeField] protected LocalizedString _electricZone;

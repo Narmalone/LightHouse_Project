@@ -9,7 +9,7 @@ namespace LightHouse.Items.Interactable
     {
         [SerializeField] private InteractableSwitchRotate _electricDoor;
         [SerializeField] private SingleRaycastedItemName _enableElectricityFirst;
-        [SerializeField] private ElectricalSwitch[] _switchesOnPannel;
+        [SerializeField] private ElectricalPannelSwitch[] _switchesOnPannel;
 
         public InteractableSwitchRotate ElectricDoor => _electricDoor;
         public SingleRaycastedItemName EnableElectricityFirstCollider => _enableElectricityFirst;
@@ -32,14 +32,14 @@ namespace LightHouse.Items.Interactable
         #region Callbacks Events
         public void RegisterEvents()
         {
-            foreach (ElectricalSwitch sw in _switchesOnPannel) 
+            foreach (ElectricalPannelSwitch sw in _switchesOnPannel) 
             {
                 sw.OnSwitchInteracted += Sw_OnSwitchInteracted;
             }
         }
         public void UnregisterEvents()
         {
-            foreach (ElectricalSwitch sw in _switchesOnPannel)
+            foreach (ElectricalPannelSwitch sw in _switchesOnPannel)
             {
                 sw.OnSwitchInteracted -= Sw_OnSwitchInteracted;
             }
@@ -63,10 +63,13 @@ namespace LightHouse.Items.Interactable
 
         public void DownAllSwitches()
         {
-
+            foreach (ElectricalPannelSwitch sw in _switchesOnPannel)
+            {
+                sw.Interact();
+            }
         }
 
-        private void Sw_OnSwitchInteracted(ElectricalSwitch obj)
+        private void Sw_OnSwitchInteracted(ElectricalPannelSwitch obj)
         {
             OnSwitchElectricityChanged?.Invoke(obj.IsSwitchOn, obj.ElectricityZone.Zone, obj.ElectricityZone);
         }
