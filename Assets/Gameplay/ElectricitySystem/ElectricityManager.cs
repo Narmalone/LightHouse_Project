@@ -23,14 +23,14 @@ namespace LightHouse.Electricity
     {
         public ElectricityZones Zone;
         public float CurrentPowerUsed;
-        public bool IsEnabled;
+        public bool ElectricityOn;
         public List<IElectricItem> Items;
 
         public ElectricZoneData(ElectricityZones zone)
         {
             Zone = zone;
             CurrentPowerUsed = 0f;
-            IsEnabled = false;
+            ElectricityOn = false;
             Items = new List<IElectricItem>();
         }
 
@@ -133,7 +133,7 @@ namespace LightHouse.Electricity
             if (!_electricZonesData.TryGetValue(zoneKey, out var zone))
                 return;
 
-            zone.IsEnabled = state;
+            zone.ElectricityOn = state;
 
             foreach (IElectricItem item in zone.Items)
             {
@@ -163,6 +163,7 @@ namespace LightHouse.Electricity
         private void Obj_AddElectricityCostToManager(ElectricityZones zone, float power)
         {
             if (!_electricZonesData.TryGetValue(zone, out var data)) return;
+            if (!data.ElectricityOn) return;
             data.AddPower(power);
             if (data.CurrentPowerUsed >= _zoneSettings.GetMaxPower(zone))
             {
@@ -174,7 +175,7 @@ namespace LightHouse.Electricity
         private void Obj_RemoveElectricityCostToManager(ElectricityZones zone, float power)
         {
             if (!_electricZonesData.TryGetValue(zone, out var data)) return;
-            data.AddPower(power);
+            data.RemovePower(power);
         }
         #endregion
 
@@ -182,22 +183,15 @@ namespace LightHouse.Electricity
         private void AddItemToZone(ElectricityZones zone, IElectricItem item)
         {
             if (!_electricZonesData.TryGetValue(zone, out var data)) return;
-
             if (!data.Items.Contains(item))
-            {
                 data.Items.Add(item);
-                //data.RecalculatePower();
-            }
         }
 
         private void RemoveItemFromZone(ElectricityZones zone, IElectricItem item)
         {
             if (!_electricZonesData.TryGetValue(zone, out var data)) return;
-
-            if (data.Items.Remove(item))
-            {
-                data.RecalculatePower();
-            }
+            if (data.Items.Contains(item))
+                data.Items.Remove(item);
         }
 
         public List<IElectricItem> GetAllItemsInZone(ElectricityZones zone)

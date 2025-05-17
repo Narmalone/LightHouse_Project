@@ -64,7 +64,11 @@ namespace LightHouse.Items
             {
                 var op = _keys[i].GetLocalizedStringAsync();
                 await op.Task;
-                resolvedParts[i] = op.Result;
+                var targetResult = op.Result;
+                if (i == 0 && !string.IsNullOrEmpty(targetResult))
+                    targetResult = char.ToUpper(targetResult[0]) + targetResult.Substring(1);
+
+                resolvedParts[i] = targetResult;
             }
 
             // Jointure des textes avec un espace

@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7543144290221397248}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.65250635, z: -0, w: 0.75778323}
+  m_LocalRotation: {x: 0, y: 0.6525085, z: 0, w: 0.75778145}
   m_LocalPosition: {x: 37.585, y: 6.003, z: -15.881}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
   _hasKeyInInventory: 0
   _hasKeyOnHands: 0
   UnsubscribeToItemOnUse: 0
-  _targetDecal: {fileID: 0}
+  _targetDecal: {fileID: 2069777044023480223}
   references:
     version: 2
     RefIds: []
@@ -158,8 +158,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2122804960001074015, guid: 2ea99c5efcf0739488303754145f0204,
         type: 3}
+      propertyPath: m_Size.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2122804960001074015, guid: 2ea99c5efcf0739488303754145f0204,
+        type: 3}
       propertyPath: m_DecalLayerMask
       value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3111865439366603824, guid: 2ea99c5efcf0739488303754145f0204,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.165
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -172,3 +182,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 129729849312554176}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2069777044023480223 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2122804960001074015, guid: 2ea99c5efcf0739488303754145f0204,
+    type: 3}
+  m_PrefabInstance: {fileID: 129729849312554176}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f19d9143a39eb3b46bc4563e9889cfbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -4,7 +4,6 @@ using LightHouse.Localization;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace LightHouse.Items.Interactable
 {
@@ -73,27 +72,12 @@ namespace LightHouse.Items.Interactable
             string input = InputManager.Interact_Bind_Name;
             LocalizedString actionString = _isSwitchOn ? _offText : _onText;
 
-            // Resolve action async
-            AsyncOperationHandle<string> actionTextOp = actionString.GetLocalizedStringAsync();
-            await actionTextOp.Task;
+            _currentText = await InteractionTextBuilder.Build(
+                actionString,
+                input,
+                _pressToAction
+            );
 
-            //we make a temp bcs a LocalizedString are shared between all instances, even we don't have multiple
-            //interactable objects displayed at the same time it's more safe, the performances are negligeable.
-            LocalizedString composed = new LocalizedString
-            {
-                TableReference = _pressToAction.TableReference,
-                TableEntryReference = _pressToAction.TableEntryReference,
-                Arguments = new object[]
-                {
-                    new { key = input, action = actionTextOp.Result }
-                }
-            };
-
-            // Resolve final string
-            AsyncOperationHandle<string> finalTextOp = composed.GetLocalizedStringAsync();
-            await finalTextOp.Task;
-
-            _currentText = finalTextOp.Result;
             if (IsItemRaycasted)
                 InvokeInteractionDescriptionUpdated();
         }

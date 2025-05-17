@@ -30,16 +30,22 @@ namespace LightHouse.Electricity
             ElectricItemRegistry.Unregister(this);
         }
 
-        public void OnElectricityZoneDisabled()
+        public void OnElectricityZoneDisabled() 
         {
-            _light.gameObject.SetActive(false);
-            RemoveElectricityCostToManager?.Invoke(ItemZone, ElectricityCost);
+            UserTurnOff();
         }
+        public void OnElectricityZoneEnabled() { }
 
-        public void OnElectricityZoneEnabled()
+        public void UserTurnOn()
         {
             _light.gameObject.SetActive(true);
             AddElectricityCostToManager?.Invoke(ItemZone, ElectricityCost);
+        }
+
+        public void UserTurnOff()
+        {
+            _light.gameObject.SetActive(false);
+            RemoveElectricityCostToManager?.Invoke(ItemZone, ElectricityCost);
         }
     }
 

@@ -14,7 +14,7 @@ namespace LightHouse.CustomEditors
     public class LocalizationWindow : EditorWindow
     {
         private LocalizationTableCollection selectedTable;
-        private Type selectedAssetType = typeof(Sprite); // Par défaut
+        private Type selectedAssetType = typeof(Sprite);
         private string[] assetTypeOptions = new string[] { "Sprite", "AudioClip", "GameObject", "TextAsset" };
         private int selectedAssetTypeIndex = 0;
 
@@ -49,14 +49,48 @@ namespace LightHouse.CustomEditors
 
         void GenerateScript(LocalizationTableCollection table)
         {
-            string className = $"LocalizedDatabase_{table.name}";
+            string prefix = table is StringTableCollection ? "LocalizedStringDatabase" : "LocalizedAssetDatabase";
+            string className = $"{prefix}_{table.name}";
             string fileName = $"{className}.cs";
-            string folderPath = CustomAssetPath;
-            string fullScriptPath = Path.Combine(folderPath, fileName);
 
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
+            // Recherche si le script existe déjà quelque part
+            string existingScriptPath = AssetDatabase.FindAssets($"{className} t:Script")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .FirstOrDefault(path => Path.GetFileNameWithoutExtension(path) == className);
 
+            string targetFolderPath;
+            string fullScriptPath;
+
+            if (!string.IsNullOrEmpty(existingScriptPath))
+            {
+                bool shouldReplace = EditorUtility.DisplayDialog(
+                    "Script déjà existant",
+                    $"Un script nommé \"{className}\" existe déjà à cet emplacement :\n{existingScriptPath}\n\nVeux-tu le remplacer ?",
+                    "Remplacer",
+                    "Annuler"
+                );
+
+                if (!shouldReplace)
+                {
+                    Debug.Log("❌ Génération annulée par l’utilisateur.");
+                    return;
+                }
+
+                // ⚠️ On écrase dans le dossier existant
+                targetFolderPath = Path.GetDirectoryName(existingScriptPath);
+                fullScriptPath = existingScriptPath;
+            }
+            else
+            {
+                // Utilisation du dossier custom
+                targetFolderPath = CustomAssetPath;
+                fullScriptPath = Path.Combine(targetFolderPath, fileName);
+
+                if (!Directory.Exists(targetFolderPath))
+                    Directory.CreateDirectory(targetFolderPath);
+            }
+
+            // ✅ Génération du script
             var sharedEntries = table.SharedData.Entries;
 
             StringBuilder sb = new StringBuilder();
@@ -89,9 +123,10 @@ namespace LightHouse.CustomEditors
 
             Debug.Log($"✅ Script généré : {fullScriptPath}");
 
+            // Générer ou mettre à jour le ScriptableObject
             EditorApplication.delayCall += () =>
             {
-                CreateAndPopulateSO(className, table, folderPath);
+                CreateAndPopulateSO(className, table, targetFolderPath);
             };
         }
 
@@ -110,15 +145,28 @@ namespace LightHouse.CustomEditors
             string assetPath = Path.Combine(folderPath, $"{className}.asset");
             ScriptableObject asset = AssetDatabase.LoadAssetAtPath(assetPath, type) as ScriptableObject;
 
-            if (asset == null)
+            if (asset != null)
+            {
+                bool shouldReplaceAsset = EditorUtility.DisplayDialog(
+                    "Asset déjà existant",
+                    $"Un ScriptableObject nommé \"{className}.asset\" existe déjà à cet emplacement :\n{assetPath}\n\nVeux-tu le mettre à jour ?",
+                    "Mettre à jour",
+                    "Annuler"
+                );
+
+                if (!shouldReplaceAsset)
+                {
+                    Debug.Log("❌ Mise à jour du ScriptableObject annulée par l’utilisateur.");
+                    return;
+                }
+
+                Debug.Log($"⚠️ Asset existant mis à jour : {assetPath}");
+            }
+            else
             {
                 asset = ScriptableObject.CreateInstance(type);
                 AssetDatabase.CreateAsset(asset, assetPath);
                 Debug.Log($"✅ Asset créé : {assetPath}");
-            }
-            else
-            {
-                Debug.Log($"⚠️ Asset existant mis à jour : {assetPath}");
             }
 
             foreach (var entry in table.SharedData.Entries)
@@ -130,20 +178,28 @@ namespace LightHouse.CustomEditors
 
                 if (table is StringTableCollection && field.FieldType == typeof(LocalizedString))
                 {
-                    var locString = new LocalizedString
+                    var locString = field.GetValue(asset) as LocalizedString;
+                    if (locString == null)
                     {
-                        TableReference = table.TableCollectionNameReference,
-                        TableEntryReference = key
-                    };
-                    field.SetValue(asset, locString);
+                        locString = new LocalizedString();
+                        field.SetValue(asset, locString);
+                    }
+
+                    locString.TableReference = table.TableCollectionNameReference;
+                    locString.TableEntryReference = key;
                 }
                 else if (table is AssetTableCollection && field.FieldType.IsGenericType &&
                          field.FieldType.GetGenericTypeDefinition() == typeof(LocalizedAsset<>))
                 {
-                    var localizedAsset = Activator.CreateInstance(field.FieldType) as LocalizedAssetBase;
+                    var localizedAsset = field.GetValue(asset) as LocalizedAssetBase;
+                    if (localizedAsset == null)
+                    {
+                        localizedAsset = Activator.CreateInstance(field.FieldType) as LocalizedAssetBase;
+                        field.SetValue(asset, localizedAsset);
+                    }
+
                     localizedAsset.TableReference = table.TableCollectionNameReference;
                     localizedAsset.TableEntryReference = key;
-                    field.SetValue(asset, localizedAsset);
                 }
             }
 
@@ -151,6 +207,7 @@ namespace LightHouse.CustomEditors
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
+
 
         string SanitizeKey(string key)
         {

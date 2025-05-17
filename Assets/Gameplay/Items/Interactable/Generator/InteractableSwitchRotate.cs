@@ -83,9 +83,9 @@ namespace LightHouse.Items.Interactable
         {
             base.Interact();
             if (_isSwitchOn)
-                GoToTarget();
+                On();
             else
-                GoToInitial();
+                Off();
         }
         #endregion
 
@@ -97,9 +97,9 @@ namespace LightHouse.Items.Interactable
         #endregion
 
         #region ROTATE FUNCS
-        public virtual void GoToTarget()
+        public virtual void On()
         {
-            if (!_isSwitchOn) _isSwitchOn = true; //security
+            if (!_isSwitchOn) _isSwitchOn = true; //security if we force it
             _startRotation = _targetToRotate.localRotation;
             Quaternion deltaRotation = Quaternion.Euler(_rotationDelta);
             _currentTarget = _startRotation * deltaRotation;
@@ -110,9 +110,9 @@ namespace LightHouse.Items.Interactable
             _isMoving = true;
         }
 
-        public virtual void GoToInitial()
+        public virtual void Off()
         {
-            if (_isSwitchOn) _isSwitchOn = false; //security
+            if (_isSwitchOn) _isSwitchOn = false; //security if we force it
             _startRotation = _targetToRotate.localRotation;
             _currentTarget = _initialRotation;
             _rotationTimer = 0f;

@@ -1,6 +1,7 @@
 // Auto-generated ScriptableObject for localization keys
 using UnityEngine;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Components;
 
 namespace LightHouse.Localization
 {
@@ -33,5 +34,6 @@ namespace LightHouse.Localization
 		public LocalizedString Unlock;
 		public LocalizedString Use;
 		public LocalizedString Generator;
+		public LocalizedString Electricity;
 	}
 }

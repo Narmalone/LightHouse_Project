@@ -65,7 +65,7 @@ namespace LightHouse.Items.Interactable
         {
             foreach (ElectricalPannelSwitch sw in _switchesOnPannel)
             {
-                sw.Interact();
+                sw.Off();
             }
         }
 
