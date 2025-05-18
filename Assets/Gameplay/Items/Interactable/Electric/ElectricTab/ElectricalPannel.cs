@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using LightHouse.Electricity;
 
@@ -7,25 +6,30 @@ namespace LightHouse.Items.Interactable
 {
     public class ElectricalPannel : MonoBehaviour
     {
+        #region VARIABLES
+
+        #region EVENTS
+        public event Action<bool, ElectricityZones, ElectricZoneData> OnSwitchElectricityChanged;
+        #endregion
+
+        #region SERIALIZED
         [SerializeField] private InteractableSwitchRotate _electricDoor;
         [SerializeField] private SingleRaycastedItemName _enableElectricityFirst;
         [SerializeField] private ElectricalPannelSwitch[] _switchesOnPannel;
+        #endregion
 
+        #region PROPERTIES
         public InteractableSwitchRotate ElectricDoor => _electricDoor;
         public SingleRaycastedItemName EnableElectricityFirstCollider => _enableElectricityFirst;
-        public event Action<bool, ElectricityZones, ElectricZoneData> OnSwitchElectricityChanged;
+        #endregion
 
-        #region MONO'S CALLBACK
+        #endregion
 
-        private void Awake()
-        {
-            RegisterEvents();
-        }
+        #region UNITY'S LIFECYCLE
 
-        private void OnDestroy()
-        {
-            UnregisterEvents();
-        }
+        private void Awake() => RegisterEvents();
+
+        private void OnDestroy() => UnregisterEvents();
 
         #endregion
 
@@ -47,6 +51,8 @@ namespace LightHouse.Items.Interactable
 
         #endregion
 
+        #region PANNEL INTERACTABILITY
+
         public void OnEnablePannelInteractibility()
         {
             _electricDoor.CanBeInteracted = true;
@@ -61,11 +67,15 @@ namespace LightHouse.Items.Interactable
             _enableElectricityFirst.gameObject.SetActive(true);
         }
 
+        #endregion
+
+        #region SWITCHES
         public void DownAllSwitches()
         {
             foreach (ElectricalPannelSwitch sw in _switchesOnPannel)
             {
                 sw.Off();
+                sw.UpdateInteractionText();
             }
         }
 
@@ -73,7 +83,7 @@ namespace LightHouse.Items.Interactable
         {
             OnSwitchElectricityChanged?.Invoke(obj.IsSwitchOn, obj.ElectricityZone.Zone, obj.ElectricityZone);
         }
+        #endregion
 
-        
     }
 }

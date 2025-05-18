@@ -10,7 +10,7 @@ namespace LightHouse.Electricity
         public event Action<ElectricityZones, float> AddElectricityCostToManager;
         public event Action<ElectricityZones, float> RemoveElectricityCostToManager;
 
-        [field: SerializeField] public bool IsElectricityOn { get; set; }
+        [field: SerializeField] public bool HasElectricity { get; set; }
         [field: SerializeField] public ElectricityZones ItemZone { get; set; }
         [field: SerializeField] public float ElectricityCost { get; set; } = 10.0f;
 

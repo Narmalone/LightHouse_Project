@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
-using LightHouse.Items;
 using System.Collections.Generic;
 using System;
 using LightHouse.Items.Interactable;
-using LightHouse.Collections;
 
 namespace LightHouse.Electricity
 {
+    #region ENUMS & UTILITIES
     public enum ElectricityZones
     {
         None,
@@ -57,22 +56,23 @@ namespace LightHouse.Electricity
             return CurrentPowerUsed;
         }
     }
+    #endregion
 
     [DefaultExecutionOrder(-1)]
     public class ElectricityManager : MonoBehaviour
     {
+        #region Serialized Fields
         [SerializeField] private Generator _generator;
         [SerializeField] private ElectricalPannel _electricalPannel;
-        [SerializeField]
-        private ElectricityZoneSettings _zoneSettings;
+        [SerializeField] private ElectricityZoneSettings _zoneSettings;
 
-        //private Dictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
-        public SerializableDictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
-
-        [SerializeField] private float _maxTotalPower = 600.0f;
+        private Dictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
+        //public SerializableDictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
+        [SerializeField] private float _maxTotalPower = 450.0f;
         [SerializeField] private float _currentTotalPower = 0.0f;
+        #endregion
 
-        #region MONO
+        #region Unity's Lifecycle
         private void Awake()
         {
             Initialize();
@@ -125,9 +125,6 @@ namespace LightHouse.Electricity
         #endregion
 
         #region Panel Events
-        /// <summary>
-        /// TO DO CHANGER l'INTEGRALITE DE LA FONCTION
-        /// </summary>
         private void ElectricalPannel_OnSwitchElectricityChanged(bool state, ElectricityZones zoneKey, ElectricZoneData datas)
         {
             if (!_electricZonesData.TryGetValue(zoneKey, out var zone))
@@ -137,7 +134,7 @@ namespace LightHouse.Electricity
 
             foreach (IElectricItem item in zone.Items)
             {
-                item.IsElectricityOn = state;
+                item.HasElectricity = state;
 
                 if (state) item.OnElectricityZoneEnabled();
                 else item.OnElectricityZoneDisabled();
@@ -165,10 +162,18 @@ namespace LightHouse.Electricity
             if (!_electricZonesData.TryGetValue(zone, out var data)) return;
             if (!data.ElectricityOn) return;
             data.AddPower(power);
-            if (data.CurrentPowerUsed >= _zoneSettings.GetMaxPower(zone))
+            if (data.CurrentPowerUsed >= GetMaxPowerForZone(zone))
             {
                 //Shutdown eveything
-                ShutDownElectricalPannel();
+                ShutdownElectricalPannel();
+                Debug.Log($"shut down il y'a trop d'objets électriques activés {zone}");
+            }
+            //calculer le max total power
+            _currentTotalPower = GetCurrentTotalPower();
+            if(_currentTotalPower > _maxTotalPower)
+            {
+                ShutdownElectricalPannel();
+                Debug.Log("Il y'a trop de trucs qui sont utilisés en tout !");
             }
         }
 
@@ -201,13 +206,6 @@ namespace LightHouse.Electricity
                 : new List<IElectricItem>();
         }
 
-        public float GetTotalPowerInZone(ElectricityZones zone)
-        {
-            return _electricZonesData.TryGetValue(zone, out var data)
-                ? data.CurrentPowerUsed
-                : 0f;
-        }
-
         public float GetCurrentTotalPower()
         {
             float total = 0f;
@@ -223,14 +221,21 @@ namespace LightHouse.Electricity
 
         #endregion
 
-        public void ShutDownElectricalPannel()
+        #region OTHER FUNCS
+        public void ShutdownElectricalPannel()
         {
+            foreach(ElectricZoneData zoneDatas in _electricZonesData.Values)
+            {
+                zoneDatas.ElectricityOn = false;
+                foreach(var item in zoneDatas.Items)
+                {
+                    item.HasElectricity = false;
+                    item.OnElectricityZoneDisabled();
+                }
+                if(zoneDatas.CurrentPowerUsed < 0f) zoneDatas.CurrentPowerUsed = 0f;
+            }
             _electricalPannel.DownAllSwitches();
         }
-
-        public void ShutdownGenerator()
-        {
-
-        }
+        #endregion
     }
 }

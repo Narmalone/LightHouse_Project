@@ -67,7 +67,7 @@ namespace LightHouse.Items.Interactable
         /// Automatically update the string we want to display under condition
         /// if the switch is on for example, also we can combine with the pressToAction
         /// </summary>
-        protected async virtual void UpdateInteractionText()
+        public async virtual void UpdateInteractionText()
         {
             string input = InputManager.Interact_Bind_Name;
             LocalizedString actionString = _isSwitchOn ? _offText : _onText;

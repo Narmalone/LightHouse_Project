@@ -4,10 +4,29 @@ namespace LightHouse.Electricity
 {
     public interface IElectricItem
     {
+        /// <summary>
+        /// Call it when the item is using Electricity
+        /// </summary>
         public event Action<ElectricityZones, float> AddElectricityCostToManager;
+
+        /// <summary>
+        /// Call it when the item stops to use the electricity
+        /// </summary>
         public event Action<ElectricityZones, float> RemoveElectricityCostToManager;
+
+        /// <summary>
+        /// If the item receive electricity
+        /// </summary>
+        public bool HasElectricity { get; set; }
+
+        /// <summary>
+        /// The cost of the item to it's Zone
+        /// </summary>
         public float ElectricityCost { get; set; }
-        public bool IsElectricityOn { get; set; }
+
+        /// <summary>
+        /// The zone where the item belongs to
+        /// </summary>
         public ElectricityZones ItemZone { get; set; }
 
         /// <summary>
