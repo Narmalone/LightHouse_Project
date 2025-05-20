@@ -67,9 +67,7 @@ namespace LightHouse.Electricity
         [SerializeField] private ElectricityZoneSettings _zoneSettings;
 
         private Dictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
-        //public SerializableDictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
         [SerializeField] private float _maxTotalPower = 450.0f;
-        [SerializeField] private float _currentTotalPower = 0.0f;
         #endregion
 
         #region Unity's Lifecycle
@@ -162,19 +160,11 @@ namespace LightHouse.Electricity
             if (!_electricZonesData.TryGetValue(zone, out var data)) return;
             if (!data.ElectricityOn) return;
             data.AddPower(power);
+
             if (data.CurrentPowerUsed >= GetMaxPowerForZone(zone))
-            {
-                //Shutdown eveything
                 ShutdownElectricalPannel();
-                Debug.Log($"shut down il y'a trop d'objets électriques activés {zone}");
-            }
-            //calculer le max total power
-            _currentTotalPower = GetCurrentTotalPower();
-            if(_currentTotalPower > _maxTotalPower)
-            {
+            else if (GetCurrentTotalPower() > _maxTotalPower)
                 ShutdownElectricalPannel();
-                Debug.Log("Il y'a trop de trucs qui sont utilisés en tout !");
-            }
         }
 
         private void Obj_RemoveElectricityCostToManager(ElectricityZones zone, float power)

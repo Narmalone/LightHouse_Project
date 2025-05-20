@@ -5,35 +5,30 @@ namespace LightHouse.Electricity
 {
     public class StandardLamp : MonoBehaviour, IElectricItem
     {
-        [SerializeField] private Light _light;
-
+        #region EVENTS
         public event Action<ElectricityZones, float> AddElectricityCostToManager;
         public event Action<ElectricityZones, float> RemoveElectricityCostToManager;
 
+        #endregion
+
+        #region SERIALIZED / PROPERTIES
+        [Header(" --- ELECTRICITY --- ")]
+        [SerializeField] private Light _light;
         [field: SerializeField] public bool HasElectricity { get; set; }
         [field: SerializeField] public ElectricityZones ItemZone { get; set; }
         [field: SerializeField] public float ElectricityCost { get; set; } = 10.0f;
 
-        private void Awake()
-        {
-            _light.gameObject.SetActive(false);
-        }
+        #endregion
 
-        private void Start()
-        {
-            //Important to register on start to let the manager subscribe to the event
-            ElectricItemRegistry.Register(this);
-        }
+        #region UNITY LIFECYCLE
+        private void Awake() => _light.gameObject.SetActive(false);
+        private void Start() => ElectricItemRegistry.Register(this);
+        private void OnDestroy() => ElectricItemRegistry.Unregister(this);
 
-        private void OnDestroy()
-        {
-            ElectricItemRegistry.Unregister(this);
-        }
+        #endregion
 
-        public void OnElectricityZoneDisabled() 
-        {
-            UserTurnOff();
-        }
+        #region ELECTRICITY
+        public void OnElectricityZoneDisabled()  => UserTurnOff();
         public void OnElectricityZoneEnabled() { }
 
         public void UserTurnOn()
@@ -47,6 +42,7 @@ namespace LightHouse.Electricity
             _light.gameObject.SetActive(false);
             RemoveElectricityCostToManager?.Invoke(ItemZone, ElectricityCost);
         }
+        #endregion
     }
 
 }
