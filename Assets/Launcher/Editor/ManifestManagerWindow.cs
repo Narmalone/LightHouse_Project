@@ -14,7 +14,7 @@ namespace LightHouse.CustomEditors
             GetWindow<ManifestManagerWindow>("Manifest Manager Window");
         }
 
-        private string buildFolder = "D:/Projects/LightHouseGame/Builds/Windows";
+        private string buildFolder = "C:/Users/Thomas/Documents/Github/Lighthouse-Game-ForLauncher";
 
         void OnGUI()
         {
