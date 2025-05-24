@@ -11,49 +11,52 @@ namespace LightHouse.Utilities
         public event Action<GameObject> OnExited;
 
         [Header("Detection")]
-        [SerializeField] bool _useTriggerEnter = true;
-        [SerializeField] bool _useTriggerStay = false;
-        [SerializeField] bool _useTriggerExit = true;
+        [SerializeField] protected bool _useTriggerEnter = true;
+        [SerializeField] protected bool _useTriggerStay = false;
+        [SerializeField] protected bool _useTriggerExit = true;
 
         [Header("Detection")]
-        [SerializeField] private bool _needMaskAndLayerToEvent = false;
+        [SerializeField] protected bool _needMaskAndLayerToEvent = false;
 
-        [SerializeField] private LayerMask _targetsMasks;
+        [SerializeField] protected LayerMask _targetsMasks;
 
-        [SerializeField, TagSelector] private string _targetTag;
+        [SerializeField, TagSelector] protected string _targetTag;
 
-        public Collider Colllider;
+        public Collider Collider;
 
-        private void OnTriggerEnter(Collider other)
+        protected virtual void OnTriggerEnter(Collider other)
         {
             if (!_useTriggerEnter) return;
             if (GetConditions(other))
             {
+                OnTriggerEntered();
                 OnEntered?.Invoke(other.gameObject);
             }
         }
 
-        private void OnTriggerStay(Collider other)
+        protected virtual void OnTriggerStay(Collider other)
         {
             if (!_useTriggerStay) return;
 
             if (GetConditions(other))
             {
+                OnTriggerStayed();
                 OnStaying?.Invoke(other.gameObject);
             }
         }
 
-        private void OnTriggerExit(Collider other)
+        protected virtual void OnTriggerExit(Collider other)
         {
             if (!_useTriggerExit) return;
 
             if (GetConditions(other))
             {
+                OnTriggerExited();
                 OnExited?.Invoke(other.gameObject);
             }
         }
 
-        private bool GetConditions(Collider other)
+        protected virtual bool GetConditions(Collider other)
         {
             if (_needMaskAndLayerToEvent)
             {
@@ -71,5 +74,9 @@ namespace LightHouse.Utilities
             }
             return false;
         }
+
+        protected virtual void OnTriggerEntered() { }
+        protected virtual void OnTriggerStayed() { }
+        protected virtual void OnTriggerExited() { }
     }
 }

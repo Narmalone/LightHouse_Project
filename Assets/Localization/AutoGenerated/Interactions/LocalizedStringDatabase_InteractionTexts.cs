@@ -35,5 +35,6 @@ namespace LightHouse.Localization
 		public LocalizedString Use;
 		public LocalizedString Generator;
 		public LocalizedString Electricity;
+		public LocalizedString Water;
 	}
 }

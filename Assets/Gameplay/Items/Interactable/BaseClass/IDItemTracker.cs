@@ -150,7 +150,7 @@ namespace LightHouse.Items.Interactable
         #endregion
 
         #region Check & Other Abstract functions
-        protected abstract void CheckConditions();
+        protected abstract bool CheckConditions();
         public void ForceCheckConditions()
         {
             CheckConditions();

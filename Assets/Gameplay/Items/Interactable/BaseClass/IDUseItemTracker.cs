@@ -9,31 +9,42 @@ namespace LightHouse.Items.Interactable
         public Action OnItemUsedOnMe;
         public bool UnsubscribeToItemOnUse = true;
         protected IInventoryItemUsable _inventoryItemUsable;
-        protected override void CheckConditions()
+        protected override bool CheckConditions()
         {
             _hasKeyInInventory = SlotManager.IsItemExistInInventory((ushort)_itemNeeded);
             _hasKeyOnHands = SlotManager.IsItemOnHands((ushort)_itemNeeded, out IInventoryItem itm);
 
             if (_inventoryItemUsable != null)
             {
-                ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
-                UnsubscribeToItem(_inventoryItemUsable);
+                UnsubscribeFromCheckCondition();
                 _inventoryItemUsable = null;
             }
 
             if (!_hasKeyOnHands || itm == null)
             {
                 OnConditionChecked?.Invoke();
-                return;
+                return false;
             }
 
             if (itm is IInventoryItemUsable usable)
             {
                 _inventoryItemUsable = usable;
-                SubscribeToItem(_inventoryItemUsable);
-                ChangeCanBeUsedFromInventory(_inventoryItemUsable, true);
+                SubscribeFromCheckCondition();
             }
             OnConditionChecked?.Invoke();
+            return true;
+        }
+
+        protected virtual void SubscribeFromCheckCondition()
+        {
+            SubscribeToItem(_inventoryItemUsable);
+            ChangeCanBeUsedFromInventory(_inventoryItemUsable, true);
+        }
+
+        protected virtual void UnsubscribeFromCheckCondition()
+        {
+            ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
+            UnsubscribeToItem(_inventoryItemUsable);
         }
 
         protected virtual void Usable_OnItemUsed()

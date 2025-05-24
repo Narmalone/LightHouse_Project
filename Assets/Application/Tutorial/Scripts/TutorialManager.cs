@@ -59,7 +59,7 @@ namespace LightHouse.Game.Tutorial
             _talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_FindMainKey);
             _talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_FindMainKey_2);
             _mainEntranceDoorTrigger.gameObject.SetActive(false);
-            _mainEntranceDoorTrigger.Colllider.enabled = false;
+            _mainEntranceDoorTrigger.Collider.enabled = false;
         }
 
         private void ElectricDoor_OnObjectInteracted()

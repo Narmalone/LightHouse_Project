@@ -1,9 +1,9 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="ConfirmationPopup" src="project://database/Assets/Game/Options/ConfirmationPopUp/Template/ConfirmationPopup.uxml?fileID=9197481963319205126&amp;guid=b42e7c21ae6220c458f1fb13dbb0d733&amp;type=3#ConfirmationPopup" />
-    <Style src="project://database/Assets/Game/Options/UI/OptionPannel.uss?fileID=7433441132597879392&amp;guid=b53aed396917198468938a872f00fe24&amp;type=3#OptionPannel" />
+    <ui:Template name="ConfirmationPopup" src="project://database/Assets/Application/Options/ConfirmationPopUp/Template/ConfirmationPopup.uxml?fileID=9197481963319205126&amp;guid=b42e7c21ae6220c458f1fb13dbb0d733&amp;type=3#ConfirmationPopup" />
+    <Style src="project://database/Assets/Application/Options/UI/OptionPannel.uss?fileID=7433441132597879392&amp;guid=b53aed396917198468938a872f00fe24&amp;type=3#OptionPannel" />
     <ui:VisualElement name="Root_Options_Parent" style="flex-grow: 1; -unity-background-scale-mode: stretch-to-fill;">
         <ui:VisualElement name="Root_Options" style="flex-direction: row; width: 100%; height: auto; display: flex; min-height: 100%; position: relative;">
-            <ui:VisualElement name="NavigationPanel" style="width: 250px; background-color: rgb(34, 34, 34); padding: 10px; flex-direction: column; justify-content: flex-start; align-items: stretch;">
+            <ui:VisualElement name="NavigationPanel" style="width: 250px; background-color: rgb(34, 34, 34); padding: 10px; flex-direction: column; justify-content: flex-start; align-items: stretch; display: flex;">
                 <ui:Button name="DisplayButton" text="Affichage" class="nav-button" style="margin-bottom: 10px; height: 50px;" />
                 <ui:Button name="GraphicsButton" text="Graphisme" class="nav-button" style="margin-bottom: 10px; height: 50px;" />
                 <ui:Button name="AudioButton" text="Son" class="nav-button" style="margin-bottom: 10px; height: 50px;" />
@@ -13,7 +13,7 @@
             </ui:VisualElement>
             <ui:VisualElement name="ContentPanel" style="flex-grow: 1; flex-direction: column; padding: 20px;">
                 <ui:VisualElement name="PanelsContainer" style="flex-grow: 1; flex-direction: column;">
-                    <ui:VisualElement name="DisplayPanel" style="flex-direction: column; width: 100%; height: 100%;">
+                    <ui:VisualElement name="DisplayPanel" style="flex-direction: column; width: 100%; height: 100%; display: none;">
                         <ui:Label text="Options d&apos;affichage" class="title" />
                         <ui:DropdownField name="ResolutionDropdown" label="Resolution" class="option-control" />
                         <ui:DropdownField name="DisplaysDropdown" label="Ecran" class="option-control" />
@@ -22,8 +22,10 @@
                         <ui:DropdownField name="RefreshRateDropdown" label="Taux de rafraichissement" class="option-control" style="margin-bottom: 10px;" />
                         <ui:DropdownField name="FrameRateDropdown" label="Limite de FPS" class="option-control" style="margin-bottom: 10px;" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="GraphicsPanel" style="flex-direction: column; width: 100%; height: 100%; display: none;">
+                    <ui:VisualElement name="GraphicsPanel" style="flex-direction: column; width: 958px; height: 100%; display: flex;">
                         <ui:Label text="Options graphiques" style="font-size: 24px; margin-bottom: 20px;" />
+                        <ui:DropdownField name="ResolutionDropdown" label="Graphics " class="option-control" />
+                        <HorizontalDropdown label="Graphics Preset" class="option-control" style="height: 67px; -unity-font-definition: url(&quot;project://database/Assets/UI%20Toolkit/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=a6dbcdc98c72e5441892fa0ac53f010b&amp;type=3#NotInter-Regular&quot;); width: 958px;" />
                     </ui:VisualElement>
                     <ui:VisualElement name="AudioPanel" style="flex-direction: column; width: 100%; height: 100%; display: none;">
                         <ui:Label text="Options sonores" style="font-size: 24px; margin-bottom: 20px;" />
