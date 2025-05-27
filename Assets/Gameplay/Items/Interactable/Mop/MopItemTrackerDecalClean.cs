@@ -28,32 +28,65 @@ namespace LightHouse.Items.Interactable
         public override void OnRaycastStart()
         {
             CheckConditions();
+        }
 
-            //if we do have the key but not
-            if (HasKeyOnHands)
+        protected override bool CheckConditions()
+        {
+            _hasKeyInInventory = SlotManager.IsItemExistInInventory((ushort)_itemNeeded);
+            _hasKeyOnHands = SlotManager.IsItemOnHands((ushort)_itemNeeded, out IInventoryItem itm);
+
+            if (_inventoryItemUsable != null)
             {
-                Mop currentHoldedMop = _inventoryItemUsable as Mop;
-                if (!currentHoldedMop.IsWet)
+                UnsubscribeFromCheckCondition();
+                _inventoryItemUsable = null;
+            }
+
+            if (!_hasKeyOnHands || itm == null)
+            {
+                OnConditionChecked?.Invoke();
+                return false;
+            }
+
+            if (itm is IInventoryItemUsable usable)
+            {
+                _inventoryItemUsable = usable;
+
+                if (IsMopUsable(out Mop mop))
                 {
-                    //If we have the mop on our hands and she's not wet we force to not subscribe to it
-                    
-                    return;
-                }
-                else
-                {
-                    
+                    SubscribeFromCheckCondition();
+                    UpdateInteractionText();
+                    return true;
                 }
             }
+            OnConditionChecked?.Invoke();
+            return false;
         }
 
         protected override void InventoryHandlerData_OnSelectedItemChanged(IInventoryItem obj)
         {
-            base.InventoryHandlerData_OnSelectedItemChanged(obj);
+            if (!IsItemRaycasted) return;
+            CheckConditions();
         }
 
         protected override void InventoryHandlerData_OnItemDropped(IInventoryItem itm)
         {
-            base.InventoryHandlerData_OnItemDropped(itm);
+            if (!IsItemRaycasted) return;
+            CheckConditions();
+        }
+
+        private bool IsMopUsable(out Mop mop)
+        {
+            mop = null;
+            if (HasKeyOnHands)
+            {
+                mop = _inventoryItemUsable as Mop;
+                if (mop == null) return false;
+                if (!mop.IsWet)
+                    return false;
+                else
+                    return true;
+            }
+            return false;
         }
 
         private void OnValidate()

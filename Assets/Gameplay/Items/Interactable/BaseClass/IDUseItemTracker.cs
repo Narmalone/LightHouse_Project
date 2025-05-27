@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using LightHouse.Inventory;
 
 namespace LightHouse.Items.Interactable
@@ -7,7 +8,8 @@ namespace LightHouse.Items.Interactable
     {
         public Action OnConditionChecked;
         public Action OnItemUsedOnMe;
-        public bool UnsubscribeToItemOnUse = true;
+        public bool AutoSubscribeOnSeen = true;
+        public bool AutoUnsubscribeOnItemUsed = true;
         protected IInventoryItemUsable _inventoryItemUsable;
         protected override bool CheckConditions()
         {
@@ -29,7 +31,8 @@ namespace LightHouse.Items.Interactable
             if (itm is IInventoryItemUsable usable)
             {
                 _inventoryItemUsable = usable;
-                SubscribeFromCheckCondition();
+                if (AutoSubscribeOnSeen)
+                    SubscribeFromCheckCondition();
             }
             OnConditionChecked?.Invoke();
             return true;
@@ -50,7 +53,7 @@ namespace LightHouse.Items.Interactable
         protected virtual void Usable_OnItemUsed()
         {
             OnItemUsedOnMe?.Invoke();
-            if (UnsubscribeToItemOnUse && _inventoryItemUsable != null)
+            if (AutoUnsubscribeOnItemUsed && _inventoryItemUsable != null)
             {
                 ChangeCanBeUsedFromInventory(_inventoryItemUsable, false);
                 UnsubscribeToItem(_inventoryItemUsable);

@@ -74,7 +74,7 @@ namespace LightHouse.Items
                 return; // rien à changer
 
             _inventoryMap[col] = targetComponent;
-            Debug.Log($"[ItemRegistry] Registered {col.name} → {targetComponent.name}");
+            //Debug.Log($"[ItemRegistry] Registered {col.name} → {targetComponent.name}");
         }
 
 

@@ -1,7 +1,4 @@
-using System;
-using LightHouse.Inventory;
 using LightHouse.Items.Inventory;
-using UnityEngine;
 
 namespace LightHouse.Items.Interactable
 {
