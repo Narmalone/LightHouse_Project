@@ -8,11 +8,15 @@ namespace LightHouse.Items
     public class SingleTalkieRaycast : SingleRaycastedItemName, IItemCallback
     {
         [SerializeField] private TalkieServiceReference _service;
-        [SerializeField] private DialogueAudioName DialogueToPlay;
+        [SerializeField] private DialogueAudioName[] DialogueToPlay;
 
         public void OnRaycastStart()
         {
-            _service.Current.Enqueue(DialogueToPlay);
+            foreach(var dialogue in DialogueToPlay)
+            {
+                _service.Current.Enqueue(dialogue);
+            }
+            
             this.gameObject.SetActive(false);
         }
 
