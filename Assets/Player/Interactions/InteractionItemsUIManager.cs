@@ -8,7 +8,7 @@ namespace LightHouse.KinematicCharacterController
     /// <summary>
     /// Handles interactions (not name display) with objects in the world.
     /// </summary>
-    public class PlayerInteractableManager : MonoBehaviour
+    public class InteractionItemsUIManager : MonoBehaviour
     {
         public static Action ForceUpdateTarget;
         #region FIELDS

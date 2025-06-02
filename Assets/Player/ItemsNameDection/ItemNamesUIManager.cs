@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LightHouse.Items.Detection
 {
-    public class PlayerItemNamesDetection : MonoBehaviour
+    public class ItemNamesUIManager : MonoBehaviour
     {
         #region FIELDS
         [Header("Settings")]

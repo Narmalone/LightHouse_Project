@@ -18,7 +18,7 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private CameraLean _cameraLean;
 
         [Header("Interactions")]
-        [SerializeField] private PlayerInteractableManager _interactions;
+        [SerializeField] private InteractionItemsUIManager _interactions;
 
         [Header("Inventory")]
         [SerializeField] private PlayerInventoryManager _inventoryController;
@@ -38,7 +38,7 @@ namespace LightHouse.KinematicCharacterController
         #region PROPERTIES
         public PlayerCharacter Character => _playerCharacter;
         public PlayerInventoryManager Inventory => _inventoryController;
-        public PlayerInteractableManager Interactions => _interactions;
+        public InteractionItemsUIManager Interactions => _interactions;
         public PlayerCamera PlayerCamera => _playerCamera;
         public CameraSpring CameraSpring => _cameraSpring;
         public CameraLean CameraLean => _cameraLean;
