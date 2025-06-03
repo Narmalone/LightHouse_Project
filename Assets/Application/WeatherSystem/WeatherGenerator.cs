@@ -23,10 +23,10 @@ public class WeatherGenerator : ScriptableObject
                 duration = totalTime - current;
             }
 
-            var evt = new Weather
+            var evt = new WeatherData
             {
                 WeatherType = (WeatherType)Random.Range(0, System.Enum.GetValues(typeof(WeatherType)).Length),
-                Humididy = Random.Range(0, 100),
+                Humidity = Random.Range(0, 100),
                 StartTimeInSeconds = current,
                 DurationInSeconds = duration
             };
