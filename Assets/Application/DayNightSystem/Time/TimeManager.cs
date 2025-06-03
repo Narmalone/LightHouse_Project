@@ -16,7 +16,7 @@ namespace LightHouse.Game.DayNightSystem
     {
         [Range(0f, 24f)]
         public float currentTime = 6f; // Heure initiale
-        public int currentDay = 0;
+        public byte currentDay = 0;
         public TimeOfDaySegment CurrentSegment { get; private set; }
         public event Action<TimeOfDaySegment> OnTimeSegmentChanged;
 
@@ -25,6 +25,9 @@ namespace LightHouse.Game.DayNightSystem
         public TimeConfiguration TimeConfig;
 
         private List<ITimeCycleObserver> observers = new List<ITimeCycleObserver>();
+
+        public event Action OnTimeReachesEnd;
+        public event Action<byte> OnDayChanged;
 
         public void RegisterObserver(ITimeCycleObserver observer)
         {
@@ -47,6 +50,12 @@ namespace LightHouse.Game.DayNightSystem
             {
                 currentTime %= 24f;
                 currentDay++;
+                OnDayChanged?.Invoke(currentDay);
+
+                if (currentDay >= TimeConfig.TotalDays)
+                {
+                    OnTimeReachesEnd?.Invoke();
+                }
             }
 
             UpdateTimeSegment();

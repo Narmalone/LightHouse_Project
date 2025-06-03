@@ -57,11 +57,12 @@ namespace LightHouse.Game.DayNightSystem
         public float moonMaxIntensity = 0.3f;
         public float moonFlareSize = 14.0f;
         public float moonFlareFallOff = 6.0f;
+        public float moonMaxFlareMultiplier = 0.3f;
         public float earthShine = 300f;
         public float fadeInStart = 18f;
         public float fadeInEnd = 20f;
         public float fadeOutStart = 4f;
-        public float fadeOutEnd = 6f;
+        public float fadeOutEnd = 5.9f;
 
         private void Update()
         {
@@ -95,6 +96,7 @@ namespace LightHouse.Game.DayNightSystem
             lightData.earthshine = t * maxEarthShineIntensity;
             lightData.flareFalloff = t * moonFlareFallOff;
             lightData.flareSize = t * moonFlareSize;
+            lightData.flareMultiplier = t * moonMaxFlareMultiplier;
             moonLight.enabled = moonLight.intensity > 0.01f;
         }
 
