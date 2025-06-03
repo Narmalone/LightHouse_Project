@@ -227,13 +227,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 91649567}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.9330127, y: -0.06698731, z: 0.25000003, w: 0.25000006}
+  m_LocalRotation: {x: -0.258819, y: 0, z: 0, w: 0.9659259}
   m_LocalPosition: {x: 0, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2699787913416653956}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -30, y: 0, z: 0}
 --- !u!114 &91649569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -387,7 +387,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 41796.875
+  m_Intensity: 41000
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2520,8 +2520,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moonLight: {fileID: 91649570}
-  hourOffset: 12
-  midnightDirection: {x: -30, y: 0, z: 0}
+  orbitBaseDirection: {x: -30, y: 0, z: 0}
+  orbitCycleDays: 29.5
+  maxEarthShineIntensity: 500
+  moonMaxIntensity: 41000
+  moonFlareSize: 14
+  moonFlareFallOff: 6
+  earthShine: 300
+  fadeInStart: 18
+  fadeInEnd: 20
+  fadeOutStart: 4
+  fadeOutEnd: 6
 --- !u!1001 &1152300438
 PrefabInstance:
   m_ObjectHideFlags: 0

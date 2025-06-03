@@ -53,11 +53,17 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
             to = eveningProfile;
             t = (timeOfDay - 17f) / 3f;
         }
-        else if (timeOfDay >= 20f || timeOfDay < 5f)
+        else if (timeOfDay >= 20f && timeOfDay < 24f)
         {
             from = eveningProfile;
             to = nightProfile;
-            t = timeOfDay < 5f ? timeOfDay / 5f : (timeOfDay - 20f) / 4f;
+            t = (timeOfDay - 20f) / 4f;
+        }
+        else if (timeOfDay >= 0f && timeOfDay < 5f)
+        {
+            from = nightProfile;
+            to = nightProfile; // nuit constante
+            t = 0f;
         }
         else // 5h - 6h
         {
@@ -65,6 +71,7 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
             to = morningProfile;
             t = (timeOfDay - 5f) / 1f;
         }
+
 
         ApplyInterpolatedProfile(from, to, t);
     }
@@ -76,13 +83,9 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
         sunLight.intensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, t);
         sunLight.colorTemperature = Mathf.Lerp(a.temperature, b.temperature, t);
 
-        // --- MOON ---
-        //moonLight.intensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, t);
-        //moonLight.color = Color.Lerp(a.sunColor, b.sunColor, t);
-
         // --- RENDER SETTINGS ---
-        RenderSettings.ambientLight = Color.Lerp(a.ambientColor, b.ambientColor, t);
-        RenderSettings.ambientIntensity = Mathf.Lerp(a.ambientIntensity, b.ambientIntensity, t);
+        //RenderSettings.ambientLight = Color.Lerp(a.ambientColor, b.ambientColor, t);
+        //RenderSettings.ambientIntensity = Mathf.Lerp(a.ambientIntensity, b.ambientIntensity, t);
 
         // --- EXPOSURE ---
         if (exposure != null)
