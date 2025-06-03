@@ -7,7 +7,7 @@ namespace LightHouse.Game.DayNightSystem
     {
         [Range(0f, 24f)]
         public float currentTime = 6f; // Heure initiale
-        public float dayLengthInMinutes = 10f;
+        public TimeConfiguration TimeConfig;
 
         private List<ITimeCycleObserver> observers = new List<ITimeCycleObserver>();
 
@@ -25,7 +25,7 @@ namespace LightHouse.Game.DayNightSystem
 
         private void Update()
         {
-            float delta = (24f / (dayLengthInMinutes * 60f)) * Time.deltaTime;
+            float delta = (24f / (TimeConfig.dayLengthInMinits * 60f)) * Time.deltaTime;
             currentTime = (currentTime + delta) % 24f;
             NotifyObservers();
         }
