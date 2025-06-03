@@ -6,8 +6,7 @@ using UnityEngine.Rendering.HighDefinition;
 public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
 {
     public Light sunLight;
-    public Volume skyVolume;
-    public Volume postProcessVolume;
+    public Volume globalVolume;
 
     [Header("Profils")]
     public LightingProfile nightProfile;
@@ -15,17 +14,18 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
     public LightingProfile dayProfile;
     public LightingProfile eveningProfile;
 
-    private HDRISky hdriSky;
     private Fog fog;
     private Exposure exposure;
+    private PhysicallyBasedSky sky;
+    private ColorAdjustments colorAdjustments;
 
     private void Start()
     {
-        FindObjectOfType<TimeManager>().RegisterObserver(this);
+        FindFirstObjectByType<TimeManager>().RegisterObserver(this);
 
-        skyVolume.profile.TryGet(out hdriSky);
-        skyVolume.profile.TryGet(out fog);
-        postProcessVolume.profile.TryGet(out exposure);
+        globalVolume.profile.TryGet(out fog);
+        globalVolume.profile.TryGet(out exposure);
+        globalVolume.profile.TryGet(out sky);
     }
 
     public void OnTimeChanged(float timeOfDay)
@@ -70,26 +70,56 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
 
     private void ApplyInterpolatedProfile(LightingProfile a, LightingProfile b, float t)
     {
-        // Lumière du soleil
+        // --- LIGHT ---
         sunLight.color = Color.Lerp(a.sunColor, b.sunColor, t);
         sunLight.intensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, t);
         sunLight.colorTemperature = Mathf.Lerp(a.temperature, b.temperature, t);
 
-        // Couleur ambiante
+        // --- RENDER SETTINGS ---
         RenderSettings.ambientLight = Color.Lerp(a.ambientColor, b.ambientColor, t);
         RenderSettings.ambientIntensity = Mathf.Lerp(a.ambientIntensity, b.ambientIntensity, t);
 
-        // Fog HDRP
-        if (fog != null)
-        {
-            fog.albedo.value = Color.Lerp(a.fogColor, b.fogColor, t);
-            fog.meanFreePath.value = Mathf.Lerp(100f, 1f / Mathf.Max(0.001f, Mathf.Lerp(a.fogDensity, b.fogDensity, t)), t);
-        }
-
-        // Post-process (exposition)
+        // --- EXPOSURE ---
         if (exposure != null)
         {
-            exposure.fixedExposure.value = Mathf.Lerp(a.exposure, b.exposure, t);
+            exposure.fixedExposure.value = Mathf.Lerp(a.Exposure, b.Exposure, t);
+            exposure.compensation.value = Mathf.Lerp(a.Compensation, b.Compensation, t);
+        }
+
+        // --- HDRP FOG ---
+        if (fog != null)
+        {
+            fog.tint.value = Color.Lerp(a.Tint, b.Tint, t);
+            fog.baseHeight.value = Mathf.Lerp(a.BaseHeight, b.BaseHeight, t);
+            fog.maximumHeight.value = Mathf.Lerp(a.MaximumHeight, b.MaximumHeight, t);
+            fog.meanFreePath.value = Mathf.Lerp(a.FogAttenuationDistance, b.FogAttenuationDistance, t);
+            fog.maxFogDistance.value = Mathf.Lerp(a.MaxFogDistance, b.MaxFogDistance, t);
+            fog.albedo.value = Color.Lerp(a.Albedo, b.Albedo, t);
+            fog.enableVolumetricFog.value = a.VolumetricFog || b.VolumetricFog; // si un des deux l'active
+            //fog.volumetricFog.meanFreePath.value = Mathf.Lerp(a.VolumetricFogDistance, b.VolumetricFogDistance, t);
+            fog.denoisingMode.value = t < 0.5f ? a.DenoisingMode : b.DenoisingMode;
+            fog.globalLightProbeDimmer.value = Mathf.Lerp(a.GIDimmer, b.GIDimmer, t);
+        }
+
+        // --- ARTISTIC SKY OVERRIDES ---
+        if (sky != null)
+        {
+            sky.groundTint.value = Color.Lerp(a.GroundTint, b.GroundTint, t);
+            sky.horizonTint.value = Color.Lerp(a.HorizonTint, b.HorizonTint, t);
+            sky.zenithTint.value = Color.Lerp(a.ZenithTint, b.ZenithTint, t);
+            sky.horizonZenithShift.value = Mathf.Lerp(a.HorizonZenithShift, b.HorizonZenithShift, t);
+            sky.aerosolDensity.value = Mathf.Lerp(a.AerosolDensity, b.AerosolDensity, t);
+            sky.aerosolTint.value = Color.Lerp(a.AerosolTint, b.AerosolTint, t);
+            sky.aerosolMaximumAltitude.value = Mathf.Lerp(a.AerosolMaximumAltitude, b.AerosolMaximumAltitude, t);
+        }
+
+        // --- COLOR ADJUSTMENTS ---
+        if (colorAdjustments != null)
+        {
+            colorAdjustments.postExposure.value = Mathf.Lerp(a.PostExposure, b.PostExposure, t);
+            colorAdjustments.contrast.value = Mathf.Lerp(a.Contrasts, b.Contrasts, t);
+            colorAdjustments.saturation.value = Mathf.Lerp(a.Saturation, b.Saturation, t);
         }
     }
+
 }
