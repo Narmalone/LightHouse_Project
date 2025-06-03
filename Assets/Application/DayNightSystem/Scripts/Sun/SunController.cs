@@ -14,6 +14,8 @@ namespace LightHouse.Game.DayNightSystem
             float normalizedTime = timeOfDay / 24f;
             float sunAngle = normalizedTime * 360f - 90f;
             sunLight.transform.rotation = Quaternion.Euler(sunAngle, noonDirection.y, noonDirection.z);
+
+            sunLight.enabled = timeOfDay > 6 && timeOfDay < 18;
         }
 
         private void Start()

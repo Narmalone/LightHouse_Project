@@ -4,7 +4,7 @@ using UnityEngine.Rendering.HighDefinition;
 [CreateAssetMenu(fileName = "LightingProfile", menuName = "DayNight/Lighting Profile")]
 public class LightingProfile : ScriptableObject
 {
-    [Header("--- LIGHT ---")]
+    [Header("--- SUN LIGHT ---")]
     public Color sunColor = Color.white;
     public float sunIntensity = 5000f;
     public float temperature = 6500f;

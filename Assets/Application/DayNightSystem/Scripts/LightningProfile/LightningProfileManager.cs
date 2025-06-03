@@ -6,6 +6,7 @@ using UnityEngine.Rendering.HighDefinition;
 public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
 {
     public Light sunLight;
+    public Light moonLight;
     public Volume globalVolume;
 
     [Header("Profils")]
@@ -74,6 +75,10 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
         sunLight.color = Color.Lerp(a.sunColor, b.sunColor, t);
         sunLight.intensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, t);
         sunLight.colorTemperature = Mathf.Lerp(a.temperature, b.temperature, t);
+
+        // --- MOON ---
+        //moonLight.intensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, t);
+        //moonLight.color = Color.Lerp(a.sunColor, b.sunColor, t);
 
         // --- RENDER SETTINGS ---
         RenderSettings.ambientLight = Color.Lerp(a.ambientColor, b.ambientColor, t);
