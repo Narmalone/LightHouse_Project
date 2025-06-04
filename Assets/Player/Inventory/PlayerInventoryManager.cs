@@ -59,6 +59,13 @@ namespace LightHouse.KinematicCharacterController
         #region MONO CALLBACKS
         private void Awake() => Initialize();
 
+        private void Start()
+        {
+            _inventoryRaycastDetector = _raycastSystem.InventoryDetector;
+            _inventoryRaycastDetector.OnDetected += HandleItemDetected;
+            _inventoryRaycastDetector.OnItemLost += ResetSeenObject;
+        }
+
         private void Update()
         {
             if (!_isInitialized) return;
@@ -136,11 +143,6 @@ namespace LightHouse.KinematicCharacterController
             _scrollHandler = new InventoryScrollHandler(_itemDatabase);
             _useFromInventoryHandler = new InventoryUseItemHandler(_inventoryUiController);
             _dropHandler = new InventoryDropHandler(_inventoryUiController, _inventoryTarget, _maxDropPower, _dropPowerCurve, _securityObstacleMasks, _securityOverlapSphereRadius);
-
-            _inventoryRaycastDetector = _raycastSystem.InventoryDetector;
-            _inventoryRaycastDetector.OnDetected += HandleItemDetected;
-            _inventoryRaycastDetector.OnItemLost += ResetSeenObject;
-
         }
         #endregion
 
@@ -169,10 +171,18 @@ namespace LightHouse.KinematicCharacterController
 
         private void InputManager_OnInputManagerWillClear() 
         {
-            InputManager.Select.performed -= Select_performed;
-            InputManager.Scroll.performed -= Scroll_performed;
-            InputManager.InteractInInventory.started -= InteractInInventory_started;
-            InputManager.InteractInInventory.canceled -= InteractInInventory_canceled;
+            if(InputManager.Select != null)
+                InputManager.Select.performed -= Select_performed;
+
+            if(InputManager.Scroll != null)
+                InputManager.Scroll.performed -= Scroll_performed;
+
+            if(InputManager.InteractInInventory != null)
+            {
+                InputManager.InteractInInventory.started -= InteractInInventory_started;
+                InputManager.InteractInInventory.canceled -= InteractInInventory_canceled;
+            }
+                
         }
 
         #endregion

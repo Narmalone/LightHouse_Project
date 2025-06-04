@@ -11,6 +11,9 @@ public enum WeatherType
 [System.Serializable]
 public class WeatherData
 {
+    /// <summary>
+    /// Automatically determined
+    /// </summary>
     public WeatherType WeatherType;
     //Données générales concernant la météo
     public float StartTimeInSeconds;
@@ -19,6 +22,9 @@ public class WeatherData
     // Données météorologiques continues
     public float Humidity;         // 0 à 1
     public float Pressure;         // hPa
-    public float Temperature;      // °C
     public float WindSpeed;        // m/s
+    public float WindOrientation; //360°
+
+    public float WaterTemperature; //°C
+    public float AirTemperature; //°C
 }

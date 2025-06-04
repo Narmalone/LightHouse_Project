@@ -89,9 +89,6 @@ namespace LightHouse.Game.DayNightSystem
                 t = 0f;
             }
 
-            Debug.Log($"Moon t = {t:F2} @ {timeManager.currentTime:F2}h");
-
-
             moonLight.intensity = t * moonMaxIntensity;
             lightData.earthshine = t * maxEarthShineIntensity;
             lightData.flareFalloff = t * moonFlareFallOff;

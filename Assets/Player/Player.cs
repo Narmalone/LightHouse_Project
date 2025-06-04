@@ -9,6 +9,8 @@ namespace LightHouse.KinematicCharacterController
     public class Player : MonoBehaviour
     {
         #region FIELDS
+        public bool EnableDebugMode = false;
+
         [Header("Character")]
         [SerializeField] private PlayerCharacter _playerCharacter;
 
@@ -57,6 +59,18 @@ namespace LightHouse.KinematicCharacterController
             _cameraLean.Initialize();
 
             BootStrap.OnGameAssetsLoaded += BootStrap_OnGameSceneInitialized;
+        }
+
+        private void Start()
+        {
+            if (EnableDebugMode)
+            {
+                PlayerHandlerData.InitializeHandlerData(this);
+                InputManager.SetPlayerInputActions(_inputActions);
+                InputManager.InputManagerInitialized();
+                _cameraSpring.enabled = true;
+                _isInitialized = true;
+            }
         }
 
         private void Update()

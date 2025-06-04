@@ -46,7 +46,7 @@ public class WeatherTimeline : ScriptableObject
             WeatherType = t < 0.5f ? a.WeatherType : b.WeatherType,
             Humidity = Mathf.Lerp(a.Humidity, b.Humidity, t),
             Pressure = Mathf.Lerp(a.Pressure, b.Pressure, t),
-            Temperature = Mathf.Lerp(a.Temperature, b.Temperature, t),
+            WaterTemperature = Mathf.Lerp(a.WaterTemperature, b.WaterTemperature, t),
             WindSpeed = Mathf.Lerp(a.WindSpeed, b.WindSpeed, t)
         };
     }
