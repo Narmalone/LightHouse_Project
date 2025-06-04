@@ -13,5 +13,6 @@ namespace LightHouse.Inventory
         MainEntranceKey = 9,
         Bucket = 10,
         Mop = 11,
+        Scotch = 12,
     }
 }
