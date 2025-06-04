@@ -23,20 +23,12 @@ public class WeatherGeneratorEditor : Editor
             return;
         }
 
-        var timeline = generator.GenerateRandomTimeline(
+        generator.FillTimeline(
             generator.MinWeathersDuration,
             generator.MaxWeathersDuration
         );
 
-        // Sauvegarde dans un chemin dynamique si besoin
-        string folderPath = "Assets/Application/WeatherSystem";
-        string assetPath = $"{folderPath}/GeneratedTimeline.asset";
-
-        AssetDatabase.CreateAsset(timeline, assetPath);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-
-        Debug.Log($"✅ Timeline météo générée dans : {assetPath}");
-        EditorGUIUtility.PingObject(timeline);
     }
 }

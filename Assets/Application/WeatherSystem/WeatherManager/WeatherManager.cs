@@ -1,0 +1,62 @@
+using UnityEngine;
+using LightHouse.Game.DayNightSystem;
+
+public class WeatherManager : MonoBehaviour
+{
+    public WeatherGenerator WeatherGenerator;
+    public WeatherTimeline WeatherTime;
+    public TimeConfiguration TimeConfig;
+    public TimeManager TimeManager;
+
+    public WeatherData CurrentWeather;
+    private WeatherData fromWeather;
+    private WeatherData toWeather;
+
+    private int currentIndex = 0;
+
+    public byte day;
+    [Range(0, 24)] public float Hour;
+    public WeatherData TargetWeather;
+
+    private void Awake()
+    {
+        WeatherGenerator.FillTimeline(WeatherGenerator.MinWeathersDuration, WeatherGenerator.MaxWeathersDuration);
+    }
+
+    private void Start()
+    {
+        if (WeatherTime.weathers.Count < 2)
+        {
+            Debug.LogError("Pas assez d'événements météo pour interpoler !");
+            return;
+        }
+
+        // Initialisation
+        fromWeather = WeatherTime.weathers[0];
+        toWeather = WeatherTime.weathers[1];
+
+        TargetWeather = WeatherUtils.GetWeatherAt(day, Hour, WeatherTime, TimeConfig);
+    }
+
+    private void Update()
+    {
+        float secondsPerDay = TimeConfig.GetTotalSecondsPerDay();
+        float currentGameSeconds = TimeManager.currentDay * secondsPerDay + (TimeManager.currentTime / 24f) * secondsPerDay;
+
+        float fromStart = fromWeather.StartTimeInSeconds;
+        float fromEnd = fromStart + fromWeather.DurationInSeconds;
+
+        // Passe à la météo suivante si on a dépassé la durée
+        if (currentGameSeconds > fromEnd && currentIndex < WeatherTime.weathers.Count - 2)
+        {
+            currentIndex++;
+            fromWeather = WeatherTime.weathers[currentIndex];
+            toWeather = WeatherTime.weathers[currentIndex + 1];
+        }
+
+        // Interpolation
+        float localTime = currentGameSeconds - fromWeather.StartTimeInSeconds;
+        float t = Mathf.Clamp01(localTime / fromWeather.DurationInSeconds);
+        CurrentWeather = WeatherUtils.LerpWeatherData(fromWeather, toWeather, t);
+    }
+}

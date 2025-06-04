@@ -8,7 +8,11 @@ public class TimeConfiguration : ScriptableObject
 
     public float GetTotalGameTimeInSeconds()
     {
-        Debug.Log(TotalDays * dayLengthInMinits);
-        return TotalDays * dayLengthInMinits;
+        return TotalDays * dayLengthInMinits * 60f;
+    }
+
+    public float GetTotalSecondsPerDay()
+    {
+        return dayLengthInMinits * 60;
     }
 }
