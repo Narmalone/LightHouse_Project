@@ -9,6 +9,8 @@ namespace LightHouse.KinematicCharacterController
     public class Player : MonoBehaviour
     {
         #region FIELDS
+        public bool EnableDebugMode = false;
+
         [Header("Character")]
         [SerializeField] private PlayerCharacter _playerCharacter;
 
@@ -18,7 +20,7 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private CameraLean _cameraLean;
 
         [Header("Interactions")]
-        [SerializeField] private PlayerInteractableManager _interactions;
+        [SerializeField] private InteractionItemsUIManager _interactions;
 
         [Header("Inventory")]
         [SerializeField] private PlayerInventoryManager _inventoryController;
@@ -38,7 +40,7 @@ namespace LightHouse.KinematicCharacterController
         #region PROPERTIES
         public PlayerCharacter Character => _playerCharacter;
         public PlayerInventoryManager Inventory => _inventoryController;
-        public PlayerInteractableManager Interactions => _interactions;
+        public InteractionItemsUIManager Interactions => _interactions;
         public PlayerCamera PlayerCamera => _playerCamera;
         public CameraSpring CameraSpring => _cameraSpring;
         public CameraLean CameraLean => _cameraLean;
@@ -57,6 +59,18 @@ namespace LightHouse.KinematicCharacterController
             _cameraLean.Initialize();
 
             BootStrap.OnGameAssetsLoaded += BootStrap_OnGameSceneInitialized;
+        }
+
+        private void Start()
+        {
+            if (EnableDebugMode)
+            {
+                PlayerHandlerData.InitializeHandlerData(this);
+                InputManager.SetPlayerInputActions(_inputActions);
+                InputManager.InputManagerInitialized();
+                _cameraSpring.enabled = true;
+                _isInitialized = true;
+            }
         }
 
         private void Update()

@@ -8,7 +8,7 @@ namespace LightHouse.KinematicCharacterController
     /// <summary>
     /// Handles interactions (not name display) with objects in the world.
     /// </summary>
-    public class PlayerInteractableManager : MonoBehaviour
+    public class InteractionItemsUIManager : MonoBehaviour
     {
         public static Action ForceUpdateTarget;
         #region FIELDS
@@ -25,9 +25,11 @@ namespace LightHouse.KinematicCharacterController
         private void Awake()
         {
             _interactionHandler = new RaycastInteractionHandler(_interactionCanvas);
+        }
 
+        private void Start()
+        {
             _raycastInteractable = _unifiedRaycastSystem.InteractableDetector;
-
             _raycastInteractable.OnDetected += interactable => _interactionHandler.SetTarget(interactable);
             _raycastInteractable.OnItemDestroyed += () => _interactionHandler.SetTarget(null);
             _raycastInteractable.OnItemLost += () => _interactionHandler.SetTarget(null);

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LightHouse.Items.Detection
 {
-    public class PlayerItemNamesDetection : MonoBehaviour
+    public class ItemNamesUIManager : MonoBehaviour
     {
         #region FIELDS
         [Header("Settings")]
@@ -21,9 +21,11 @@ namespace LightHouse.Items.Detection
         private void Awake()
         {
             _nameDisplayHandler = new RaycastNameDisplayHandler(_interactionCanvas);
+        }
 
+        private void Start()
+        {
             _raycastItemName = _unifiedRaycastSystem.ItemNameDetector;
-
             _raycastItemName.OnDetected += item => _nameDisplayHandler.SetTarget(item);
             _raycastItemName.OnItemLost += () => _nameDisplayHandler.SetTarget(null);
         }

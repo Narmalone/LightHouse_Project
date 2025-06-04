@@ -69,7 +69,7 @@ namespace LightHouse.Game.Tutorial
 
         private void SwitchBoardTutorial_OnAllBernaclesRemoved()
         {
-            //_talkieRef.Current.Enqueue(DialogueAudioName.TUTORIAL_ElectricalPannel_3);
+            //_talkieRef.Current.Enqueue(DialogueAudioName.tuto);
         }
     }
 
