@@ -76,6 +76,7 @@ namespace LightHouse.KinematicCharacterController
                 return;
             HandleDropInput();
             HandleInteractInInventoryInput();
+
         }
 
         private void LateUpdate()

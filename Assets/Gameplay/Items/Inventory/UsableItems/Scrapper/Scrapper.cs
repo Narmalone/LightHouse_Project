@@ -22,7 +22,10 @@ namespace LightHouse.Items.Inventory
         public LocalizedString _use => _interactionTextsDB.Use;
         public LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
         public bool CanBeUsedFromInventory { get; set; } = false;
+        [field: SerializeField] public float UseHoldTime { get; set; } = 0.5f;
+        
         protected string _currentUseText;
+        private IInventoryItemUsable _inventoryItemUsableImplementation;
 
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;

@@ -10,7 +10,10 @@ namespace LightHouse.Items.Inventory
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
         public event Action<string> UseTextSlotChanged;
         public bool CanBeUsedFromInventory { get; set; }
+
+        [field: SerializeField] public float UseHoldTime { get; set; } = 0.5f;
         
+
         public string UseTextSlot()
         {
             return "Use Scotch";
@@ -25,6 +28,7 @@ namespace LightHouse.Items.Inventory
         {
             CanBeUsedFromInventoryChanged?.Invoke(this.GlobalItemID, this.ItemSpecificID);
         }
+
     }
 
 }

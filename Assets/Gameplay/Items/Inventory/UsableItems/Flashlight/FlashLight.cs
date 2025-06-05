@@ -16,6 +16,8 @@ namespace LightHouse.Items.Inventory
         [SerializeField] protected string _currentUseInInventoryText;
         [Header("IInventory Item")]
         public bool CanBeUsedFromInventory { get; set; } = true;
+
+        [field: SerializeField] public float UseHoldTime { get; set; } = 1f;
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
         public event Action<string> UseTextSlotChanged;
