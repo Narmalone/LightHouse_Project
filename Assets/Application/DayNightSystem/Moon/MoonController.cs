@@ -23,7 +23,7 @@ namespace LightHouse.Game.DayNightSystem
             timeManager = FindFirstObjectByType<TimeManager>();
             if (timeManager != null)
             {
-                timeManager.OnTimeSegmentChanged += HandleSegmentChanged;
+                TimeManager.OnTimeSegmentChanged += HandleSegmentChanged;
                 UpdateMoonRotation(); // force la première rotation
             }
         }
@@ -106,7 +106,7 @@ namespace LightHouse.Game.DayNightSystem
         private void OnDestroy()
         {
             if (timeManager != null)
-                timeManager.OnTimeSegmentChanged -= HandleSegmentChanged;
+                TimeManager.OnTimeSegmentChanged -= HandleSegmentChanged;
         }
     }
 }

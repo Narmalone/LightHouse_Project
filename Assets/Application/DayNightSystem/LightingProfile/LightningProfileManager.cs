@@ -29,6 +29,11 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
         globalVolume.profile.TryGet(out sky);
     }
 
+    public Light GetMainLight()
+    {
+        return TimeHandlerData.TimeOfDay == TimeOfDaySegment.Morning || TimeHandlerData.TimeOfDay == TimeOfDaySegment.Midday ? sunLight : moonLight;
+    }
+
     public void OnTimeChanged(float timeOfDay)
     {
         LightingProfile from = null;
