@@ -12,13 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f7c079868ba76e459d45a25aa05d66a, type: 3}
   m_Name: CloudSettings_Cloudy
   m_EditorClassIdentifier: 
-  DensityMultiplier: 0.45
+  DensityMultiplier: 0.4
   DensityCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.15
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -27,7 +36,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0.6
+      value: 0.1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -37,16 +46,25 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ShapeFactor: 0.75
-  ShapeScale: 0.85
-  ErosionFactor: 0.8
-  ErosionScale: 65
+  ShapeFactor: 0.875
+  ShapeScale: 5
+  ErosionFactor: 0.9
+  ErosionScale: 75
   ErosionCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.7
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.1
+      value: 0.9
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -55,7 +73,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0.6
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -70,7 +88,16 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.3
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.25
+      value: 0.4
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -79,7 +106,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0.2
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -89,7 +116,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  BottomAltitude: 1800
-  AltitudeRange: 2200
+  BottomAltitude: 1200
+  AltitudeRange: 2000
   ShapeOffset: {x: 0, y: 0, z: 0}
   EarthCurvature: 0

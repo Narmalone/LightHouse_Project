@@ -1537,7 +1537,7 @@ Transform:
   m_GameObject: {fileID: 744819263}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.9914449, z: 0, w: 0.13052654}
-  m_LocalPosition: {x: -76.4, y: 29.7, z: 178.1}
+  m_LocalPosition: {x: -213.5941, y: -7.2, z: 690.4296}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2049,6 +2049,7 @@ GameObject:
   m_Component:
   - component: {fileID: 861966773}
   - component: {fileID: 861966774}
+  - component: {fileID: 861966775}
   m_Layer: 0
   m_Name: Virtual Camera
   m_TagString: Untagged
@@ -2065,7 +2066,7 @@ Transform:
   m_GameObject: {fileID: 861966772}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.9914449, z: -0, w: 0.13052654}
-  m_LocalPosition: {x: -76.4, y: 29.7, z: 178.1}
+  m_LocalPosition: {x: -212.3, y: -7.2, z: 685.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2118,6 +2119,29 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 1142654285}
+--- !u!114 &861966775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 861966772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a200b19ca1a9685429ed7e043c28e904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Resolution: 20
+  m_Appearance:
+    pathColor: {r: 0, g: 1, b: 0, a: 1}
+    inactivePathColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    width: 0.2
+  m_Looped: 0
+  m_Waypoints:
+  - position: {x: 0, y: 0, z: -5}
+    roll: 0
+  - position: {x: -0.000047705493, y: -10.568749, z: 51.4745}
+    roll: 0
 --- !u!1 &883574771
 GameObject:
   m_ObjectHideFlags: 0
@@ -2443,7 +2467,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418e42c7d0405cc48a7b83f63ea53bb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Path: {fileID: 0}
+  m_Path: {fileID: 861966775}
   m_PathPosition: 0
   m_PositionUnits: 0
   m_PathOffset: {x: 0, y: 0, z: 0}
