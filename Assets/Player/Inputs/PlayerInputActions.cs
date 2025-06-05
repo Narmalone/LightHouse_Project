@@ -176,9 +176,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""InteractInInventory"",
                     ""type"": ""Button"",
                     ""id"": ""2fcc0e2c-4dd0-43ef-8071-f5b213aba01a"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Hold(duration=0.4,pressPoint=0.5)"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {

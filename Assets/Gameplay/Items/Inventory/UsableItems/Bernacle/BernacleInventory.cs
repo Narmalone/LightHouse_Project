@@ -7,6 +7,7 @@ namespace LightHouse.Items.Inventory
     public class BernacleInventory : InventoryItemBase, IInventoryItemUsable, IInventoryStackable
     {
         public bool CanBeUsedFromInventory { get; set; } = true;
+        [field: SerializeField] public float UseHoldTime { get; set; } = 0.5f;
 
         [SerializeField] private ushort _maxStack = 10;
         public ushort MaxStack => _maxStack;
