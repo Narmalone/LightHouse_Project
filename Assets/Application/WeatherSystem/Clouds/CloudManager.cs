@@ -143,6 +143,10 @@ public class CloudManager : MonoBehaviour
         target.microErosionScale.value = Mathf.Lerp(150f, 400f, t);
         target.bottomAltitude.value = Mathf.Lerp(from.BottomAltitude, to.BottomAltitude, t);
         target.altitudeRange.value = Mathf.Lerp(from.AltitudeRange, to.AltitudeRange, t);
+
+        target.ambientLightProbeDimmer.value = Mathf.Lerp(from.AmbientLightProbeDimmer, to .AmbientLightProbeDimmer, t);
+        target.sunLightDimmer.value = Mathf.Lerp(from.SunLightDimmer, to .SunLightDimmer, t);
+        target.scatteringTint.value = Color.Lerp(from.ScatteringTint, to.ScatteringTint, t);
     }
 }
 

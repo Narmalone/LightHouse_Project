@@ -25,6 +25,11 @@ public class CloudSettings : ScriptableObject
     public float BottomAltitude;
     public float AltitudeRange;
 
+    [Header("Lighting")]
+    public float AmbientLightProbeDimmer = 1.0f;
+    public float SunLightDimmer = 1.0f;
+    public Color ScatteringTint = Color.black;
+
     [Header("Other")]
     public Vector3 ShapeOffset;
     public float EarthCurvature;
