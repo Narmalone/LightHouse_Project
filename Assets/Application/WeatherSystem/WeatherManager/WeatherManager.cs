@@ -12,6 +12,13 @@ public class WeatherManager : MonoBehaviour
     private WeatherData fromWeather;
     private WeatherData toWeather;
 
+    public WeatherData FromWeather => fromWeather;
+    public WeatherData ToWeather => toWeather;
+
+    private float currentGameSeconds;
+    private float fromStart;
+    public float CurrentBlend => Mathf.Clamp01((currentGameSeconds - fromStart) / fromWeather.DurationInSeconds);
+
     private int currentIndex = 0;
 
     public byte day;
@@ -38,9 +45,9 @@ public class WeatherManager : MonoBehaviour
     private void Update()
     {
         float secondsPerDay = TimeConfig.GetTotalSecondsPerDay();
-        float currentGameSeconds = TimeManager.currentDay * secondsPerDay + (TimeManager.currentTime / 24f) * secondsPerDay;
+        currentGameSeconds = TimeManager.currentDay * secondsPerDay + (TimeManager.currentTime / 24f) * secondsPerDay;
 
-        float fromStart = fromWeather.StartTimeInSeconds;
+        fromStart = fromWeather.StartTimeInSeconds;
         float fromEnd = fromStart + fromWeather.DurationInSeconds;
 
         // Passe à la météo suivante si on a dépassé la durée
