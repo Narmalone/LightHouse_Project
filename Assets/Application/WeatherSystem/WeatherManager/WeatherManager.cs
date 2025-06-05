@@ -16,7 +16,6 @@ public class WeatherManager : MonoBehaviour
 
     public byte day;
     [Range(0, 24)] public float Hour;
-    public WeatherData TargetWeather;
 
     private void Awake()
     {
@@ -34,8 +33,6 @@ public class WeatherManager : MonoBehaviour
         // Initialisation
         fromWeather = WeatherTime.weathers[0];
         toWeather = WeatherTime.weathers[1];
-
-        TargetWeather = WeatherUtils.GetWeatherAt(day, Hour, WeatherTime, TimeConfig);
     }
 
     private void Update()

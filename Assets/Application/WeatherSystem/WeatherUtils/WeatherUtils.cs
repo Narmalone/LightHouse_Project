@@ -29,20 +29,24 @@ public static class WeatherUtils
 
     public static WeatherData LerpWeatherData(WeatherData from, WeatherData to, float t)
     {
+        float rawOrientation = Mathf.LerpAngle(from.WindOrientation, to.WindOrientation, t);
+        float normalizedOrientation = (rawOrientation % 360f + 360f) % 360f;
+
         return new WeatherData
         {
-            WeatherType = t < 0.5f ? from.WeatherType : to.WeatherType, // ou ignorer ce champ si tu préfères
+            WeatherType = t < 0.5f ? from.WeatherType : to.WeatherType,
             StartTimeInSeconds = Mathf.Lerp(from.StartTimeInSeconds, to.StartTimeInSeconds, t),
             DurationInSeconds = Mathf.Lerp(from.DurationInSeconds, to.DurationInSeconds, t),
             Humidity = Mathf.Lerp(from.Humidity, to.Humidity, t),
             AtmosphericPressure = Mathf.Lerp(from.AtmosphericPressure, to.AtmosphericPressure, t),
             WindSpeed = Mathf.Lerp(from.WindSpeed, to.WindSpeed, t),
-            WindOrientation = Mathf.LerpAngle(from.WindOrientation, to.WindOrientation, t),
+            WindOrientation = normalizedOrientation,
             WaterTemperature = Mathf.Lerp(from.WaterTemperature, to.WaterTemperature, t),
             AirTemperature = Mathf.Lerp(from.AirTemperature, to.AirTemperature, t),
-            WindOrientationType = AngleToOrientationType(Mathf.LerpAngle(from.WindOrientation, to.WindOrientation, t))
+            WindOrientationType = AngleToOrientationType(normalizedOrientation)
         };
     }
+
 
     public static WindOrientationType AngleToOrientationType(float angle)
     {
