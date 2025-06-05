@@ -24,6 +24,9 @@ namespace LightHouse.Items.Inventory
         [SerializeField] private bool _destroyOnUsed = true;
         [SerializeField] private bool _dropItemOnUsed = true;
         [field: SerializeField] public bool CanBeUsedFromInventory { get; set; }
+
+        [field: SerializeField] public float UseHoldTime { get; set; } = 0.5f;
+        
         #endregion
 
         #region IInventory Fields

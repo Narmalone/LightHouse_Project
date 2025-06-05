@@ -8,6 +8,7 @@ namespace LightHouse.Inventory
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
         public event Action<string> UseTextSlotChanged;
         public bool CanBeUsedFromInventory { get; set; }
+        public float UseHoldTime { get; set; }
         string UseTextSlot();
         void UseFromInventory();
         void InvokeOnCanBeUsedFromInventoryChanged();
