@@ -91,7 +91,7 @@ public class CloudManager : MonoBehaviour
 
         // --- Forme nuages : plus bas/compact si vent ou pression basse ---
         float pressureEffect = 1f - tPressure;
-        float shapeIntensity = Mathf.Clamp01(tWind * 0.8f + (1f - tPressure) * 0.1f);
+        float shapeIntensity = Mathf.Clamp01(tWind * 0.8f + (1f - tPressure));
         clouds.shapeFactor.value = Mathf.Lerp(0.4f, 1.0f, 1f - shapeIntensity); // + intense = plus petit
 
         // --- Érosion ---
