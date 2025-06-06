@@ -84,7 +84,7 @@ MonoBehaviour:
   tessellationFactorFadeRange: 1850
   refractionColor: {r: 0.24602018, g: 0.7156454, b: 0.82278585, a: 1}
   maxRefractionDistance: 2
-  absorptionDistance: 10
+  absorptionDistance: 4
   scatteringColor: {r: 0.0362218, g: 0.1784443, b: 0.39362136, a: 1}
   ambientScattering: 0.446
   heightScattering: 0.5
@@ -112,12 +112,12 @@ MonoBehaviour:
   volumeDepth: 50
   volumeHeight: 5
   volumePrority: 0
-  absorptionDistanceMultiplier: 1
+  absorptionDistanceMultiplier: 2
   underWaterAmbientProbeContribution: 1
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
   underWaterRefraction: 0
-  decalRegionSize: {x: 200, y: 200}
+  decalRegionSize: {x: 2000, y: 2000}
   decalRegionAnchor: {fileID: 5060471476600764085}
   supportLargeCurrent: 1
   largeCurrentRes: 512
@@ -145,7 +145,7 @@ MonoBehaviour:
   simulationFoamAmount: 0.7
   supportSimulationFoamMask: 1
   simulationFoamMask: {fileID: 2800000, guid: 7f9393304aedcc24c8d1500044e87418, type: 3}
-  simulationFoamMaskExtent: {x: 200, y: 200}
+  simulationFoamMaskExtent: {x: 600, y: 600}
   simulationFoamMaskOffset: {x: 0, y: 0}
   simulationFoamWindCurve:
     serializedVersion: 2
@@ -204,5 +204,5 @@ MonoBehaviour:
   maskRes: 512
   waterMask: {fileID: 2800000, guid: 7f9393304aedcc24c8d1500044e87418, type: 3}
   waterMaskRemap: {x: 0, y: 1}
-  waterMaskExtent: {x: 50, y: 50}
+  waterMaskExtent: {x: 600, y: 600}
   waterMaskOffset: {x: 0, y: 0}

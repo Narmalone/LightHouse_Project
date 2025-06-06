@@ -20,10 +20,6 @@ public class WeatherManager : MonoBehaviour
     public float CurrentBlend => Mathf.Clamp01((currentGameSeconds - fromStart) / fromWeather.DurationInSeconds);
 
     private int currentIndex = 0;
-
-    public byte day;
-    [Range(0, 24)] public float Hour;
-
     private void Awake()
     {
         WeatherGenerator.FillTimeline(WeatherGenerator.MinWeathersDuration, WeatherGenerator.MaxWeathersDuration);
