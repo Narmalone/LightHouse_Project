@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace LightHouse.Game.DayNightSystem
 {
     public class SunController : MonoBehaviour, ITimeCycleObserver
     {
         public Light sunLight;
-
+        public LensFlareComponentSRP Lens;
         [Tooltip("Angle de rotation du soleil à midi (vertical)")]
         public Vector3 noonDirection = new Vector3(50f, 0f, 0f);
 
@@ -16,6 +17,7 @@ namespace LightHouse.Game.DayNightSystem
             sunLight.transform.rotation = Quaternion.Euler(sunAngle, noonDirection.y, noonDirection.z);
 
             sunLight.enabled = timeOfDay > 6 && timeOfDay < 18;
+            Lens.enabled = sunLight.enabled;
         }
 
         private void Start()
