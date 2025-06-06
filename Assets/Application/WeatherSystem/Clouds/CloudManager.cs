@@ -22,6 +22,11 @@ public class CloudManager : MonoBehaviour
     public CloudSettings Snowy;
     public CloudSettings Stormy;
 
+
+    public bool EnableUpdateErrosion;
+    public float erosionUpdateInterval = 20f;
+    private float erosionTimer = 0f;
+
     private float densityVelocity;
     private float erosionVelocity;
     private float microErosionVelocity;
@@ -127,20 +132,34 @@ public class CloudManager : MonoBehaviour
         );
 
         target.shapeFactor.value = Mathf.Lerp(from.ShapeFactor, to.ShapeFactor, t);
-        target.erosionFactor.value = Mathf.SmoothDamp(
-            target.erosionFactor.value,
-            Mathf.Lerp(from.ErosionFactor, to.ErosionFactor, t),
-            ref erosionVelocity, 1f
-        );
 
-        target.erosionScale.value = Mathf.Lerp(from.ErosionScale, to.ErosionScale, t);
-        target.microErosionFactor.value = Mathf.SmoothDamp(
-            target.microErosionFactor.value,
-            Mathf.Lerp(from.ErosionFactor, to.ErosionFactor, t),
-            ref microErosionVelocity, 1f
-        );
+        erosionTimer += Time.deltaTime;
+        if (erosionTimer >= erosionUpdateInterval)
+        {
+            erosionTimer = 0f;
 
-        target.microErosionScale.value = Mathf.Lerp(150f, 400f, t);
+            UpdateErosionFromWeather(WeatherManager.CurrentWeather);
+        }
+
+        if (EnableUpdateErrosion)
+        {
+            target.erosionFactor.value = Mathf.SmoothDamp
+            (
+                target.erosionFactor.value,
+                Mathf.Lerp(from.ErosionFactor, to.ErosionFactor, t),
+                ref erosionVelocity, 1f
+            );
+            target.erosionScale.value = Mathf.Lerp(from.ErosionScale, to.ErosionScale, t);
+            target.microErosionFactor.value = Mathf.SmoothDamp(
+                target.microErosionFactor.value,
+                Mathf.Lerp(from.ErosionFactor, to.ErosionFactor, t),
+                ref microErosionVelocity, 1f
+            );
+
+            target.microErosionScale.value = Mathf.Lerp(150f, 400f, t);
+        }
+
+      
         target.bottomAltitude.value = Mathf.Lerp(from.BottomAltitude, to.BottomAltitude, t);
         target.altitudeRange.value = Mathf.Lerp(from.AltitudeRange, to.AltitudeRange, t);
 
@@ -148,6 +167,18 @@ public class CloudManager : MonoBehaviour
         target.sunLightDimmer.value = Mathf.Lerp(from.SunLightDimmer, to .SunLightDimmer, t);
         target.scatteringTint.value = Color.Lerp(from.ScatteringTint, to.ScatteringTint, t);
     }
+
+    private void UpdateErosionFromWeather(WeatherData weather)
+    {
+        float tPressure = Mathf.InverseLerp(980f, 1030f, weather.AtmosphericPressure);
+        float tWind = Mathf.InverseLerp(0f, 30f, weather.WindSpeed);
+
+        clouds.erosionFactor.value = Mathf.Lerp(0.6f, 0.95f, tPressure);
+        clouds.erosionScale.value = Mathf.Lerp(40f, 80f, tWind);
+        clouds.microErosionFactor.value = Mathf.Lerp(0.4f, 0.8f, tWind);
+        clouds.microErosionScale.value = Mathf.Lerp(150f, 400f, tWind);
+    }
+
 }
 
 
