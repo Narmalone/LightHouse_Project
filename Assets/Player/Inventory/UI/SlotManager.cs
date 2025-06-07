@@ -141,6 +141,23 @@ namespace LightHouse.Inventory
             }
             return false;
         }
+        
+        /// <summary>
+        /// Check if there is an item in the slots with the given global ID and retrieve the first item in that slot.
+        /// </summary>
+        public static bool GetFirstItemInSlot(ushort globalId, out IInventoryItem item)
+        {
+            item = null;
+            foreach (ItemSlot itemSlot in Slots)
+            {
+                if (itemSlot.SlotDatas.ItemGlobalID != globalId || !itemSlot.SlotDatas.HasItem) continue;
+                if (itemSlot.SlotDatas.GetFirstItemInSlot(out item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// Check if there is the matching items in the current selected slot

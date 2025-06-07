@@ -45,7 +45,7 @@ namespace LightHouse.Items
                 drop.Rigidbody.AddForce(drop.ForceDirection * drop.Force, ForceMode.Impulse);
             }
 
-            _dropQueue.Clear(); // Toujours vider après traitement
+            _dropQueue.Clear(); // Toujours vider aprï¿½s traitement
         }
     }
 
