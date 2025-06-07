@@ -143,6 +143,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c652b1c70d3e14d80a69c60f355006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &551505477 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3000360642430492552, guid: 387555a13aae6144e9bf423dfa35b31e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1272131090}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &551505482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551505477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b689dfa981ef4e479cd9bc8fc8db2b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSurface: {fileID: 8831640405150505767}
+  includeDeformation: 1
+  excludeSimulation: 0
+  maxIterations: 48
 --- !u!1 &563556222
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,40 +240,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 479686033230738422, guid: 7f5044dbb210b124d8407f6a62907085,
-        type: 3}
-      propertyPath: currentTime
-      value: 2.92
-      objectReference: {fileID: 0}
-    - target: {fileID: 4885299100456785300, guid: 7f5044dbb210b124d8407f6a62907085,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6588581196747164576, guid: 7f5044dbb210b124d8407f6a62907085,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6853006418761821015, guid: 7f5044dbb210b124d8407f6a62907085,
         type: 3}
       propertyPath: m_Name
       value: TimeManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 6853006418761821015, guid: 7f5044dbb210b124d8407f6a62907085,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8121729233430920544, guid: 7f5044dbb210b124d8407f6a62907085,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8151197949238660155, guid: 7f5044dbb210b124d8407f6a62907085,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8320635845687374319, guid: 7f5044dbb210b124d8407f6a62907085,
         type: 3}
@@ -859,7 +851,7 @@ Transform:
   m_GameObject: {fileID: 1174780835}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: 5.7107735, y: 0, z: 0}
+  m_LocalPosition: {x: 7.736898, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -897,7 +889,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f19d9143a39eb3b46bc4563e9889cfbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 1947916239}
+  m_Material: {fileID: 1806459457}
   m_DrawDistance: 500
   m_FadeScale: 0.9
   m_StartAngleFade: 180
@@ -912,7 +904,7 @@ MonoBehaviour:
   m_DecalLayerMask: -1
   m_ScaleMode: 0
   m_Offset: {x: 0, y: 0, z: 0}
-  m_Size: {x: 25, y: 8.56616, z: 10}
+  m_Size: {x: 25, y: 11.605347, z: 10}
   m_FadeFactor: 1
   m_Version: 3
 --- !u!114 &1192850958 stripped
@@ -1339,7 +1331,7 @@ Light:
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 795774.7
-  m_Range: 10
+  m_Range: 3.5
   m_SpotAngle: 49.273766
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1420,6 +1412,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level
       objectReference: {fileID: 0}
+    - target: {fileID: 1744005149288136990, guid: 387555a13aae6144e9bf423dfa35b31e,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.077188
+      objectReference: {fileID: 0}
     - target: {fileID: 5141652873661956516, guid: 387555a13aae6144e9bf423dfa35b31e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1473,7 +1470,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3000360642430492552, guid: 387555a13aae6144e9bf423dfa35b31e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 551505482}
   m_SourcePrefab: {fileID: 100100000, guid: 387555a13aae6144e9bf423dfa35b31e, type: 3}
 --- !u!1 &1370543975
 GameObject:
@@ -1539,7 +1540,7 @@ Transform:
   - {fileID: 563556223}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!21 &1947916239
+--- !u!21 &1806459457
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
@@ -1623,7 +1624,7 @@ Material:
     - _AffectMetal: 0
     - _AffectNormal: 0
     - _AffectSmoothness: 1
-    - _ContrastNormalized: 0
+    - _ContrastNormalized: 0.032887757
     - _DecalColorMask0: 15
     - _DecalColorMask1: 0
     - _DecalColorMask2: 3
@@ -1635,8 +1636,8 @@ Material:
     - _DecalStencilWriteMask: 16
     - _DrawOrder: 0
     - _FoamSmoothness: 0.3
-    - _NormalizedAliveTime: 0.23253348
-    - _Opacity: 0.7138467
+    - _NormalizedAliveTime: 0.59067494
+    - _Opacity: 1
     - _OpticalFlowMultiplier: 0
     - _Speed: 1
     - _WaterSmoothness: 0.9
@@ -1690,8 +1691,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scaleMode: 0
-  regionSize: {x: 25, y: 8.56616}
-  amplitude: 0.49969268
+  regionSize: {x: 25, y: 11.605347}
+  amplitude: 0.6769786
   surfaceFoamDimmer: 1
   deepFoamDimmer: 1
   resolution: {x: 128, y: 64}
@@ -1723,6 +1724,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WeatherForecast
+      objectReference: {fileID: 0}
+    - target: {fileID: 2619427613281440311, guid: 3315b8a4ae1c66249af0a5e3fa392b4c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3084332304922588641, guid: 3315b8a4ae1c66249af0a5e3fa392b4c,
         type: 3}
@@ -1791,6 +1797,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WeatherManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 1841824990737059855, guid: 9fc10f7b2d7764e438abb5693052ce99,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2514823470258362959, guid: 9fc10f7b2d7764e438abb5693052ce99,
         type: 3}
@@ -1914,6 +1925,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CloudManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5776243432095598467, guid: 637aeec0d8eb4374f8cb76ac7496c78e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7333159391859400569, guid: 637aeec0d8eb4374f8cb76ac7496c78e,
         type: 3}

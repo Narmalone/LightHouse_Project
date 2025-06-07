@@ -7,6 +7,7 @@ public class FitToWaterSurface : MonoBehaviour
     public WaterSurface targetSurface = null;
     public bool includeDeformation = true;
     public bool excludeSimulation = false;
+    public int maxIterations = 8;
 
     // Internal search params
     WaterSearchParameters searchParameters = new WaterSearchParameters();
@@ -21,7 +22,7 @@ public class FitToWaterSurface : MonoBehaviour
             searchParameters.startPositionWS = searchResult.candidateLocationWS;
             searchParameters.targetPositionWS = gameObject.transform.position;
             searchParameters.error = 0.01f;
-            searchParameters.maxIterations = 8;
+            searchParameters.maxIterations = maxIterations;
             searchParameters.includeDeformation = includeDeformation;
             searchParameters.excludeSimulation = excludeSimulation;
 
