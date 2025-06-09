@@ -39,6 +39,7 @@ namespace LightHouse.Items
                     drop.Rigidbody.linearVelocity = Vector3.zero;
                     drop.Rigidbody.angularVelocity = Vector3.zero;
                 }
+                drop.Rigidbody.transform.position = drop.Position;
                 drop.Rigidbody.position = drop.Position;
                 drop.Rigidbody.MovePosition(drop.Position);
                 //drop.Rigidbody.MoveRotation(drop.Rotation);
