@@ -84,6 +84,7 @@ namespace LightHouse.KinematicCharacterController
         private void LateUpdate()
         {
             if (!_isInitialized) return;
+            if (!_enableAllCharacterInputs) return;
             HandleCameraInput();
 
             Transform camTarget = _playerCharacter.GetCameraTarget();

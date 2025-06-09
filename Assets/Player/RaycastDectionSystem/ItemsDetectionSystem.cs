@@ -29,6 +29,7 @@ namespace LightHouse.Items.Detection
 
         private void Awake()
         {
+            _camera = Camera.main;
             _itemNameDetector = new RaycastDetector<IItemName>(_camera, _raycastDistance, _nameLayers, _blockingLayers, _qti);
             _interactableDetector = new RaycastDetector<IInteractable>(_camera, _raycastDistance, _interactableLayers, _blockingLayers, _qti);
             _inventoryDetector = new RaycastDetector<IInventoryItem>(_camera, _raycastDistance, _inventoryLayers, _blockingLayers, _qti);
