@@ -39,6 +39,7 @@ namespace LightHouse.Items
                     drop.Rigidbody.linearVelocity = Vector3.zero;
                     drop.Rigidbody.angularVelocity = Vector3.zero;
                 }
+                drop.Rigidbody.transform.position = drop.Position;
                 drop.Rigidbody.position = drop.Position;
                 drop.Rigidbody.transform.position = drop.Position;
                 drop.Rigidbody.MovePosition(drop.Position);
@@ -46,7 +47,7 @@ namespace LightHouse.Items
                 drop.Rigidbody.AddForce(drop.ForceDirection * drop.Force, ForceMode.Impulse);
             }
 
-            _dropQueue.Clear(); // Toujours vider après traitement
+            _dropQueue.Clear(); // Toujours vider aprï¿½s traitement
         }
     }
 

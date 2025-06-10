@@ -12,6 +12,7 @@ namespace LightHouse.KinematicCharacterController
     /// </summary>
     public class PlayerInventoryManager : MonoBehaviour
     {
+
         #region SERILIAZED FIELDS
         [SerializeField] private ItemsDetectionSystem _raycastSystem;
         [Header("Inventory Settings")]
@@ -54,6 +55,8 @@ namespace LightHouse.KinematicCharacterController
         private IInventoryItem _lastInventoryItemSeen;
 
         private bool _isInitialized = false;
+        
+        
         #endregion
 
         #region MONO CALLBACKS
@@ -200,6 +203,7 @@ namespace LightHouse.KinematicCharacterController
             else
             {
                 Debug.Log("item non récupéré inventaire plein");
+                
             }
         }
 
