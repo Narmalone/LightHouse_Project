@@ -59,9 +59,6 @@ namespace LightHouse.Items.Inventory
                     ScrewInteractable screwComp = hit.GetComponent<ScrewInteractable>();
                     if (screwComp != null && screwComp.gameObject != this.gameObject)
                     {
-                        GameObject prefab = Instantiate(_itemDatabase.GetPrefab((ushort)_itemToAddInInventory));
-                        IInventoryItem inventoryItem = prefab.GetComponent<IInventoryItem>();
-                        PlayerHandlerData.MainPlayer.Inventory.AddItemToInventory(SlotManager.CurrentSlotIndex, inventoryItem);
                         if (!SlotManager.FindFirstEmptySlot(out ItemSlot slot) && !SlotManager.TryFindStackableSlot(this.GlobalItemID,out ItemSlot stackSlot))
                         {
                             if (_screwPrefab != null)
@@ -69,6 +66,10 @@ namespace LightHouse.Items.Inventory
                                 GameObject screwInstance = Instantiate(_screwPrefab, ItemsDetectionSystem.CurrentHitedObjectPosition.position, Quaternion.identity);
                             }
                         }
+                        GameObject prefab = Instantiate(_itemDatabase.GetPrefab((ushort)_itemToAddInInventory));
+                        IInventoryItem inventoryItem = prefab.GetComponent<IInventoryItem>();
+                        PlayerHandlerData.MainPlayer.Inventory.AddItemToInventory(SlotManager.CurrentSlotIndex, inventoryItem);
+                        
                         Destroy(screwComp.gameObject);
                     }
                 }                
