@@ -197,10 +197,12 @@ namespace LightHouse.KinematicCharacterController
                 case PlayerState.Normal:
                     _enableAllCharacterInputs = true;
                     _inventoryController.Enable();
+                    _interactions.Enable();
                     break;
                 case PlayerState.CameraMode:
                     _enableAllCharacterInputs = false;
                     _inventoryController.Disable();
+                    _interactions.Disable();
                     break;
                 case PlayerState.CutScenesModes:
                     break;
