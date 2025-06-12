@@ -47,20 +47,6 @@ public class LightHouseCameraController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("slt1");
-        if (Input.GetKeyUp(KeyCode.B)) 
-        {
-            Debug.Log("slt");
-            if(IsEnabled)
-                SetEnable(false);
-            else SetEnable(true);
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("connard");
-        }
-
         if (!IsEnabled) return;
         Vector2 lookInputs = InputManager.Player.Look.ReadValue<Vector2>();
         UpdateCameraRotation(lookInputs);

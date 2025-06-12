@@ -2,14 +2,29 @@ using LightHouse.Inputs;
 using UnityEngine;
 using LightHouse.Handlers;
 using LightHouse.Game.BootStrap;
+using System;
 
 namespace LightHouse.KinematicCharacterController
 {
+    /// <summary>
+    /// Pre-states of the players
+    /// <see cref="Normal"/> is when the player can freely move
+    /// <see cref="CameraMode"/> is when the player is seeing the cameras from the computer
+    /// <see cref="CutScenesModes"/> is when the player is seeing 
+    /// </summary>
+    public enum PlayerState
+    {
+        Normal,
+        CameraMode,
+        CutScenesModes
+    }
     [DefaultExecutionOrder(-20)]
     public class Player : MonoBehaviour
     {
         #region FIELDS
         public bool EnableDebugMode = false;
+        public PlayerState PlayerState = PlayerState.Normal;
+        public static Action<PlayerState> ForceChangePlayerState;
 
         [Header("Character")]
         [SerializeField] private PlayerCharacter _playerCharacter;
@@ -51,6 +66,8 @@ namespace LightHouse.KinematicCharacterController
         {
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             UnityEngine.Cursor.visible = false;
+
+            ForceChangePlayerState += PlayerChangeState;
             _inputActions = new PlayerInputActions();
             _inputActions.Enable();
             _playerCharacter.Initialize();
@@ -100,6 +117,7 @@ namespace LightHouse.KinematicCharacterController
             _inputActions.Dispose();
             PlayerHandlerData.Dispose();
             BootStrap.OnGameAssetsLoaded -= BootStrap_OnGameSceneInitialized;
+            ForceChangePlayerState -= PlayerChangeState;
         }
         #endregion
 
@@ -171,6 +189,23 @@ namespace LightHouse.KinematicCharacterController
         #region CAMERA SPRING
         private void HandleSpring(float deltaTime, Vector3 up) => _cameraSpring.UpdateSpring(deltaTime, up);
         #endregion
+
+        private void PlayerChangeState(PlayerState state)
+        {
+            switch (state)
+            {
+                case PlayerState.Normal:
+                    _enableAllCharacterInputs = true;
+                    _inventoryController.Enable();
+                    break;
+                case PlayerState.CameraMode:
+                    _enableAllCharacterInputs = false;
+                    _inventoryController.Disable();
+                    break;
+                case PlayerState.CutScenesModes:
+                    break;
+            }
+        }
     }
 
 }

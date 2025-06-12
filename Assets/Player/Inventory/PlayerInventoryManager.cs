@@ -15,6 +15,8 @@ namespace LightHouse.KinematicCharacterController
 
         #region SERILIAZED FIELDS
         [SerializeField] private ItemsDetectionSystem _raycastSystem;
+        public bool IsEnabled = true;
+
         [Header("Inventory Settings")]
         [SerializeField] private byte _inventoryCapacity = 4;
         [SerializeField] private float _grabAndDropItemRange = 1.5f;
@@ -55,8 +57,6 @@ namespace LightHouse.KinematicCharacterController
         private IInventoryItem _lastInventoryItemSeen;
 
         private bool _isInitialized = false;
-        
-        
         #endregion
 
         #region MONO CALLBACKS
@@ -133,12 +133,11 @@ namespace LightHouse.KinematicCharacterController
             SlotManager.Initialize(_slots);
             InitializeControllers();
             BootStrap.OnGameAssetsLoaded += GameInitiator_OnGameSceneInitialized;
+            _isInitialized = true;
         }
 
         private void GameInitiator_OnGameSceneInitialized()
         {
-            InventoryHandlerData.Initialized();
-            _isInitialized = true;
         }
 
         private void InitializeControllers()
@@ -147,6 +146,19 @@ namespace LightHouse.KinematicCharacterController
             _scrollHandler = new InventoryScrollHandler(_itemDatabase);
             _useFromInventoryHandler = new InventoryUseItemHandler(_inventoryUiController);
             _dropHandler = new InventoryDropHandler(_inventoryUiController, _inventoryTarget, _maxDropPower, _dropPowerCurve, _securityObstacleMasks, _securityOverlapSphereRadius);
+        }
+        #endregion
+
+        #region UI
+        public void Enable()
+        {
+            _inventoryUiController.gameObject.SetActive(true);
+            IsEnabled = true;
+        }
+        public void Disable()
+        {
+            _inventoryUiController.gameObject.SetActive(false);
+            IsEnabled = false;
         }
         #endregion
 
@@ -266,24 +278,50 @@ namespace LightHouse.KinematicCharacterController
             obj.ForceDropItemFromInventory -= IInventoryItem_ForceDropItemFromInventory;
         }
 
-        private void HandleDropInput() => _dropHandler.HandleDropInput();
+        private void HandleDropInput()
+        {
+            if (!IsEnabled)
+            {
+                if (_dropHandler.IsChargingDrop)
+                    _dropHandler.CancelDrop();
+                return;
+            }
+            _dropHandler.HandleDropInput();
+        }
         #endregion
 
         #region InteractInInventory Handling & Input callback
         private void InteractInInventory_started(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
+            if (!IsEnabled)
+            {
+                _useFromInventoryHandler.Canceled();
+                return;
+            }
             _useFromInventoryHandler.Started();
         }
         private void InteractInInventory_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
             _useFromInventoryHandler.Canceled();
         }
-        private void HandleInteractInInventoryInput() => _useFromInventoryHandler.HandeInteractInInventoryInput();
+        private void HandleInteractInInventoryInput()
+        {
+            if (!IsEnabled)
+            {
+                if (_useFromInventoryHandler.IsHolding && !_useFromInventoryHandler.HasBeenPerformed)
+                {
+                    _useFromInventoryHandler.Canceled();
+                }
+                return;
+            }
+            _useFromInventoryHandler.HandeInteractInInventoryInput();
+        }
         #endregion
 
         #region SCROLL HANDLING
         private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
+            if (!IsEnabled) return;
             int direction = -Mathf.RoundToInt(obj.ReadValue<Vector2>().y);
             if (direction != 0)
                 _scrollHandler.Scroll(direction);
@@ -293,6 +331,7 @@ namespace LightHouse.KinematicCharacterController
         #region SELECT HANDLING
         private void Select_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
+            if (!IsEnabled) return;
             if (short.TryParse(obj.control.name, out short slotIndex))
             {
                 short targetSlotIndex = slotIndex;
