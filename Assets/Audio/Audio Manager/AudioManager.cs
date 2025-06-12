@@ -106,7 +106,6 @@ namespace LightHouse.Audio
             return PlayClip(clip, parent, ambiance.volume, ambiance.loop, ambiance._spatialBlend);
         }
 
-
         public AudioSource PlayRandomEffect(Transform parent, EffectsAudioName category)
         {
             EffectAudio effect = _audioDB.GetEffect(category);

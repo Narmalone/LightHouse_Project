@@ -47,5 +47,18 @@ namespace LightHouse.KinematicCharacterController
             _interactionHandler.OnDestroyed();
         }
         #endregion
+
+        #region UI
+        public void Enable()
+        {
+            _interactionCanvas.gameObject.SetActive(false);
+        }
+
+        public void Disable()
+        {
+            _interactionCanvas.gameObject.SetActive(true);
+        }
+
+        #endregion
     }
 }

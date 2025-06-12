@@ -10,6 +10,9 @@ namespace LightHouse.Inventory
         
         private float _currentHoldValue;
         private bool _hasBeenPerformed;
+        private bool _isHolding = false;
+        public bool IsHolding => _isHolding;
+        public bool HasBeenPerformed => _hasBeenPerformed;
 
         public InventoryUseItemHandler(InventoryUIController inventoryUIController)
         {
@@ -62,6 +65,8 @@ namespace LightHouse.Inventory
         public void Canceled()
         {
             _inventoryUIController.FillInteractHoldedImage(0.0f);
+            _isHolding = false;
+            _hasBeenPerformed = false;
 
             if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
                 return;
@@ -77,7 +82,6 @@ namespace LightHouse.Inventory
                 if (item is IInventoryItemUsable)
                 {
                     SetTarget(null);
-                    _hasBeenPerformed = false;
                 }
             }
         }
@@ -88,6 +92,7 @@ namespace LightHouse.Inventory
             if (_hasBeenPerformed) return;
             if (InputManager.InteractInInventory.IsPressed())
             {
+                _isHolding = true;
                 UpdateHoldValue();
                 if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex))
                     return;
@@ -103,6 +108,7 @@ namespace LightHouse.Inventory
                 if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex))
                     return;
                 _inventoryUIController.FillInteractHoldedImage(0.0f);
+                _isHolding = false;
             }
 
             //in seperated if bcs it cannot be performed while pressed
@@ -113,6 +119,7 @@ namespace LightHouse.Inventory
                 UseItemFromInventory(_usableItem);
                 _inventoryUIController.FillInteractHoldedImage(0.0f);
                 _hasBeenPerformed = true;
+                _isHolding = false;
             }
         }
     }
