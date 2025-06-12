@@ -2,43 +2,37 @@ using LightHouse.KinematicCharacterController;
 using System;
 using UnityEngine;
 
-public class LightHouseCamerasSystem : MonoBehaviour
+namespace LightHouse.Game.Computer.Cameras
 {
-    public LightHouseCameraController[] Cameras;
-    public int CurrentActiveCamera;
-
-    public bool CameraModeEnabled = false;
-    public static event Action OnCameraModeEnabled;
-    public static event Action OnCameraModeDisabled;
-
-    private void Awake()
+    public class LightHouseCamerasSystem : MonoBehaviour
     {
-        CurrentActiveCamera = 0;
-    }
+        public LightHouseCameraController[] Cameras;
+        public int CurrentActiveCamera;
 
-    public void EnableCameraMode()
-    {
-        CameraModeEnabled = true;
-        Player.ForceChangePlayerState.Invoke(PlayerState.CameraMode);
-        Cameras[CurrentActiveCamera].SetEnable(true);
-        OnCameraModeEnabled?.Invoke();
-    }
+        public bool CameraModeEnabled = false;
+        public static event Action OnCameraModeEnabled;
+        public static event Action OnCameraModeDisabled;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.B))
+        private void Awake()
         {
-            if (!CameraModeEnabled)
-                EnableCameraMode();
-            else DisableCameraMode();
+            CurrentActiveCamera = 0;
+        }
+
+        public void EnableCameraMode()
+        {
+            CameraModeEnabled = true;
+            Player.ForceChangePlayerState.Invoke(PlayerState.CameraMode);
+            Cameras[CurrentActiveCamera].SetEnable(true);
+            OnCameraModeEnabled?.Invoke();
+        }
+
+        public void DisableCameraMode()
+        {
+            CameraModeEnabled = false;
+            Cameras[CurrentActiveCamera].SetEnable(false);
+            OnCameraModeDisabled?.Invoke();
+            Player.ForceChangePlayerState.Invoke(PlayerState.Normal);
         }
     }
-
-    public void DisableCameraMode()
-    {
-        CameraModeEnabled = false;
-        Cameras[CurrentActiveCamera].SetEnable(false);
-        OnCameraModeDisabled?.Invoke();
-        Player.ForceChangePlayerState.Invoke(PlayerState.Normal);
-    }
 }
+
