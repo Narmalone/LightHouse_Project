@@ -34,6 +34,14 @@ public class SonarDotController : MonoBehaviour
         SetDotSize(new Vector2(size, size));
     }
 
+    public void SetDotRotation(Vector3 eulers)
+    {
+        if (_rectTransform == null) return;
+
+        float zRotation = -eulers.y; // Inversion pour l'UI
+        _rectTransform.localRotation = Quaternion.Euler(0, 0, zRotation);
+    }
+
     public void SetDotColor(Color color)
     {
         if (_instanceMaterial != null)

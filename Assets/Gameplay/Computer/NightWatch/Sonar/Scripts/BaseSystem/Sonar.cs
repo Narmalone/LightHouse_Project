@@ -13,18 +13,25 @@ namespace LightHouse.Game.Computer.NightWatch.Sonar
             float rayonSqr = DetectionRange * DetectionRange;
             Vector3 centre = transform.position;
 
-            foreach (var bateau in SonarManager.SonarItems)
+            foreach (var sonarItem in SonarManager.SonarItems)
             {
-                if ((bateau.Position - centre).sqrMagnitude <= rayonSqr)
+                if ((sonarItem.Position - centre).sqrMagnitude <= rayonSqr)
                 {
                     // ✔️ Détection : le bateau est dans la sphère
-                    Debug.Log("Bateau détecté : " + bateau.Name);
-                    bateau.IsDetectedBySonar = true;
+                    if (!sonarItem.IsDetectedBySonar)
+                    {
+                        Debug.Log("Nouvel Objet détecté : " + sonarItem.Name);
+                        sonarItem.IsDetectedBySonar = true;
+                        sonarItem.UniqueID = SonarIDAllocator.AllocateID();
+                    }
                 }
                 else
                 {
-                    if (bateau.IsDetectedBySonar)
-                        bateau.IsDetectedBySonar = false;
+                    if (sonarItem.IsDetectedBySonar)
+                    {
+                        sonarItem.IsDetectedBySonar = false;
+                        SonarIDAllocator.ReleaseID(sonarItem.UniqueID);
+                    }
                 }
             }
         }

@@ -1,6 +1,8 @@
+using LightHouse.Audio;
 using LightHouse.Game.Computer.NightWatch.Sonar;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,19 +19,56 @@ public class SonarUI : MonoBehaviour
     [Header("Effets visuels")]
     [SerializeField] private RectTransform radarSweepLine;
     [SerializeField] private Material SweepLineShader;
-    [SerializeField] private RectTransform radarPingFX;
+    [SerializeField] private Image _sonarPingImage;
     [SerializeField] private float sweepRotationSpeed = 72f; // degrés par seconde (360° en 5s)
     [SerializeField] private float pingDuration = 0.5f;
 
+    [Header("Sounds")]
+    [SerializeField] private AudioSource _sonarPingAudioSource;
+    [SerializeField] private EffectAudio _sonarPingClip;
 
-    private readonly Dictionary<string, RectTransform> _activeDots = new();
+    private float _currentSweepAngle = 0f;
+    private readonly Dictionary<int, SonarDotController> _activeDots = new();
 
-    void Start()
+    private void OnValidate()
     {
-        StartCoroutine(UpdateRadarRoutine());
+        if(_sonarPingClip != null)
+        {
+            _sonarPingAudioSource.clip = _sonarPingClip.clips[0];
+            _sonarPingAudioSource.spatialBlend = _sonarPingClip._spatialBlend;
+            _sonarPingAudioSource.volume = _sonarPingClip.volume;
+        }
     }
 
-    IEnumerator UpdateRadarRoutine()
+    private void Awake()
+    {
+        _sonarPingAudioSource.clip = _sonarPingClip.clips[0];
+        _sonarPingAudioSource.spatialBlend = _sonarPingClip._spatialBlend;
+        _sonarPingAudioSource.volume = _sonarPingClip.volume;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            StartCoroutine(UpdateRadarRoutine());
+        }
+        else if (Input.GetKeyDown(KeyCode.L))
+        {
+            StopAllCoroutines();
+        }
+        if (SweepLineShader != null)
+        {
+            // Incrémenter manuellement l'angle
+            _currentSweepAngle += sweepRotationSpeed * Time.deltaTime;
+            _currentSweepAngle %= 360f;
+
+            // Envoyer au shader
+            SweepLineShader.SetFloat("_SweepAngle", _currentSweepAngle);
+        }
+    }
+
+    private IEnumerator UpdateRadarRoutine()
     {
         var wait = new WaitForSeconds(SonarDelay);
         while (UpdateRadarRoutineEnabled)
@@ -39,21 +78,6 @@ public class SonarUI : MonoBehaviour
         }
     }
 
-    private float sweepAngle = 0f;
-    private void Update()
-    {
-        if (SweepLineShader != null)
-        {
-            // Incrémenter manuellement l'angle
-            sweepAngle += sweepRotationSpeed * Time.deltaTime;
-            sweepAngle %= 360f;
-
-            // Envoyer au shader
-            SweepLineShader.SetFloat("_SweepAngle", sweepAngle);
-        }
-    }
-
-
     private void UpdateRadar()
     {
         float panelRadius = Mathf.Min(_sonnarPannel.rect.width, _sonnarPannel.rect.height) / 2f;
@@ -61,7 +85,7 @@ public class SonarUI : MonoBehaviour
         Quaternion inverseRotation = Quaternion.Inverse(_sonar.transform.rotation);
 
         // Réutiliser une liste statique pour éviter des allocations
-        var detectedThisFrame = new HashSet<string>();
+        var detectedThisFrame = new HashSet<int>();
 
         // Phase 1 : Ajout ou mise à jour des dots actifs
         foreach (var item in SonarManager.SonarItems)
@@ -69,7 +93,7 @@ public class SonarUI : MonoBehaviour
             if (!item.IsDetectedBySonar)
                 continue;
 
-            detectedThisFrame.Add(item.Name);
+            detectedThisFrame.Add(item.UniqueID);
 
             Vector3 offset = item.Position - sonarPosition;
             Vector2 flatOffset = new Vector2(offset.x, offset.z);
@@ -79,20 +103,21 @@ public class SonarUI : MonoBehaviour
             if (uiPos.sqrMagnitude > panelRadius * panelRadius)
                 uiPos = uiPos.normalized * panelRadius;
 
-            if (!_activeDots.TryGetValue(item.Name, out RectTransform dot))
+            if (!_activeDots.TryGetValue(item.UniqueID, out SonarDotController dot))
             {
                 var dotInstance = Instantiate(_sonarDotPrefab, _sonnarPannel);
                 dotInstance.SetDotColor(item.DotColor); // couleur personnalisée
                 dotInstance.SetDotSize(item.DotSize);
-                dot = dotInstance.RectTransform;
-                _activeDots[item.Name] = dot;
+                dot = dotInstance;
+                _activeDots[item.UniqueID] = dot;
             }
 
-            dot.anchoredPosition = uiPos;
+            dot.RectTransform.anchoredPosition = uiPos;
+            dot.SetDotRotation(item.RotationAngles);
         }
 
         // Phase 2 : Nettoyage des anciens dots
-        var keysToRemove = new List<string>();
+        var keysToRemove = new List<int>();
         foreach (var kvp in _activeDots)
         {
             if (!detectedThisFrame.Contains(kvp.Key))
@@ -107,27 +132,28 @@ public class SonarUI : MonoBehaviour
             _activeDots.Remove(key);
         }
 
-        StartCoroutine(AnimatePing());
+        StartCoroutine(AnimatePingRoutine());
     }
 
 
-    IEnumerator AnimatePing()
+    private IEnumerator AnimatePingRoutine()
     {
-        if (radarPingFX == null)
+        if (_sonarPingImage == null)
             yield break;
 
-        radarPingFX.gameObject.SetActive(true);
+        _sonarPingImage.gameObject.SetActive(true);
+        _sonarPingAudioSource?.Play();
 
         // Reset couleur
-        Image pingImage = radarPingFX.GetComponent<Image>();
-        Color startColor = pingImage.color;
+        Color startColor = _sonarPingImage.color;
         startColor.a = 0.4f;
-        pingImage.color = startColor;
+        _sonarPingImage.color = startColor;
 
         // Taille initiale et finale
         float t = 0f;
         float pingStartSize = 100f; // pixels (par ex, commence petit)
         float pingMaxSize = 1600f;  // dépasse largement le radar (dépend de ton canvas)
+
 
         while (t < pingDuration)
         {
@@ -136,19 +162,16 @@ public class SonarUI : MonoBehaviour
 
             // Taille croissante
             float size = Mathf.Lerp(pingStartSize, pingMaxSize, progress);
-            radarPingFX.sizeDelta = new Vector2(size, size);
+            _sonarPingImage.rectTransform.sizeDelta = new Vector2(size, size);
 
             // Alpha décroissant
-            Color c = pingImage.color;
+            Color c = _sonarPingImage.color;
             c.a = Mathf.Lerp(0.4f, 0f, progress);
-            pingImage.color = c;
+            _sonarPingImage.color = c;
 
             yield return null;
         }
 
-        radarPingFX.gameObject.SetActive(false);
+        _sonarPingImage.gameObject.SetActive(false);
     }
-
-
-
 }
