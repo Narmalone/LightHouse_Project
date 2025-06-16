@@ -33,6 +33,13 @@ namespace LightHouse.Game.Computer.Cameras
             OnCameraModeDisabled?.Invoke();
             Player.ForceChangePlayerState.Invoke(PlayerState.Normal);
         }
+
+        public void SwitchCamera(int cameraIndex)
+        {
+            Cameras[CurrentActiveCamera].SetEnable(false);
+            CurrentActiveCamera = cameraIndex;
+            Cameras[CurrentActiveCamera].SetEnable(true);
+        }
     }
 }
 
