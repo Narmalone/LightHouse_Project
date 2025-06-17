@@ -5,7 +5,7 @@ public class SimpleBoidBoat : MonoBehaviour
 {
     [Header(" --- COMPONENTS --- ")]
     [SerializeField] private Rigidbody _rb;
-    public Transform RaycastsTransform;
+    [SerializeField] private Transform RaycastsTransform;
     [SerializeField] private PhysicalBuoyancy[] _buoyancys;
     [SerializeField] private RandomPointOnWaterSurface _randomPointOnWaterSurface;
 
@@ -15,21 +15,16 @@ public class SimpleBoidBoat : MonoBehaviour
 
     [Header(" --- OBSTACLE AVOIDANCE --- ")]
     [SerializeField] private LayerMask _obstacleMasks;
-    [SerializeField] private float _obstacleCheckDistance = 50.0f;
-    [SerializeField] private int _avoidanceRayCount = 7;
-    [SerializeField] private float _avoidanceSpread = 60f;
-    [SerializeField, Range(0f, 1f)] private float _avoidanceWeight = 0.6f;  // importance de l'évitement
-    [SerializeField] private float _avoidanceThreshold = 0.15f; // Si le vecteur d’évitement est trop faible, on l’ignore
-    [SerializeField] private float _maxAvoidanceAngleChange = 45f; // Angle max qu’on autorise d’un frame à l’autre
+    [SerializeField] private float _rayDistance = 50f;
+    [SerializeField] private int _rayCount = 9;
+    [SerializeField] private float _raySpread = 90f;
+    [SerializeField] private float _repathDelay = 0.25f;
+    [SerializeField] private float _maxAngleChange = 45f;
 
-    [SerializeField] private float _avoidanceSmoothTime = 0.25f;
-    private Vector3 _previousAvoidance = Vector3.zero;
-
-    [Header(" --- DEBUG --- ")]
+    private Vector3 _targetPosition;
+    private Vector3 _currentAvoidanceDirection = Vector3.zero;
+    private float _timeSinceLastRaycast = 0f;
     private Vector3 _lastFinalDirection = Vector3.forward;
-    private bool _lastObstacleBetween = false;
-
-    private Vector3 _smoothedAvoidance = Vector3.zero;
 
     private void Start()
     {
@@ -40,10 +35,11 @@ public class SimpleBoidBoat : MonoBehaviour
         _rb.position = entry;
         _rb.rotation = Quaternion.LookRotation((exit - entry).normalized, Vector3.up);
 
-        StartCoroutine(EnablePhysicsAndBuoyancyNextFrame());
+        _targetPosition = exit;
+        StartCoroutine(EnablePhysics());
     }
 
-    private System.Collections.IEnumerator EnablePhysicsAndBuoyancyNextFrame()
+    private System.Collections.IEnumerator EnablePhysics()
     {
         yield return new WaitForFixedUpdate();
         _rb.isKinematic = false;
@@ -52,102 +48,87 @@ public class SimpleBoidBoat : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_randomPointOnWaterSurface.Destination == null) return;
+        if (_targetPosition == null) return;
 
-        Vector3 toTarget = _randomPointOnWaterSurface.Destination - _rb.position;
+        Vector3 toTarget = _targetPosition - _rb.position;
         toTarget.y = 0f;
-        if (toTarget.magnitude < 0.1f) return;
+        if (toTarget.magnitude < 1f) return;
 
-        Vector3 directionToTarget = toTarget.normalized;
-        Vector3 avoidance = ComputeAvoidanceDirection();
+        Vector3 dirToTarget = toTarget.normalized;
 
-        // Smooth l’évitement pour éviter les changements trop brusques
-        //_smoothedAvoidance = Vector3.Lerp(_smoothedAvoidance, avoidance, Time.fixedDeltaTime / _avoidanceSmoothTime);
+        _timeSinceLastRaycast += Time.fixedDeltaTime;
+        if (_timeSinceLastRaycast >= _repathDelay)
+        {
+            _timeSinceLastRaycast = 0f;
+            _currentAvoidanceDirection = ComputeSafeDirection(dirToTarget);
+        }
 
-        // _smoothedAvoidance = Vector3.Lerp(...);  ❌ plus nécessaire
-        Vector3 finalDir = ((1f - _avoidanceWeight) * directionToTarget + _avoidanceWeight * avoidance).normalized;
-
+        Vector3 finalDir = Vector3.RotateTowards(_rb.transform.forward, _currentAvoidanceDirection, Mathf.Deg2Rad * _maxAngleChange, 0f).normalized;
         _lastFinalDirection = finalDir;
-        _lastObstacleBetween = avoidance != Vector3.zero;
 
         SteerAndMove(finalDir);
     }
 
-    private Vector3 ComputeAvoidanceDirection()
+    private Vector3 ComputeSafeDirection(Vector3 desired)
     {
-        Vector3 avoidance = Vector3.zero;
         Vector3 origin = RaycastsTransform.position;
-        Vector3 forward = RaycastsTransform.forward;
-        float halfSpread = _avoidanceSpread * 0.5f;
+        float halfSpread = _raySpread * 0.5f;
 
-        for (int i = 0; i < _avoidanceRayCount; i++)
+        Vector3 bestDir = desired;
+        float bestScore = float.MinValue;
+
+        for (int i = 0; i < _rayCount; i++)
         {
-            float t = (_avoidanceRayCount == 1) ? 0.5f : (i / (float)(_avoidanceRayCount - 1));
+            float t = (_rayCount == 1) ? 0.5f : i / (float)(_rayCount - 1);
             float angle = Mathf.Lerp(-halfSpread, halfSpread, t);
-            Vector3 dir = Quaternion.AngleAxis(angle, Vector3.up) * forward;
+            Vector3 dir = Quaternion.AngleAxis(angle, Vector3.up) * desired;
 
-            if (Physics.Raycast(origin, dir, out RaycastHit hit, _obstacleCheckDistance, _obstacleMasks))
+            bool hit = Physics.Raycast(origin, dir, _rayDistance, _obstacleMasks);
+            if (!hit)
             {
-                float weight = 1f - (hit.distance / _obstacleCheckDistance);
-                avoidance -= dir * weight;
+                float dot = Vector3.Dot(desired, dir); // +1 = aligné, -1 = opposé
+                if (dot > bestScore)
+                {
+                    bestScore = dot;
+                    bestDir = dir;
+                }
             }
         }
 
-        // Analyse du résultat
-        if (avoidance.magnitude < _avoidanceThreshold)
-            return Vector3.zero;
-
-        avoidance.Normalize();
-
-        // Limiter l’angle entre deux directions d’évitement successives
-        float angleDiff = Vector3.Angle(_previousAvoidance, avoidance);
-        if (_previousAvoidance != Vector3.zero && angleDiff > _maxAvoidanceAngleChange)
-        {
-            // Réduire le saut d’angle
-            avoidance = Vector3.RotateTowards(_previousAvoidance, avoidance, Mathf.Deg2Rad * _maxAvoidanceAngleChange, 0f);
-        }
-
-        _previousAvoidance = avoidance;
-        return avoidance;
+        return bestDir.normalized;
     }
-
 
     private void SteerAndMove(Vector3 direction)
     {
         if (direction == Vector3.zero) return;
 
-        Quaternion desiredRotation = Quaternion.LookRotation(direction, Vector3.up);
-        _rb.MoveRotation(Quaternion.RotateTowards(_rb.rotation, desiredRotation, _turnSpeed * Time.fixedDeltaTime));
+        Quaternion targetRot = Quaternion.LookRotation(direction, Vector3.up);
+        _rb.MoveRotation(Quaternion.RotateTowards(_rb.rotation, targetRot, _turnSpeed * Time.fixedDeltaTime));
         _rb.AddForce(_rb.transform.forward * _moveSpeed, ForceMode.Force);
     }
 
     private void OnDrawGizmosSelected()
     {
-        if (_rb == null || _randomPointOnWaterSurface == null) return;
+        if (_rb == null || RaycastsTransform == null) return;
 
         Vector3 origin = RaycastsTransform.position;
-        Vector3 toTarget = _randomPointOnWaterSurface.Destination - origin;
-        toTarget.y = 0f;
-        Vector3 dirToTarget = toTarget.normalized;
 
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(origin, _randomPointOnWaterSurface.Destination);
+        Gizmos.DrawLine(origin, _targetPosition);
 
-        Gizmos.color = _lastObstacleBetween ? Color.magenta : Color.cyan;
-        Gizmos.DrawRay(origin, dirToTarget * _obstacleCheckDistance);
-
-        float halfSpread = _avoidanceSpread * 0.5f;
-        for (int i = 0; i < _avoidanceRayCount; i++)
+        float halfSpread = _raySpread * 0.5f;
+        Vector3 forward = (_targetPosition - _rb.position).normalized;
+        for (int i = 0; i < _rayCount; i++)
         {
-            float t = (_avoidanceRayCount == 1) ? 0.5f : (i / (float)(_avoidanceRayCount - 1));
+            float t = (_rayCount == 1) ? 0.5f : i / (float)(_rayCount - 1);
             float angle = Mathf.Lerp(-halfSpread, halfSpread, t);
-            Vector3 dir = Quaternion.AngleAxis(angle, Vector3.up) * RaycastsTransform.transform.forward;
+            Vector3 dir = Quaternion.AngleAxis(angle, Vector3.up) * forward;
 
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawRay(origin, dir * _obstacleCheckDistance);
+            Gizmos.color = Physics.Raycast(origin, dir, _rayDistance, _obstacleMasks) ? Color.magenta : Color.yellow;
+            Gizmos.DrawRay(origin, dir * _rayDistance);
         }
 
         Gizmos.color = Color.green;
-        Gizmos.DrawRay(origin, _lastFinalDirection * 5f);
+        Gizmos.DrawRay(origin, _lastFinalDirection * 10f);
     }
 }

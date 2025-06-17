@@ -162,7 +162,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 16777428}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0b3c3a33661cd6d4d81a4e9bda0afb8b, type: 3}
   m_Name: 
@@ -192,11 +192,11 @@ MonoBehaviour:
   _obstacleMasks:
     serializedVersion: 2
     m_Bits: 1
-  _obstacleCheckDistance: 250
-  _avoidanceRayCount: 8
-  _avoidanceSpread: 30
-  _avoidanceWeight: 0.6
-  _avoidanceSmoothTime: 0.25
+  _rayDistance: 200
+  _rayCount: 9
+  _raySpread: 90
+  _repathDelay: 0.25
+  _maxAngleChange: 45
 --- !u!114 &20855652 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6546931149197099652, guid: 709a2e69c00fd8d4da294a6f50131a05,
@@ -410,7 +410,7 @@ MonoBehaviour:
   _centerTransform: {fileID: 873685455}
   arcAngle: 180
   startingAngle: 0
-  _minEntryExitDistance: 100
+  _minEntryExitDistance: 300
   _enableDebug: 0
   _entryPoint: {x: 0, y: 0, z: 0}
   _exitPoint: {x: 0, y: 0, z: 0}
