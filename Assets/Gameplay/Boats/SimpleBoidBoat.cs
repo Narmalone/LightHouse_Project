@@ -1,4 +1,4 @@
-using LightHouse.Game.WaterExtension;
+﻿using LightHouse.Game.WaterExtension;
 using UnityEngine;
 
 public class SimpleBoidBoat : MonoBehaviour
@@ -18,8 +18,12 @@ public class SimpleBoidBoat : MonoBehaviour
     [SerializeField] private float _obstacleCheckDistance = 50.0f;
     [SerializeField] private int _avoidanceRayCount = 7;
     [SerializeField] private float _avoidanceSpread = 60f;
-    [SerializeField, Range(0f, 1f)] private float _avoidanceWeight = 0.6f;  // importance de l'�vitement
+    [SerializeField, Range(0f, 1f)] private float _avoidanceWeight = 0.6f;  // importance de l'évitement
+    [SerializeField] private float _avoidanceThreshold = 0.15f; // Si le vecteur d’évitement est trop faible, on l’ignore
+    [SerializeField] private float _maxAvoidanceAngleChange = 45f; // Angle max qu’on autorise d’un frame à l’autre
+
     [SerializeField] private float _avoidanceSmoothTime = 0.25f;
+    private Vector3 _previousAvoidance = Vector3.zero;
 
     [Header(" --- DEBUG --- ")]
     private Vector3 _lastFinalDirection = Vector3.forward;
@@ -57,10 +61,11 @@ public class SimpleBoidBoat : MonoBehaviour
         Vector3 directionToTarget = toTarget.normalized;
         Vector3 avoidance = ComputeAvoidanceDirection();
 
-        // Smooth l��vitement pour �viter les changements trop brusques
-        _smoothedAvoidance = Vector3.Lerp(_smoothedAvoidance, avoidance, Time.fixedDeltaTime / _avoidanceSmoothTime);
+        // Smooth l’évitement pour éviter les changements trop brusques
+        //_smoothedAvoidance = Vector3.Lerp(_smoothedAvoidance, avoidance, Time.fixedDeltaTime / _avoidanceSmoothTime);
 
-        Vector3 finalDir = ((1f - _avoidanceWeight) * directionToTarget + _avoidanceWeight * _smoothedAvoidance).normalized;
+        // _smoothedAvoidance = Vector3.Lerp(...);  ❌ plus nécessaire
+        Vector3 finalDir = ((1f - _avoidanceWeight) * directionToTarget + _avoidanceWeight * avoidance).normalized;
 
         _lastFinalDirection = finalDir;
         _lastObstacleBetween = avoidance != Vector3.zero;
@@ -72,7 +77,7 @@ public class SimpleBoidBoat : MonoBehaviour
     {
         Vector3 avoidance = Vector3.zero;
         Vector3 origin = RaycastsTransform.position;
-        Vector3 forward = RaycastsTransform.transform.forward;
+        Vector3 forward = RaycastsTransform.forward;
         float halfSpread = _avoidanceSpread * 0.5f;
 
         for (int i = 0; i < _avoidanceRayCount; i++)
@@ -88,8 +93,24 @@ public class SimpleBoidBoat : MonoBehaviour
             }
         }
 
+        // Analyse du résultat
+        if (avoidance.magnitude < _avoidanceThreshold)
+            return Vector3.zero;
+
+        avoidance.Normalize();
+
+        // Limiter l’angle entre deux directions d’évitement successives
+        float angleDiff = Vector3.Angle(_previousAvoidance, avoidance);
+        if (_previousAvoidance != Vector3.zero && angleDiff > _maxAvoidanceAngleChange)
+        {
+            // Réduire le saut d’angle
+            avoidance = Vector3.RotateTowards(_previousAvoidance, avoidance, Mathf.Deg2Rad * _maxAvoidanceAngleChange, 0f);
+        }
+
+        _previousAvoidance = avoidance;
         return avoidance;
     }
+
 
     private void SteerAndMove(Vector3 direction)
     {
