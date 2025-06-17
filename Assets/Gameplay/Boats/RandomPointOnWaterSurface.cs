@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
+using System.Collections.Generic;
 
 namespace LightHouse.Game.WaterExtension
 {
@@ -11,8 +12,15 @@ namespace LightHouse.Game.WaterExtension
         [SerializeField] public Transform _centerTransform;
 
         [Header("Arc Settings")]
-        [Range(0f, 360f)] public float arcAngle = 180f; // ouverture totale
-        public float startingAngle = 0f; // orientation du cône (0 = vers Z+)
+        [Range(0f, 360f)] public float arcAngle = 180f;
+        public float startingAngle = 0f;
+
+        [Header("Path Generation")]
+        [Range(2, 10)] public int numberOfPoints = 5;
+        public bool useBezier = false;
+        public float pathRandomness = 5f;
+        public LayerMask obstacleMask;
+        public float pointCheckRadius = 2f;
 
         [Header("Constraints")]
         [SerializeField] private float _minEntryExitDistance = 20f;
@@ -27,13 +35,15 @@ namespace LightHouse.Game.WaterExtension
         private Vector3 _destination;
         public Vector3 Destination => _destination;
 
+        public List<Vector3> pathPoints = new List<Vector3>();
+
         private void Awake()
         {
             GenerateNewEntryExitPoints();
+            GeneratePathPoints();
 
-            var (start, end) = GetEntryExitPoints();
-            transform.position = start;
-            _destination = end;
+            transform.position = _entryPoint;
+            _destination = _exitPoint;
         }
 
         public void GenerateNewEntryExitPoints()
@@ -70,12 +80,61 @@ namespace LightHouse.Game.WaterExtension
             return (_entryPoint, _exitPoint);
         }
 
+        public void GeneratePathPoints()
+        {
+            pathPoints.Clear();
+
+            if (useBezier)
+            {
+                Vector3 control = _centerTransform.position + Random.insideUnitSphere * pathRandomness;
+                for (int i = 0; i <= numberOfPoints; i++)
+                {
+                    float t = i / (float)numberOfPoints;
+                    Vector3 point = Mathf.Pow(1 - t, 2) * _entryPoint +
+                                    2 * (1 - t) * t * control +
+                                    Mathf.Pow(t, 2) * _exitPoint;
+                    pathPoints.Add(TryRelocatePoint(point));
+                }
+            }
+            else
+            {
+                for (int i = 0; i <= numberOfPoints; i++)
+                {
+                    float t = i / (float)numberOfPoints;
+                    Vector3 linear = Vector3.Lerp(_entryPoint, _exitPoint, t);
+                    Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)) * pathRandomness;
+                    Vector3 offsetPoint = linear + randomOffset;
+                    pathPoints.Add(TryRelocatePoint(offsetPoint));
+                }
+            }
+        }
+
+        private Vector3 TryRelocatePoint(Vector3 original)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                Vector3 offset = new Vector3(
+                    Random.Range(-2f, 2f),
+                    0,
+                    Random.Range(-2f, 2f)
+                );
+                Vector3 candidate = original + offset;
+                if (!IsPointObstructed(candidate))
+                    return candidate;
+            }
+            return original;
+        }
+
+        private bool IsPointObstructed(Vector3 point)
+        {
+            return Physics.CheckSphere(point, pointCheckRadius, obstacleMask);
+        }
+
         private void OnDrawGizmos()
         {
             if (!_enableDebug || _centerTransform == null) return;
 
             Vector3 center = _centerTransform.position;
-
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(center, _radiusForPointGeneration);
 
@@ -98,6 +157,17 @@ namespace LightHouse.Game.WaterExtension
             Gizmos.color = Color.red;
             Gizmos.DrawSphere(_exitPoint, 1.5f);
             Gizmos.DrawLine(_entryPoint, _exitPoint);
+
+            if (pathPoints.Count > 1)
+            {
+                Gizmos.color = Color.blue;
+                for (int i = 0; i < pathPoints.Count - 1; i++)
+                {
+                    Gizmos.DrawLine(pathPoints[i], pathPoints[i + 1]);
+                    Gizmos.DrawSphere(pathPoints[i], 0.5f);
+                }
+                Gizmos.DrawSphere(pathPoints[pathPoints.Count - 1], 0.5f);
+            }
         }
     }
 }
