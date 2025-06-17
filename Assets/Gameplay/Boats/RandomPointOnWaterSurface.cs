@@ -5,13 +5,23 @@ namespace LightHouse.Game.WaterExtension
 {
     public class RandomPointOnWaterSurface : MonoBehaviour
     {
+        [Header("Configuration")]
         [SerializeField] private WaterSurface _waterSurface;
-        [SerializeField] private float _radiusForPointGeneration = 100f;
-        [SerializeField] private Transform _centerTransform;
+        [SerializeField] public float _radiusForPointGeneration = 100f;
+        [SerializeField] public Transform _centerTransform;
+
+        [Header("Arc Settings")]
+        [Range(0f, 360f)] public float arcAngle = 180f; // ouverture totale
+        public float startingAngle = 0f; // orientation du cône (0 = vers Z+)
+
+        [Header("Constraints")]
+        [SerializeField] private float _minEntryExitDistance = 20f;
+
+        [Header("Debug")]
         [SerializeField] private bool _enableDebug = true;
 
-        private Vector3 _entryPoint;
-        private Vector3 _exitPoint;
+        public Vector3 _entryPoint;
+        public Vector3 _exitPoint;
         private bool _hasGeneratedPoints = false;
 
         private Vector3 _destination;
@@ -19,7 +29,6 @@ namespace LightHouse.Game.WaterExtension
 
         private void Awake()
         {
-            // Génère une paire au lancement
             GenerateNewEntryExitPoints();
 
             var (start, end) = GetEntryExitPoints();
@@ -27,48 +36,68 @@ namespace LightHouse.Game.WaterExtension
             _destination = end;
         }
 
-
-        public Vector3 GetRandomPointInsideCircle()
-        {
-            Vector2 random2D = Random.insideUnitCircle * _radiusForPointGeneration;
-            Vector3 point = _centerTransform.position + new Vector3(random2D.x, 0, random2D.y);
-            return point;
-        }
-
         public void GenerateNewEntryExitPoints()
         {
-            float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-            Vector3 dir = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+            const int maxTries = 20;
+            int attempt = 0;
 
-            _entryPoint = _centerTransform.position + dir * _radiusForPointGeneration;
-            _exitPoint = _centerTransform.position - dir * _radiusForPointGeneration;
+            do
+            {
+                _entryPoint = GetRandomPointOnArc();
+                _exitPoint = GetRandomPointOnArc();
+                attempt++;
+            }
+            while (Vector3.Distance(_entryPoint, _exitPoint) < _minEntryExitDistance && attempt < maxTries);
 
             _hasGeneratedPoints = true;
+        }
+
+        private Vector3 GetRandomPointOnArc()
+        {
+            float halfArc = arcAngle * 0.5f;
+            float randomAngle = Random.Range(-halfArc, halfArc);
+            float finalAngle = startingAngle + randomAngle;
+
+            Vector3 dir = Quaternion.Euler(0f, finalAngle, 0f) * Vector3.forward;
+            return _centerTransform.position + dir * _radiusForPointGeneration;
         }
 
         public (Vector3 entry, Vector3 exit) GetEntryExitPoints()
         {
             if (!_hasGeneratedPoints)
-            {
                 GenerateNewEntryExitPoints();
-            }
 
             return (_entryPoint, _exitPoint);
         }
 
         private void OnDrawGizmos()
         {
-            if (!_enableDebug || _centerTransform == null || !_hasGeneratedPoints) return;
+            if (!_enableDebug || _centerTransform == null) return;
+
+            Vector3 center = _centerTransform.position;
 
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(_centerTransform.position, _radiusForPointGeneration);
+            Gizmos.DrawWireSphere(center, _radiusForPointGeneration);
+
+            Gizmos.color = Color.white;
+            int segments = 64;
+            float halfArc = arcAngle * 0.5f;
+            float angleStep = arcAngle / segments;
+
+            Vector3 prev = center + Quaternion.Euler(0, startingAngle - halfArc, 0) * Vector3.forward * _radiusForPointGeneration;
+            for (int i = 1; i <= segments; i++)
+            {
+                float angle = startingAngle - halfArc + i * angleStep;
+                Vector3 next = center + Quaternion.Euler(0, angle, 0) * Vector3.forward * _radiusForPointGeneration;
+                Gizmos.DrawLine(prev, next);
+                prev = next;
+            }
 
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(_entryPoint, 2f);
+            Gizmos.DrawSphere(_entryPoint, 1.5f);
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(_exitPoint, 2f);
+            Gizmos.DrawSphere(_exitPoint, 1.5f);
             Gizmos.DrawLine(_entryPoint, _exitPoint);
         }
     }
-
 }
