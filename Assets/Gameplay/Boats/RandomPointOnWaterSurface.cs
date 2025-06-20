@@ -7,9 +7,8 @@ namespace LightHouse.Game.WaterExtension
     public class RandomPointOnWaterSurface : MonoBehaviour
     {
         [Header("Configuration")]
-        [SerializeField] private WaterSurface _waterSurface;
-        [SerializeField] public float _radiusForPointGeneration = 100f;
-        [SerializeField] public Transform _centerTransform;
+        [SerializeField] public float radius = 100f;
+        public Vector3 CenterPoint;
 
         [Header("Arc Settings")]
         [Range(0f, 360f)] public float arcAngle = 180f;
@@ -23,93 +22,97 @@ namespace LightHouse.Game.WaterExtension
         public float pointCheckRadius = 2f;
 
         [Header("Constraints")]
-        [SerializeField] private float _minEntryExitDistance = 20f;
+        [SerializeField] private float minEntryExitDistance = 20f;
 
         [Header("Debug")]
-        [SerializeField] private bool _enableDebug = true;
+        [SerializeField] private bool enableDebug = true;
 
-        public Vector3 _entryPoint;
-        public Vector3 _exitPoint;
-        private bool _hasGeneratedPoints = false;
-
-        private Vector3 _destination;
-        public Vector3 Destination => _destination;
-
-        public List<Vector3> pathPoints = new List<Vector3>();
+        public Vector3 EntryPoint { get; private set; }
+        public Vector3 ExitPoint { get; private set; }
+        public List<Vector3> PathPoints { get; private set; } = new();
 
         private void Awake()
         {
+            CenterPoint = GameWorldHandlerData.IslandCenterPoint.position;
+            transform.position = CenterPoint;
             GenerateNewEntryExitPoints();
-            GeneratePathPoints();
-
-            transform.position = _entryPoint;
-            _destination = _exitPoint;
+            PathPoints = GeneratePath(EntryPoint, ExitPoint);
+            transform.position = EntryPoint;
         }
+
+        #region Public Interface
 
         public void GenerateNewEntryExitPoints()
         {
             const int maxTries = 20;
             int attempt = 0;
-
             do
             {
-                _entryPoint = GetRandomPointOnArc();
-                _exitPoint = GetRandomPointOnArc();
+                EntryPoint = GetRandomPointOnArc();
+                ExitPoint = GetRandomPointOnArc();
                 attempt++;
             }
-            while (Vector3.Distance(_entryPoint, _exitPoint) < _minEntryExitDistance && attempt < maxTries);
-
-            _hasGeneratedPoints = true;
-        }
-
-        private Vector3 GetRandomPointOnArc()
-        {
-            float halfArc = arcAngle * 0.5f;
-            float randomAngle = Random.Range(-halfArc, halfArc);
-            float finalAngle = startingAngle + randomAngle;
-
-            Vector3 dir = Quaternion.Euler(0f, finalAngle, 0f) * Vector3.forward;
-            return _centerTransform.position + dir * _radiusForPointGeneration;
+            while (Vector3.Distance(EntryPoint, ExitPoint) < minEntryExitDistance && attempt < maxTries);
         }
 
         public (Vector3 entry, Vector3 exit) GetEntryExitPoints()
         {
-            if (!_hasGeneratedPoints)
-                GenerateNewEntryExitPoints();
-
-            return (_entryPoint, _exitPoint);
+            return (EntryPoint, ExitPoint);
         }
 
-        public void GeneratePathPoints()
+        public List<Vector3> GeneratePath(Vector3 start, Vector3 end)
         {
-            pathPoints.Clear();
-
-            if (useBezier)
-            {
-                Vector3 control = _centerTransform.position + Random.insideUnitSphere * pathRandomness;
-                for (int i = 0; i <= numberOfPoints; i++)
-                {
-                    float t = i / (float)numberOfPoints;
-                    Vector3 point = Mathf.Pow(1 - t, 2) * _entryPoint +
-                                    2 * (1 - t) * t * control +
-                                    Mathf.Pow(t, 2) * _exitPoint;
-                    pathPoints.Add(TryRelocatePoint(point));
-                }
-            }
-            else
-            {
-                for (int i = 0; i <= numberOfPoints; i++)
-                {
-                    float t = i / (float)numberOfPoints;
-                    Vector3 linear = Vector3.Lerp(_entryPoint, _exitPoint, t);
-                    Vector3 randomOffset = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)) * pathRandomness;
-                    Vector3 offsetPoint = linear + randomOffset;
-                    pathPoints.Add(TryRelocatePoint(offsetPoint));
-                }
-            }
+            return useBezier
+                ? GetBezierPath(start, end, numberOfPoints, pathRandomness)
+                : GetLinearPath(start, end, numberOfPoints, pathRandomness);
         }
 
-        private Vector3 TryRelocatePoint(Vector3 original)
+        public Vector3 GetRandomPointOnArc()
+        {
+            float halfArc = arcAngle * 0.5f;
+            float angle = startingAngle + Random.Range(-halfArc, halfArc);
+            Vector3 direction = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+            return CenterPoint + direction * radius;
+        }
+
+        #endregion
+
+        #region Path Algorithms
+
+        private List<Vector3> GetLinearPath(Vector3 start, Vector3 end, int count, float randomness)
+        {
+            var points = new List<Vector3>();
+            for (int i = 0; i <= count; i++)
+            {
+                float t = i / (float)count;
+                Vector3 basePoint = Vector3.Lerp(start, end, t);
+                Vector3 offset = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)) * randomness;
+                points.Add(ValidatePoint(basePoint + offset));
+            }
+            return points;
+        }
+
+        private List<Vector3> GetBezierPath(Vector3 start, Vector3 end, int count, float randomness)
+        {
+            var points = new List<Vector3>();
+            Vector3 control = CenterPoint + Random.insideUnitSphere * randomness;
+            for (int i = 0; i <= count; i++)
+            {
+                float t = i / (float)count;
+                Vector3 point =
+                    Mathf.Pow(1 - t, 2) * start +
+                    2 * (1 - t) * t * control +
+                    Mathf.Pow(t, 2) * end;
+                points.Add(ValidatePoint(point));
+            }
+            return points;
+        }
+
+        #endregion
+
+        #region Validation & Utilities
+
+        public Vector3 ValidatePoint(Vector3 point)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -118,56 +121,92 @@ namespace LightHouse.Game.WaterExtension
                     0,
                     Random.Range(-2f, 2f)
                 );
-                Vector3 candidate = original + offset;
-                if (!IsPointObstructed(candidate))
+                Vector3 candidate = point + offset;
+                if (!Physics.CheckSphere(candidate, pointCheckRadius, obstacleMask))
                     return candidate;
             }
-            return original;
+            return point; // fallback
         }
 
-        private bool IsPointObstructed(Vector3 point)
-        {
-            return Physics.CheckSphere(point, pointCheckRadius, obstacleMask);
-        }
+        #endregion
+
+        #region Debug
 
         private void OnDrawGizmos()
         {
-            if (!_enableDebug || _centerTransform == null) return;
+            if (!enableDebug || CenterPoint == null) return;
 
-            Vector3 center = _centerTransform.position;
+            Vector3 centerPos = CenterPoint;
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(center, _radiusForPointGeneration);
+            Gizmos.DrawWireSphere(centerPos, radius);
 
+            // Arc
             Gizmos.color = Color.white;
             int segments = 64;
             float halfArc = arcAngle * 0.5f;
             float angleStep = arcAngle / segments;
 
-            Vector3 prev = center + Quaternion.Euler(0, startingAngle - halfArc, 0) * Vector3.forward * _radiusForPointGeneration;
+            Vector3 prev = centerPos + Quaternion.Euler(0, startingAngle - halfArc, 0) * Vector3.forward * radius;
             for (int i = 1; i <= segments; i++)
             {
                 float angle = startingAngle - halfArc + i * angleStep;
-                Vector3 next = center + Quaternion.Euler(0, angle, 0) * Vector3.forward * _radiusForPointGeneration;
+                Vector3 next = centerPos + Quaternion.Euler(0, angle, 0) * Vector3.forward * radius;
                 Gizmos.DrawLine(prev, next);
                 prev = next;
             }
 
+            // Entry / Exit
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(_entryPoint, 1.5f);
+            Gizmos.DrawSphere(EntryPoint, 1.5f);
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(_exitPoint, 1.5f);
-            Gizmos.DrawLine(_entryPoint, _exitPoint);
+            Gizmos.DrawSphere(ExitPoint, 1.5f);
+            Gizmos.DrawLine(EntryPoint, ExitPoint);
 
-            if (pathPoints.Count > 1)
+            // Path
+            if (PathPoints.Count > 1)
             {
                 Gizmos.color = Color.blue;
-                for (int i = 0; i < pathPoints.Count - 1; i++)
+                for (int i = 0; i < PathPoints.Count - 1; i++)
                 {
-                    Gizmos.DrawLine(pathPoints[i], pathPoints[i + 1]);
-                    Gizmos.DrawSphere(pathPoints[i], 0.5f);
+                    Gizmos.DrawLine(PathPoints[i], PathPoints[i + 1]);
+                    Gizmos.DrawSphere(PathPoints[i], 0.5f);
                 }
-                Gizmos.DrawSphere(pathPoints[pathPoints.Count - 1], 0.5f);
+                Gizmos.DrawSphere(PathPoints[^1], 0.5f);
             }
         }
+
+        #endregion
+
+        /// <summary>
+        /// Calcule la progression du bateau entre EntryPoint et ExitPoint (0 = début, 1 = arrivé).
+        /// </summary>
+        public float GetProgress01(Vector3 currentPosition)
+        {
+            Vector3 path = ExitPoint - EntryPoint;
+            Vector3 toCurrent = currentPosition - EntryPoint;
+
+            if (path.sqrMagnitude < 0.01f)
+                return 0f;
+
+            float t = Vector3.Dot(toCurrent, path.normalized) / path.magnitude;
+            return Mathf.Clamp01(t);
+        }
+
+
+        private Vector3 ProjectPointOnSegment(Vector3 a, Vector3 b, Vector3 p)
+        {
+            Vector3 ab = b - a;
+            float t = Vector3.Dot(p - a, ab) / ab.sqrMagnitude;
+            return a + Mathf.Clamp01(t) * ab;
+        }
+
+        private bool IsPointOnSegment(Vector3 a, Vector3 b, Vector3 p)
+        {
+            float d1 = Vector3.Distance(a, p);
+            float d2 = Vector3.Distance(p, b);
+            float dTotal = Vector3.Distance(a, b);
+            return Mathf.Abs((d1 + d2) - dTotal) < 0.1f;
+        }
+
     }
 }

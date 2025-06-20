@@ -8,10 +8,10 @@ public class RandomPointOnWaterSurfaceEditor : Editor
     private void OnSceneGUI()
     {
         RandomPointOnWaterSurface r = (RandomPointOnWaterSurface)target;
-        if (r == null || !r.enabled || r._centerTransform == null) return;
+        if (r == null || !r.enabled || r.CenterPoint == null) return;
 
-        Vector3 center = r._centerTransform.position;
-        float radius = r._radiusForPointGeneration;
+        Vector3 center = r.CenterPoint;
+        float radius = r.radius;
         float arc = r.arcAngle;
         float startAngle = r.startingAngle;
 
@@ -25,16 +25,16 @@ public class RandomPointOnWaterSurfaceEditor : Editor
         Handles.DrawWireArc(center, Vector3.up, Quaternion.Euler(0, start, 0) * Vector3.forward, arc, radius);
 
         // Directions
-        Vector3 dirEntry = (r._entryPoint - center).normalized;
-        Vector3 dirExit = (r._exitPoint - center).normalized;
+        Vector3 dirEntry = (r.EntryPoint - center).normalized;
+        Vector3 dirExit = (r.ExitPoint - center).normalized;
 
         Handles.color = Color.green;
-        Handles.DrawLine(center, r._entryPoint);
-        Handles.SphereHandleCap(0, r._entryPoint, Quaternion.identity, 1.5f, EventType.Repaint);
+        Handles.DrawLine(center, r.EntryPoint);
+        Handles.SphereHandleCap(0, r.EntryPoint, Quaternion.identity, 1.5f, EventType.Repaint);
 
         Handles.color = Color.red;
-        Handles.DrawLine(center, r._exitPoint);
-        Handles.SphereHandleCap(0, r._exitPoint, Quaternion.identity, 1.5f, EventType.Repaint);
+        Handles.DrawLine(center, r.ExitPoint);
+        Handles.SphereHandleCap(0, r.ExitPoint, Quaternion.identity, 1.5f, EventType.Repaint);
 
         // Direction centrale
         Handles.color = Color.yellow;

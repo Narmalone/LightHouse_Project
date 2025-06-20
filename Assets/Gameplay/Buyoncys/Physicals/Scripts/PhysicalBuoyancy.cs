@@ -18,8 +18,18 @@ namespace LightHouse.Game.WaterExtension
         private WaterSearchParameters _waterSearchParams;
         private WaterSearchResult _waterSearchResult;
 
+        private void Start()
+        {
+            if(_water == null)
+            {
+                _water = GameWorldHandlerData.MainOceanSurface;
+            }
+        }
+
         private void FixedUpdate()
         {
+            if (_water == null) return;
+
             // Gravit�
             _rb.AddForceAtPosition(Physics.gravity / 4f, transform.position, ForceMode.Acceleration);
 
