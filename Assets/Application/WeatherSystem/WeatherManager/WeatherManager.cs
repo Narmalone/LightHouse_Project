@@ -60,6 +60,7 @@ namespace LightHouse.Weather
             float localTime = currentGameSeconds - fromWeather.StartTimeInSeconds;
             float t = Mathf.Clamp01(localTime / fromWeather.DurationInSeconds);
             CurrentWeather = WeatherUtils.LerpWeatherData(fromWeather, toWeather, t);
+            WeatherHandlerData.SetCurrentWeatherDatas(CurrentWeather);
         }
     }
 }

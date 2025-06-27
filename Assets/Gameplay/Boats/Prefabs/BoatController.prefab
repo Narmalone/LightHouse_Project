@@ -32,7 +32,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1141165599980865478}
   - {fileID: 1717375047506425007}
   - {fileID: 9206914827138963819}
   m_Father: {fileID: 0}
@@ -49,9 +48,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b3c3a33661cd6d4d81a4e9bda0afb8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rb: {fileID: 6924849749339475232}
   _boatsManager: {fileID: 11400000, guid: 58a894bbfbbedb3469b8980a53871cf7, type: 2}
   _data:
     Name: 
+  _randomPointController: {fileID: 11400000, guid: 839a28127a1206e44b247a971794f7c2,
+    type: 2}
+  _controller: {fileID: 600614590147420919}
   _anomalyController: {fileID: -4446188357636996726}
 --- !u!114 &-4446188357636996726
 MonoBehaviour:
@@ -83,7 +86,6 @@ MonoBehaviour:
   - {fileID: 8550759235978611720}
   - {fileID: 5438875225122397157}
   - {fileID: 2251138063874810858}
-  _randomPointOnWaterSurface: {fileID: 441299696797489726}
   _moveSpeed: 5
   _turnSpeed: 30
   _obstacleMask:
@@ -95,6 +97,8 @@ MonoBehaviour:
   _boxCastHeight: 50
   _avoidanceAngleIncrement: 20
   _maxAvoidanceChecks: 8
+  _progress: 0
+  _pathPointThreshold: 5
 --- !u!1 &5553667284273141739
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,63 +131,6 @@ Transform:
   - {fileID: 5758349129261765603}
   m_Father: {fileID: 5866494404175411966}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5646394213967566196
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1141165599980865478}
-  - component: {fileID: 441299696797489726}
-  m_Layer: 0
-  m_Name: RandomTest
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1141165599980865478
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5646394213967566196}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5866494404175411966}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &441299696797489726
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5646394213967566196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16cdcd7cf4a53ae46af79d48796405fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 1000
-  CenterPoint: {x: 0, y: 0, z: 0}
-  arcAngle: 180
-  startingAngle: 0
-  numberOfPoints: 10
-  useBezier: 0
-  pathRandomness: 50
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 1
-  pointCheckRadius: 2
-  minEntryExitDistance: 1200
-  enableDebug: 1
 --- !u!1 &5811682788690620323
 GameObject:
   m_ObjectHideFlags: 0

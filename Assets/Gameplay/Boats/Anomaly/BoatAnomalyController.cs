@@ -1,21 +1,19 @@
 using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
 
 public class BoatAnomalyController : MonoBehaviour
 {
     private List<BoatAnomaly> activeAnomalies = new();
+    [SerializeField] private float _minAnomalyProgress = 0.1f;
+    [SerializeField] private float _maxAnomalyProgress = 0.5f;
 
     public void AddAnomaly(BoatAnomaly anomalyPrefab)
     {
-        BoatAnomaly anomaly = Instantiate(anomalyPrefab, transform);
-        anomaly.Initialize(GetComponent<Boat>());
-        activeAnomalies.Add(anomaly);
+        activeAnomalies.Add(anomalyPrefab);
     }
 
     public void RemoveAnomaly(BoatAnomaly anomaly)
     {
-        anomaly.Resolve(GetComponent<Boat>());
         activeAnomalies.Remove(anomaly);
         Destroy(anomaly);
     }
