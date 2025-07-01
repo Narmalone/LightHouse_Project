@@ -216,12 +216,6 @@ Transform:
   - {fileID: 823377718}
   m_Father: {fileID: 373774867}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &92675097 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8121729233430920544, guid: 7f5044dbb210b124d8407f6a62907085,
-    type: 3}
-  m_PrefabInstance: {fileID: 6438859476369368601}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &98467103
 GameObject:
   m_ObjectHideFlags: 0
@@ -2288,7 +2282,7 @@ MonoBehaviour:
   m_Entries:
   - id: 0
     category: 0
-    gameObject: {fileID: 92675097}
+    gameObject: {fileID: 0}
 --- !u!4 &1047381855
 Transform:
   m_ObjectHideFlags: 19
@@ -4186,6 +4180,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 479686033230738422, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: currentTime
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6853006418761821015, guid: 7f5044dbb210b124d8407f6a62907085,
         type: 3}
       propertyPath: m_Name
@@ -4241,6 +4240,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8527520273938784926, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: dayProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: f8d0d68806fc50740bbcca6ca5d36258,
+        type: 2}
+    - target: {fileID: 8527520273938784926, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: nightProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: 5ff823fea43afe1468d8e409bf301a6d,
+        type: 2}
+    - target: {fileID: 8527520273938784926, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: eveningProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: aea0a580b36edaf45aeafe8e57f6a21e,
+        type: 2}
+    - target: {fileID: 8527520273938784926, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: morningProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: 93e47234f4a530e4aad8a77e523e5909,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
