@@ -5,8 +5,8 @@ using UnityEngine.Rendering.HighDefinition;
 
 public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
 {
-    public Light sunLight;
-    public Light moonLight;
+    public SunController Sun;
+    public MoonController Moon;
     public Volume globalVolume;
 
     [Header("Profils")]
@@ -31,7 +31,7 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
 
     public Light GetMainLight()
     {
-        return TimeHandlerData.TimeOfDay == TimeOfDaySegment.Morning || TimeHandlerData.TimeOfDay == TimeOfDaySegment.Midday ? sunLight : moonLight;
+        return TimeHandlerData.TimeOfDay == TimeOfDaySegment.Morning || TimeHandlerData.TimeOfDay == TimeOfDaySegment.Midday ? Sun.sunLight : Moon.moonLight;
     }
 
     public void OnTimeChanged(float timeOfDay)
@@ -84,9 +84,11 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
     private void ApplyInterpolatedProfile(LightingProfile a, LightingProfile b, float t)
     {
         // --- LIGHT ---
-        sunLight.color = Color.Lerp(a.sunColor, b.sunColor, t);
-        sunLight.intensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, t);
-        sunLight.colorTemperature = Mathf.Lerp(a.temperature, b.temperature, t);
+        Sun.sunLight.color = Color.Lerp(a.sunColor, b.sunColor, t);
+        Sun.sunLight.intensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, t);
+        Sun.sunLight.colorTemperature = Mathf.Lerp(a.temperature, b.temperature, t);
+        Sun.Lens.intensity = Mathf.Lerp(a.FlareIntensity, b.FlareIntensity, t);
+        Sun.Lens.scale = Mathf.Lerp(a.FlareScale, b.FlareScale, t);
 
         // --- RENDER SETTINGS ---
         //RenderSettings.ambientLight = Color.Lerp(a.ambientColor, b.ambientColor, t);

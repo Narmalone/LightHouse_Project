@@ -9,6 +9,10 @@ public class LightingProfile : ScriptableObject
     public float sunIntensity = 5000f;
     public float temperature = 6500f;
 
+    [Header("--- SUN FLARE ---")]
+    public float FlareIntensity = 2.0f;
+    public float FlareScale = 1.0f;
+
     [Header("--- PHYSICALLY BASED SKY ---")]
     public Color GroundTint;
 

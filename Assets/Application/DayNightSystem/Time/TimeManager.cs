@@ -18,7 +18,7 @@ namespace LightHouse.Game.DayNightSystem
         [Range(0f, 24f)]
         public float currentTime = 6f; // Heure initiale
         public byte currentDay = 0;
-        public TimeOfDaySegment CurrentSegment { get; private set; }
+        [field: SerializeField] public TimeOfDaySegment CurrentSegment { get; private set; }
         public static event Action<TimeOfDaySegment> OnTimeSegmentChanged;
 
         private TimeOfDaySegment lastSegment;
