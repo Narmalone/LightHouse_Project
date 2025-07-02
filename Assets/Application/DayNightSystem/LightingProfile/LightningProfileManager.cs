@@ -20,13 +20,37 @@ public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
     private PhysicallyBasedSky sky;
     private ColorAdjustments colorAdjustments;
 
+    private void Awake()
+    {
+        Sun.OnSunLightToggled += Sun_OnSunLightToggled;
+    }
+
     private void Start()
     {
-        FindFirstObjectByType<TimeManager>().RegisterObserver(this);
+        var timemanager = FindFirstObjectByType<TimeManager>();
+        timemanager.RegisterObserver(this);
 
         globalVolume.profile.TryGet(out fog);
         globalVolume.profile.TryGet(out exposure);
         globalVolume.profile.TryGet(out sky);
+    }
+
+    private void OnDestroy()
+    {
+        Sun.OnSunLightToggled -= Sun_OnSunLightToggled;
+    }
+
+    private void Sun_OnSunLightToggled(bool obj)
+    {
+        Debug.Log("cc");
+        if(obj == false)
+        {
+            Moon.moonLight.shadows = LightShadows.Soft;
+        }
+        else
+        {
+            Moon.moonLight.shadows = LightShadows.None;
+        }
     }
 
     public Light GetMainLight()
