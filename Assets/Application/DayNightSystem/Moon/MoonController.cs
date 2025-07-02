@@ -30,7 +30,7 @@ namespace LightHouse.Game.DayNightSystem
 
         private void HandleSegmentChanged(TimeOfDaySegment segment)
         {
-            moonLight.enabled = timeManager.currentTime >= 18f || timeManager.currentTime <= 6f;
+            moonLight.enabled = timeManager.currentTime >= fadeInStart || timeManager.currentTime <= fadeOutEnd;
             if (segment == TimeOfDaySegment.Midday)
             {
                 UpdateMoonRotation();
