@@ -41,12 +41,12 @@ public class BoatsManager : MonoBehaviour
 
     private void OnEnable()
     {
-        TimeManager.OnTimeSegmentChanged += HandleTimeSegmentChange;
+        TimeHandlerData.OnTimeSegmentChanged += HandleTimeSegmentChange;
     }
 
     private void OnDisable()
     {
-        TimeManager.OnTimeSegmentChanged -= HandleTimeSegmentChange;
+        TimeHandlerData.OnTimeSegmentChanged -= HandleTimeSegmentChange;
     }
 
     private void Start()

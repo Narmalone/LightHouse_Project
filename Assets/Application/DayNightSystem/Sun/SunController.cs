@@ -1,44 +1,88 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 using System;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace LightHouse.Game.DayNightSystem
 {
     public class SunController : MonoBehaviour, ITimeCycleObserver
     {
-        public Light sunLight;
-        public LensFlareComponentSRP Lens;
+        #region Inspector
+
+        [Header("References")]
+        [SerializeField] private Light _sunLight;
+        [SerializeField] private LensFlareComponentSRP _lens;
+        [SerializeField] private HDAdditionalLightData _lightData;
+
+        [Header("Sun Rotation")]
         [Tooltip("Angle de rotation du soleil à midi (vertical)")]
-        public Vector3 noonDirection = new Vector3(50f, 0f, 0f);
+        [SerializeField] private Vector3 _noonDirection = new Vector3(50f, 0f, 0f);
 
-        public event Action<bool> OnSunLightToggled; // Événement lancé quand sunLight.enabled change
+        #endregion
 
-        private bool previousSunState;
+        #region Events
+
+        /// <summary>
+        /// Appelé quand l'état actif du soleil change (enabled/disabled).
+        /// </summary>
+        public event Action<bool> OnSunLightToggled;
+
+        #endregion
+
+        #region Private
+
+        private bool _previousSunState;
+
+        #endregion
+
+        #region Properties
+
+        public Light SunLight => _sunLight;
+        public LensFlareComponentSRP Lens => _lens;
+        public HDAdditionalLightData LightData => _lightData;
+
+        #endregion
+
+        #region Unity Callbacks
+
+        private void Start()
+        {
+            _previousSunState = _sunLight.enabled;
+            OnSunLightToggled?.Invoke(_previousSunState);
+        }
+
+        #endregion
+
+        #region Time Cycle
+
+        public void RegisterToTimeManager(TimeManager timeManager)
+        {
+            timeManager.RegisterObserver(this);
+        }
+
+        public void UnregisterFromTimeManager(TimeManager timeManager)
+        {
+            timeManager.RegisterObserver(this);
+        }
 
         public void OnTimeChanged(float timeOfDay)
         {
             float normalizedTime = timeOfDay / 24f;
             float sunAngle = normalizedTime * 360f - 90f;
-            sunLight.transform.rotation = Quaternion.Euler(sunAngle, noonDirection.y, noonDirection.z);
+            _sunLight.transform.rotation = Quaternion.Euler(sunAngle, _noonDirection.y, _noonDirection.z);
 
-            bool newSunState = timeOfDay > 6 && timeOfDay < 18;
+            bool newSunState = timeOfDay > 6f && timeOfDay < 18f;
 
-            if (newSunState != previousSunState)
+            if (newSunState != _previousSunState)
             {
-                OnSunLightToggled?.Invoke(newSunState); //Lancer l'événement
-                previousSunState = newSunState;
+                OnSunLightToggled?.Invoke(newSunState);
+                _previousSunState = newSunState;
             }
 
-            sunLight.enabled = newSunState;
-            Lens.enabled = newSunState;
+            _sunLight.enabled = newSunState;
+            _lens.enabled = newSunState;
         }
 
-        private void Start()
-        {
-            FindFirstObjectByType<TimeManager>().RegisterObserver(this);
-            previousSunState = sunLight.enabled;
-            OnSunLightToggled?.Invoke(previousSunState);
-            Debug.Log(previousSunState);
-        }
+        #endregion
     }
 }

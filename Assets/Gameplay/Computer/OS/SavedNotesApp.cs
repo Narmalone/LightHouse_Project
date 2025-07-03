@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class SavedNotesApp : ComputerApp
 {
+
     public override void OnClose()
     {
         throw new System.NotImplementedException();

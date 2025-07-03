@@ -19,8 +19,6 @@ namespace LightHouse.Game.DayNightSystem
         public float currentTime = 6f; // Heure initiale
         public byte currentDay = 0;
         [field: SerializeField] public TimeOfDaySegment CurrentSegment { get; private set; }
-        public static event Action<TimeOfDaySegment> OnTimeSegmentChanged;
-
         private TimeOfDaySegment lastSegment;
 
         public TimeConfiguration TimeConfig;
@@ -82,7 +80,8 @@ namespace LightHouse.Game.DayNightSystem
             {
                 lastSegment = newSegment;
                 CurrentSegment = newSegment;
-                OnTimeSegmentChanged?.Invoke(newSegment);
+                TimeHandlerData.TimeOfDay = newSegment;
+                TimeHandlerData.OnTimeSegmentChanged?.Invoke(newSegment);
             }
         }
 
