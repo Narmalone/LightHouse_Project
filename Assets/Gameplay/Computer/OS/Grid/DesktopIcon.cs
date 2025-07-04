@@ -6,7 +6,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CanvasGroup))]
 public class DesktopIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    public int gridIndex;
     public ComputerApp CurrentApplication;
     public Image Background;
     public Color HoverColor;
@@ -16,15 +15,6 @@ public class DesktopIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private void Awake()
     {
         //CurrentApplication = GetComponentInChildren<ComputerApp>();
-    }
-
-    private void Start()
-    {
-        if(CurrentApplication == null)
-        {
-            this.Hide();
-        }
-
     }
 
     private void OnValidate()
