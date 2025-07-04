@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 4041101702678497821}
   - component: {fileID: 3789446795183008909}
   m_Layer: 5
-  m_Name: DropDownParameter
+  m_Name: EnumParameter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -269,8 +269,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3789446795183008909}
         m_TargetAssemblyTypeName: UpdateState, Assembly-CSharp
-        m_MethodName: Decrement
-        m_Mode: 3
+        m_MethodName: OnClicNegativeButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -402,8 +402,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3789446795183008909}
         m_TargetAssemblyTypeName: UpdateState, Assembly-CSharp
-        m_MethodName: Increment
-        m_Mode: 3
+        m_MethodName: OnClicPositiveButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
