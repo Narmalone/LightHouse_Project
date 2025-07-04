@@ -2,7 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class UpdateState : MonoBehaviour
+public class EnumParameter : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI DisplayText;
     [SerializeField] private int Index;

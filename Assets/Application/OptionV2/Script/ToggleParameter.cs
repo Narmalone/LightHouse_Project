@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BoolParameter : MonoBehaviour
+public class ToggleParameter : MonoBehaviour
 {
     [SerializeField] private Button TrueButton;
     [SerializeField] private Button FalseButton;
