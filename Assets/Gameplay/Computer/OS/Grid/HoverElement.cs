@@ -1,22 +1,26 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class HoverElement : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
-    public bool IsSelected;
+    [SerializeField] private bool _isSelected;
+    [SerializeField] private Image _targetGraphic;
+    [SerializeField] private Color _hoverColor;
+    [SerializeField] private Color _stopHoveringColor;
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        IsSelected = !IsSelected;
+        _isSelected = !_isSelected;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("hovering");
+        _targetGraphic.color = _hoverColor;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("not hovering");
+        _targetGraphic.color = _stopHoveringColor;
     }
 }

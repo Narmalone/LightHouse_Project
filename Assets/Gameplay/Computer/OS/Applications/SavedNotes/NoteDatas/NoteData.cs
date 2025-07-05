@@ -1,6 +1,7 @@
 [System.Serializable]
 public class NoteData
 {
+    public string ID;
     public string Title;
     public string Content;
 
@@ -8,5 +9,6 @@ public class NoteData
     {
         Title = title;
         Content = content;
+        ID = System.Guid.NewGuid().ToString();
     }
 }

@@ -15,9 +15,12 @@ public abstract class ComputerApp : MonoBehaviour
 {
     public E_ComputerAppState State;
     [field: SerializeField] public string AppName { get; protected set; }
-    [field: SerializeField] public TextMeshProUGUI AppText { get; protected set; }
     [SerializeField] protected Button _closeButton;
+    [SerializeField] private RectTransform _rectTransform;
     public bool IsMinimized { get; private set; }
+
+    public OS _os;
+    public RectTransform RectTransform => _rectTransform;
     public abstract void OnOpen();
     public abstract void OnClose();
     public abstract void OnMinimize();
@@ -30,6 +33,11 @@ public abstract class ComputerApp : MonoBehaviour
     protected virtual void OnDestroy()
     {
         _closeButton.onClick.RemoveListener(OnClose);
+    }
+
+    public virtual void Initialize(OS os)
+    {
+        _os = os;
     }
 
     public void ToggleMinimize()

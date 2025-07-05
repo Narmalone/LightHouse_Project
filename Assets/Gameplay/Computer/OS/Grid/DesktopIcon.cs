@@ -40,13 +40,11 @@ public class DesktopIcon : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public void OnPointerEnter(PointerEventData eventData)
     {
         Background.color = HoverColor;
-        Debug.Log("enter");
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         Background.color = new Color(1,1,1,0);
-        Debug.Log("exit");
     }
 
     public void OnPointerClick(PointerEventData eventData)

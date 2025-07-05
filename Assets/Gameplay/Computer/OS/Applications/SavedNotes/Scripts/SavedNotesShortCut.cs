@@ -1,6 +1,7 @@
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SavedNotesShortCut : ShortCutController
+namespace LightHouse.Game.Computer.NoteSystem
 {
+    public class SavedNotesShortCut : ShortCutController
+    {
+
+    }
 }
