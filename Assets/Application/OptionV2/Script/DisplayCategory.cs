@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class DisplaySubCategory : MonoBehaviour
+public class DisplayCategory : MonoBehaviour
 {
     // Référence aux catégories à afficher/masquer
-    [SerializeField]private SubCategory[] _subCategories;
+    private Category[] _categories;
 
     void Start()
     {
@@ -16,33 +16,34 @@ public class DisplaySubCategory : MonoBehaviour
     void AddCategory()
     {
         // Si le tableau est vide, on le remplit automatiquement avec les enfants
-        if (_subCategories == null || _subCategories.Length == 0)
+        if (_categories == null || _categories.Length == 0)
         {
             // inclut les objets inactifs
-            _subCategories = GetComponentsInChildren<SubCategory>(true);
+            _categories = GetComponentsInChildren<Category>(true);
         }
     }
 
     // Méthodes appelées quand on clique sur un bouton correspondant à une sous-catégorie
-    public void OnClicFirstSubCategory() => ShowCategory(0);
-    public void OnClicSecondSubCategory() => ShowCategory(1);
-    public void OnClicThirdSubCategory() => ShowCategory(2);
+    public void OnClicGameplay() => ShowCategory(0);
+    public void OnClicControls() => ShowCategory(1);
+    public void OnClicVideo() => ShowCategory(2);
+    public void OnClicSound() => ShowCategory(3);
 
     // Affiche la sous-catégorie spécifiée et masque toutes les autres
     void ShowCategory(int indexToShow)
     {
-        for (int i = 0; i < _subCategories.Length; i++)
+        for (int i = 0; i < _categories.Length; i++)
         {
             // Vérifie que l'élément n'est pas null
-            if (_subCategories[i] != null && i == indexToShow)
+            if (_categories[i] != null && i == indexToShow)
             {      
                 // Affiche la sous-catégorie sélectionnée
-                _subCategories[i].Show();
+                _categories[i].Show();
             }
             else
             {
                 // Masque les autres
-                _subCategories[i].Hide();
+                _categories[i].Hide();
             }
         }
     }

@@ -2,12 +2,12 @@ using UnityEngine;
 
 interface IDisplayable
 {
-    public void ShowSubCategory()
+    public void Show()
     {
 
     }
 
-    public void HideSubCategory()
+    public void Hide()
     {
 
     }

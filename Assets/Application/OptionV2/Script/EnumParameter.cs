@@ -5,13 +5,13 @@ using UnityEngine;
 public class EnumParameter : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI DisplayText;
-    [SerializeField] private int Index;
-    [SerializeField] private Quality CurrentQuality;
+    private int _index;
+    private Quality _currentQuality;
 
     void Start()
     {
         // Initialise Index avec l'enum
-        Index = (int)CurrentQuality;
+        _index = (int)_currentQuality;
         SetDisplayText();
     }
 
@@ -30,13 +30,13 @@ public class EnumParameter : MonoBehaviour
     private void Increment(int minValue, int maxValue)
     {
         // increment index
-        Index++;
+        _index++;
 
         // établi des limites à l'index
-        Index = Mathf.Clamp(Index, minValue, maxValue);
+        _index = Mathf.Clamp(_index, minValue, maxValue);
 
         // lie CurrentQuality à Index
-        CurrentQuality = (Quality)Index;
+        _currentQuality = (Quality)_index;
 
         SetDisplayText();
     }
@@ -44,20 +44,20 @@ public class EnumParameter : MonoBehaviour
     private void Decrement(int minValue, int maxValue)
     {
         // décrement index
-        Index--;
+        _index--;
 
         // établi des limites à l'index
-        Index = Mathf.Clamp(Index, minValue, maxValue);
+        _index = Mathf.Clamp(_index, minValue, maxValue);
 
         // lie CurrentQuality à Index
-        CurrentQuality = (Quality)Index;
+        _currentQuality = (Quality)_index;
 
         SetDisplayText();
     }
 
     private void SetDisplayText()
     {
-        DisplayText.text = CurrentQuality switch
+        DisplayText.text = _currentQuality switch
         {
             Quality.Low => "Low",
             Quality.Medium => "Medium",
