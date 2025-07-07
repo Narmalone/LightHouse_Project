@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnumParameter : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI DisplayText;
+    [SerializeField] private TextMeshProUGUI _displayText;
     private int _index;
     private Quality _currentQuality;
 
@@ -57,7 +57,7 @@ public class EnumParameter : MonoBehaviour
 
     private void SetDisplayText()
     {
-        DisplayText.text = _currentQuality switch
+        _displayText.text = _currentQuality switch
         {
             Quality.Low => "Low",
             Quality.Medium => "Medium",
