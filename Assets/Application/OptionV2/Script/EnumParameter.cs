@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnumParameter : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _displayText;
+
     private int _index;
     private Quality _currentQuality;
 
