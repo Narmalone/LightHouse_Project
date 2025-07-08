@@ -4,74 +4,41 @@ using UnityEngine;
 
 public class EnumParameter : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _displayText;
+    [SerializeField] private EnumWrapper enumWrapper;
+    [SerializeField] private TextMeshProUGUI displayText;
 
-    private int _index;
-    private Quality _currentQuality;
-
-    void Start()
+    private void Start()
     {
-        // Initialise Index avec l'enum
-        _index = (int)_currentQuality;
-        SetDisplayText();
+        UpdateDisplay();
     }
 
-    // appelée lorsque PositiveButton est cliquer
     public void OnClicPositiveButton()
     {
-        Increment(0, 4);
+        Increment();
     }
 
-    // appelée lorsque NegativeButton est cliquer
     public void OnClicNegativeButton()
     {
-        Decrement(0, 4);
+        Decrement();
     }
 
-    private void Increment(int minValue, int maxValue)
+    void Increment()
     {
-        // increment index
-        _index++;
-
-        // établi des limites à l'index
-        _index = Mathf.Clamp(_index, minValue, maxValue);
-
-        // lie CurrentQuality à Index
-        _currentQuality = (Quality)_index;
-
-        SetDisplayText();
+        int index = Mathf.Clamp(enumWrapper.GetIndex() + 1, 0, enumWrapper.GetCount() - 1);
+        enumWrapper.SetIndex(index);
+        UpdateDisplay();
+    }
+    
+    void Decrement()
+    {
+        int index = Mathf.Clamp(enumWrapper.GetIndex() - 1, 0, enumWrapper.GetCount() - 1);
+        enumWrapper.SetIndex(index);
+        UpdateDisplay();
     }
 
-    private void Decrement(int minValue, int maxValue)
+    private void UpdateDisplay()
     {
-        // décrement index
-        _index--;
-
-        // établi des limites à l'index
-        _index = Mathf.Clamp(_index, minValue, maxValue);
-
-        // lie CurrentQuality à Index
-        _currentQuality = (Quality)_index;
-
-        SetDisplayText();
-    }
-
-    private void SetDisplayText()
-    {
-        _displayText.text = _currentQuality switch
-        {
-            Quality.Low => "Low",
-            Quality.Medium => "Medium",
-            Quality.High => "High",
-            Quality.VeryHigh => "Very High",
-            Quality.Epic => "Epic",
-            _ => "Unknown"
-        };
-    }
-
-    enum Quality
-    {
-        Low, Medium, High, VeryHigh, Epic
+        displayText.text = enumWrapper.GetName(enumWrapper.GetIndex());
     }
 }
 
