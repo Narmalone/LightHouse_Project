@@ -2,24 +2,28 @@
 using System.Linq;
 using UnityEngine;
 
-public class OS : TabCanvas
+namespace LightHouse.Game.Computer.OS
 {
-    public List<ComputerApp> apps = new List<ComputerApp>();
-    public List<ShortCutController> ShortCuts = new List<ShortCutController>();
-    [SerializeField] private RectTransform _runningAppsParent;
-
-    public RectTransform RunningAppParent => _runningAppsParent;
-
-    private void OnValidate()
+    public class OS : TabCanvas
     {
-        ShortCuts = GetComponentsInChildren<ShortCutController>().ToList();
-    }
+        public List<ComputerApp> apps = new List<ComputerApp>();
+        public List<ShortCutController> ShortCuts = new List<ShortCutController>();
+        [SerializeField] private RectTransform _runningAppsParent;
 
-    private void Awake()
-    {
-        foreach (var shortcut in ShortCuts) 
+        public RectTransform RunningAppParent => _runningAppsParent;
+
+        private void OnValidate()
         {
-            shortcut.Initialize(this);
+            ShortCuts = GetComponentsInChildren<ShortCutController>().ToList();
+        }
+
+        private void Awake()
+        {
+            foreach (var shortcut in ShortCuts)
+            {
+                shortcut.Initialize(this);
+            }
         }
     }
+
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using LightHouse.Game.DayNightSystem;
+using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
 namespace LightHouse.Weather.Ocean

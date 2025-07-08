@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 
 namespace LightHouse.Game.DayNightSystem
 {
@@ -17,16 +16,13 @@ namespace LightHouse.Game.DayNightSystem
     {
         [Range(0f, 24f)]
         public float currentTime = 6f; // Heure initiale
-        public byte currentDay = 0;
+        public byte currentDay = 1;
         [field: SerializeField] public TimeOfDaySegment CurrentSegment { get; private set; }
         private TimeOfDaySegment lastSegment;
 
         public TimeConfiguration TimeConfig;
 
         private List<ITimeCycleObserver> observers = new List<ITimeCycleObserver>();
-
-        public static event Action OnTimeReachesEnd;
-        public static event Action<byte> OnDayChanged;
 
         public void RegisterObserver(ITimeCycleObserver observer)
         {
@@ -40,6 +36,12 @@ namespace LightHouse.Game.DayNightSystem
                 observers.Remove(observer);
         }
 
+        private void Awake()
+        {
+            currentDay = 1;
+            TimeHandlerData.CurrentDay = currentDay;
+        }
+
         private void Update()
         {
             float delta = (24f / (TimeConfig.dayLengthInMinits * 60f)) * Time.deltaTime;
@@ -51,11 +53,11 @@ namespace LightHouse.Game.DayNightSystem
                 currentTime %= 24f;
                 currentDay++;
                 TimeHandlerData.CurrentDay = currentDay;
-                OnDayChanged?.Invoke(currentDay);
+                TimeHandlerData.OnDayChanged?.Invoke(currentDay);
 
                 if (currentDay >= TimeConfig.TotalDays)
                 {
-                    OnTimeReachesEnd?.Invoke();
+                    TimeHandlerData.OnTimeReachesEnd?.Invoke();
                 }
             }
 

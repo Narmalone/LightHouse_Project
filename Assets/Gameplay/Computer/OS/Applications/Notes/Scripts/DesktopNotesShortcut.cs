@@ -1,3 +1,4 @@
+using LightHouse.Game.DayNightSystem;
 using UnityEngine;
 
 namespace LightHouse.Game.Computer.NoteSystem
