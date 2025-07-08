@@ -4,41 +4,34 @@ using UnityEngine;
 
 public class EnumParameter : MonoBehaviour
 {
-    [SerializeField] private EnumWrapper enumWrapper;
-    [SerializeField] private TextMeshProUGUI displayText;
+    [SerializeField] private EnumWrapper _enumWrapper;
+    [SerializeField] private TextMeshProUGUI _displayText;
 
     private void Start()
     {
         UpdateDisplay();
     }
 
-    public void OnClicPositiveButton()
-    {
-        Increment();
-    }
-
-    public void OnClicNegativeButton()
-    {
-        Decrement();
-    }
+    public void OnClicPositiveButton() => Increment();
+    public void OnClicNegativeButton() => Decrement();
 
     void Increment()
     {
-        int index = Mathf.Clamp(enumWrapper.GetIndex() + 1, 0, enumWrapper.GetCount() - 1);
-        enumWrapper.SetIndex(index);
+        int index = Mathf.Clamp(_enumWrapper.GetIndex() + 1, 0, _enumWrapper.GetCount() - 1);
+        _enumWrapper.SetIndex(index);
         UpdateDisplay();
     }
     
     void Decrement()
     {
-        int index = Mathf.Clamp(enumWrapper.GetIndex() - 1, 0, enumWrapper.GetCount() - 1);
-        enumWrapper.SetIndex(index);
+        int index = Mathf.Clamp(_enumWrapper.GetIndex() - 1, 0, _enumWrapper.GetCount() - 1);
+        _enumWrapper.SetIndex(index);
         UpdateDisplay();
     }
 
-    private void UpdateDisplay()
+    void UpdateDisplay()
     {
-        displayText.text = enumWrapper.GetName(enumWrapper.GetIndex());
+        _displayText.text = _enumWrapper.GetName(_enumWrapper.GetIndex());
     }
 }
 

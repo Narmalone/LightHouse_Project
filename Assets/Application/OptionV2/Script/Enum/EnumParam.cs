@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Enum Wrappers/Enum")]
+[CreateAssetMenu(menuName = "Enum Wrappers/Quality")]
 public class EnumParam : EnumWrapper
 {
     public enum Quality { Low, Medium, High, VeryHigh, Epic }
