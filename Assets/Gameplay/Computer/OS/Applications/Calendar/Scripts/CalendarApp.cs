@@ -8,10 +8,13 @@ using UnityEngine.UI;
 namespace LightHouse.Game.Computer.Calendar
 {
     /// <summary>
-    /// Application calendrier affichant le jour et l'heure actuelle au format 12h (AM/PM).
+    /// Application calendrier affichant les événements journaliers
+    /// et l'heure actuelle au format 12h (AM/PM).
     /// </summary>
     public class CalendarApp : ComputerApp
     {
+        #region UI References
+
         [Header("UI References")]
         [SerializeField] private TextMeshProUGUI _dayType;
         [SerializeField] private TextMeshProUGUI _dayTime;
@@ -20,10 +23,17 @@ namespace LightHouse.Game.Computer.Calendar
         [SerializeField] private ClockHandRotator _handRotator;
         [SerializeField] private ColorSettings _basicColors;
 
+        #endregion
+
+        #region Calendar Data
+
         [Header("Calendar Data")]
+        [SerializeField] private CalendarEventDatabase _eventDatabase;
         [SerializeField] private Transform _parentDaysToCheck;
         [SerializeField] private CalendarDayElement[] _calendarDays;
-        [SerializeField] private CalendarEventDatabase _eventDatabase;
+
+        #endregion
+
         #region Unity Lifecycle
 
         protected override void Awake()
@@ -31,10 +41,10 @@ namespace LightHouse.Game.Computer.Calendar
             base.Awake();
             TimeHandlerData.OnDayChanged += OnDayChanged;
 
-            // Enregistrer les listeners une seule fois
+            // Abonnement au clic sur chaque jour
             for (int i = 0; i < _calendarDays.Length; i++)
             {
-                int index = i; // capture locale pour le delegate
+                int index = i; // évite la capture incorrecte dans la closure
                 _calendarDays[i].Button.onClick.AddListener(() => OnClickDay(index));
             }
         }
@@ -42,9 +52,15 @@ namespace LightHouse.Game.Computer.Calendar
         private void Start()
         {
             byte currentDay = TimeHandlerData.CurrentDay;
-            UpdateCurrentDayUI(currentDay); // ✅ car méthode attend un jour (1-based)
-            DistributeStartingEventsToCalendar();
-            ShowDaySummary((byte)TimeUtility.ToIndexFromDay(currentDay));
+
+            UpdateCurrentDayUI(currentDay); // UI sur le jour en cours
+            DistributeStartingEventsToCalendar(); // événements initiaux
+            ShowDaySummary((byte)TimeUtility.ToIndexFromDay(currentDay)); // résumé du jour
+        }
+
+        private void LateUpdate()
+        {
+            SetDayTime(TimeHandlerData.CurrentDay, TimeHandlerData.CurrentTime);
         }
 
         protected override void OnDestroy()
@@ -52,14 +68,14 @@ namespace LightHouse.Game.Computer.Calendar
             base.OnDestroy();
             TimeHandlerData.OnDayChanged -= OnDayChanged;
 
-            // Nettoyage des listeners
+            // Désinscription des clics
             foreach (var day in _calendarDays)
                 day.Button.onClick.RemoveAllListeners();
         }
 
-        private void Update()
+        private void OnValidate()
         {
-            SetDayTime(TimeHandlerData.CurrentDay, TimeHandlerData.CurrentTime);
+            _calendarDays = _parentDaysToCheck.GetComponentsInChildren<CalendarDayElement>();
         }
 
         #endregion
@@ -71,15 +87,15 @@ namespace LightHouse.Game.Computer.Calendar
             int index = TimeUtility.ToIndexFromDay(currentDay);
             if (index >= _calendarDays.Length) return;
 
-            UpdateDathPastUI((byte)currentDay);
-            UpdateCurrentDayUI((byte)currentDay);
+            UpdateDathPastUI(currentDay);
+            UpdateCurrentDayUI(currentDay);
             ShowDaySummary((byte)index);
         }
-
 
         private void UpdateDathPastUI(byte currentDay)
         {
             if (currentDay < 2) return;
+
             var target = _calendarDays[currentDay - 2];
             ApplyColorToDay(target, _basicColors.ScrollbarBorder, _basicColors.IconTint, _basicColors.WindowBorder);
         }
@@ -90,6 +106,9 @@ namespace LightHouse.Game.Computer.Calendar
             ApplyColorToDay(target, _basicColors.ButtonCloseBorder, _basicColors.IconTint, _basicColors.ButtonCloseBorder);
         }
 
+        /// <summary>
+        /// Applique des couleurs personnalisées à un jour du calendrier.
+        /// </summary>
         private void ApplyColorToDay(CalendarDayElement day, Color normal, Color highlight, Color shadow)
         {
             ColorBlock block = day.Button.colors;
@@ -99,6 +118,9 @@ namespace LightHouse.Game.Computer.Calendar
             day.Button.colors = block;
         }
 
+        /// <summary>
+        /// Remplit chaque jour du calendrier avec les événements initiaux.
+        /// </summary>
         private void DistributeStartingEventsToCalendar()
         {
             if (_eventDatabase == null || _calendarDays == null || _calendarDays.Length == 0)
@@ -123,6 +145,9 @@ namespace LightHouse.Game.Computer.Calendar
             }
         }
 
+        /// <summary>
+        /// Affiche un résumé textuel des événements d’un jour donné.
+        /// </summary>
         public void ShowDaySummary(byte dayIndex)
         {
             if (dayIndex >= _calendarDays.Length) return;
@@ -152,11 +177,17 @@ namespace LightHouse.Game.Computer.Calendar
             _daySummary.text = sb.ToString();
         }
 
+        /// <summary>
+        /// Clic sur un jour : affiche le résumé correspondant.
+        /// </summary>
         public void OnClickDay(int dayIndex)
         {
             ShowDaySummary((byte)dayIndex);
         }
 
+        /// <summary>
+        /// Met à jour l'affichage de l'heure dans l'UI.
+        /// </summary>
         public void SetDayTime(byte day, float time)
         {
             _dayTime.text = $"Day {day:D2} - {TimeUtility.FormatTime12h(time)}";
@@ -164,8 +195,19 @@ namespace LightHouse.Game.Computer.Calendar
 
         #endregion
 
-        public override void OnClose() => Destroy(gameObject);
+        #region App Lifecycle Overrides
+
+        public override void OnClose()
+        {
+            if (OpenMode == AppOpenMode.ReactivateIfExists)
+                gameObject.SetActive(false);
+            else
+                Destroy(gameObject);
+        }
+
         public override void OnMinimize() { }
         public override void OnOpen() { }
+
+        #endregion
     }
 }

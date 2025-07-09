@@ -2,11 +2,14 @@ using UnityEngine;
 
 namespace LightHouse.Game.DayNightSystem
 {
+    /// <summary>
+    /// Time Utility contains utilities functions that helps to manage about Day Night & Time System
+    /// You can check the main system about: <see cref="TimeManager"/> <seealso cref="TimeHandlerData"/> classes
+    /// </summary>
     public static class TimeUtility
     {
         public static int ToIndexFromDay(byte day) => Mathf.Max(day - 1, 0);
         public static byte ToDayFromIndex(int index) => (byte)(index + 1);
-
 
         /// <summary>
         /// Formate une heure décimale en format 12h (AM/PM).
