@@ -1,37 +1,47 @@
-using System;
 using TMPro;
 using UnityEngine;
 
 public class EnumParameter : MonoBehaviour
 {
-    [SerializeField] private EnumWrapper _enumWrapper;
-    [SerializeField] private TextMeshProUGUI _displayText;
+    [SerializeField]
+    private EnumWrapper _enumWrapper;
+    [SerializeField]
+    private TextMeshProUGUI _displayText;
+    [SerializeField]
+    private int Index;
+    [SerializeField]
+    private string[] _array;
 
-    private void Start()
+    void Start()
     {
-        UpdateDisplay();
+        _array = _enumWrapper.OptionName;
+        Index = 0;
+        SetDisplayText();
     }
 
-    public void OnClicPositiveButton() => Increment();
-    public void OnClicNegativeButton() => Decrement();
+    public void OnClicPositiveButton() => Increment(_array.Length - 1);
+    public void OnClicNegativeButton() => Decrement(_array.Length - 1);
 
-    void Increment()
+    private void Increment( int maxValue)
     {
-        int index = Mathf.Clamp(_enumWrapper.GetIndex() + 1, 0, _enumWrapper.GetCount() - 1);
-        _enumWrapper.SetIndex(index);
-        UpdateDisplay();
-    }
-    
-    void Decrement()
-    {
-        int index = Mathf.Clamp(_enumWrapper.GetIndex() - 1, 0, _enumWrapper.GetCount() - 1);
-        _enumWrapper.SetIndex(index);
-        UpdateDisplay();
+        Index++;
+        Index = Mathf.Clamp(Index,0, maxValue);
+        SetDisplayText();
     }
 
-    void UpdateDisplay()
+    private void Decrement(int maxValue)
     {
-        _displayText.text = _enumWrapper.GetName(_enumWrapper.GetIndex());
+        Index--;
+        Index = Mathf.Clamp(Index,0, maxValue);
+        SetDisplayText();
+    }
+
+    private void SetDisplayText()
+    {
+        if (Index >= 0 && Index < _array.Length)
+        {
+            _displayText.text = _array[Index];
+        }
     }
 }
 

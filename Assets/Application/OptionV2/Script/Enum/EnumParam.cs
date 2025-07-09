@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 [CreateAssetMenu(menuName = "Enum Wrappers/Quality")]
 public class EnumParam : EnumWrapper
@@ -14,4 +14,4 @@ public class EnumParam : EnumWrapper
     public override string GetName(int index) => GetNames()[index];
     public override void SetIndex(int index) => current = (Quality)index;
     public override int GetIndex() => (int)current;
-}
+}*/
