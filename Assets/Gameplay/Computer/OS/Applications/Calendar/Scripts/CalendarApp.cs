@@ -157,13 +157,18 @@ namespace LightHouse.Game.Computer.Calendar
             if (events == null || events.Count == 0)
             {
                 _daySummary.text = $"Day {dayIndex + 1:D2}:\n- No events";
-                Debug.Log(_calendarDays[dayIndex].transform.name);
                 return;
             }
 
+            //Handle Notification
+            if (_calendarDays[dayIndex].NotificationImg.isActiveAndEnabled)
+                _calendarDays[dayIndex].NotificationImg.gameObject.SetActive(false);
+
+            //Sort by Start Time for UX
             events.Sort((a, b) => a.StartTime.CompareTo(b.StartTime));
             _summaryDayText.text = $"Day {dayIndex + 1:D2}:";
 
+            //Concat everything in one single string about all events
             StringBuilder sb = new();
             foreach (var e in events)
             {

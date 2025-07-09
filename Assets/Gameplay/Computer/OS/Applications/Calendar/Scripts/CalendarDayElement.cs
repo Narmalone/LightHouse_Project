@@ -38,9 +38,6 @@ namespace LightHouse.Game.Computer.Calendar
         public void AddEvent(CalendarEvent evt)
         {
             _events.Add(evt);
-
-            if (!_notificationImg.isActiveAndEnabled)
-                _notificationImg.gameObject.SetActive(true);
         }
 
         #endregion

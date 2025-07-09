@@ -301,7 +301,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00063049403}
+  m_AnchoredPosition: {x: 0, y: 0.00008556334}
   m_SizeDelta: {x: -10, y: 144}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &3572243330840902444
@@ -373,7 +373,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -60}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -0.000034332}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3952328641899572823
@@ -1529,10 +1529,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbee46ae53bee8349af764057d87357c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hour24: 18.5
-  DebugMode: 0
-  hourHand: {fileID: 3886938772807672969}
-  minuteHand: {fileID: 8252583434581149297}
+  _handHour: {fileID: 3886938772807672969}
+  _handMinits: {fileID: 8252583434581149297}
 --- !u!1 &7761001986926780851
 GameObject:
   m_ObjectHideFlags: 0
@@ -1966,6 +1964,7 @@ MonoBehaviour:
   _daySummary: {fileID: 1887548679990968825}
   _handRotator: {fileID: 2257983780073744998}
   _basicColors: {fileID: 11400000, guid: cdba57520893aa44fbf62997ad31e982, type: 2}
+  _eventDatabase: {fileID: 11400000, guid: aa5f0af79a406914db247b43393a4b7c, type: 2}
   _parentDaysToCheck: {fileID: 649276250214148326}
   _calendarDays:
   - {fileID: 8975493021257102313}
@@ -1999,7 +1998,6 @@ MonoBehaviour:
   - {fileID: 4563242613471157602}
   - {fileID: 3726902617881689787}
   - {fileID: 7145127622523392745}
-  _eventDatabase: {fileID: 11400000, guid: aa5f0af79a406914db247b43393a4b7c, type: 2}
 --- !u!1001 &177788314987040654
 PrefabInstance:
   m_ObjectHideFlags: 0
