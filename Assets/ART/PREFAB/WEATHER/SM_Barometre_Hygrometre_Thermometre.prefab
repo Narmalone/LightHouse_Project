@@ -9,9 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6942869989316835057}
-  - component: {fileID: 7365723166597285691}
   m_Layer: 0
-  m_Name: SM_Compass
+  m_Name: SM_Barometre_Hygrometre_Thermometre
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,33 +29,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6819316339425734397}
+  - {fileID: 6713936185314773289}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &7365723166597285691
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8389306771688507654}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.14958002
-  m_Height: 1.2450542
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.6163392, z: 0}
---- !u!1001 &6424857013808892182
+--- !u!1001 &6531917234571931330
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -64,69 +40,69 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6942869989316835057}
     m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalRotation.y
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+    - target: {fileID: 919132149155446097, guid: 08304783f955d2e42a3968bba6f7af84,
         type: 3}
       propertyPath: m_Name
-      value: SM_Compass
+      value: SM_Barometre_Hygrometre_Thermometre
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 10059c809ccb76d4ba8d8f6651470fc7, type: 3}
---- !u!4 &6819316339425734397 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: 08304783f955d2e42a3968bba6f7af84, type: 3}
+--- !u!4 &6713936185314773289 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 10059c809ccb76d4ba8d8f6651470fc7,
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 08304783f955d2e42a3968bba6f7af84,
     type: 3}
-  m_PrefabInstance: {fileID: 6424857013808892182}
+  m_PrefabInstance: {fileID: 6531917234571931330}
   m_PrefabAsset: {fileID: 0}
