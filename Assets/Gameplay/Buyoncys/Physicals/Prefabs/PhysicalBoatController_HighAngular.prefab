@@ -89,7 +89,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6328700726452321714}
+  - component: {fileID: 3713984935334522967}
   - component: {fileID: 8143109087810621634}
+  - component: {fileID: 1195200945405775138}
+  - component: {fileID: 7646295309562820759}
   m_Layer: 0
   m_Name: PhysicalBoatController_HighAngular
   m_TagString: Untagged
@@ -113,6 +116,29 @@ Transform:
   - {fileID: 7436521940928068202}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3713984935334522967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3080255392387852504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b3c3a33661cd6d4d81a4e9bda0afb8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rb: {fileID: 8996113524597791322}
+  _boatsManager: {fileID: 11400000, guid: 58a894bbfbbedb3469b8980a53871cf7, type: 2}
+  _data:
+    Name: 
+    NationalityFlag: {fileID: 0}
+  _randomPointController: {fileID: 11400000, guid: 839a28127a1206e44b247a971794f7c2,
+    type: 2}
+  _controller: {fileID: 1195200945405775138}
+  _anomalyController: {fileID: 7646295309562820759}
+  <DotColor>k__BackingField: {r: 0, g: 1, b: 0.60875654, a: 1}
+  <DotSize>k__BackingField: {x: 15, y: 40}
 --- !u!114 &8143109087810621634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,6 +167,51 @@ MonoBehaviour:
   _includeDeformation: 1
   _excludeSimulation: 0
   _outputNormal: 1
+--- !u!114 &1195200945405775138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3080255392387852504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6e2e125c497cc44b64257b2351f544, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rb: {fileID: 8996113524597791322}
+  _buoyancys:
+  - {fileID: 8068039110258238579}
+  - {fileID: 4490817691866530773}
+  - {fileID: 1108987393895546681}
+  - {fileID: 4213574843085093148}
+  _moveForce: 10000
+  _turnForce: 10000
+  _pathPointThreshold: 5
+  _progress: 0
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1
+  _overlapDistance: 40
+  _boatWidth: 25
+  _boatLength: 40
+  _boxCastHeight: 50
+  _avoidanceAngleIncrement: 20
+  _maxAvoidanceChecks: 8
+--- !u!114 &7646295309562820759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3080255392387852504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2950b7d054e9934ba44c665b203acdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _minAnomalyProgress: 0.1
+  _maxAnomalyProgress: 0.5
 --- !u!1 &3651872384639202431
 GameObject:
   m_ObjectHideFlags: 0

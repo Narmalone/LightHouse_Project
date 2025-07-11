@@ -50,6 +50,8 @@ namespace LightHouse.Game.Computer.OS
 
         protected OS _os;
 
+        public OS OS => _os;
+
         #endregion
 
         #region Unity Lifecycle
@@ -58,6 +60,16 @@ namespace LightHouse.Game.Computer.OS
         {
             if (_closeButton != null)
                 _closeButton.onClick.AddListener(OnClose);
+        }
+
+        private void OnEnable()
+        {
+            State = E_ComputerAppState.Opened;
+        }
+
+        private void OnDisable()
+        {
+            State = E_ComputerAppState.Closed;
         }
 
         protected virtual void OnDestroy()

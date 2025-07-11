@@ -27,6 +27,14 @@ namespace LightHouse.Gameplay.Boats
         [SerializeField] private bool _excludeSimulation = false;
         [SerializeField] private bool _outputNormal = false;
 
+        private void Start()
+        {
+            if(_waterSurface == null)
+            {
+                _waterSurface = FindFirstObjectByType<WaterSurface>();
+            }
+        }
+
         private void FixedUpdate()
         {
             if (_rb == null || _waterSurface == null || _floaters == null || _floaters.Length == 0) return;

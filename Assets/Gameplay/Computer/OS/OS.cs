@@ -32,6 +32,8 @@ namespace LightHouse.Game.Computer.OS
         /// </summary>
         private Dictionary<string, ComputerApp> _openedApps = new();
 
+        public bool PlayerOnComputer = false;
+
         #endregion
 
         #region Unity Lifecycle

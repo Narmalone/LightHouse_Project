@@ -22,6 +22,7 @@ public class BoatsNationalitiesManager : ScriptableObject
             {
                 if (!PossibleBoatDatas.Contains(boat))
                     PossibleBoatDatas.Add(boat);
+                boat.NationalityFlag = config.Flag;
             }
         }
     }

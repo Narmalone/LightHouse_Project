@@ -8,6 +8,8 @@ public class TabCanvas : MonoBehaviour
     [SerializeField] private GraphicRaycaster _raycaster;
     [SerializeField] private CanvasGroup _canvasGroup;
 
+    public bool IsVisible => _canvasGroup.alpha > 0f;
+
     public void EnableCanvasGroup()
     {
         _canvasGroup.interactable = true;

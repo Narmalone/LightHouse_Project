@@ -25,7 +25,7 @@ namespace LightHouse.Weather.Ocean
 
         private void Update()
         {
-            if (WeatherManager.CurrentWeather == null || SunLight == null) return;
+            if (WeatherManager == null || WeatherManager.CurrentWeather == null || SunLight == null) return;
 
             var weather = WeatherManager.CurrentWeather;
 

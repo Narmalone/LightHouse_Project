@@ -9,7 +9,7 @@ public class BoidController : MonoBehaviour
 
     [Header(" --- COMPONENTS --- ")]
     [SerializeField] private Rigidbody _rb;
-    [SerializeField] private PhysicalBuoyancy[] _buoyancys;
+    [SerializeField] private GameObject[] _buoyancys;
     private VectorPath _path;
 
     public VectorPath Path => _path;
@@ -68,7 +68,7 @@ public class BoidController : MonoBehaviour
     private void Start()
     {
         foreach (var buoy in _buoyancys)
-            buoy.enabled = false;
+            buoy.gameObject.SetActive(false);
 
         _rb.isKinematic = true;
 
@@ -97,7 +97,7 @@ public class BoidController : MonoBehaviour
         _rb.isKinematic = false;
 
         foreach (var buoy in _buoyancys)
-            buoy.enabled = true;
+            buoy.gameObject.SetActive(true);
     }
 
     #endregion

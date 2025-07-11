@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class SonarUI : MonoBehaviour
 {
     [Header("Références UI")]
-    public Sonar _sonar;                          // Référence au script de détection
+    public Sonar _sonar => SonarHandlerData.Sonar;                          // Référence au script de détection
     [SerializeField] private RectTransform _sonnarPannel;             // UI circulaire représentant le radar
     [SerializeField] private SonarDotController _sonarDotPrefab;            // Prefab représentant un bateau
 
@@ -22,6 +22,10 @@ public class SonarUI : MonoBehaviour
     [SerializeField] private Image _sonarPingImage;
     [SerializeField] private float sweepRotationSpeed = 72f; // degrés par seconde (360° en 5s)
     [SerializeField] private float pingDuration = 0.5f;
+
+    [Header("Ping Sizes")]
+    [SerializeField] private float _pingStartSize = 100.0f;
+    [SerializeField] private float _pingMaxSize = 500.0f;
 
     [Header("Sounds")]
     [SerializeField] private AudioSource _sonarPingAudioSource;
@@ -49,14 +53,6 @@ public class SonarUI : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            StartCoroutine(UpdateRadarRoutine());
-        }
-        else if (Input.GetKeyDown(KeyCode.L))
-        {
-            StopAllCoroutines();
-        }
         if (SweepLineShader != null)
         {
             // Incrémenter manuellement l'angle
@@ -66,6 +62,16 @@ public class SonarUI : MonoBehaviour
             // Envoyer au shader
             SweepLineShader.SetFloat("_SweepAngle", _currentSweepAngle);
         }
+    }
+
+    public void StartRadar()
+    {
+        StartCoroutine(UpdateRadarRoutine());
+    }
+
+    public void StopRadar()
+    {
+        StopAllCoroutines();
     }
 
     private IEnumerator UpdateRadarRoutine()
@@ -88,7 +94,7 @@ public class SonarUI : MonoBehaviour
         var detectedThisFrame = new HashSet<int>();
 
         // Phase 1 : Ajout ou mise à jour des dots actifs
-        foreach (var item in SonarManager.SonarItems)
+        foreach (var item in SonarHandlerData.SonarItems)
         {
             if (!item.IsDetectedBySonar)
                 continue;
@@ -151,8 +157,8 @@ public class SonarUI : MonoBehaviour
 
         // Taille initiale et finale
         float t = 0f;
-        float pingStartSize = 100f; // pixels (par ex, commence petit)
-        float pingMaxSize = 1600f;  // dépasse largement le radar (dépend de ton canvas)
+        float pingStartSize = _pingStartSize; // pixels (par ex, commence petit)
+        float pingMaxSize = _pingMaxSize;  // dépasse largement le radar (dépend de ton canvas)
 
 
         while (t < pingDuration)

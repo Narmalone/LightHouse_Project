@@ -16,12 +16,12 @@ namespace LightHouse.Game.Computer.NightWatch.Sonar
 
         private void OnEnable()
         {
-            SonarManager.Register(this);
+            SonarHandlerData.Register(this);
         }
 
         private void OnDisable()
         {
-            SonarManager.Unregister(this);
+            SonarHandlerData.Unregister(this);
         }
     }
 }

@@ -4,16 +4,21 @@ namespace LightHouse.Game.Computer.NightWatch.Sonar
 {
     public class Sonar : MonoBehaviour
     {
-        public bool Continuous = true;
+        public bool EnableSonarDetector = true;
         public float DetectionRange = 100f;
+
+        private void Awake()
+        {
+            SonarHandlerData.Sonar = this;
+        }
 
         private void Update()
         {
-            if (!Continuous) return;
+            if (!EnableSonarDetector) return;
             float rayonSqr = DetectionRange * DetectionRange;
             Vector3 centre = transform.position;
 
-            foreach (var sonarItem in SonarManager.SonarItems)
+            foreach (var sonarItem in SonarHandlerData.SonarItems)
             {
                 if ((sonarItem.Position - centre).sqrMagnitude <= rayonSqr)
                 {
