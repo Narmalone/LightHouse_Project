@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ToggleParameter : MonoBehaviour
+public class ToggleParameter : MonoBehaviour, IConfigurable
 {
     [SerializeField] private Button _TrueButton;
     [SerializeField] private Button _FalseButton;
@@ -20,10 +20,12 @@ public class ToggleParameter : MonoBehaviour
         // change sa propre couleur
         _TrueButton.image.color = new Color(1f, 1f, 1f, 1f);
 
-        //Appeller une fonction lorsque l'interupteur est vrai
-        print("Vrai");
+        //Appelle une fonction lorsque l'interupteur est actif
+        True();
+
+        HasChanged(true);
     }
-    
+
     public void OnClicFalse()
     {
         // change la couleur de l'autre boutton
@@ -32,7 +34,39 @@ public class ToggleParameter : MonoBehaviour
         // change sa propre couleur
         _FalseButton.image.color = new Color(1f, 1f, 1f, 1f);
 
-        //Appeller une fonction lorsque l'interrupteur est faux
-        print("Faux");
+        //Appelle une fonction lorsque l'interrupteur est inactif
+        False();
+
+        HasChanged(false);
+    }
+
+    void True()
+    {
+
+    }
+
+    void False()
+    {
+
+    }
+
+    public bool HasChanged(bool state)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Apply()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Revert()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool HasChanged()
+    {
+        throw new System.NotImplementedException();
     }
 }
