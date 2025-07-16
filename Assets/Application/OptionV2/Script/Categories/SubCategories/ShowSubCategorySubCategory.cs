@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class DisplaySubCategory : MonoBehaviour
+public class ShowSubCategory : MonoBehaviour
 {
     // Référence aux catégories à afficher/masquer
-    [SerializeField]private SubCategory[] _subCategories;
+    private SubCategory[] _subCategories;
 
     void Start()
     {

@@ -7,9 +7,6 @@ public class EnumParameter : EnumWrapper, IConfigurable
     [SerializeField]
     private TextMeshProUGUI _displayText;
 
-    [SerializeField]
-    private string[] _array;
-
     private Names Current => current;
     private enum Names { Low, Medium, High, Epic, Ultra }
 
