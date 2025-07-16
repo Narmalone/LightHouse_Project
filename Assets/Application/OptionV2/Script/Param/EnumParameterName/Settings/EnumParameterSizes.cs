@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class EnumParameterLanguages : EnumWrapper, IConfigurable
+public class EnumParameterLanguages : EnumWrapper
 {
     [SerializeField]
     private TextMeshProUGUI _displayText;
@@ -10,10 +10,9 @@ public class EnumParameterLanguages : EnumWrapper, IConfigurable
     [SerializeField]
     private string[] _array;
 
-    private Languages Current => current;
-    private enum Languages { English, French, Spanish, Chinese, Japonese, Russian}
+    //private ELanguages Current => _size;
 
-    private Languages current;
+    private ESizes _size;
 
     void Start()
     {
@@ -23,11 +22,11 @@ public class EnumParameterLanguages : EnumWrapper, IConfigurable
     public void OnClicPositiveButton() => Increment();
     public void OnClicNegativeButton() => Decrement();
 
-    public override string[] GetNames() => System.Enum.GetNames(typeof(Languages));
-    public override int GetCount() => System.Enum.GetValues(typeof(Languages)).Length;
+    public override string[] GetNames() => System.Enum.GetNames(typeof(ESizes));
+    public override int GetCount() => System.Enum.GetValues(typeof(ESizes)).Length;
     public override string GetName(int index) => GetNames()[index];
-    public override void SetIndex(int index) => current = (Languages)index;
-    public override int GetIndex() => (int)current;
+    public override void SetIndex(int index) => _size = (ESizes)index;
+    public override int GetIndex() => (int)_size;
 
     private void Increment()
     {
@@ -45,19 +44,6 @@ public class EnumParameterLanguages : EnumWrapper, IConfigurable
     private void SetDisplayText()
     {
         _displayText.text = GetName(GetIndex());
-    }
-
-    public bool HasChanged()
-    {
-        throw new System.NotImplementedException();
-    }
-    public void Apply()
-    {
-        throw new System.NotImplementedException();
-    }
-    public void Revert()
-    {
-        throw new System.NotImplementedException();
     }
 }
 

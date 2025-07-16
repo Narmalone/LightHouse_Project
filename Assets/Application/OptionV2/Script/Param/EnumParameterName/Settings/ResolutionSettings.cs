@@ -47,7 +47,6 @@ public class ResolutionSettings : MonoBehaviour
 
         // met à jour le text
         SetDisplayText();
-
     }
 
     public void Decrement()
