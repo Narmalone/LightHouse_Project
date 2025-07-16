@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace LightHouse.Game.DayNightSystem
@@ -25,5 +26,14 @@ namespace LightHouse.Game.DayNightSystem
 
             return $"{displayHour:D2}:{minute:D2} {period}";
         }
+
+        /// <summary>
+        /// Retourne une chaîne formatée "day XX" à partir d'un numéro de jour.
+        /// </summary>
+        public static string FormatDay(byte day)
+        {
+            return $"day {day:D2}";
+        }
+
     }
 }

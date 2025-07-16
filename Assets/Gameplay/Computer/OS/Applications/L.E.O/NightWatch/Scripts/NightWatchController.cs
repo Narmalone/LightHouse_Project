@@ -13,9 +13,12 @@ public class NightWatchController : LEOWindow
 {
     [SerializeField] private LEOApplication _manager;
     [SerializeField] private TabCanvas _tabCanvas;
+    [SerializeField] private LEOWindowButton _backButton;
+    [SerializeField] private LEOWindowButton _switchToCamera;
     [SerializeField] private NightWatchReportWindow[] _windows;
     [SerializeField] private SonarUI _sonarUIController;
     [SerializeField] private UI_BuoysReportController _buoysUIController;
+    [SerializeField] private UI_BoatReportController _boatsUIController;
 
     private Dictionary<E_NightWatchMode, NightWatchReportWindow> _windowMap;
     private NightWatchReportWindow _activeWindow;
@@ -23,6 +26,7 @@ public class NightWatchController : LEOWindow
     private void Awake()
     {
         _windowMap = new Dictionary<E_NightWatchMode, NightWatchReportWindow>();
+        _backButton.App = _manager;
         foreach (var w in _windows)
         {
             w.Close();
@@ -33,13 +37,15 @@ public class NightWatchController : LEOWindow
         }
     }
 
-    private void OnEnable()
+    public override void Open()
     {
-        if(_manager.State == E_ComputerAppState.Opened && _manager.OS.PlayerOnComputer)
+        base.Open();
+        if (_manager.State == E_ComputerAppState.Opened && _manager.OS.PlayerOnComputer)
         {
             _sonarUIController.StartRadar();
         }
     }
+
     private void Start()
     {
         SwitchTo(E_NightWatchMode.Boat);

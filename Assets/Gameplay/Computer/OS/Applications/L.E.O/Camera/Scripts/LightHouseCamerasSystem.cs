@@ -1,3 +1,4 @@
+using LightHouse.Game.DayNightSystem;
 using LightHouse.KinematicCharacterController;
 using System;
 using UnityEngine;
@@ -7,7 +8,9 @@ namespace LightHouse.Game.Computer.Cameras
     public class LightHouseCamerasSystem : MonoBehaviour
     {
         public LightHouseCameraController[] Cameras;
-        public int CurrentActiveCamera;
+        public int CurrentActiveCameraIndex;
+
+        public LightHouseCameraController CurrentActiveCamera => Cameras[CurrentActiveCameraIndex];
 
         public bool CameraModeEnabled = false;
         public static event Action OnCameraModeEnabled;
@@ -15,30 +18,33 @@ namespace LightHouse.Game.Computer.Cameras
 
         private void Awake()
         {
-            CurrentActiveCamera = 0;
+            CurrentActiveCameraIndex = 0;
         }
 
         public void EnableCameraMode()
         {
             CameraModeEnabled = true;
-            Player.ForceChangePlayerState.Invoke(PlayerState.CameraMode);
-            Cameras[CurrentActiveCamera].SetEnable(true);
+            Cameras[CurrentActiveCameraIndex].SetEnable(true);
             OnCameraModeEnabled?.Invoke();
         }
 
         public void DisableCameraMode()
         {
             CameraModeEnabled = false;
-            Cameras[CurrentActiveCamera].SetEnable(false);
+            Cameras[CurrentActiveCameraIndex].SetEnable(false);
             OnCameraModeDisabled?.Invoke();
-            Player.ForceChangePlayerState.Invoke(PlayerState.Normal);
+        }
+
+        public RenderTexture GetCurrentCameraRenderTexture()
+        {
+            return Cameras[CurrentActiveCameraIndex].RenderTextureCamera.renderTexture;
         }
 
         public void SwitchCamera(int cameraIndex)
         {
-            Cameras[CurrentActiveCamera].SetEnable(false);
-            CurrentActiveCamera = cameraIndex;
-            Cameras[CurrentActiveCamera].SetEnable(true);
+            Cameras[CurrentActiveCameraIndex].SetEnable(false);
+            CurrentActiveCameraIndex = cameraIndex;
+            Cameras[CurrentActiveCameraIndex].SetEnable(true);
         }
     }
 }

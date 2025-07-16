@@ -11,6 +11,9 @@ namespace LightHouse.Game.Computer.OS
     {
         #region Fields & Properties
 
+        [Header("Services Reference")]
+        private ComputerServices _services;
+
         [Header("App References")]
         [Tooltip("Liste des instances d'applications en cours.")]
         public List<ComputerApp> apps = new List<ComputerApp>();
@@ -33,6 +36,7 @@ namespace LightHouse.Game.Computer.OS
         private Dictionary<string, ComputerApp> _openedApps = new();
 
         public bool PlayerOnComputer = false;
+        public ComputerServices Services => _services;
 
         #endregion
 
@@ -51,6 +55,11 @@ namespace LightHouse.Game.Computer.OS
             {
                 shortcut.Initialize(this);
             }
+        }
+
+        public void SetService(ComputerServices services)
+        {
+            this._services = services;
         }
 
         #endregion

@@ -1,3 +1,4 @@
+using LightHouse.Game.Computer.OS;
 using UnityEngine;
 
 public abstract class LEOWindow : MonoBehaviour, ILEOWindow
@@ -6,6 +7,7 @@ public abstract class LEOWindow : MonoBehaviour, ILEOWindow
     [SerializeField] private CanvasGroup _canvasGroup;
     public CanvasGroup CanvasGroup => _canvasGroup;
     public ELEOWindow Type => _type;
+    public OS OSSystem { get; set; }
 
     public virtual void Open()
     {

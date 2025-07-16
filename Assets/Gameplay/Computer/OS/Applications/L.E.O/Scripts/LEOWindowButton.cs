@@ -1,24 +1,30 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Button))]
 public class LEOWindowButton : MonoBehaviour
 {
-    [SerializeField] private LEOApplication _app;
-    [SerializeField] private Button _button;
-    [SerializeField] private ELEOWindow _target;
+    public LEOApplication App;
+    [SerializeField] protected Button _button;
+    [SerializeField] protected ELEOWindow _target;
 
-    private void Awake()
+    private void Reset()
+    {
+        _button = GetComponent<Button>();
+    }
+
+    protected virtual void Awake()
     {
         _button.onClick.AddListener(OnClick);
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         _button.onClick.RemoveListener(OnClick);
     }
 
-    public void OnClick()
+    public virtual void OnClick()
     {
-        _app.ShowWindow(_target);
+        App?.ShowWindow(_target);
     }
 }
