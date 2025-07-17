@@ -12,21 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f7c079868ba76e459d45a25aa05d66a, type: 3}
   m_Name: CloudSettings_Foggy
   m_EditorClassIdentifier: 
-  DensityMultiplier: 0.65
+  DensityMultiplier: 0.15
   DensityCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.5
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.3
       value: 1
       inSlope: 0
       outSlope: 0
@@ -35,8 +26,17 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.7
-      value: 0.6
+      time: 0.25
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.35
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -44,8 +44,26 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.65
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.75
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
       time: 1
-      value: 0.3
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -55,10 +73,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ShapeFactor: 0.45
-  ShapeScale: 5
-  ErosionFactor: 0.75
-  ErosionScale: 50
+  ShapeFactor: 0.6
+  ShapeScale: 4
+  ErosionFactor: 0.7
+  ErosionScale: 100
   ErosionCurve:
     serializedVersion: 2
     m_Curve:
@@ -134,7 +152,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  BottomAltitude: 800
-  AltitudeRange: 1800
+  BottomAltitude: 1500
+  AltitudeRange: 2500
+  AmbientLightProbeDimmer: 1
+  SunLightDimmer: 1
+  ScatteringTint: {r: 0, g: 0, b: 0, a: 1}
   ShapeOffset: {x: 0, y: 0, z: 0}
   EarthCurvature: 0

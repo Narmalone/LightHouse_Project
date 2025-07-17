@@ -12,33 +12,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f7c079868ba76e459d45a25aa05d66a, type: 3}
   m_Name: CloudSettings_Rainy
   m_EditorClassIdentifier: 
-  DensityMultiplier: 0.5
+  DensityMultiplier: 0.15
   DensityCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.39999998
-      outSlope: -0.39999998
+      inSlope: -4
+      outSlope: -4
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.5
-      value: 0.8
+      time: 0.25
+      value: 0
       inSlope: 0
       outSlope: 0
-      tangentMode: 34
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.35
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.65
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.75
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0.39999998
-      outSlope: 0.39999998
+      inSlope: 4
+      outSlope: 4
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -47,9 +74,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   ShapeFactor: 0.6
-  ShapeScale: 10
-  ErosionFactor: 0.5
-  ErosionScale: 75
+  ShapeScale: 3
+  ErosionFactor: 0.7
+  ErosionScale: 100
   ErosionCurve:
     serializedVersion: 2
     m_Curve:

@@ -12,21 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f7c079868ba76e459d45a25aa05d66a, type: 3}
   m_Name: CloudSettings_Cloudy
   m_EditorClassIdentifier: 
-  DensityMultiplier: 0.3
+  DensityMultiplier: 0.15
   DensityCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.15
       value: 1
       inSlope: 0
       outSlope: 0
@@ -35,7 +26,34 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.45
+      time: 0.25
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.35
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.65
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.75
       value: 0
       inSlope: 0
       outSlope: 0
@@ -45,7 +63,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -55,9 +73,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  ShapeFactor: 0.45
+  ShapeFactor: 0.55
   ShapeScale: 5
-  ErosionFactor: 0
+  ErosionFactor: 0.7
   ErosionScale: 75
   ErosionCurve:
     serializedVersion: 2
@@ -97,16 +115,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.25
-      value: 0.4
+      value: 0.5
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -115,7 +124,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0
+      value: 0.5
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -125,8 +134,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  BottomAltitude: 1200
-  AltitudeRange: 2000
+  BottomAltitude: 1500
+  AltitudeRange: 2500
   AmbientLightProbeDimmer: 1
   SunLightDimmer: 1
   ScatteringTint: {r: 0, g: 0, b: 0, a: 1}
