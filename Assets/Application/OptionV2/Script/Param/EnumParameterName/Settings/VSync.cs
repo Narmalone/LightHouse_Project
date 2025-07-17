@@ -1,9 +1,16 @@
 using TMPro;
 using UnityEngine;
 
-public class AntiAliasing : EnumWrapper, IConfigurable
+public class VSync : EnumWrapper, IConfigurable
 {
     private EActivableQuality _activableQuality;
+    private EActivableQuality _defaultActivableQuality;
+
+    private new void Start()
+    {
+        base.Start();
+        _defaultActivableQuality = EActivableQuality.Disable;
+    }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EActivableQuality));
     public override int GetCount() => System.Enum.GetValues(typeof(EActivableQuality)).Length;
@@ -13,16 +20,18 @@ public class AntiAliasing : EnumWrapper, IConfigurable
 
     public bool HasChanged()
     {
-        throw new System.NotImplementedException();
+        return _activableQuality != _defaultActivableQuality;
     }
 
     public void Apply()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Vsync apply");
     }
 
     public void Revert()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Vsync reset");
+        _activableQuality = _defaultActivableQuality;
+        SetDisplayText();
     }
 }

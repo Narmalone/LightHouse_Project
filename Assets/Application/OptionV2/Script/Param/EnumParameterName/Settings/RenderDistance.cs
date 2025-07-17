@@ -5,6 +5,13 @@ using UnityEngine;
 public class RenderDistance : EnumWrapper, IConfigurable
 {
     private EQuality _quality;
+    private EQuality _defaultQuality;
+
+    private new void Start()
+    {
+        base.Start();
+        _defaultQuality = EQuality.Low;
+    }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EQuality));
     public override int GetCount() => System.Enum.GetValues(typeof(EQuality)).Length;
@@ -14,17 +21,25 @@ public class RenderDistance : EnumWrapper, IConfigurable
 
     public bool HasChanged()
     {
-        throw new System.NotImplementedException();
+        return _defaultQuality != _quality;
     }
 
     public void Apply()
     {
-        throw new System.NotImplementedException();
+        if (HasChanged())
+        {
+            Debug.Log("Render Distance apply");
+        }
     }
 
     public void Revert()
     {
-        throw new System.NotImplementedException();
+        if (HasChanged())
+        {
+            Debug.Log("Render Distance reset");
+            _quality = _defaultQuality;
+            SetDisplayText();
+        }
     }
 }
 

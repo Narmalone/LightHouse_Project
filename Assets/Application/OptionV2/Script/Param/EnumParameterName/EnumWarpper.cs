@@ -26,12 +26,14 @@ public abstract class EnumWrapper : MonoBehaviour
         SetIndex(index);
         SetDisplayText();
     }
+
     protected void Decrement()
     {
         int index = Mathf.Clamp(GetIndex() - 1, 0, GetCount() - 1);
         SetIndex(index);
         SetDisplayText();
     }
+
     protected void SetDisplayText()
     {
         _displayText.text = GetName(GetIndex());

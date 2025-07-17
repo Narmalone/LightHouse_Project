@@ -2,9 +2,16 @@ using TMPro;
 using UnityEngine;
 
 
-public class EnumParameterLanguages : EnumWrapper, IConfigurable
+public class Sizes : EnumWrapper, IConfigurable
 {
     private ESizes _size;
+    private ESizes _defaultSize;
+
+    private new void Start()
+    {
+        base.Start();
+        _defaultSize = ESizes.Small;
+    }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(ESizes));
     public override int GetCount() => System.Enum.GetValues(typeof(ESizes)).Length;
@@ -14,17 +21,19 @@ public class EnumParameterLanguages : EnumWrapper, IConfigurable
 
     public bool HasChanged()
     {
-        throw new System.NotImplementedException();
+        return _size != _defaultSize;
     }
 
     public void Apply()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Sizes apply");
     }
 
     public void Revert()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Sizes reset");
+        _size = _defaultSize;
+        SetDisplayText();
     }
 }
 

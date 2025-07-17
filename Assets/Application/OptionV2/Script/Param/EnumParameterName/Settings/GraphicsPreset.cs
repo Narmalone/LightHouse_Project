@@ -4,13 +4,13 @@ using UnityEngine;
 public class GraphicsPreset : EnumWrapper, IConfigurable
 {
     [SerializeField] private EQuality _quality;
-    [SerializeField] private EQuality _defaultQualityIndex;
+    [SerializeField] private EQuality _defaultQuality;
 
 
     private new void Start()
     {
         base.Start();
-        _defaultQualityIndex = EQuality.Low;
+        _defaultQuality = EQuality.Low;
     }
 
     private void Update()
@@ -34,7 +34,7 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
 
     public bool HasChanged()
     {
-        return _defaultQualityIndex != _quality;
+        return _defaultQuality != _quality;
     }
 
     public void Apply()
@@ -49,9 +49,9 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            _quality = _defaultQualityIndex;
-            SetDisplayText();
             Debug.Log("Graphics Preset reset");
+            _quality = _defaultQuality;
+            SetDisplayText();
         }
     }
 }

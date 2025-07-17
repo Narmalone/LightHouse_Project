@@ -5,6 +5,13 @@ using UnityEngine;
 public class SubtitlesLanguages : EnumWrapper, IConfigurable
 {
     private ELanguages _languages;
+    private ELanguages _defaultLanguages;
+
+    private new void Start()
+    {
+        base.Start();
+        _defaultLanguages = ELanguages.English;
+    }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(ELanguages));
     public override int GetCount() => System.Enum.GetValues(typeof(ELanguages)).Length;
@@ -14,17 +21,19 @@ public class SubtitlesLanguages : EnumWrapper, IConfigurable
 
     public bool HasChanged()
     {
-        throw new System.NotImplementedException();
+        return _languages != _defaultLanguages;
     }
 
     public void Apply()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Language apply");
     }
 
     public void Revert()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Language reset");
+        _languages = _defaultLanguages;
+        SetDisplayText();
     }
 }
 
