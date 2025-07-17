@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class EnumParameterLanguages : EnumWrapper
+public class EnumParameterLanguages : EnumWrapper, IConfigurable
 {
     private ESizes _size;
 
@@ -11,5 +11,20 @@ public class EnumParameterLanguages : EnumWrapper
     public override string GetName(int index) => GetNames()[index];
     public override void SetIndex(int index) => _size = (ESizes)index;
     public override int GetIndex() => (int)_size;
+
+    public bool HasChanged()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Apply()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Revert()
+    {
+        throw new System.NotImplementedException();
+    }
 }
 

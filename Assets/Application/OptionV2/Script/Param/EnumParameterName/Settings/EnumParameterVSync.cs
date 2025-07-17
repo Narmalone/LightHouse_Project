@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class EnumParameterVSync : EnumWrapper
+public class EnumParameterVSync : EnumWrapper, IConfigurable
 {
     private EActivableQuality _activableQuality;
 
@@ -10,4 +10,19 @@ public class EnumParameterVSync : EnumWrapper
     public override string GetName(int index) => GetNames()[index];
     public override void SetIndex(int index) => _activableQuality = (EActivableQuality)index;
     public override int GetIndex() => (int)_activableQuality;
+
+    public bool HasChanged()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Apply()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Revert()
+    {
+        throw new System.NotImplementedException();
+    }
 }

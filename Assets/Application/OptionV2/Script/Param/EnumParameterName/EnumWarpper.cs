@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public abstract class EnumWrapper : MonoBehaviour, IConfigurable
+public abstract class EnumWrapper : MonoBehaviour
 {
 
     [SerializeField] protected TextMeshProUGUI _displayText;
@@ -35,20 +35,5 @@ public abstract class EnumWrapper : MonoBehaviour, IConfigurable
     protected void SetDisplayText()
     {
         _displayText.text = GetName(GetIndex());
-    }
-
-    public bool HasChanged()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Apply()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Revert()
-    {
-        throw new System.NotImplementedException();
     }
 }

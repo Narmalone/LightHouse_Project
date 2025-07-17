@@ -75,7 +75,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6068141024359315240}
   - component: {fileID: 4041101702678497821}
-  - component: {fileID: 3789446795183008909}
   m_Layer: 5
   m_Name: EnumParameter
   m_TagString: Untagged
@@ -130,21 +129,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &3789446795183008909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 849226384878250089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b75285be3ee79542a1b55a2806da6a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enumWrapper: {fileID: 11400000, guid: 36abff89397373a4c840d0e8f2216c4c, type: 2}
-  _displayText: {fileID: 3721236042951127457}
-  Index: 0
 --- !u!1 &2128608738254400459
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,7 +250,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3789446795183008909}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UpdateState, Assembly-CSharp
         m_MethodName: OnClicNegativeButton
         m_Mode: 1
@@ -399,7 +383,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3789446795183008909}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UpdateState, Assembly-CSharp
         m_MethodName: OnClicPositiveButton
         m_Mode: 1

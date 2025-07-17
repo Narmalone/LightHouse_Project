@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class EnumParameterSizes : EnumWrapper
+public class SubtitlesLanguages : EnumWrapper, IConfigurable
 {
     private ELanguages _languages;
 
@@ -11,5 +11,20 @@ public class EnumParameterSizes : EnumWrapper
     public override string GetName(int index) => GetNames()[index];
     public override void SetIndex(int index) => _languages = (ELanguages)index;
     public override int GetIndex() => (int)_languages;
+
+    public bool HasChanged()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Apply()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Revert()
+    {
+        throw new System.NotImplementedException();
+    }
 }
 

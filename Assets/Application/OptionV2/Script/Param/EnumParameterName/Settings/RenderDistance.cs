@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class EnumParameter : EnumWrapper
+public class RenderDistance : EnumWrapper, IConfigurable
 {
     private EQuality _quality;
 
@@ -11,5 +11,20 @@ public class EnumParameter : EnumWrapper
     public override string GetName(int index) => GetNames()[index];
     public override void SetIndex(int index) => _quality = (EQuality)index;
     public override int GetIndex() => (int)_quality;
+
+    public bool HasChanged()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Apply()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Revert()
+    {
+        throw new System.NotImplementedException();
+    }
 }
 
