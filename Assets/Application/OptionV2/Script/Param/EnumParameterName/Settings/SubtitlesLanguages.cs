@@ -26,14 +26,20 @@ public class SubtitlesLanguages : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        Debug.Log("Language apply");
+        if (HasChanged())
+        {
+            Debug.Log("Language apply");
+        }
     }
 
-    public void Revert()
+    public void Reset()
     {
-        Debug.Log("Language reset");
-        _languages = _defaultLanguages;
-        SetDisplayText();
+        if (HasChanged())
+        {
+            Debug.Log("Language reset");
+            _languages = _defaultLanguages;
+            SetDisplayText();
+        }
     }
 }
 

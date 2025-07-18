@@ -8,11 +8,10 @@ public class ShowSubCategory : MonoBehaviour
     void Start()
     {
         AddCategory();
-
-        // Affiche Gameplay par défaut
         ShowCategory(0);
     }
 
+    // Affiche Gameplay par défaut
     void AddCategory()
     {
         // Si le tableau est vide, on le remplit automatiquement avec les enfants

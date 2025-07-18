@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class RenderDistance : EnumWrapper, IConfigurable
 {
-    private EQuality _quality;
-    private EQuality _defaultQuality;
+    [SerializeField] private EQuality _quality;
+    [SerializeField] private EQuality _defaultQuality;
 
     private new void Start()
     {
@@ -32,7 +32,7 @@ public class RenderDistance : EnumWrapper, IConfigurable
         }
     }
 
-    public void Revert()
+    public void Reset()
     {
         if (HasChanged())
         {

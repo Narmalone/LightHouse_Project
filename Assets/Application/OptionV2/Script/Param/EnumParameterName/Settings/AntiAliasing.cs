@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class AntiAliasing : EnumWrapper, IConfigurable
 {
-    private EActivableQuality _activableQuality;
-    private EActivableQuality _defaultActivableQuality;
+    [SerializeField] private EActivableQuality _activableQuality;
+    [SerializeField] private EActivableQuality _defaultActivableQuality;
 
     private new void Start()
     {
@@ -25,13 +25,19 @@ public class AntiAliasing : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        Debug.Log("Anti-Aliasing apply");
+        if (HasChanged())
+        {
+            Debug.Log("Anti-Aliasing apply");
+        }
     }
 
-    public void Revert()
+    public void Reset()
     {
-        Debug.Log("Anti-Aliasing reset");
-        _activableQuality = _defaultActivableQuality;
-        SetDisplayText();
+        if (HasChanged())
+        {
+            Debug.Log("Anti-Aliasing reset");
+            _activableQuality = _defaultActivableQuality;
+            SetDisplayText();
+        }
     }
 }

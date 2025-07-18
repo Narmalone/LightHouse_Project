@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class VSync : EnumWrapper, IConfigurable
 {
-    private EActivableQuality _activableQuality;
-    private EActivableQuality _defaultActivableQuality;
+    [SerializeField] private EActivableQuality _activableQuality;
+    [SerializeField] private EActivableQuality _defaultActivableQuality;
 
     private new void Start()
     {
@@ -25,13 +25,19 @@ public class VSync : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        Debug.Log("Vsync apply");
+        if (HasChanged())
+        {
+            Debug.Log("Vsync apply");
+        }
     }
 
-    public void Revert()
+    public void Reset()
     {
-        Debug.Log("Vsync reset");
-        _activableQuality = _defaultActivableQuality;
-        SetDisplayText();
+        if (HasChanged())
+        {
+            Debug.Log("Vsync reset");
+            _activableQuality = _defaultActivableQuality;
+            SetDisplayText();
+        }
     }
 }

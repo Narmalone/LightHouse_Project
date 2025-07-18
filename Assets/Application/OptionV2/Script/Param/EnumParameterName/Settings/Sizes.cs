@@ -26,14 +26,20 @@ public class Sizes : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        Debug.Log("Sizes apply");
+        if (HasChanged())
+        {
+            Debug.Log("Sizes apply");
+        }
     }
 
-    public void Revert()
+    public void Reset()
     {
-        Debug.Log("Sizes reset");
-        _size = _defaultSize;
-        SetDisplayText();
+        if (HasChanged())
+        {
+            Debug.Log("Sizes reset");
+            _size = _defaultSize;
+            SetDisplayText();
+        }
     }
 }
 

@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class DisplayMode : EnumWrapper, IConfigurable
 {
-    private EDisplayMode _displayMode;
-    private EDisplayMode _defaultDisplayMode;
+    [SerializeField] private EDisplayMode _displayMode;
+    [SerializeField] private EDisplayMode _defaultDisplayMode;
 
     private new void Start()
     {
         base.Start();
-        _defaultDisplayMode = EDisplayMode.FullScreen;
+        _defaultDisplayMode = EDisplayMode.Windowed;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EDisplayMode));
@@ -25,13 +25,19 @@ public class DisplayMode : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        Debug.Log("DisplayMode apply");
+        if (HasChanged())
+        {
+            Debug.Log("DisplayMode apply");
+        }
     }
 
-    public void Revert()
+    public void Reset()
     {
-        Debug.Log("DisplayMode reset");
-        _displayMode = _defaultDisplayMode;
-        SetDisplayText();
+        if (HasChanged())
+        {
+            Debug.Log("DisplayMode reset");
+            _displayMode = _defaultDisplayMode;
+            SetDisplayText();
+        }
     }
 }

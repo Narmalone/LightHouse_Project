@@ -9,8 +9,8 @@ public class ResolutionSettings : MonoBehaviour, IConfigurable
     Resolution[] _resolutions;
     List<string> _resolutionsNames;
 
-    private int _indexResolution;
-    private int _currentResolutionIndex;
+    [SerializeField] private int _indexResolution;
+    [SerializeField] private int _currentResolutionIndex;
 
     void Start()
     {
@@ -20,9 +20,9 @@ public class ResolutionSettings : MonoBehaviour, IConfigurable
         // liste qui va stocker les noms de chaque résolutions 
         _resolutionsNames = new List<string>();
 
-        SetOptionsNames();
-
         _indexResolution = _currentResolutionIndex;
+
+        SetOptionsNames();
 
         SetDisplayText();
     }
@@ -77,16 +77,24 @@ public class ResolutionSettings : MonoBehaviour, IConfigurable
 
     public bool HasChanged()
     {
-        return _displayText != null;
+        return _indexResolution != _currentResolutionIndex;
     }
 
     public void Apply()
     {
-        throw new System.NotImplementedException();
+        if (HasChanged())
+        {
+            Debug.Log("Resolution Settings apply");
+        }
     }
 
-    public void Revert()
+    public void Reset()
     {
-        throw new System.NotImplementedException();
+        if (HasChanged())
+        {
+            Debug.Log("Resolution Settings reset");
+            _indexResolution = _currentResolutionIndex;
+            SetDisplayText();
+        }
     }
 }

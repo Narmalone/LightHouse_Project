@@ -1,7 +1,27 @@
 using UnityEngine;
 
-public class ToggleRayTracing : ToggleParameter
+public class ToggleRayTracing : ToggleParameter, IConfigurable
 {
-    new void True() => Debug.Log("RayTracing ON");
-    new void False() => Debug.Log("RayTracing OFF");
+    public bool HasChanged()
+    {
+        return _enable != _defaultEnable;
+    }
+
+    public void Apply()
+    {
+        if (HasChanged())
+        {
+            Debug.Log("RayTracing Apply");
+        }
+    }
+
+    public void Reset()
+    {
+        if (HasChanged())
+        {
+            Debug.Log("RayTracing reset");
+            _enable = _defaultEnable;
+            Toggle();
+        }
+    }
 }

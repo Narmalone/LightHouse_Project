@@ -4,5 +4,5 @@ public interface IConfigurable
 {
     bool HasChanged();
     void Apply();
-    void Revert();
+    void Reset();
 }

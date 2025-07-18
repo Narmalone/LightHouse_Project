@@ -13,19 +13,6 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
         _defaultQuality = EQuality.Low;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Apply();
-        }
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            Revert();
-        }
-    }
-
     public override string[] GetNames() => System.Enum.GetNames(typeof(EQuality));
     public override int GetCount() => System.Enum.GetValues(typeof(EQuality)).Length;
     public override string GetName(int index) => GetNames()[index];
@@ -45,7 +32,7 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
         }
     }
 
-    public void Revert()
+    public void Reset()
     {
         if (HasChanged())
         {
