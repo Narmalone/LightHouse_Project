@@ -14,8 +14,8 @@ public class ToggleParameter : MonoBehaviour
 
     protected void Start()
     {
-        _FalseButton.image.color = _inactiveColor;
         _TrueButton.image.color = _activeColor;
+        _FalseButton.image.color = _inactiveColor;
 
         _enable = _defaultEnable;
     }

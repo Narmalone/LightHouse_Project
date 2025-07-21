@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class Sizes : EnumWrapper, IConfigurable
+public class MouseCursorSize : EnumWrapper, IConfigurable
 {
     private ESizes _size;
     private ESizes _defaultSize;

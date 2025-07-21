@@ -3,21 +3,11 @@ using UnityEngine.UI;
 
 public class SliderParam : MonoBehaviour
 {
-    protected float _minValue;
-    protected float _maxValue;
-    protected float _currentValue;
+    [SerializeField] protected Slider _slider;
     protected float _defaultValue;
-    protected Slider _slider;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    protected void Start()
     {
-        
+        _slider.value = _defaultValue;
     }
 }

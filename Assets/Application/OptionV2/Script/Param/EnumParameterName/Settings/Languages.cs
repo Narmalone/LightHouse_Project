@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class SubtitlesLanguages : EnumWrapper, IConfigurable
+public class Languages : EnumWrapper, IConfigurable
 {
     private ELanguages _languages;
     private ELanguages _defaultLanguages;

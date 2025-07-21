@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ToggleRayTracing : ToggleParameter, IConfigurable
+public class PullPush : ToggleParameter, IConfigurable
 {
     public bool HasChanged()
     {
@@ -11,7 +11,7 @@ public class ToggleRayTracing : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("RayTracing Apply");
+            Debug.Log("Pull/Push Apply");
         }
     }
 
@@ -19,7 +19,7 @@ public class ToggleRayTracing : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("RayTracing reset");
+            Debug.Log("Pull/Push reset");
             _enable = _defaultEnable;
             Toggle();
         }
