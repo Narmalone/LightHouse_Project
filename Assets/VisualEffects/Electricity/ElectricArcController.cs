@@ -11,6 +11,7 @@ public class ElectricArcController : MonoBehaviour
 
     public VisualEffectAsset EffectAsset;
     public int NumberOfSubArcs;
+    public float Size;
     public GameObject Pos1;
     public GameObject Pos2;
     public GameObject Pos3;
@@ -23,6 +24,7 @@ public class ElectricArcController : MonoBehaviour
     private static int _pos4 = Shader.PropertyToID("Pos4");
     private static int _noiseFrequency = Shader.PropertyToID("NoiseFrequency");
     private static int _noiseRange = Shader.PropertyToID("NoiseRange");
+    private static int _size = Shader.PropertyToID("Size");
     void Start()
     {
         for (int i = 0; i < NumberOfSubArcs; i++)
@@ -82,6 +84,7 @@ public class ElectricArcController : MonoBehaviour
             thisVisualEffectAsset.SetVector3(_pos4, Pos4.transform.position);
             thisVisualEffectAsset.SetFloat(_noiseRange, Random.Range(0,1f));
             thisVisualEffectAsset.SetFloat(_noiseFrequency, Random.Range(0,1f));
+            thisVisualEffectAsset.SetFloat(_size, Size + Random.Range(0.05f,0.1f)*Size );
         }
     }
 
