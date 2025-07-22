@@ -6,28 +6,29 @@ public class SubCategory : MonoBehaviour, IDisplayable
 {
     private CanvasGroup _canvasGroup;
 
-    [SerializeField] private List<IConfigurable> _settings = new List<IConfigurable>();
+    public List<IConfigurable> _settings = new List<IConfigurable>();
 
     private void Awake()
     {
-        // Récupère le CanvasGroup
         _canvasGroup = GetComponent<CanvasGroup>();
     }
 
     private void Start()
     {
+        // Récupère le CanvasGroup
+        
         GetAllSetting();
     }
 
     private void Update()
     {
         // en fait c'est "A" mais pour une raison que j'ignore c'est en QWERTY
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             ApplyChangedSettings();
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.G))
         {
             ResetChangedSettings();
         }
@@ -70,6 +71,7 @@ public class SubCategory : MonoBehaviour, IDisplayable
         }
     }
 
+    // la sous-catégorie apparait
     public void Show()
     {
         // Visible
@@ -82,6 +84,7 @@ public class SubCategory : MonoBehaviour, IDisplayable
         _canvasGroup.blocksRaycasts = true;  
     }
 
+    // la sous-catégorie disparait
     public void Hide()
     {
         // invisible

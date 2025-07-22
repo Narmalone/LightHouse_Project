@@ -3,36 +3,69 @@ using UnityEngine;
 
 public class PopUp : MonoBehaviour, IDisplayable
 {
-    [SerializeField] private Timer _timer;
     [SerializeField] private TextMeshProUGUI _timerText;
     [SerializeField] private float _timerValue = 10f;
 
-    private string _timeLeft;
+    private CanvasGroup _canvasGroup;
+    private Timer _timer;
 
-    private void Start()
+    private void Awake()
     {
-        _timer._timerTotalDuration = _timerValue;
+        _timer = new Timer(_timerValue);
+        _canvasGroup = GetComponent<CanvasGroup>();
     }
 
-    private void Update()
+    void Start()
     {
+        Hide();
+    }
+
+    void Update()
+    {
+        DebugInput();
+
+        // fps => secondes
+        _timer.Tick(_timerValue =+ Time.deltaTime);
+
         SetTimerText();
+
+        if (_timer.GetTimeRemaining() <= 0)
+        {
+            Hide();
+        }
+
     }
 
+    // pour tester
+    void DebugInput()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Show();
+        }
+    }
+
+    // met à jour le texte
     void SetTimerText()
     {
-        _timerText.text = _timeLeft;
+        // affiche le temps restant arrondi à l'unité
+        _timerText.text = Mathf.Round(_timer.GetTimeRemaining()).ToString();
     }
 
+    // le pop up apparait, reset et lance le timer
     public void Show()
     {
-        gameObject.SetActive(true);
+        _timer.ResetTimer();
         _timer.StartTimer();
+        _canvasGroup.alpha = 1.0f;
+        _canvasGroup.interactable = true;
     }
 
+    // le pop up disparait et arrête le timer
     public void Hide()
     {
-        gameObject.SetActive(false);
         _timer.StopTimer();
+        _canvasGroup.alpha = 0f;
+        _canvasGroup.interactable = false;
     }
 }
