@@ -355,6 +355,7 @@ GameObject:
   - component: {fileID: 141483398}
   - component: {fileID: 141483397}
   - component: {fileID: 141483396}
+  - component: {fileID: 141483400}
   m_Layer: 0
   m_Name: ScreenshotCam
   m_TagString: MainCamera
@@ -575,6 +576,15 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 4.5, y: 0.7, z: 0}
+--- !u!45 &141483400
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141483395}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 2100000, guid: 860a66ca4259b384f9ec01b687f71c3c, type: 2}
 --- !u!1 &239523353
 GameObject:
   m_ObjectHideFlags: 0
@@ -4546,6 +4556,11 @@ PrefabInstance:
       propertyPath: currentTime
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1302083048185547347, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: weight
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4671491135199040680, guid: 7f5044dbb210b124d8407f6a62907085,
         type: 3}
       propertyPath: fadeInEnd
@@ -4586,10 +4601,25 @@ PrefabInstance:
       propertyPath: _fadeOutStartHour
       value: 5.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4885299100456785300, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6853006418761821015, guid: 7f5044dbb210b124d8407f6a62907085,
         type: 3}
       propertyPath: m_Name
       value: TimeManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 6853006418761821015, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8151197949238660155, guid: 7f5044dbb210b124d8407f6a62907085,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8320635845687374319, guid: 7f5044dbb210b124d8407f6a62907085,
         type: 3}
