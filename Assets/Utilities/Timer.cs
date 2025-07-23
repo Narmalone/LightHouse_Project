@@ -53,6 +53,15 @@ public class Timer
         OnTimerReset?.Invoke();
     }
 
+    public void ResetTimer(float newTotalDuration)
+    {
+        _timerTotalDuration = newTotalDuration;
+        _timerDuration = 0f;
+        _isRunning = false;
+        OnTimerReset?.Invoke();
+    }
+
+
     public float GetTimeRemaining()
     {
         return _timerTotalDuration - _timerDuration;

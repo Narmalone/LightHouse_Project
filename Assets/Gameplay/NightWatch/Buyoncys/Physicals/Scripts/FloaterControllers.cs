@@ -1,10 +1,9 @@
-﻿using LightHouse.Game.Computer.NightWatch.Sonar;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-namespace LightHouse.Gameplay.Boats
+namespace LightHouse.Utilities
 {
-    public class BoatPhysicsFloatController : MonoBehaviour
+    public class FloaterControllers : MonoBehaviour
     {
         [Header("Water")]
         [SerializeField] private WaterSurface _waterSurface;

@@ -5,11 +5,11 @@ using UnityEngine;
 namespace LightHouse.Weather
 {
     [CreateAssetMenu(fileName = "WeatherDatabase", menuName = "LightHouse/Weather/Database")]
-    public class WeatherDefinitionDatabase : ScriptableObject
+    public class WeatherConfigDatabase : ScriptableObject
     {
-        public List<WeatherDefinition> Definitions;
+        public List<WeatherConfiguration> Definitions;
 
-        public WeatherDefinition GetDefinition(WeatherType type)
+        public WeatherConfiguration GetDefinition(WeatherType type)
         {
             return Definitions.Find(d => d.Type == type);
         }

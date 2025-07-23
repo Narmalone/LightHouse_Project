@@ -12,6 +12,18 @@ namespace LightHouse.Game.DayNightSystem
         Evening
     }
 
+    public enum TimeOfDaySecondariesSegments
+    {
+        StartMorningTransition,
+        EndMorningTransition,
+        StartDayTransition,
+        EndDayTransition,
+        StartEveningTransition,
+        EndEveningTransition,
+        StartNightTransition,
+        EndNightTransition
+    }
+
     public class TimeManager : MonoBehaviour
     {
         [Range(0f, 24f)]
@@ -40,6 +52,7 @@ namespace LightHouse.Game.DayNightSystem
         {
             currentDay = 1;
             TimeHandlerData.CurrentDay = currentDay;
+            TimeHandlerData.CurrentTime = currentTime;
         }
 
         private void Update()

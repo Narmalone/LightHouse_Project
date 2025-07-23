@@ -3,9 +3,10 @@ using UnityEngine;
 namespace LightHouse.Weather
 {
     [CreateAssetMenu(fileName = "NewWeatherDefinition", menuName = "LightHouse/Weather/Definition")]
-    public class WeatherDefinition : ScriptableObject
+    public class WeatherConfiguration : ScriptableObject
     {
         public WeatherType Type;
+        public float DangerLevel = 1.0f;
 
         [Header("Conditions")]
         public Vector2 HumidityRange = new Vector2(60f, 100f);

@@ -9,23 +9,21 @@ public class BoatsManager : MonoBehaviour
     #region === Inspector Fields ===
 
     [Header("Boat Settings")]
-    public Boat Prefab;
-    public List<Boat> CurrentPresentBoats = new();
-    public AnomalyConfiguration[] AnomalyConfigurations;
-    public BoatAnomalyDefinition[] allAnomalyDefinitions;
+    [SerializeField] private Boat _prefab;
+    private List<Boat> _controllers = new();
+    [SerializeField] private AnomalyConfiguration[] _anomalyConfigsByWeather;
+    [SerializeField] private BoatAnomalyDefinition[] _anomalyPrefabs;
 
     [Header("Spawn Settings")]
-    public byte MinBoatsSpawn = 2;
-    public byte MaxBoatsSpawn = 4;
-    [Range(0f, 24f)] public float spawnStartHour = 20f;
-    [Range(0f, 24f)] public float spawnEndHour = 1f;
-    public float visualSpawnDelay = 1f;
+    [SerializeField] private NightWatchConfiguration _nightWatchConfig;
+    [SerializeField] private byte _minBoatsSpawnDuringNight = 2;
+    [SerializeField] private byte _maxBoatsSpawnDuringNight = 4;
 
     [Header("Time Settings")]
-    public bool despawnOnMorning = true;
+    [SerializeField] private bool _despawnAllBoatsOnMorning = false;
 
     [Header("Anomalies")]
-    [SerializeField] private float anomalyChance = 0.3f;
+    [SerializeField] private float _anomalyChances = 0.3f;
 
     #endregion
 
@@ -51,7 +49,7 @@ public class BoatsManager : MonoBehaviour
 
     private void Start()
     {
-        if (IsTimeInRange(TimeHandlerData.CurrentTime, spawnStartHour, spawnEndHour))
+        if (TimeUtility.IsTimeInRange(TimeHandlerData.CurrentTime, _nightWatchConfig.BoatsSpawnStartHour, _nightWatchConfig.BoatsSpawnEndHour))
         {
             ScheduleSpawns();
             hasSpawnedToday = true;
@@ -62,7 +60,7 @@ public class BoatsManager : MonoBehaviour
     {
         float now = TimeHandlerData.CurrentTime;
 
-        if (!hasSpawnedToday && IsTimeInRange(now, spawnStartHour, spawnEndHour))
+        if (!hasSpawnedToday && TimeUtility.IsTimeInRange(now, _nightWatchConfig.BoatsSpawnStartHour, _nightWatchConfig.BoatsSpawnEndHour))
         {
             ScheduleSpawns();
             hasSpawnedToday = true;
@@ -87,11 +85,11 @@ public class BoatsManager : MonoBehaviour
         scheduledTimes.Clear();
         nextIndex = 0;
 
-        int count = Random.Range(MinBoatsSpawn, MaxBoatsSpawn + 1);
+        int count = Random.Range(_minBoatsSpawnDuringNight, _maxBoatsSpawnDuringNight + 1);
 
         for (int i = 0; i < count; i++)
         {
-            float randomHour = RandomHourInWindow(spawnStartHour, spawnEndHour);
+            float randomHour = RandomHourInWindow(_nightWatchConfig.BoatsSpawnStartHour, _nightWatchConfig.BoatsSpawnEndHour);
             scheduledTimes.Add(randomHour);
         }
 
@@ -100,28 +98,20 @@ public class BoatsManager : MonoBehaviour
 
     private void SpawnBoat()
     {
-        Boat boat = Instantiate(Prefab);
+        Boat boat = Instantiate(_prefab);
         TryAddAnomaly(boat);
-        CurrentPresentBoats.Add(boat);
-
-        if (visualSpawnDelay > 0f)
-            StartCoroutine(VisualDelay());
-    }
-
-    private IEnumerator VisualDelay()
-    {
-        yield return new WaitForSeconds(visualSpawnDelay);
+        _controllers.Add(boat);
     }
 
     private void DespawnAllBoats()
     {
-        foreach (var boat in CurrentPresentBoats)
+        foreach (var boat in _controllers)
         {
             if (boat != null)
                 Destroy(boat.gameObject);
         }
 
-        CurrentPresentBoats.Clear();
+        _controllers.Clear();
     }
 
     #endregion
@@ -136,7 +126,7 @@ public class BoatsManager : MonoBehaviour
             scheduledTimes.Clear();
             nextIndex = 0;
 
-            if (despawnOnMorning)
+            if (_despawnAllBoatsOnMorning)
                 DespawnAllBoats();
         }
     }
@@ -160,26 +150,12 @@ public class BoatsManager : MonoBehaviour
 
     private bool HasReachedHour(float now, float target)
     {
-        return IsTimeInRange(now, target, spawnEndHour);
-    }
-
-    private bool IsTimeInRange(float current, float start, float end)
-    {
-        if (end > start)
-            return current >= start && current < end;
-        else
-            return current >= start || current < end;
+        return TimeUtility.HasReachedHour(now, target, _nightWatchConfig.BoatsSpawnEndHour);
     }
 
     private int CompareTimeOfDay(float a, float b)
     {
-        if (IsTimeInRange(a, spawnStartHour, spawnEndHour) &&
-            IsTimeInRange(b, spawnStartHour, spawnEndHour))
-        {
-            return ((a < spawnStartHour) ? a + 24f : a).CompareTo((b < spawnStartHour) ? b + 24f : b);
-        }
-
-        return a.CompareTo(b);
+        return TimeUtility.CompareTimeOfDay(a, b, _nightWatchConfig.BoatsSpawnStartHour, _nightWatchConfig.BoatsSpawnEndHour);
     }
 
     #endregion
@@ -191,9 +167,9 @@ public class BoatsManager : MonoBehaviour
     /// </summary>
     private void TryAddAnomaly(Boat boat)
     {
-        if (Random.value > anomalyChance) return;
+        if (Random.value > _anomalyChances) return;
 
-        foreach (var config in AnomalyConfigurations)
+        foreach (var config in _anomalyConfigsByWeather)
         {
 #if UNITY_EDITOR
             //Debug
@@ -232,7 +208,7 @@ public class BoatsManager : MonoBehaviour
     /// </summary>
     private BoatAnomalyDefinition GetAnomalyDefinition(AnomalyType type)
     {
-        foreach (var def in allAnomalyDefinitions)
+        foreach (var def in _anomalyPrefabs)
             if (def.Type == type)
                 return def;
 
