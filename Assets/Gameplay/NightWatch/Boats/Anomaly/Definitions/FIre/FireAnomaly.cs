@@ -4,7 +4,7 @@ public class FireAnomaly : BoatAnomaly
 {
     public ParticleSystem fireEffect;
 
-    public override AnomalyType Type => AnomalyType.Fire;
+    public override AnomalyType Type => AnomalyType.FireAboard;
 
     public override void Apply()
     {
