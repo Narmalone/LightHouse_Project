@@ -14,6 +14,9 @@ namespace LightHouse.Weather
         private WeatherData fromWeather;
         private WeatherData toWeather;
 
+        private WeatherType _previousWeatherType;
+        private WeatherType _currentWeatherType;
+
         public WeatherData FromWeather => fromWeather;
         public WeatherData ToWeather => toWeather;
 
@@ -59,7 +62,14 @@ namespace LightHouse.Weather
             // Interpolation
             float localTime = currentGameSeconds - fromWeather.StartTimeInSeconds;
             float t = Mathf.Clamp01(localTime / fromWeather.DurationInSeconds);
+            _previousWeatherType = CurrentWeather.WeatherType;
             CurrentWeather = WeatherUtils.LerpWeatherData(fromWeather, toWeather, t);
+            _currentWeatherType = CurrentWeather.WeatherType;
+
+            if(_previousWeatherType != _currentWeatherType)
+            {
+                WeatherHandlerData.OnWeatherTypeChanged?.Invoke(_currentWeatherType);
+            }
             WeatherHandlerData.SetCurrentWeatherDatas(CurrentWeather);
         }
     }

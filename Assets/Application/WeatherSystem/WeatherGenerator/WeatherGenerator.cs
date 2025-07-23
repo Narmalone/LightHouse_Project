@@ -5,12 +5,12 @@ using Random = UnityEngine.Random;
 
 namespace LightHouse.Weather
 {
-    [CreateAssetMenu(fileName = "Generator_Default", menuName = "Lighthouse/Weather/New Generator")]
+    [CreateAssetMenu(fileName = "Generator_Default", menuName = "LightHouse/Weather/New Generator")]
     public class WeatherGenerator : ScriptableObject
     {
         public TimeConfiguration TimeConfig;
         public WeatherTimeline Timeline;
-        public WeatherDefinitionDatabase WeatherDefinitions;
+        public WeatherConfigDatabase WeatherDefinitions; 
         public float MinWeathersDuration;
         public float MaxWeathersDuration;
 
@@ -34,7 +34,6 @@ namespace LightHouse.Weather
 
                 var chosenType = (WeatherType)Random.Range(0, System.Enum.GetValues(typeof(WeatherType)).Length);
                 var typeParams = WeatherDefinitions.GetDefinition(chosenType);
-
                 float randomOrientation = Random.Range(0f, 360f);
 
                 var evt = new WeatherData

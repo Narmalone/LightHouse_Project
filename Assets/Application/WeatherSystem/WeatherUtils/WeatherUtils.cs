@@ -62,7 +62,7 @@ namespace LightHouse.Weather.Utils
             float airTemp,
             float windSpeed,
             float waterTemp,
-            WeatherDefinitionDatabase definitionDatabase)
+            WeatherConfigDatabase definitionDatabase)
         {
             WeatherType bestMatch = WeatherType.Sunny;
             float bestScore = float.MinValue;

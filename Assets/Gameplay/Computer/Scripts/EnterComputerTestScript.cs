@@ -1,5 +1,7 @@
 using Cinemachine;
 using LightHouse.Game.Computer;
+using LightHouse.Handlers;
+using LightHouse.KinematicCharacterController;
 using UnityEngine;
 
 public class EnterComputerTestScript : MonoBehaviour
@@ -17,11 +19,13 @@ public class EnterComputerTestScript : MonoBehaviour
                 computer.ComputerEnter();
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+                Player.ForceChangePlayerState?.Invoke(PlayerState.CameraMode);
             }
             else
             {
                 Enabled = false;
                 computer.ComputerExit();
+                Player.ForceChangePlayerState?.Invoke(PlayerState.Normal);
             }
         }
     }

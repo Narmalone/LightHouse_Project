@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6772096130241010765
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2440887297585075163}
+  - component: {fileID: 1342644213576319905}
+  m_Layer: 0
+  m_Name: LightHouse_Cameras
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2440887297585075163
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6772096130241010765}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3104766625242675267}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1342644213576319905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6772096130241010765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45ff92f00b466a946a5e44988d81f101, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Cameras:
+  - {fileID: 349134568719536434}
+  CurrentActiveCamera: 0
+  CameraModeEnabled: 0
+--- !u!1001 &2340055245680975915
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2440887297585075163}
+    m_Modifications:
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1025253980228421242, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+        type: 3}
+      propertyPath: m_Name
+      value: LightHouse_Camera_1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e4fb8b3a2979f7946abebf0846bc11d5, type: 3}
+--- !u!114 &349134568719536434 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2639650149475610905, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+    type: 3}
+  m_PrefabInstance: {fileID: 2340055245680975915}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6e36633315a0542992b8cd8a40ea22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &3104766625242675267 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 824109334476183656, guid: e4fb8b3a2979f7946abebf0846bc11d5,
+    type: 3}
+  m_PrefabInstance: {fileID: 2340055245680975915}
+  m_PrefabAsset: {fileID: 0}
