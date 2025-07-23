@@ -126,7 +126,7 @@ namespace LightHouse.Game.Rendering
             else if (timeOfDay >= 0f && timeOfDay < 6f)
             {
                 from = _nightProfile;
-                to = _nightProfile;
+                to = _dayProfile;
                 t = 0f;
             }
 
