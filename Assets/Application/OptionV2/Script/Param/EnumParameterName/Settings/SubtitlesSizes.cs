@@ -6,11 +6,13 @@ public class SubtitlesSizes : EnumWrapper, IConfigurable
 {
     private ESizes _size;
     private ESizes _defaultSize;
+    private ESizes _aplliedSize;
 
     private new void Start()
     {
         base.Start();
         _defaultSize = ESizes.Small;
+        _aplliedSize = _size;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(ESizes));
@@ -29,6 +31,7 @@ public class SubtitlesSizes : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("Subtitles Sizes apply");
+            _aplliedSize = _size;
         }
     }
 
@@ -38,8 +41,14 @@ public class SubtitlesSizes : EnumWrapper, IConfigurable
         {
             Debug.Log("Subtitles Sizes reset");
             _size = _defaultSize;
+            _aplliedSize = _defaultSize;
             SetDisplayText();
         }
+    }
+
+    bool IConfigurable.HasBeenApplied()
+    {
+        return _aplliedSize == _size;
     }
 }
 

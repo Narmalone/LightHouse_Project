@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class PopUp : MonoBehaviour, IDisplayable
 {
-    [SerializeField] private TextMeshProUGUI _timerText;
-    [SerializeField] private float _timerValue = 10f;
+    [SerializeField] TextMeshProUGUI _timerText;
+    [SerializeField] float _timerValue = 10f;
 
-    private CanvasGroup _canvasGroup;
-    private Timer _timer;
+    CanvasGroup _canvasGroup;
+    Timer _timer;
 
     private void Awake()
     {
@@ -18,6 +18,7 @@ public class PopUp : MonoBehaviour, IDisplayable
     void Start()
     {
         Hide();
+        _canvasGroup.blocksRaycasts = false;
     }
 
     void Update()
@@ -33,7 +34,6 @@ public class PopUp : MonoBehaviour, IDisplayable
         {
             Hide();
         }
-
     }
 
     // pour tester
@@ -57,15 +57,21 @@ public class PopUp : MonoBehaviour, IDisplayable
     {
         _timer.ResetTimer();
         _timer.StartTimer();
-        _canvasGroup.alpha = 1.0f;
-        _canvasGroup.interactable = true;
+        SetCanvaGroup(1f, true, true);
     }
 
     // le pop up disparait et arrête le timer
     public void Hide()
     {
         _timer.StopTimer();
-        _canvasGroup.alpha = 0f;
-        _canvasGroup.interactable = false;
+        SetCanvaGroup(0f, false, false);
+    }
+
+    // change les valeurs du canva group
+    void SetCanvaGroup(float alpha, bool interactable, bool blocksRaycasts)
+    {
+        _canvasGroup.alpha = alpha;
+        _canvasGroup.interactable = interactable;
+        _canvasGroup.blocksRaycasts = blocksRaycasts;
     }
 }

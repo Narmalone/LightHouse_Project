@@ -97,4 +97,9 @@ public class ResolutionSettings : MonoBehaviour, IConfigurable
             SetDisplayText();
         }
     }
+
+    bool IConfigurable.HasBeenApplied()
+    {
+        throw new System.NotImplementedException();
+    }
 }

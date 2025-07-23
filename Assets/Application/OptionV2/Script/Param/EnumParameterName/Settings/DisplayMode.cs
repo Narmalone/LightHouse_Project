@@ -5,11 +5,13 @@ public class DisplayMode : EnumWrapper, IConfigurable
 {
     [SerializeField] private EDisplayMode _displayMode;
     [SerializeField] private EDisplayMode _defaultDisplayMode;
+    [SerializeField] private EDisplayMode _appliedDisplayMode;
 
     private new void Start()
     {
         base.Start();
         _defaultDisplayMode = EDisplayMode.Windowed;
+        _appliedDisplayMode = _displayMode;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EDisplayMode));
@@ -28,6 +30,7 @@ public class DisplayMode : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("DisplayMode apply");
+            _appliedDisplayMode = _displayMode;
         }
     }
 
@@ -37,7 +40,13 @@ public class DisplayMode : EnumWrapper, IConfigurable
         {
             Debug.Log("DisplayMode reset");
             _displayMode = _defaultDisplayMode;
+            _appliedDisplayMode = _defaultDisplayMode;
             SetDisplayText();
         }
+    }
+
+    bool IConfigurable.HasBeenApplied()
+    {
+        return _appliedDisplayMode == _displayMode;
     }
 }

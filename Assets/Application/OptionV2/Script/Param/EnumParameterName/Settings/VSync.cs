@@ -5,11 +5,13 @@ public class VSync : EnumWrapper, IConfigurable
 {
     [SerializeField] private EActivableQuality _activableQuality;
     [SerializeField] private EActivableQuality _defaultActivableQuality;
+    [SerializeField] private EActivableQuality _appliedActivableQuality;
 
     private new void Start()
     {
         base.Start();
         _defaultActivableQuality = EActivableQuality.Disable;
+        _appliedActivableQuality = _activableQuality;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EActivableQuality));
@@ -28,6 +30,7 @@ public class VSync : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("Vsync apply");
+            _appliedActivableQuality = _activableQuality;
         }
     }
 
@@ -37,7 +40,13 @@ public class VSync : EnumWrapper, IConfigurable
         {
             Debug.Log("Vsync reset");
             _activableQuality = _defaultActivableQuality;
+            _appliedActivableQuality = _defaultActivableQuality;
             SetDisplayText();
         }
+    }
+
+    public bool HasBeenApplied()
+    {
+        return _appliedActivableQuality == _activableQuality;
     }
 }

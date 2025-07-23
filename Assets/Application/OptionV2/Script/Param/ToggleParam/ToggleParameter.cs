@@ -8,6 +8,7 @@ public class ToggleParameter : MonoBehaviour
 
     protected bool _enable;
     protected bool _defaultEnable = true;
+    [SerializeField] protected bool _appliedEnable;
 
     private Color _activeColor = new Color(1f, 1f, 1f, 1f);
     private Color _inactiveColor = new Color(1f, 1f, 1f, 0.5f);
@@ -18,6 +19,7 @@ public class ToggleParameter : MonoBehaviour
         _FalseButton.image.color = _inactiveColor;
 
         _enable = _defaultEnable;
+        _appliedEnable = _enable;
     }
 
     public void OnClicTrue()

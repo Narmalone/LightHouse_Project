@@ -5,11 +5,13 @@ public class AntiAliasing : EnumWrapper, IConfigurable
 {
     [SerializeField] private EActivableQuality _activableQuality;
     [SerializeField] private EActivableQuality _defaultActivableQuality;
+    [SerializeField] private EActivableQuality _appliedActivableQuality;
 
     private new void Start()
     {
         base.Start();
         _defaultActivableQuality = EActivableQuality.Disable;
+        _appliedActivableQuality = _activableQuality;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EActivableQuality));
@@ -28,6 +30,7 @@ public class AntiAliasing : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("Anti-Aliasing apply");
+            _appliedActivableQuality = _activableQuality;
         }
     }
 
@@ -37,7 +40,13 @@ public class AntiAliasing : EnumWrapper, IConfigurable
         {
             Debug.Log("Anti-Aliasing reset");
             _activableQuality = _defaultActivableQuality;
+            _appliedActivableQuality = _defaultActivableQuality;
             SetDisplayText();
         }
+    }
+
+    public bool HasBeenApplied()
+    {
+        return _appliedActivableQuality == _activableQuality;
     }
 }

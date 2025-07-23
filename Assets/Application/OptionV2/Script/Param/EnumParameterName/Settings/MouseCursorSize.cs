@@ -6,11 +6,13 @@ public class MouseCursorSize : EnumWrapper, IConfigurable
 {
     private ESizes _size;
     private ESizes _defaultSize;
+    private ESizes _appliedSize;
 
     private new void Start()
     {
         base.Start();
         _defaultSize = ESizes.Small;
+        _appliedSize = _size;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(ESizes));
@@ -29,6 +31,7 @@ public class MouseCursorSize : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("Sizes apply");
+            _appliedSize = _size;
         }
     }
 
@@ -38,8 +41,14 @@ public class MouseCursorSize : EnumWrapper, IConfigurable
         {
             Debug.Log("Sizes reset");
             _size = _defaultSize;
+            _appliedSize = _defaultSize;
             SetDisplayText();
         }
+    }
+
+    bool IConfigurable.HasBeenApplied()
+    {
+        return _appliedSize == _size; ;
     }
 }
 

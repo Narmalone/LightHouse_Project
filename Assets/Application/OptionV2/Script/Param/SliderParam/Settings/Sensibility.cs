@@ -22,6 +22,7 @@ public class Sensibility : SliderParam, IConfigurable
         if (HasChanged())
         {
             print ("Sensibility" + _axis + " : " + _slider.value);
+            _appliedValue = _slider.value;
         }
     }
 
@@ -35,7 +36,13 @@ public class Sensibility : SliderParam, IConfigurable
         if (HasChanged()) 
         {
             _slider.value = _defaultValue;
+            _appliedValue = _defaultValue;
             print("Sensibility reset");
         }
+    }
+
+    public bool HasBeenApplied()
+    {
+        return _appliedValue == _slider.value;
     }
 }

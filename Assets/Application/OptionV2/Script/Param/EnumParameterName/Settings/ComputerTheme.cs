@@ -6,11 +6,14 @@ public class ComputerTheme : EnumWrapper, IConfigurable
 {
     private EColors _color;
     private EColors _defaultColor;
+    private EColors _appliedColor;
 
     private new void Start()
     {
         base.Start();
         _defaultColor = EColors.Blue;
+        _color = _defaultColor;
+        _appliedColor = _color;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EColors));
@@ -26,20 +29,28 @@ public class ComputerTheme : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Sizes apply");
+            _appliedColor = _color;
         }
     }
 
     public void Reset()
     {
-        if (HasChanged())
+        if (HasChanged() && HasBeenApplied())
         {
             Debug.Log("Sizes reset");
             _color = _defaultColor;
+            _appliedColor = _defaultColor;
             SetDisplayText();
         }
+    }
+
+    public bool HasBeenApplied()
+    {
+        return _appliedColor == _color;
+
     }
 }
 

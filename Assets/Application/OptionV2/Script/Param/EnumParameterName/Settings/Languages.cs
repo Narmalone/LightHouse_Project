@@ -6,11 +6,13 @@ public class Languages : EnumWrapper, IConfigurable
 {
     private ELanguages _languages;
     private ELanguages _defaultLanguages;
+    private ELanguages _appliedLanguages;
 
     private new void Start()
     {
         base.Start();
         _defaultLanguages = ELanguages.English;
+        _appliedLanguages = _languages; 
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(ELanguages));
@@ -29,6 +31,7 @@ public class Languages : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("Subtitles Language apply");
+            _appliedLanguages = _languages; 
         }
     }
 
@@ -38,8 +41,14 @@ public class Languages : EnumWrapper, IConfigurable
         {
             Debug.Log("Subtitles Language reset");
             _languages = _defaultLanguages;
+            _appliedLanguages = _defaultLanguages;
             SetDisplayText();
         }
+    }
+
+    public bool HasBeenApplied()
+    {
+        return _appliedLanguages == _languages; 
     }
 }
 

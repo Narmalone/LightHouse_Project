@@ -1,16 +1,15 @@
 using UnityEngine;
 
-public class DisplayCategory : MonoBehaviour
+public class Header : MonoBehaviour
 {
-    // Référence aux catégories à afficher/masquer
-    private Category[] _categories;
+    private Category[] _categories; // Référence aux catégories à afficher/masquer
+
+    [SerializeField] private PopUp _popUp;
 
     void Start()
     {
         AddCategory();
-
-        // Affiche Gameplay par défaut
-        ShowCategory(0);
+        ShowCategory(0); // Affiche Gameplay par défaut
     }
 
     void AddCategory()
@@ -24,10 +23,20 @@ public class DisplayCategory : MonoBehaviour
     }
 
     // Méthodes appelées quand on clique sur un bouton correspondant à une sous-catégorie
-    public void OnClicGameplay() => ShowCategory(0);
-    public void OnClicControls() => ShowCategory(1);
-    public void OnClicVideo() => ShowCategory(2);
-    public void OnClicSound() => ShowCategory(3);
+    public void OnClic(int index)
+    {
+        foreach (var category in _categories)
+        {
+            if (category.HasAnyAppliedSetting())
+            {
+                ShowCategory(index);
+            }
+            else
+            {
+                _popUp.Show();
+            }
+        }
+    }
 
     // Affiche la sous-catégorie spécifiée et masque toutes les autres
     void ShowCategory(int indexToShow)

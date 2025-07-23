@@ -4,12 +4,13 @@ public class Bloom : EnumWrapper, IConfigurable
 {
     [SerializeField] private EQuality _quality;
     [SerializeField] private EQuality _defaultQuality;
-
+    [SerializeField] private EQuality _appliedQuality;
 
     private new void Start()
     {
         base.Start();
         _defaultQuality = EQuality.Low;
+        _appliedQuality = _quality;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EQuality));
@@ -28,6 +29,7 @@ public class Bloom : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("Bloom apply");
+            _appliedQuality = _quality;
         }
     }
 
@@ -37,7 +39,13 @@ public class Bloom : EnumWrapper, IConfigurable
         {
             Debug.Log("Bloom reset");
             _quality = _defaultQuality;
+            _appliedQuality = _defaultQuality;
             SetDisplayText();
         }
+    }
+
+    public bool HasBeenApplied()
+    {
+        return _appliedQuality == _quality;
     }
 }

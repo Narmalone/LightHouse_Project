@@ -17,6 +17,7 @@ public class MouseSmoothing : SliderParam, IConfigurable
         if (HasChanged())
         {
             print(" Mouse Smoothing : " + _slider.value);
+            _appliedValue = _slider.value;
         }
     }
 
@@ -30,7 +31,13 @@ public class MouseSmoothing : SliderParam, IConfigurable
         if (HasChanged())
         {
             _slider.value = _defaultValue;
+            _appliedValue = _defaultValue;
             print("Mouse Smoothing reset");
         }
+    }
+
+    public bool HasBeenApplied()
+    {
+        return _appliedValue == _slider.value;
     }
 }

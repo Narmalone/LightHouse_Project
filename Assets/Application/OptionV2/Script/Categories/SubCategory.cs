@@ -4,23 +4,22 @@ using UnityEngine;
 
 public class SubCategory : MonoBehaviour, IDisplayable
 {
-    private CanvasGroup _canvasGroup;
+    CanvasGroup _canvasGroup;
 
     public List<IConfigurable> _settings = new List<IConfigurable>();
 
-    private void Awake()
+    void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
     }
 
-    private void Start()
+    void Start()
     {
         // Récupère le CanvasGroup
-        
         GetAllSetting();
     }
 
-    private void Update()
+    void Update()
     {
         // en fait c'est "A" mais pour une raison que j'ignore c'est en QWERTY
         if (Input.GetKeyDown(KeyCode.F))
@@ -34,11 +33,9 @@ public class SubCategory : MonoBehaviour, IDisplayable
         }
     }
 
+    // récupère tout les paramétres
     void GetAllSetting()
     {
-        // Vérifie si ce GameObject lui-même a IConfigurable
-        IConfigurable selfConfigurable = GetComponent<IConfigurable>();
-
         // Parcours des enfants directs
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -54,46 +51,59 @@ public class SubCategory : MonoBehaviour, IDisplayable
     }
 
     // applique tout les param de la sous-catégorie
-    void ApplyChangedSettings()
+    public void ApplyChangedSettings()
     {
-        foreach ( IConfigurable configurable in _settings)
-        {
-            configurable.Apply();
-        }
+        ApplyOrReset(true);
     }
 
     // réinitialise tout les param de la sous-catégorie
-    void ResetChangedSettings()
+    public void ResetChangedSettings()
     {
-        foreach ( IConfigurable configurable in _settings)
+        ApplyOrReset(false);
+    }
+
+    void ApplyOrReset(bool shouldApply)
+    {
+        foreach (IConfigurable configurable in _settings)
         {
-            configurable.Reset();
+            if (shouldApply)
+            {
+                configurable.Apply();
+            }
+            else
+            {
+                configurable.Reset();
+            }
         }
+    }
+
+    public bool HasAnyAppliedSetting()
+    {
+        foreach (var setting in _settings)
+        {
+            if (setting.HasBeenApplied())
+                return true;
+        }
+        return false;
     }
 
     // la sous-catégorie apparait
     public void Show()
     {
-        // Visible
-        _canvasGroup.alpha = 1f;
-
-        // Permet l'interaction
-        _canvasGroup.interactable = true;
-
-        // Permet les clics
-        _canvasGroup.blocksRaycasts = true;  
+        SetCanvaGroup(1f, true, true);
     }
 
     // la sous-catégorie disparait
     public void Hide()
     {
-        // invisible
-        _canvasGroup.alpha = 0f;
+        SetCanvaGroup(0f, false, false);
+    }
 
-        // Désactiver interaction
-        _canvasGroup.interactable = false;
-
-        // Ignorer les clics
-        _canvasGroup.blocksRaycasts = false; 
+    // change les valeurs du canva group
+    void SetCanvaGroup(float alpha, bool interactable, bool blocksRaycasts)
+    {
+        _canvasGroup.alpha = alpha;
+        _canvasGroup.interactable = interactable;
+        _canvasGroup.blocksRaycasts = blocksRaycasts;
     }
 }

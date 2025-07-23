@@ -4,12 +4,14 @@ public class BlurQuality : EnumWrapper, IConfigurable
 {
     [SerializeField] private EQuality _quality;
     [SerializeField] private EQuality _defaultQuality;
+    [SerializeField] private EQuality _aplliedQuality;
 
 
     private new void Start()
     {
         base.Start();
         _defaultQuality = EQuality.Low;
+        _aplliedQuality = _quality;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EQuality));
@@ -28,6 +30,7 @@ public class BlurQuality : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("Blur Quality apply");
+            _aplliedQuality = _quality;
         }
     }
 
@@ -37,7 +40,13 @@ public class BlurQuality : EnumWrapper, IConfigurable
         {
             Debug.Log("Blur Quality reset");
             _quality = _defaultQuality;
+            _aplliedQuality = _defaultQuality;
             SetDisplayText();
         }
+    }
+
+    bool IConfigurable.HasBeenApplied()
+    {
+        return _aplliedQuality == _quality;
     }
 }

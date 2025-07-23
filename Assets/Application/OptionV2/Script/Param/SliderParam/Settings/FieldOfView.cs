@@ -18,6 +18,7 @@ public class FieldOfView : SliderParam, IConfigurable
         if (HasChanged())
         {
             print ("FOV : " + _slider.value);
+            _appliedValue = _slider.value;
         }
     }
 
@@ -31,7 +32,13 @@ public class FieldOfView : SliderParam, IConfigurable
         if (HasChanged()) 
         {
             _slider.value = _defaultValue;
+            _appliedValue = _defaultValue;
             print("FOV reset");
         }
+    }
+
+    public bool HasBeenApplied()
+    {
+        return _appliedValue == _slider.value;
     }
 }

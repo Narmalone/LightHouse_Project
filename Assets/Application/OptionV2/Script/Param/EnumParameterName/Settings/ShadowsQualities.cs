@@ -4,12 +4,14 @@ public class ShadowsQualities : EnumWrapper, IConfigurable
 {
     [SerializeField] private EQuality _quality;
     [SerializeField] private EQuality _defaultQuality;
+    [SerializeField] private EQuality _appliedQuality;
 
 
     private new void Start()
     {
         base.Start();
         _defaultQuality = EQuality.Low;
+        _appliedQuality = _quality;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EQuality));
@@ -28,6 +30,7 @@ public class ShadowsQualities : EnumWrapper, IConfigurable
         if (HasChanged())
         {
             Debug.Log("Shadows Qualities apply");
+            _appliedQuality = _quality;
         }
     }
 
@@ -37,7 +40,13 @@ public class ShadowsQualities : EnumWrapper, IConfigurable
         {
             Debug.Log("Shadows Qualities reset");
             _quality = _defaultQuality;
+            _appliedQuality = _defaultQuality;
             SetDisplayText();
         }
+    }
+
+    bool IConfigurable.HasBeenApplied()
+    {
+        return _appliedQuality == _quality;
     }
 }

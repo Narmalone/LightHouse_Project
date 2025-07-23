@@ -4,12 +4,14 @@ public class AmbiantOcclusion : EnumWrapper, IConfigurable
 {
     [SerializeField] private EQuality _quality;
     [SerializeField] private EQuality _defaultQuality;
+    [SerializeField] private EQuality _appliedQuality;
 
 
     private new void Start()
     {
         base.Start();
         _defaultQuality = EQuality.Low;
+        _appliedQuality = _quality;
     }
 
     public override string[] GetNames() => System.Enum.GetNames(typeof(EQuality));
@@ -25,9 +27,10 @@ public class AmbiantOcclusion : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Ambiant Occlusion apply");
+            _appliedQuality = _quality;
         }
     }
 
@@ -37,7 +40,13 @@ public class AmbiantOcclusion : EnumWrapper, IConfigurable
         {
             Debug.Log("Ambiant Occlusion reset");
             _quality = _defaultQuality;
+            _appliedQuality = _defaultQuality;
             SetDisplayText();
         }
-    }
+    } 
+
+    public bool HasBeenApplied()
+    {
+        return _appliedQuality == _quality;
+    }   
 }
