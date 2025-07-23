@@ -126,8 +126,9 @@ namespace LightHouse.Game.Rendering
             else if (timeOfDay >= 0f && timeOfDay < 6f)
             {
                 from = _nightProfile;
-                to = _nightProfile;
-                t = 0f;
+                to = _morningProfile;
+                Debug.Log("morning");
+                t = timeOfDay / 6;
             }
 
             bool useManualSunFade = timeOfDay >= _sunFadeStart && timeOfDay <= _sunFadeEnd;

@@ -71,7 +71,7 @@ namespace LightHouse.Game.DayNightSystem
             float sunAngle = normalizedTime * 360f - 90f;
             _sunLight.transform.rotation = Quaternion.Euler(sunAngle, _noonDirection.y, _noonDirection.z);
 
-            bool newSunState = timeOfDay > 6f && timeOfDay < 18f;
+            bool newSunState = timeOfDay > 6f && timeOfDay < 18.15f;
 
             if (newSunState != _previousSunState)
             {
