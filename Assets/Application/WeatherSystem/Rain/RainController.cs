@@ -1,3 +1,4 @@
+using LightHouse.Weather;
 using System;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -52,5 +53,11 @@ public class RainController : MonoBehaviour
             float volumeInDb = (RainIntensity <= 0.0001f) ? -80f : Mathf.Log10(RainIntensity) * 20f;
             mixer.SetFloat("RainVolume", volumeInDb);
         }
+    }
+
+    private void LateUpdate()
+    {
+        if(WeatherHandlerData.CurrentWeather != null)
+            RainIntensity = Mathf.Lerp(85f, 100f, WeatherHandlerData.CurrentWeather.Humidity);
     }
 }

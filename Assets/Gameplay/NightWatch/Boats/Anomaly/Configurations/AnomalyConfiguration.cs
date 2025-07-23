@@ -28,7 +28,7 @@ public class AnomalyConfiguration : ScriptableObject
                 return anomaly.anomaly;
         }
 
-        return AnomalyType.Fire;
+        return AnomalyType.FireAboard;
     }
 
     [Serializable]
@@ -41,11 +41,11 @@ public class AnomalyConfiguration : ScriptableObject
 }
 public enum AnomalyType
 {
-    Fire,
-    Drift,
-    LightsOff,
-    RadioSilence,
-    Disease,
-    EmptyBoat,
-    GlitchedBoat
+    FireAboard,
+    MedicalEmergency,
+    HostileBehaviour,
+    DamagedBoat,
+    FuelLeak,
+    LightsOutage,
+    Quarantine
 }

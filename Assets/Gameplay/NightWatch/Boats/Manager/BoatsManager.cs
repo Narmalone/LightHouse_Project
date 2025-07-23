@@ -13,6 +13,7 @@ public class BoatsManager : MonoBehaviour
     private List<Boat> _controllers = new();
     [SerializeField] private AnomalyConfiguration[] _anomalyConfigsByWeather;
     [SerializeField] private BoatAnomalyDefinition[] _anomalyPrefabs;
+    [SerializeField] private BoatAnomaliesDatabase _anomaliesDatabase;
 
     [Header("Spawn Settings")]
     [SerializeField] private NightWatchConfiguration _nightWatchConfig;
@@ -37,14 +38,15 @@ public class BoatsManager : MonoBehaviour
 
     #region === Unity Events ===
 
-    private void OnEnable()
+    private void Awake()
     {
         TimeHandlerData.OnTimeSegmentChanged += HandleTimeSegmentChange;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         TimeHandlerData.OnTimeSegmentChanged -= HandleTimeSegmentChange;
+        _anomaliesDatabase.ResetAll();
     }
 
     private void Start()
@@ -171,32 +173,17 @@ public class BoatsManager : MonoBehaviour
 
         foreach (var config in _anomalyConfigsByWeather)
         {
-#if UNITY_EDITOR
-            //Debug
-            if(WeatherHandlerData.CurrentWeather == null)
-            {
-                var anomalyType = config.PickRandomAnomaly();
-                var def = GetAnomalyDefinition(anomalyType.Value);
-
-                
-                if (def != null)
-                {
-                    var re = def.InstantiateAndAttach(boat);
-                    boat.AnomalyController.AddAnomaly(re);
-                }
-                else
-                    Debug.LogWarning($"No prefab defined for anomaly: {anomalyType.Value}");
-
-                return;
-            }
-#endif
             if (config.weatherType == WeatherHandlerData.CurrentWeather.WeatherType)
             {
                 var anomalyType = config.PickRandomAnomaly();
                 var def = GetAnomalyDefinition(anomalyType.Value);
 
                 if (def != null)
-                    def.InstantiateAndAttach(boat);
+                {
+                    var anomaly =  def.InstantiateAndAttach(boat);
+                    boat.AnomalyController.AddAnomaly(anomaly);
+                    _anomaliesDatabase.SetAnomaly(boat.Data.Name, def.AnomalyName);
+                }
                 else
                     Debug.LogWarning($"No prefab defined for anomaly: {anomalyType.Value}");
             }

@@ -12,6 +12,7 @@ public class Boat : MonoBehaviour, ISonarable
     [SerializeField] private BoatAnomalyController _anomalyController;
     public BoatAnomalyController AnomalyController => _anomalyController;
     public Rigidbody RB => _rb;
+    public BoatData Data => _data;
 
     [Header("Sonar Element")]
     public string Name { get; }
@@ -29,6 +30,7 @@ public class Boat : MonoBehaviour, ISonarable
     private void Awake()
     {
         _data = _boatsManager.Register();
+        this.gameObject.name = _data.Name;
         SonarHandlerData.Register(this);
         _controller.Initialize(_randomPointController.GetRandomPath());
     }
