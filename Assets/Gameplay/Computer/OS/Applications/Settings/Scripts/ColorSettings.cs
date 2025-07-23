@@ -28,4 +28,14 @@ public class ColorSettings : ScriptableObject
     [Header("🖱️ Scrollbars")]
     public Color ScrollbarBackground = new Color32(0xB8, 0xBE, 0xD1, 255);
     public Color ScrollbarBorder = new Color32(0x78, 0x80, 0x98, 255);
+
+
+    [Header(" --- GLOBAL CONFIGS --- ")]
+
+    [Header(" -- ELEMENTS -- ")]
+    public Color Window = new Color32(0x63, 0x4F, 0x34, 255);
+
+    [Header(" -- TEXTS -- ")]
+    public Color Headers = new Color32(0xFF, 0xB6, 0x49, 255);
+    public Color HeaderWindows = Color.white;
 }

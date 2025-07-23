@@ -1,4 +1,5 @@
 using LightHouse.Game.Computer.OS;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,6 +37,7 @@ public class NightWatchController : LEOWindow
                 Debug.LogWarning($"Duplicate NightWatch window type: {w.WindowType}");
         }
     }
+
 
     public override void Open()
     {

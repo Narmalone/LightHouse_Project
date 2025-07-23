@@ -10,7 +10,7 @@ namespace LightHouse.Weather
     {
         public TimeConfiguration TimeConfig;
         public WeatherTimeline Timeline;
-        public WeatherConfigDatabase WeatherDefinitions;
+        public WeatherConfigDatabase WeatherDefinitions; 
         public float MinWeathersDuration;
         public float MaxWeathersDuration;
 
@@ -34,7 +34,6 @@ namespace LightHouse.Weather
 
                 var chosenType = (WeatherType)Random.Range(0, System.Enum.GetValues(typeof(WeatherType)).Length);
                 var typeParams = WeatherDefinitions.GetDefinition(chosenType);
-
                 float randomOrientation = Random.Range(0f, 360f);
 
                 var evt = new WeatherData

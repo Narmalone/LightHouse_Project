@@ -8,7 +8,7 @@ public class BoatAnomalyDefinition : ScriptableObject
 
     public BoatAnomaly InstantiateAndAttach(Boat boat)
     {
-        var instance = GameObject.Instantiate(Prefab, boat.transform);
+        var instance = GameObject.Instantiate(Prefab, boat.RB.transform);
         instance.Initialize(boat);
         instance.Apply();
         return instance;

@@ -54,20 +54,18 @@ public class BoatsNationalitiesManager : ScriptableObject
         }
     }
 
-    public BoatData FindName(string name)
+    public bool FindName(string name, out BoatData datas)
     {
-        foreach (var boat in PossibleBoatDatas)
-        {
-            if (boat.Name == name)
-                return boat;
-        }
-
+        datas = null;
         foreach (var boat in CurrentUsedBoatDatas)
         {
             if (boat.Name == name)
-                return boat;
+            {
+                datas = boat;
+                return true;
+            }
         }
 
-        return null;
+        return false;
     }
 }

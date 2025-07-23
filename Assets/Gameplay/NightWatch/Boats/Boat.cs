@@ -1,6 +1,4 @@
 using LightHouse.Game.Computer.NightWatch.Sonar;
-using LightHouse.Game.WaterExtension;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Boat : MonoBehaviour, ISonarable
@@ -13,6 +11,7 @@ public class Boat : MonoBehaviour, ISonarable
     [SerializeField] private BoidController _controller;
     [SerializeField] private BoatAnomalyController _anomalyController;
     public BoatAnomalyController AnomalyController => _anomalyController;
+    public Rigidbody RB => _rb;
 
     [Header("Sonar Element")]
     public string Name { get; }
@@ -32,6 +31,14 @@ public class Boat : MonoBehaviour, ISonarable
         _data = _boatsManager.Register();
         SonarHandlerData.Register(this);
         _controller.Initialize(_randomPointController.GetRandomPath());
+    }
+
+    private void LateUpdate()
+    {
+        if (_controller.Progress >= 1.0f)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     private void OnDestroy()
