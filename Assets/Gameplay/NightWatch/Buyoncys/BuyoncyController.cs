@@ -1,19 +1,37 @@
+using LightHouse.Game.Computer.NightWatch.Sonar;
 using LightHouse.Game.DayNightSystem;
 using LightHouse.Weather;
 using System;
 using UnityEngine;
 
-public class BuyoncyController : MonoBehaviour
+public class BuyoncyController : MonoBehaviour, ISonarable
 {
+    [SerializeField] private Rigidbody _rb;
     [SerializeField] private WeatherConfigDatabase _weatherDefinitionDatabase;
     [SerializeField] private NightWatchConfiguration _nightWatchConfig;
     [SerializeField] private float _minimumInitialLifeTime = 60f;
     [SerializeField] private float _maximumInitialLifeTime = 350f;
 
+    [SerializeField] private Color _aliveColor = Color.green;
+    [SerializeField] private Color _deadColor = Color.red;
+    [SerializeField] private Light _lifeLight;
+
     public event Action OnBroken;
     public event Action OnRepaired;
 
     public float CurrentSpeed { get; set; } = 1.0f;
+
+    public string Name => this.gameObject.name;
+
+    public int UniqueID { get; set; }
+    public bool IsDetectedBySonar { get ; set; }
+
+    public Vector3 Position => _rb.position;
+
+    public Vector3 RotationAngles => _rb.transform.eulerAngles;
+
+    [field: SerializeField] public Color DotColor { get; set; }
+    [field: SerializeField] public Vector2 DotSize { get; set; }
 
     private Timer _timer;
     public float CurrentLifeTime;
@@ -21,13 +39,16 @@ public class BuyoncyController : MonoBehaviour
     private void Awake()
     {
         _timer = new Timer(GetRandomLifeTime());
+        CurrentLifeTime = _timer.GetTimeRemaining();
         _timer.OnTimerComplete += OnTimerCompleted;
         WeatherHandlerData.OnWeatherTypeChanged += OnWeatherChanged;
+        SonarHandlerData.Register(this);
     }
 
     private void OnDestroy()
     {
         WeatherHandlerData.OnWeatherTypeChanged -= OnWeatherChanged;
+        SonarHandlerData.Unregister(this);
     }
 
     private void OnWeatherChanged(WeatherType type)
@@ -39,6 +60,7 @@ public class BuyoncyController : MonoBehaviour
     private void Start()
     {
         _timer.StartTimer();
+        _lifeLight.color = _aliveColor;
     }
 
     private void Update()
@@ -62,12 +84,14 @@ public class BuyoncyController : MonoBehaviour
 
     public void BreakDown()
     {
-        OnRepaired?.Invoke();        
+        OnBroken?.Invoke();
+        _lifeLight.color = _deadColor;
     }
 
     public void Repaired()
     {
         _timer.ResetTimer(GetRandomLifeTime());
         OnRepaired?.Invoke();
+        _lifeLight.color = _aliveColor;
     }
 }
