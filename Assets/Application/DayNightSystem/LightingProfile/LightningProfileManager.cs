@@ -126,7 +126,8 @@ namespace LightHouse.Game.Rendering
             else if (timeOfDay >= 0f && timeOfDay < 6f)
             {
                 from = _nightProfile;
-                to = _dayProfile;
+                to = _morningProfile;
+                Debug.Log("morning");
                 t = 0f;
             }
 
