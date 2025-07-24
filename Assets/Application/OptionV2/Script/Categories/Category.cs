@@ -1,9 +1,12 @@
 using UnityEngine;
+using static PopUp;
 
 public class Category : MonoBehaviour, IDisplayable
 {
     // Référence aux catégories à afficher/masquer
     [SerializeField] private SubCategory[] _subCategories;
+    [SerializeField] private PopUp _popUp;
+
     private SubCategory[] SubCategories
     {
         get
@@ -16,11 +19,9 @@ public class Category : MonoBehaviour, IDisplayable
         }
     }
 
-    [SerializeField] private PopUp _popUp;
-
     private void Awake()
     {
-        AddCategory();
+       AddCategory();
     }
 
     void Start()
@@ -33,7 +34,9 @@ public class Category : MonoBehaviour, IDisplayable
         foreach (var sub in SubCategories)
         {
             if (sub.HasAnyAppliedSetting())
+            {
                 return true;
+            }
         }
         return false;
     }
@@ -63,7 +66,6 @@ public class Category : MonoBehaviour, IDisplayable
             }
         }
     }
-
 
     // Affiche la sous-catégorie spécifiée et masque toutes les autres
     void ShowCategory(int indexToShow)

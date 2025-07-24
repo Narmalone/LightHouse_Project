@@ -1,10 +1,12 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Header : MonoBehaviour
 {
-    private Category[] _categories; // Référence aux catégories à afficher/masquer
+    [SerializeField] PopUp _popUp;
 
-    [SerializeField] private PopUp _popUp;
+    Category[] _categories; // Référence aux catégories à afficher/masquer
 
     void Start()
     {

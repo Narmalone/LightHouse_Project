@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class PopUp : MonoBehaviour, IDisplayable
 {
+    public delegate void PopUpDelagate();
+    public static event PopUpDelagate popUpApply;
+    public static event PopUpDelagate popUpReset;
+
     [SerializeField] TextMeshProUGUI _timerText;
     [SerializeField] float _timerValue = 10f;
 
@@ -17,32 +21,48 @@ public class PopUp : MonoBehaviour, IDisplayable
 
     void Start()
     {
-        Hide();
         _canvasGroup.blocksRaycasts = false;
+        Hide();
     }
 
     void Update()
     {
-        DebugInput();
-
-        // fps => secondes
-        _timer.Tick(_timerValue =+ Time.deltaTime);
 
         SetTimerText();
+        Countdown();
+    }
 
-        if (_timer.GetTimeRemaining() <= 0)
+
+    public void Onclic(bool apply)
+    {
+        if (apply)
         {
+            popUpApply?.Invoke();
             Hide();
+        }
+        else
+        {
+            ResetSetting();
         }
     }
 
-    // pour tester
-    void DebugInput()
+    // Décompte du chrono
+    void Countdown()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        // fps => secondes
+        _timer.Tick(_timerValue =+ Time.deltaTime);
+
+        if (_timer.GetTimeRemaining() <= 0)
         {
-            Show();
+            ResetSetting();
+            Debug.Log("RESET !!!");
         }
+    }
+
+    void ResetSetting()
+    {
+        popUpReset?.Invoke();
+        Hide();
     }
 
     // met à jour le texte

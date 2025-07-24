@@ -1,12 +1,26 @@
 using LightHouse.Interactions;
 using System.Collections.Generic;
 using UnityEngine;
+using static PopUp;
 
 public class SubCategory : MonoBehaviour, IDisplayable
 {
+    public List<IConfigurable> _settings = new List<IConfigurable>();
+    public static event PopUpDelagate popUpDelagate;
+
     CanvasGroup _canvasGroup;
 
-    public List<IConfigurable> _settings = new List<IConfigurable>();
+    private void OnEnable()
+    {
+        PopUp.popUpApply += ApplyChangedSettings;
+        PopUp.popUpReset += ResetChangedSettings;
+    }
+
+    private void OnDisable()
+    {
+        PopUp.popUpApply -= ApplyChangedSettings;
+        PopUp.popUpReset -= ResetChangedSettings;
+    }
 
     void Awake()
     {

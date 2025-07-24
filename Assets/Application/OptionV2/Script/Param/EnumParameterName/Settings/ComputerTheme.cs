@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class ComputerTheme : EnumWrapper, IConfigurable
 {
-    private EColors _color;
-    private EColors _defaultColor;
-    private EColors _appliedColor;
+    [SerializeField] private EColors _color;
+    [SerializeField] private EColors _defaultColor;
+    [SerializeField] private EColors _appliedColor;
 
     private new void Start()
     {
         base.Start();
-        _defaultColor = EColors.Blue;
+        _defaultColor = EColors.Red;
         _color = _defaultColor;
         _appliedColor = _color;
     }
@@ -31,7 +31,7 @@ public class ComputerTheme : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Sizes apply");
+            Debug.Log("ComputerTheme apply");
             _appliedColor = _color;
         }
     }
@@ -40,7 +40,7 @@ public class ComputerTheme : EnumWrapper, IConfigurable
     {
         if (HasChanged() && HasBeenApplied())
         {
-            Debug.Log("Sizes reset");
+            Debug.Log("ComputerTheme reset");
             _color = _defaultColor;
             _appliedColor = _defaultColor;
             SetDisplayText();
@@ -50,7 +50,6 @@ public class ComputerTheme : EnumWrapper, IConfigurable
     public bool HasBeenApplied()
     {
         return _appliedColor == _color;
-
     }
 }
 
