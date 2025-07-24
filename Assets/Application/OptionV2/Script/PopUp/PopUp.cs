@@ -12,6 +12,7 @@ public class PopUp : MonoBehaviour, IDisplayable
 
     CanvasGroup _canvasGroup;
     Timer _timer;
+    bool _doOnce;
 
     private void Awake()
     {
@@ -52,10 +53,10 @@ public class PopUp : MonoBehaviour, IDisplayable
         // fps => secondes
         _timer.Tick(_timerValue =+ Time.deltaTime);
 
-        if (_timer.GetTimeRemaining() <= 0)
+        if (_timer.GetTimeRemaining() <= 0 && !_doOnce) //  
         {
             ResetSetting();
-            Debug.Log("RESET !!!");
+            _doOnce = true;
         }
     }
 
@@ -78,6 +79,7 @@ public class PopUp : MonoBehaviour, IDisplayable
         _timer.ResetTimer();
         _timer.StartTimer();
         SetCanvaGroup(1f, true, true);
+        _doOnce = false;
     }
 
     // le pop up disparait et arrête le timer

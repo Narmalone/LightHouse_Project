@@ -26,7 +26,7 @@ public class Category : MonoBehaviour, IDisplayable
 
     void Start()
     {
-        ShowCategory(0); // Affiche Gameplay par défaut
+       ShowCategory(0); // Affiche Gameplay par défaut
     }
 
     public bool HasAnyAppliedSetting()
@@ -36,6 +36,7 @@ public class Category : MonoBehaviour, IDisplayable
             if (sub.HasAnyAppliedSetting())
             {
                 return true;
+                Debug.Log("true");
             }
         }
         return false;
@@ -63,6 +64,7 @@ public class Category : MonoBehaviour, IDisplayable
             else
             {
                 _popUp.Show();
+                Debug.Log("show");
             }
         }
     }

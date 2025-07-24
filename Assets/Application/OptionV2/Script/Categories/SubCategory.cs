@@ -10,13 +10,13 @@ public class SubCategory : MonoBehaviour, IDisplayable
 
     CanvasGroup _canvasGroup;
 
-    private void OnEnable()
+    void OnEnable()
     {
         PopUp.popUpApply += ApplyChangedSettings;
         PopUp.popUpReset += ResetChangedSettings;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         PopUp.popUpApply -= ApplyChangedSettings;
         PopUp.popUpReset -= ResetChangedSettings;
@@ -67,20 +67,20 @@ public class SubCategory : MonoBehaviour, IDisplayable
     // applique tout les param de la sous-catégorie
     public void ApplyChangedSettings()
     {
-        ApplyOrReset(true);
+        OnClic(true);
     }
 
     // réinitialise tout les param de la sous-catégorie
     public void ResetChangedSettings()
     {
-        ApplyOrReset(false);
+        OnClic(false);
     }
 
-    void ApplyOrReset(bool shouldApply)
+    void OnClic(bool apply)
     {
         foreach (IConfigurable configurable in _settings)
         {
-            if (shouldApply)
+            if (apply)
             {
                 configurable.Apply();
             }
@@ -96,7 +96,9 @@ public class SubCategory : MonoBehaviour, IDisplayable
         foreach (var setting in _settings)
         {
             if (setting.HasBeenApplied())
+            {
                 return true;
+            }
         }
         return false;
     }
