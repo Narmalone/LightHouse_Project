@@ -1,10 +1,8 @@
-using System.Diagnostics;
-
 public class CrossairOpacity : SliderParam, IConfigurable
 {
     new private void Start()
     {
-        _defaultValue = 1f;
+        _defaultValue = 1;
         base.Start();
     }
     void Update()

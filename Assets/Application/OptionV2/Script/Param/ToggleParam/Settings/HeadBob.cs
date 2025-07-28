@@ -2,6 +2,19 @@ using UnityEngine;
 
 public class HeadBob : ToggleParameter, IConfigurable
 {
+    private void Update()
+    {
+        //Debuging();
+    }
+
+    void Debuging()
+    {
+        if (HasBeenApplied())
+        {
+            print("Head Bob :" + HasBeenApplied());
+        }
+    }
+
     public bool HasChanged()
     {
         return _enable != _defaultEnable;

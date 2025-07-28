@@ -14,7 +14,7 @@ public class PopUp : MonoBehaviour, IDisplayable
     Timer _timer;
     bool _doOnce;
 
-    private void Awake()
+    void Awake()
     {
         _timer = new Timer(_timerValue);
         _canvasGroup = GetComponent<CanvasGroup>();
@@ -28,7 +28,6 @@ public class PopUp : MonoBehaviour, IDisplayable
 
     void Update()
     {
-
         SetTimerText();
         Countdown();
     }
@@ -53,7 +52,7 @@ public class PopUp : MonoBehaviour, IDisplayable
         // fps => secondes
         _timer.Tick(_timerValue =+ Time.deltaTime);
 
-        if (_timer.GetTimeRemaining() <= 0 && !_doOnce) //  
+        if (_timer.GetTimeRemaining() <= 0 && !_doOnce)  
         {
             ResetSetting();
             _doOnce = true;

@@ -28,7 +28,7 @@ public class SubtitlesSizes : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Subtitles Sizes apply");
             _aplliedSize = _size;
@@ -46,7 +46,7 @@ public class SubtitlesSizes : EnumWrapper, IConfigurable
         }
     }
 
-    bool IConfigurable.HasBeenApplied()
+    public bool HasBeenApplied()
     {
         return _aplliedSize == _size;
     }

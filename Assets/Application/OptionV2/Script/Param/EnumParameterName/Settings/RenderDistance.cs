@@ -28,7 +28,7 @@ public class RenderDistance : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Render Distance apply");
             _appliedQuality = _quality;

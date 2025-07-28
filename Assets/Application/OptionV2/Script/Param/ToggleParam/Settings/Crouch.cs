@@ -2,6 +2,19 @@ using UnityEngine;
 
 public class Crouch : ToggleParameter, IConfigurable
 {
+    private void Update()
+    {
+        //Debuging();
+    }
+
+    void Debuging()
+    {
+        if (HasBeenApplied())
+        {
+            print("Crouch :" + HasBeenApplied());
+        }
+    }
+
     public bool HasChanged()
     {
         return _enable != _defaultEnable;

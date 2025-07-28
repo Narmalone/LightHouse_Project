@@ -1,4 +1,3 @@
-using LightHouse.Interactions;
 using System.Collections.Generic;
 using UnityEngine;
 using static PopUp;
@@ -76,31 +75,36 @@ public class SubCategory : MonoBehaviour, IDisplayable
         OnClic(false);
     }
 
+    // Button UI
     void OnClic(bool apply)
     {
+        // Parcourt les settings implémentant l'interface IConfigurable
         foreach (IConfigurable configurable in _settings)
         {
+            // définis le boutton d'application
             if (apply)
             {
-                configurable.Apply();
+                configurable.Apply(); // applique
             }
             else
             {
-                configurable.Reset();
+                configurable.Reset(); // réinitialise
             }
         }
     }
 
-    public bool HasAnyAppliedSetting()
+    public bool HasAnyUnappliedSetting()
     {
-        foreach (var setting in _settings)
+        // Parcourt les settings implémentant l'interface IConfigurable
+        foreach (IConfigurable configurable in _settings)
         {
-            if (setting.HasBeenApplied())
+            // si il trouve un setting pas appliqué...
+            if (!configurable.HasBeenApplied())
             {
-                return true;
+                return true; // HasAnyUnappliedSetting() renvoie vrai
             }
         }
-        return false;
+        return false; // HasAnyUnappliedSetting() renvoie faux
     }
 
     // la sous-catégorie apparait

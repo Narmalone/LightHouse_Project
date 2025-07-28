@@ -28,7 +28,7 @@ public class Languages : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Subtitles Language apply");
             _appliedLanguages = _languages; 

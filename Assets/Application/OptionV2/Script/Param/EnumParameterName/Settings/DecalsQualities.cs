@@ -28,7 +28,7 @@ public class DecalsQualities : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Decals Qualities apply");
             _appliedQuality = _quality;
@@ -46,7 +46,7 @@ public class DecalsQualities : EnumWrapper, IConfigurable
         }
     }
 
-    bool IConfigurable.HasBeenApplied()
+    public bool HasBeenApplied()
     {
         return _appliedQuality == _defaultQuality;
     }

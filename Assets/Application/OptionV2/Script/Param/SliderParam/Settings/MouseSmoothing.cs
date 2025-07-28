@@ -1,12 +1,11 @@
-using UnityEngine;
-
 public class MouseSmoothing : SliderParam, IConfigurable
 {
     new private void Start()
     {
-        _defaultValue = 0.5f;
+        _defaultValue = 5f;
         base.Start();
     }
+
     void Update()
     {
         //Apply();

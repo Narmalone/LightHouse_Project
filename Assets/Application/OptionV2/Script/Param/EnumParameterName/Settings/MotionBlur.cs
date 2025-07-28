@@ -27,7 +27,7 @@ public class MotionBlur : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Motion Blur apply");
             _appliedQuality = _quality;

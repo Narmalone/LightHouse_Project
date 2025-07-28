@@ -27,7 +27,7 @@ public class EnvironnementDetails : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Environnement Details apply");
             _appliedQuality = _quality;

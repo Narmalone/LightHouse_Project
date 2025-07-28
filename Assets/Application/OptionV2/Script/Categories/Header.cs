@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Header : MonoBehaviour
 {
-    [SerializeField] PopUp _popUp;
+    [SerializeField] PopUp _popUp; // ref au Pop Up
 
     Category[] _categories; // Référence aux catégories à afficher/masquer
 
@@ -25,15 +25,17 @@ public class Header : MonoBehaviour
     // Méthodes appelées quand on clique sur un bouton correspondant à une sous-catégorie
     public void OnClic(int index)
     {
+        // Parcourt les categories
         foreach (var category in _categories)
         {
-            if (category.HasAnyAppliedSetting())
+            // si il trouve un setting pas appliqué...
+            if (category.GetUnappliedSetting())
             {
-                ShowCategory(index);
+                _popUp.Show(); // pop apparait
             }
             else
             {
-                _popUp.Show();
+                ShowCategory(index); // chande de categories
             }
         }
     }

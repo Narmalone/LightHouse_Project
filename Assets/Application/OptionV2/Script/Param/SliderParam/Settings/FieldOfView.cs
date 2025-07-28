@@ -1,4 +1,3 @@
-using UnityEngine;
 using System.Diagnostics;
 
 public class FieldOfView : SliderParam, IConfigurable
@@ -11,8 +10,16 @@ public class FieldOfView : SliderParam, IConfigurable
     void Update()
     {
         //Apply();
+        //Debuging();
     }
 
+    void Debuging()
+    {
+        if (HasBeenApplied())
+        {
+            print("Field Of View : " + HasBeenApplied());
+        }
+    }
     public void Apply()
     {
         if (HasChanged())
@@ -21,7 +28,7 @@ public class FieldOfView : SliderParam, IConfigurable
             _appliedValue = _slider.value;
         }
     }
-
+     
     public bool HasChanged()
     {
         return _slider.value != _defaultValue;

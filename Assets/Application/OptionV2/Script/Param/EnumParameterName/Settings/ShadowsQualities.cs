@@ -27,7 +27,7 @@ public class ShadowsQualities : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Shadows Qualities apply");
             _appliedQuality = _quality;
@@ -45,7 +45,7 @@ public class ShadowsQualities : EnumWrapper, IConfigurable
         }
     }
 
-    bool IConfigurable.HasBeenApplied()
+    public bool HasBeenApplied()
     {
         return _appliedQuality == _quality;
     }

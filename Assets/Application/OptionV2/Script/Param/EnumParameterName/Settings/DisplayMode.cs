@@ -27,7 +27,7 @@ public class DisplayMode : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("DisplayMode apply");
             _appliedDisplayMode = _displayMode;
@@ -45,7 +45,7 @@ public class DisplayMode : EnumWrapper, IConfigurable
         }
     }
 
-    bool IConfigurable.HasBeenApplied()
+    public bool HasBeenApplied()
     {
         return _appliedDisplayMode == _displayMode;
     }

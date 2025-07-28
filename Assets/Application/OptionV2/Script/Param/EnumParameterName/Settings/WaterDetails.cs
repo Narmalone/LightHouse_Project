@@ -27,7 +27,7 @@ public class WaterDetails : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Water Details apply");
             _appliedQuality = _quality;

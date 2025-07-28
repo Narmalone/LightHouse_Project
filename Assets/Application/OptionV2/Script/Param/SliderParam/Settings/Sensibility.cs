@@ -1,11 +1,8 @@
-using AYellowpaper.SerializedCollections;
-using System.Diagnostics;
 using UnityEngine;
 
 public class Sensibility : SliderParam, IConfigurable
 {
     [SerializeField] string _axis;
-
 
     new private void Start()
     {

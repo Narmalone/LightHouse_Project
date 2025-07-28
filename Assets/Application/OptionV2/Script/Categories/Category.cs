@@ -1,5 +1,4 @@
 using UnityEngine;
-using static PopUp;
 
 public class Category : MonoBehaviour, IDisplayable
 {
@@ -29,17 +28,18 @@ public class Category : MonoBehaviour, IDisplayable
        ShowCategory(0); // Affiche Gameplay par défaut
     }
 
-    public bool HasAnyAppliedSetting()
+    public bool GetUnappliedSetting()
     {
-        foreach (var sub in SubCategories)
+        // Parcourt les subCategories
+        foreach (var subCategories in SubCategories)
         {
-            if (sub.HasAnyAppliedSetting())
+            // s'il y a des param non-appliqués...
+            if (subCategories.HasAnyUnappliedSetting())
             {
-                return true;
-                Debug.Log("true");
+                return true; // renvoie vrai
             }
         }
-        return false;
+        return false; // renvoie faux
     }
 
     void AddCategory()
@@ -55,17 +55,14 @@ public class Category : MonoBehaviour, IDisplayable
     // Méthodes appelées quand on clique sur un bouton correspondant à une sous-catégorie
     public void OnClic(int index)
     {
-        foreach (var sub in _subCategories)
+        // s'il y a des param non-appliqués...
+        if (GetUnappliedSetting())
         {
-            if (sub.HasAnyAppliedSetting())
-            {
-                ShowCategory(index);
-            }
-            else
-            {
-                _popUp.Show();
-                Debug.Log("show");
-            }
+            _popUp.Show(); // fait apparaitre le pop up
+        }
+        else
+        {
+            ShowCategory(index); // change de catégorie
         }
     }
 

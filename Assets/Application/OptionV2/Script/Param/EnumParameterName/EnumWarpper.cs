@@ -17,8 +17,17 @@ public abstract class EnumWrapper : MonoBehaviour
     public abstract void SetIndex(int index);
     public abstract int GetIndex();
 
-    public void OnClicPositiveButton() => Increment();
-    public void OnClicNegativeButton() => Decrement();
+    public void OnClic(bool add)
+    {
+        if (add)
+        {
+            Increment();
+        }
+        else
+        {
+            Decrement();
+        }
+    }
 
     protected void Increment()
     {

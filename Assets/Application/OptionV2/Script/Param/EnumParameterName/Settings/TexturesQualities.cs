@@ -27,7 +27,7 @@ public class TexturesQualities : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Textures Qualities apply");
             _appliedQuality = _quality;

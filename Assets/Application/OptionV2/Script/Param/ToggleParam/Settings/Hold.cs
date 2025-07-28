@@ -2,6 +2,18 @@ using UnityEngine;
 
 public class Hold : ToggleParameter, IConfigurable
 {
+    private void Update()
+    {
+        //Debuging();
+    }
+    void Debuging()
+    {
+        if (HasBeenApplied())
+        {
+            print("Hold :" + HasBeenApplied());
+        }
+    }
+
     public bool HasChanged()
     {
         return _enable != _defaultEnable;

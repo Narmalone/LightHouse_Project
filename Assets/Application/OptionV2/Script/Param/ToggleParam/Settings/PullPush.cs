@@ -2,6 +2,19 @@ using UnityEngine;
 
 public class PullPush : ToggleParameter, IConfigurable
 {
+    private void Update()
+    {
+        //Debuging();
+    }
+
+    void Debuging()
+    {
+        if (HasBeenApplied())
+        {
+            print("Pull / Push : " + HasBeenApplied());
+        }
+    }
+
     public bool HasChanged()
     {
         return _enable != _defaultEnable;
