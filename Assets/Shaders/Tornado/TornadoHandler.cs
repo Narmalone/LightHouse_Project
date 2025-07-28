@@ -27,6 +27,8 @@ public class TornadoHandler : MonoBehaviour
 
     [Header("Shape")]
     public float Height;
+    public float VortexRadius = 1;
+    public float TornadoWidth = 1;
 
     [Header("Rotation Settings")]
     public float RotationSpeed = 1f;
@@ -90,10 +92,10 @@ public class TornadoHandler : MonoBehaviour
         //Update Local Volumetric Fogs
 
         float updatedHeightForLVF = Height + Height / 5;
-        LVF_BaseTornado.parameters.size = new Vector3(updatedHeightForLVF / 2, updatedHeightForLVF, updatedHeightForLVF/2);
-        LVF_SubTornado.parameters.size = new Vector3(updatedHeightForLVF / 2, updatedHeightForLVF, updatedHeightForLVF / 2);
-        LVF_BottomFog.parameters.size = new Vector3(updatedHeightForLVF, Height/5, updatedHeightForLVF);
-        LVF_TopFog.parameters.size = new Vector3(updatedHeightForLVF, Height / 5, updatedHeightForLVF);
+        LVF_BaseTornado.parameters.size = new Vector3(updatedHeightForLVF / 2 * TornadoWidth, updatedHeightForLVF, updatedHeightForLVF/2  * TornadoWidth);
+        LVF_SubTornado.parameters.size = new Vector3(updatedHeightForLVF / 2 * TornadoWidth, updatedHeightForLVF, updatedHeightForLVF / 2 * TornadoWidth);
+        LVF_BottomFog.parameters.size = new Vector3(updatedHeightForLVF * VortexRadius, Height/5 * VortexRadius, updatedHeightForLVF * VortexRadius);
+        LVF_TopFog.parameters.size = new Vector3(updatedHeightForLVF * VortexRadius, Height / 5 * VortexRadius, updatedHeightForLVF * VortexRadius);
         LVF_TornadoParticles.parameters.size = new Vector3(Height * 3 / 4, Height, Height * 3 / 4);
 
         LVF_BaseTornado.parameters.distanceFadeStart = RenderDistance;
@@ -134,8 +136,8 @@ public class TornadoHandler : MonoBehaviour
         M_TornadoParticles.SetFloat(_tornadoRotationSpeed, -RotationSpeed * 10);
 
         //Fog Distance
-        M_BaseTornadoMaterial.SetFloat(_tornadoFogDistance, FogDistance / 3);
-        M_SubTornadoMaterial.SetFloat(_tornadoFogDistance, FogDistance);
+        M_BaseTornadoMaterial.SetFloat(_tornadoFogDistance, FogDistance * 3);
+        M_SubTornadoMaterial.SetFloat(_tornadoFogDistance, FogDistance * 2);
         M_TopTornadoFogMaterial.SetFloat(_tornadoFogDistance, FogDistance);
         M_BottomTornadoFogMaterial.SetFloat(_tornadoFogDistance, FogDistance);
         M_TornadoParticles.SetFloat(_tornadoFogDistance, FogDistance / (1 / ParticlesFogDistanceDilution));
@@ -149,11 +151,11 @@ public class TornadoHandler : MonoBehaviour
         M_TornadoParticles.SetFloat(_tornadoOpacity, Opacity);
 
         //Radius
-        M_TopTornadoFogMaterial.SetFloat(_tornadoRadius, Height / 2);
-        M_TopTornadoFogMaterial.SetFloat(_tornadoRadiusOfGrowth, Height / 2);
+        M_TopTornadoFogMaterial.SetFloat(_tornadoRadius, Height / 2 * VortexRadius);
+        M_TopTornadoFogMaterial.SetFloat(_tornadoRadiusOfGrowth, Height / 2 * VortexRadius);
 
-        M_BottomTornadoFogMaterial.SetFloat(_tornadoRadius, Height / 2);
-        M_BottomTornadoFogMaterial.SetFloat(_tornadoRadiusOfGrowth, Height / 2);
+        M_BottomTornadoFogMaterial.SetFloat(_tornadoRadius, Height / 2 * VortexRadius);
+        M_BottomTornadoFogMaterial.SetFloat(_tornadoRadiusOfGrowth, Height / 2 * VortexRadius);
     }
     private void DebugGetFogMaterialPropertyNames()
     {
