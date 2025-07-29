@@ -24,7 +24,7 @@ public class Crouch : ToggleParameter, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Crouch Apply");
+            //Debug.Log("Crouch Apply");
             _appliedEnable = _enable;
         }
     }
@@ -33,7 +33,7 @@ public class Crouch : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Crouch reset");
+            //Debug.Log("Crouch reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();

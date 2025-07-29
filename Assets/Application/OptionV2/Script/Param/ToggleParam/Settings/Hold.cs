@@ -23,7 +23,7 @@ public class Hold : ToggleParameter, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Hold Apply");
+            //Debug.Log("Hold Apply");
             _appliedEnable = _enable;
         }
     }
@@ -32,7 +32,7 @@ public class Hold : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Hold reset");
+            //Debug.Log("Hold reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();

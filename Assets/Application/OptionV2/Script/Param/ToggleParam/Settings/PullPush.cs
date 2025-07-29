@@ -24,7 +24,7 @@ public class PullPush : ToggleParameter, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Pull/Push Apply");
+            //Debug.Log("Pull/Push Apply");
             _appliedEnable = _enable;
         }
     }
@@ -33,7 +33,7 @@ public class PullPush : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Pull/Push reset");
+            //Debug.Log("Pull/Push reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();

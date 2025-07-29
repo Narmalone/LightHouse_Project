@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ResolutionSettings : MonoBehaviour, IConfigurable
+public class ResolutionSettings : MonoBehaviour //, IConfigurable
 {
     [SerializeField] TextMeshProUGUI _displayText;
 
@@ -98,7 +98,7 @@ public class ResolutionSettings : MonoBehaviour, IConfigurable
         }
     }
 
-    bool IConfigurable.HasBeenApplied()
+    public bool HasBeenApplied()
     {
         throw new System.NotImplementedException();
     }

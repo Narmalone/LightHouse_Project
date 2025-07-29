@@ -24,7 +24,7 @@ public class FieldOfView : SliderParam, IConfigurable
     {
         if (HasChanged())
         {
-            print ("FOV : " + _slider.value);
+            //print ("FOV : " + _slider.value);
             _appliedValue = _slider.value;
         }
     }

@@ -34,6 +34,13 @@ public class SubCategory : MonoBehaviour, IDisplayable
 
     void Update()
     {
+        InputDebug();
+
+        print(HasAnyUnappliedSetting());
+    }
+
+    void InputDebug()
+    {
         // en fait c'est "A" mais pour une raison que j'ignore c'est en QWERTY
         if (Input.GetKeyDown(KeyCode.F))
         {
@@ -59,12 +66,13 @@ public class SubCategory : MonoBehaviour, IDisplayable
             if (configurable != null)
             {
                 _settings.Add(configurable);
+                //print(configurable);
             }
         }
     }
 
     // applique tout les param de la sous-catégorie
-    public void ApplyChangedSettings()
+    public void ApplyChangedSettings()  
     {
         OnClic(true);
     }
@@ -84,11 +92,20 @@ public class SubCategory : MonoBehaviour, IDisplayable
             // définis le boutton d'application
             if (apply)
             {
-                configurable.Apply(); // applique
+                if (configurable.HasChanged())
+                {
+                    configurable.Apply(); // applique
+                    Debug.Log (configurable + " : Appliqué");
+                }
             }
             else
             {
-                configurable.Reset(); // réinitialise
+                if (configurable.HasChanged())
+                {
+                    configurable.Reset(); // réinitialise
+                    Debug.Log (configurable + " : Réinitialisé");
+
+                }
             }
         }
     }

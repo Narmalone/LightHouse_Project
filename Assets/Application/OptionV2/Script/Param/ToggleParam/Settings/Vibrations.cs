@@ -32,3 +32,4 @@ public class Vibrations : ToggleParameter, IConfigurable
         return _appliedEnable = _enable;
     }
 }
+        

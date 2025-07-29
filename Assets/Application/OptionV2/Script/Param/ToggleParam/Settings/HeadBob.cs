@@ -22,7 +22,7 @@ public class HeadBob : ToggleParameter, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged() && !HasBeenApplied())
+        if (HasChanged())
         {
             Debug.Log("Head Bob Apply");
             _appliedEnable = _enable;
@@ -33,7 +33,7 @@ public class HeadBob : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Head Bob reset");
+            //Debug.Log("Head Bob reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();

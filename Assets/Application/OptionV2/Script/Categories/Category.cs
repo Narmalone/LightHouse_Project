@@ -6,7 +6,9 @@ public class Category : MonoBehaviour, IDisplayable
     [SerializeField] private SubCategory[] _subCategories;
     [SerializeField] private PopUp _popUp;
 
-    private SubCategory[] SubCategories
+    CanvasGroup _canvasGroup;
+
+    SubCategory[] SubCategories
     {
         get
         {
@@ -17,7 +19,10 @@ public class Category : MonoBehaviour, IDisplayable
             return _subCategories;
         }
     }
-
+    private void Update()
+    {
+        //print(GetUnappliedSetting());
+    }
     private void Awake()
     {
        AddCategory();
@@ -26,6 +31,8 @@ public class Category : MonoBehaviour, IDisplayable
     void Start()
     {
        ShowCategory(0); // Affiche Gameplay par défaut
+       _canvasGroup = GetComponent<CanvasGroup>();
+
     }
 
     public bool GetUnappliedSetting()
@@ -87,11 +94,21 @@ public class Category : MonoBehaviour, IDisplayable
 
     public void Show()
     {
+        //SetCanvaGroup(1f, true, true);
         gameObject.SetActive(true);
     }
 
     public void Hide()
     {
+        //SetCanvaGroup(0f, false, false);
         gameObject.SetActive(false);
+    }
+
+    // change les valeurs du canva group
+    void SetCanvaGroup(float alpha, bool interactable, bool blocksRaycasts)
+    {
+        _canvasGroup.alpha = alpha;
+        _canvasGroup.interactable = interactable;
+        _canvasGroup.blocksRaycasts = blocksRaycasts;
     }
 }
