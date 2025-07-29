@@ -26,6 +26,7 @@ public class Boat : MonoBehaviour, ISonarable
 
     [field: SerializeField] public Color DotColor { get; set; }
     [field: SerializeField] public Vector2 DotSize { get; set; } = new Vector2(15, 15);
+    [field: SerializeField] public Sprite DotSprite { get; set; }
 
     private void Awake()
     {

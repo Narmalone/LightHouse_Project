@@ -32,6 +32,7 @@ public class BuyoncyController : MonoBehaviour, ISonarable
 
     [field: SerializeField] public Color DotColor { get; set; }
     [field: SerializeField] public Vector2 DotSize { get; set; }
+    [field: SerializeField] public Sprite DotSprite { get; set; }
 
     private Timer _timer;
     public float CurrentLifeTime;

@@ -114,6 +114,7 @@ public class SonarUI : MonoBehaviour
                 var dotInstance = Instantiate(_sonarDotPrefab, _sonnarPannel);
                 dotInstance.SetDotColor(item.DotColor); // couleur personnalisée
                 dotInstance.SetDotSize(item.DotSize);
+                dotInstance.SetDotSprite(item.DotSprite);
                 dot = dotInstance;
                 _activeDots[item.UniqueID] = dot;
             }

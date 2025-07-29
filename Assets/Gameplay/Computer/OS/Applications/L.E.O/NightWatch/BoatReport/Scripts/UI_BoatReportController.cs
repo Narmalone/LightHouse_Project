@@ -9,6 +9,7 @@ public class UI_BoatReportController : NightWatchReportWindow
     [SerializeField] private BoatsNationalitiesManager _nationalityManager;
     [SerializeField] private BoatAnomaliesDatabase _anomalyDatabase;
     [SerializeField] private AnomalyReportButton[] _anomaliesButton;
+    [SerializeField] private NightWatchSendDatas _nightWatchSendDatasPrefab;
     [SerializeField] TMP_Dropdown _nationalitiesDropdown;
     [SerializeField] Image _dropdownFlag;
     [SerializeField] private Image _summaryFlag;
@@ -61,6 +62,7 @@ public class UI_BoatReportController : NightWatchReportWindow
         //générer la pop up
         //check if sended datas are goods
         //Update the pop up if it's good or not
+        bool isSuccessFull = false;
         if (_nationalityManager.FindName(BoatNameInput, out BoatData data))
         {
             Debug.Log($"Bateau correspondant: {data.Name}");
@@ -71,6 +73,7 @@ public class UI_BoatReportController : NightWatchReportWindow
             if (flagCorrect && anomalyCorrect)
             {
                 Debug.Log("✅ Report VALID: Name + flag + anomalie OK");
+                isSuccessFull = true;
             }
             else
             {
@@ -79,6 +82,8 @@ public class UI_BoatReportController : NightWatchReportWindow
                 if (!anomalyCorrect) Debug.Log("→ Mauvaise anomalie");
             }
         }
+        var instance = Instantiate(_nightWatchSendDatasPrefab, this.transform);
+        instance.IsSuccessfull = isSuccessFull;
     }
     private void SetupAnomalyButtons()
     {

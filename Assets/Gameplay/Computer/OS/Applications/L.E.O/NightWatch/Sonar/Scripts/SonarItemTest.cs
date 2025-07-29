@@ -13,6 +13,7 @@ namespace LightHouse.Game.Computer.NightWatch.Sonar
         [field: SerializeField] public Color DotColor { get; set; } = Color.green;
         [field: SerializeField] public Vector2 DotSize { get; set; } = new Vector2(20f, 20f);
         [field: SerializeField] public int UniqueID { get; set; } = -1;
+        [field: SerializeField] public Sprite DotSprite { get; set; }
 
         private void OnEnable()
         {
