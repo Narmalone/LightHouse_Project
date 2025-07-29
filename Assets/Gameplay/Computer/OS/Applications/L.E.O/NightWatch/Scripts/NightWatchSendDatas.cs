@@ -35,11 +35,12 @@ public class NightWatchSendDatas : MonoBehaviour
     [SerializeField] private HeightsLerpers _dataMissmatch;
 
     [Header("Loading Animation")]
+    [SerializeField] private GameObject _loadingContent;
     [SerializeField] private AnimationCurve _loadingCurve;
     [SerializeField] private float _loadingDuration = 3f;
 
     [Header("Success")]
-    [SerializeField] private GameObject _loadingContent;
+    [SerializeField] private GameObject _successContent;
     [SerializeField] private Color _successImageColor = Color.green;
     [SerializeField] private string _sucessText;
 
@@ -56,6 +57,7 @@ public class NightWatchSendDatas : MonoBehaviour
     public DataStatus CurrentStatus { get; private set; } = DataStatus.None;
     public bool IsSuccessfull { get; set; } = false;
     private Coroutine _loadingRoutine;
+    private GameObject _lastContentOpened;
 
     private void Start()
     {
@@ -83,19 +85,24 @@ public class NightWatchSendDatas : MonoBehaviour
     {
         if (CurrentStatus == nextStatus) return;
         CurrentStatus = nextStatus;
-
+        _lastContentOpened?.SetActive(false);
         switch (nextStatus)
         {
             case DataStatus.Loading:
+                _lastContentOpened = _loadingContent;
                 EnterLoadingState();
                 break;
             case DataStatus.Success:
+                _lastContentOpened = _successContent;
                 EnterSuccessState();
                 break;
             case DataStatus.Failed:
+                _lastContentOpened = _failureContent;
                 EnterFailedState();
                 break;
             case DataStatus.DataMissmatch:
+                _lastContentOpened = _missmatchContent;
+                EnterDataMissmatchState();
                 break;
         }
     }
@@ -113,6 +120,7 @@ public class NightWatchSendDatas : MonoBehaviour
 
     private void EnterLoadingState()
     {
+        _loadingContent.SetActive(true);
         _mainLerp.SetTargetHeight(_pending.MainWindowSize);
         _contentLerper.SetTargetHeight(_pending.ContentwindowSize);
 
@@ -142,11 +150,12 @@ public class NightWatchSendDatas : MonoBehaviour
     private void OnLoadingFinished(bool success)
     {
         _reportResultHeaderImage.gameObject.SetActive(true);
-        SwitchTo(success ? DataStatus.Success : DataStatus.Failed);
+        SwitchTo(success ? DataStatus.Success : DataStatus.DataMissmatch);
     }
 
     private void EnterSuccessState()
     {
+        _successContent.gameObject.SetActive(true);
         _mainLerp.SetTargetHeight(_success.MainWindowSize);
         _contentLerper.SetTargetHeight(_success.ContentwindowSize);
         _progressBar.value = 1f;
@@ -157,6 +166,7 @@ public class NightWatchSendDatas : MonoBehaviour
 
     private void EnterFailedState()
     {
+        _failureContent.gameObject.SetActive(true);
         _mainLerp.SetTargetHeight(_failed.MainWindowSize);
         _contentLerper.SetTargetHeight(_failed.ContentwindowSize);
         _progressBar.value = 0f;
@@ -167,6 +177,7 @@ public class NightWatchSendDatas : MonoBehaviour
 
     private void EnterDataMissmatchState()
     {
+        _missmatchContent.gameObject.SetActive(true);   
         _mainLerp.SetTargetHeight(_dataMissmatch.MainWindowSize);
         _contentLerper.SetTargetHeight(_dataMissmatch.ContentwindowSize);
         _progressBar.value = 0f;

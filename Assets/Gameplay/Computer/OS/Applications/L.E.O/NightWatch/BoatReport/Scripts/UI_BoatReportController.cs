@@ -10,6 +10,7 @@ public class UI_BoatReportController : NightWatchReportWindow
     [SerializeField] private BoatAnomaliesDatabase _anomalyDatabase;
     [SerializeField] private AnomalyReportButton[] _anomaliesButton;
     [SerializeField] private NightWatchSendDatas _nightWatchSendDatasPrefab;
+    [SerializeField] private BoatAnomalyTimerController _anomalyTimerController;
     [SerializeField] TMP_Dropdown _nationalitiesDropdown;
     [SerializeField] Image _dropdownFlag;
     [SerializeField] private Image _summaryFlag;
@@ -74,6 +75,8 @@ public class UI_BoatReportController : NightWatchReportWindow
             {
                 Debug.Log("✅ Report VALID: Name + flag + anomalie OK");
                 isSuccessFull = true;
+                //Get difference here to know in how many time he resolved the problem
+                //How can we know it's the good solved
             }
             else
             {

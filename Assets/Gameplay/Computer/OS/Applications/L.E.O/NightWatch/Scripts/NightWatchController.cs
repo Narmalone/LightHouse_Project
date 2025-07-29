@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public enum E_NightWatchMode
 {
     Boat,
-    Buoys
+    Buoys,
+    Signals
 }
 
 public class NightWatchController : LEOWindow
