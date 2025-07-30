@@ -29,7 +29,7 @@ public class ShadowsQualities : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Shadows Qualities apply");
+            //Debug.Log("Shadows Qualities apply");
             _appliedQuality = _quality;
         }
     }
@@ -38,7 +38,7 @@ public class ShadowsQualities : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Shadows Qualities reset");
+            //Debug.Log("Shadows Qualities reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

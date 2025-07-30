@@ -11,7 +11,7 @@ public class Vibrations : ToggleParameter, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Vibrations Apply");
+            //Debug.Log("Vibrations Apply");
             _appliedEnable = _enable;
         }
     }
@@ -20,7 +20,7 @@ public class Vibrations : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Vibrations reset");
+            //Debug.Log("Vibrations reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();
@@ -29,7 +29,7 @@ public class Vibrations : ToggleParameter, IConfigurable
 
     public bool HasBeenApplied()
     {
-        return _appliedEnable = _enable;
+        return _appliedEnable == _enable;
     }
 }
         

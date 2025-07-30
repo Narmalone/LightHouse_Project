@@ -29,7 +29,7 @@ public class TexturesQualities : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Textures Qualities apply");
+            //Debug.Log("Textures Qualities apply");
             _appliedQuality = _quality;
         }
     }
@@ -38,7 +38,7 @@ public class TexturesQualities : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Textures Qualities reset");
+            //Debug.Log("Textures Qualities reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

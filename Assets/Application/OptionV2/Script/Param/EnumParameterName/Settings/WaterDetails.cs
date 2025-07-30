@@ -29,7 +29,7 @@ public class WaterDetails : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Water Details apply");
+            //Debug.Log("Water Details apply");
             _appliedQuality = _quality;
         }
     }
@@ -38,7 +38,7 @@ public class WaterDetails : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Water Details reset");
+            //Debug.Log("Water Details reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

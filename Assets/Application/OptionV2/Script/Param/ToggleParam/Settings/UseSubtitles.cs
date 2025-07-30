@@ -11,7 +11,7 @@ public class UseSubtitles : ToggleParameter, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Use Subtitles Apply");
+            //Debug.Log("Use Subtitles Apply");
             _appliedEnable = _enable;
         }
     }
@@ -20,7 +20,7 @@ public class UseSubtitles : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Use Subtitles reset");
+            //Debug.Log("Use Subtitles reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();
@@ -29,6 +29,6 @@ public class UseSubtitles : ToggleParameter, IConfigurable
 
     public bool HasBeenApplied()
     {
-        return _appliedEnable = _enable;
+        return _appliedEnable == _enable;
     }
 }

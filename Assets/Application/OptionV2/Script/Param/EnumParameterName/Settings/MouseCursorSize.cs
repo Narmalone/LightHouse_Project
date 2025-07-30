@@ -28,7 +28,7 @@ public class MouseCursorSize : EnumWrapper, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
             Debug.Log("Sizes apply");
             _appliedSize = _size;
@@ -46,7 +46,7 @@ public class MouseCursorSize : EnumWrapper, IConfigurable
         }
     }
 
-    bool IConfigurable.HasBeenApplied()
+    public bool HasBeenApplied()
     {
         return _appliedSize == _size; ;
     }

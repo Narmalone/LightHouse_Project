@@ -42,6 +42,6 @@ public class Crouch : ToggleParameter, IConfigurable
 
     public bool HasBeenApplied()
     {
-        return _appliedEnable = _enable;
+        return _appliedEnable == _enable;
     }
 }

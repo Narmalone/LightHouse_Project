@@ -30,7 +30,7 @@ public class RenderDistance : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Render Distance apply");
+            //Debug.Log("Render Distance apply");
             _appliedQuality = _quality;
         }
     }
@@ -39,7 +39,7 @@ public class RenderDistance : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Render Distance reset");
+            //Debug.Log("Render Distance reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

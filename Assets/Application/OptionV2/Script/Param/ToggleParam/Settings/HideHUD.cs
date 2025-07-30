@@ -11,7 +11,7 @@ public class HideHUD : ToggleParameter, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("HUD Apply");
+            //Debug.Log("HUD Apply");
             _appliedEnable = _enable;
         }
     }
@@ -20,7 +20,7 @@ public class HideHUD : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("HUD reset");
+            //Debug.Log("HUD reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();
@@ -29,6 +29,6 @@ public class HideHUD : ToggleParameter, IConfigurable
 
     public bool HasBeenApplied()
     {
-        return _appliedEnable = _enable;
+        return _appliedEnable == _enable;
     }
 }

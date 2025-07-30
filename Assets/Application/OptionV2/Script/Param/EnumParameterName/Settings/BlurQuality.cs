@@ -29,7 +29,7 @@ public class BlurQuality : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Blur Quality apply");
+            //Debug.Log("Blur Quality apply");
             _appliedQuality = _quality;
         }
     }
@@ -38,7 +38,7 @@ public class BlurQuality : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Blur Quality reset");
+            //Debug.Log("Blur Quality reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

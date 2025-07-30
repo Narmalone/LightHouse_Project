@@ -29,7 +29,7 @@ public class EnvironnementDetails : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Environnement Details apply");
+            //Debug.Log("Environnement Details apply");
             _appliedQuality = _quality;
         }
     }
@@ -38,7 +38,7 @@ public class EnvironnementDetails : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Environnement Details reset");
+            //Debug.Log("Environnement Details reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

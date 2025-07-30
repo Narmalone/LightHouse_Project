@@ -11,7 +11,7 @@ public class InvertYAxis : ToggleParameter, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Invert Y Axis Apply");
+            //Debug.Log("Invert Y Axis Apply");
             _appliedEnable = _enable;
         }
     }
@@ -20,7 +20,7 @@ public class InvertYAxis : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Invert Y Axis reset");
+            //Debug.Log("Invert Y Axis reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();
@@ -29,6 +29,6 @@ public class InvertYAxis : ToggleParameter, IConfigurable
 
     public bool HasBeenApplied()
     {
-        return _appliedEnable = _enable;
+        return _appliedEnable == _enable;
     }
 }

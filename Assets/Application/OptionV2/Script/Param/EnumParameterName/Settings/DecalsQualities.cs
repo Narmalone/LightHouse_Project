@@ -30,7 +30,7 @@ public class DecalsQualities : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Decals Qualities apply");
+            //Debug.Log("Decals Qualities apply");
             _appliedQuality = _quality;
         }
     }
@@ -39,7 +39,7 @@ public class DecalsQualities : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Decals Qualities reset");
+            //Debug.Log("Decals Qualities reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

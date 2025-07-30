@@ -30,7 +30,7 @@ public class Languages : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Subtitles Language apply");
+            //Debug.Log("Subtitles Language apply");
             _appliedLanguages = _languages; 
         }
     }
@@ -39,7 +39,7 @@ public class Languages : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Subtitles Language reset");
+            //Debug.Log("Subtitles Language reset");
             _languages = _defaultLanguages;
             _appliedLanguages = _defaultLanguages;
             SetDisplayText();

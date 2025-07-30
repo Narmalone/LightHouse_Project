@@ -38,7 +38,7 @@ public class ComputerTheme : EnumWrapper, IConfigurable
 
     public void Reset()
     {
-        if (HasChanged() && HasBeenApplied())
+        if (HasChanged())
         {
             Debug.Log("ComputerTheme reset");
             _color = _defaultColor;

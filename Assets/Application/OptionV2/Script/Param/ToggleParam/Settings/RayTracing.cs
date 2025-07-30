@@ -11,7 +11,7 @@ public class RayTracing : ToggleParameter, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("RayTracing Apply");
+            //Debug.Log("RayTracing Apply");
             _appliedEnable = _enable;
         }
     }
@@ -20,7 +20,7 @@ public class RayTracing : ToggleParameter, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("RayTracing reset");
+            //Debug.Log("RayTracing reset");
             _enable = _defaultEnable;
             _appliedEnable = _defaultEnable;
             Toggle();
@@ -29,6 +29,6 @@ public class RayTracing : ToggleParameter, IConfigurable
 
     public bool HasBeenApplied()
     {
-        return _appliedEnable = _enable;
+        return _appliedEnable == _enable;
     }
 }

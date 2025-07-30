@@ -36,7 +36,7 @@ public class SubCategory : MonoBehaviour, IDisplayable
     {
         InputDebug();
 
-        print(HasAnyUnappliedSetting());
+        //print(HasAnyUnappliedSetting());
     }
 
     void InputDebug()

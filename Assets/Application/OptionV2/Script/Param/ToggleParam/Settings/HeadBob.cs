@@ -22,9 +22,9 @@ public class HeadBob : ToggleParameter, IConfigurable
 
     public void Apply()
     {
-        if (HasChanged())
+        if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Head Bob Apply");
+            //Debug.Log("Head Bob Apply");
             _appliedEnable = _enable;
         }
     }
@@ -42,6 +42,6 @@ public class HeadBob : ToggleParameter, IConfigurable
 
     public bool HasBeenApplied()
     {
-        return _appliedEnable = _enable;
+        return _appliedEnable == _enable;
     }
 }

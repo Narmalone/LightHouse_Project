@@ -24,7 +24,7 @@ public class ToggleParameter : MonoBehaviour
 
     public void OnClic(bool enable)
     {
-        if (enable)
+        if (enable) // param buttons
         {
             _enable = true;
             Toggle();
