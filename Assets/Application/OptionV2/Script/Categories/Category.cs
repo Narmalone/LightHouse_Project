@@ -19,20 +19,16 @@ public class Category : MonoBehaviour, IDisplayable
             return _subCategories;
         }
     }
-    private void Update()
-    {
-        //print(GetUnappliedSetting());
-    }
+
     private void Awake()
     {
        AddCategory();
+       _canvasGroup = GetComponent<CanvasGroup>();
     }
 
     void Start()
     {
        ShowCategory(0); // Affiche Gameplay par défaut
-       _canvasGroup = GetComponent<CanvasGroup>();
-
     }
 
     public bool GetUnappliedSetting()
@@ -94,14 +90,13 @@ public class Category : MonoBehaviour, IDisplayable
 
     public void Show()
     {
-        //SetCanvaGroup(1f, true, true);
-        gameObject.SetActive(true);
+        SetCanvaGroup(1f, true, true);
+        gameObject.transform.SetSiblingIndex(2);
     }
 
     public void Hide()
     {
-        //SetCanvaGroup(0f, false, false);
-        gameObject.SetActive(false);
+        SetCanvaGroup(0f, false, false);
     }
 
     // change les valeurs du canva group
