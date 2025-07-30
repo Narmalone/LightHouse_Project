@@ -19,7 +19,7 @@ public class GlobalVolume : SliderParam, IConfigurable
     {
         if (HasChanged())
         {
-            print("Global Volume : " + _slider.value);
+            //print("Global Volume : " + _slider.value);
             _appliedValue = _slider.value;
         }
     }
@@ -35,7 +35,7 @@ public class GlobalVolume : SliderParam, IConfigurable
         {
             _slider.value = _defaultValue;
             _appliedValue = _defaultValue;
-            Debug.Log("Global Volume reset");
+            //Debug.Log("Global Volume reset");
         }
     }
 

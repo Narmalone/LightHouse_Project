@@ -17,7 +17,7 @@ public class FieldOfView : SliderParam, IConfigurable
     {
         if (HasBeenApplied())
         {
-            print("Field Of View : " + HasBeenApplied());
+            //print("Field Of View : " + HasBeenApplied());
         }
     }
     public void Apply()
@@ -40,7 +40,7 @@ public class FieldOfView : SliderParam, IConfigurable
         {
             _slider.value = _defaultValue;
             _appliedValue = _defaultValue;
-            print("FOV reset");
+            //print("FOV reset");
         }
     }
 

@@ -29,7 +29,7 @@ public class AmbiantOcclusion : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Ambiant Occlusion apply");
+            //Debug.Log("Ambiant Occlusion apply");
             _appliedQuality = _quality;
         }
     }
@@ -38,7 +38,7 @@ public class AmbiantOcclusion : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Ambiant Occlusion reset");
+            //Debug.Log("Ambiant Occlusion reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

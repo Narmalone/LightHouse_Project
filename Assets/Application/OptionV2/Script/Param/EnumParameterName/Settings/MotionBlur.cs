@@ -29,7 +29,7 @@ public class MotionBlur : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Motion Blur apply");
+            //Debug.Log("Motion Blur apply");
             _appliedQuality = _quality;
         }
     }
@@ -38,7 +38,7 @@ public class MotionBlur : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Motion Blur reset");
+            //Debug.Log("Motion Blur reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

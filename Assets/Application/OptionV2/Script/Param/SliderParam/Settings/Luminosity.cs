@@ -14,7 +14,7 @@ public class Luminosity : SliderParam, IConfigurable
     {
         if (HasChanged())
         {
-            print ("luminosity : " + _slider.value);
+            //print ("luminosity : " + _slider.value);
             _appliedValue = _slider.value;
         }
     }
@@ -30,7 +30,7 @@ public class Luminosity : SliderParam, IConfigurable
         {
             _slider.value = _defaultValue;
             _appliedValue = _defaultValue;
-            print("luminosity reset");
+            //print("luminosity reset");
         }
     }
 

@@ -29,7 +29,7 @@ public class DisplayMode : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("DisplayMode apply");
+            //Debug.Log("DisplayMode apply");
             _appliedDisplayMode = _displayMode;
         }
     }
@@ -38,7 +38,7 @@ public class DisplayMode : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("DisplayMode reset");
+            //Debug.Log("DisplayMode reset");
             _displayMode = _defaultDisplayMode;
             _appliedDisplayMode = _defaultDisplayMode;
             SetDisplayText();

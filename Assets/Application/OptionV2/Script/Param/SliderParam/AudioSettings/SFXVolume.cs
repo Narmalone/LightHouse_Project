@@ -19,7 +19,7 @@ public class SFXVolume : SliderParam, IConfigurable
     {
         if (HasChanged())
         {
-            print("SFX Volume : " + _slider.value);
+            //print("SFX Volume : " + _slider.value);
             _appliedValue = _slider.value;
         }
     }
@@ -35,7 +35,7 @@ public class SFXVolume : SliderParam, IConfigurable
         {
             _slider.value = _defaultValue;
             _appliedValue = _defaultValue;
-            Debug.Log("SFX Volume reset");
+            //Debug.Log("SFX Volume reset");
         }
     }
 

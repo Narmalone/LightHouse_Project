@@ -30,7 +30,7 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Graphics Preset apply");
+            //Debug.Log("Graphics Preset apply");
             _appliedQuality = _quality;
         }
     }
@@ -39,7 +39,7 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Graphics Preset reset");
+            //Debug.Log("Graphics Preset reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();

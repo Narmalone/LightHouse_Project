@@ -14,7 +14,7 @@ public class CrossairOpacity : SliderParam, IConfigurable
     {
         if (HasChanged())
         {
-            print ("Crossair Opacity : " + _slider.value);
+            //print ("Crossair Opacity : " + _slider.value);
             _appliedValue = _slider.value;
         }
     }
@@ -30,7 +30,7 @@ public class CrossairOpacity : SliderParam, IConfigurable
         {
             _slider.value = _defaultValue;
             _appliedValue = _defaultValue;
-            print("Crossair Opacity reset");
+            //print("Crossair Opacity reset");
         }
     }
 

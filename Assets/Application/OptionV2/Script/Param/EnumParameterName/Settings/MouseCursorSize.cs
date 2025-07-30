@@ -30,7 +30,7 @@ public class MouseCursorSize : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("Sizes apply");
+            //Debug.Log("Sizes apply");
             _appliedSize = _size;
         }
     }
@@ -39,7 +39,7 @@ public class MouseCursorSize : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Sizes reset");
+            //Debug.Log("Sizes reset");
             _size = _defaultSize;
             _appliedSize = _defaultSize;
             SetDisplayText();

@@ -29,7 +29,7 @@ public class AntiAliasing : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Anti-Aliasing apply");
+            //Debug.Log("Anti-Aliasing apply");
             _appliedActivableQuality = _activableQuality;
         }
     }
@@ -38,7 +38,7 @@ public class AntiAliasing : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Anti-Aliasing reset");
+            //Debug.Log("Anti-Aliasing reset");
             _activableQuality = _defaultActivableQuality;
             _appliedActivableQuality = _defaultActivableQuality;
             SetDisplayText();

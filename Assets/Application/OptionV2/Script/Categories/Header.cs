@@ -37,20 +37,17 @@ public class Header : MonoBehaviour
 
     void GetAllSetting()
     {
-        // Parcours des enfants directs
-        for (int i = 0; i < transform.childCount; i++)
+        _settings.Clear();
+
+        IConfigurable[] configurables = GetComponentsInChildren<IConfigurable>(true);
+
+        foreach (IConfigurable configurable in configurables)
         {
-            Transform child = transform.GetChild(i);
-
-            IConfigurable configurable = child.GetComponent<IConfigurable>();
-
-            if (configurable != null)
-            {
-                _settings.Add(configurable);
-                print("configurable");
-            }
+            _settings.Add(configurable);
+            //Debug.Log($"Found configurable: {configurable}");
         }
     }
+
 
     // Méthodes appelées quand on clique sur un bouton correspondant à une sous-catégorie
     public void OnClic(int index)
@@ -93,8 +90,11 @@ public class Header : MonoBehaviour
     {
         foreach (IConfigurable configurable in _settings)
         {
-            configurable.Reset();
-            print("ResetAll");
+            if (configurable.HasChanged())
+            {
+                configurable.Reset();
+                print("ResetAll");
+            }
         }
     }
 }

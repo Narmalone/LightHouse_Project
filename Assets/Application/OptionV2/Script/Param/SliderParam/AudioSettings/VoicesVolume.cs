@@ -19,7 +19,7 @@ public class VoicesVolume : SliderParam, IConfigurable
     {
         if (HasChanged())
         {
-            print("Voices Volume : " + _slider.value);
+            //print("Voices Volume : " + _slider.value);
             _appliedValue = _slider.value;
         }
     }
@@ -35,7 +35,7 @@ public class VoicesVolume : SliderParam, IConfigurable
         {
             _slider.value = _defaultValue;
             _appliedValue = _defaultValue;
-            Debug.Log("Voices Volume reset");
+            //Debug.Log("Voices Volume reset");
         }
     }
 

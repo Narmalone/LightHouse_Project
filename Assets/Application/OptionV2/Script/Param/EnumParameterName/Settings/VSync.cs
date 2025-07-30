@@ -29,7 +29,7 @@ public class VSync : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Vsync apply");
+            //Debug.Log("Vsync apply");
             _appliedActivableQuality = _activableQuality;
         }
     }
@@ -38,7 +38,7 @@ public class VSync : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("Vsync reset");
+            //Debug.Log("Vsync reset");
             _activableQuality = _defaultActivableQuality;
             _appliedActivableQuality = _defaultActivableQuality;
             SetDisplayText();

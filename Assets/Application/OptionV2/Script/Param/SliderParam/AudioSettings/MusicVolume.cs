@@ -19,7 +19,7 @@ public class MusicVolume : SliderParam, IConfigurable
     {
         if (HasChanged())
         {
-            print("Music Volume : " + _slider.value);
+            //print("Music Volume : " + _slider.value);
             _appliedValue = _slider.value;
         }
     }
@@ -35,7 +35,7 @@ public class MusicVolume : SliderParam, IConfigurable
         {
             _slider.value = _defaultValue;
             _appliedValue = _defaultValue;
-            Debug.Log("Music Volume reset");
+            //Debug.Log("Music Volume reset");
         }
     }
 
