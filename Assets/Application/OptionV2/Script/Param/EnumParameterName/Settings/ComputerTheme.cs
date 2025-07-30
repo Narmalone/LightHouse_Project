@@ -31,7 +31,7 @@ public class ComputerTheme : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            Debug.Log("ComputerTheme apply");
+            //Debug.Log("ComputerTheme apply");
             _appliedColor = _color;
         }
     }
@@ -40,7 +40,7 @@ public class ComputerTheme : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            Debug.Log("ComputerTheme reset");
+            //Debug.Log("ComputerTheme reset");
             _color = _defaultColor;
             _appliedColor = _defaultColor;
             SetDisplayText();

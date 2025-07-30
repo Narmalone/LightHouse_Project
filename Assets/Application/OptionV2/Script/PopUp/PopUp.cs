@@ -52,6 +52,7 @@ public class PopUp : MonoBehaviour, IDisplayable
         // fps => secondes
         _timer.Tick(_timerValue =+ Time.deltaTime);
 
+        // réinitialise les param à la fin du Décompte
         if (_timer.GetTimeRemaining() <= 0 && !_doOnce)  
         {
             ResetSetting();
@@ -72,20 +73,28 @@ public class PopUp : MonoBehaviour, IDisplayable
         _timerText.text = Mathf.Round(_timer.GetTimeRemaining()).ToString();
     }
 
-    // le pop up apparait, reset et lance le timer
     public void Show()
     {
-        _timer.ResetTimer();
-        _timer.StartTimer();
-        SetCanvaGroup(1f, true, true);
-        _doOnce = false;
+        // reset
+        _timer.ResetTimer(); 
+
+        // lance le timer
+        _timer.StartTimer(); 
+
+        // le pop up apparait
+        SetCanvaGroup(1f, true, true); 
+        
+        // peut le faire une fois de plus 
+        _doOnce = false; 
     }
 
-    // le pop up disparait et arrête le timer
     public void Hide()
     {
+        // arrête le timer
         _timer.StopTimer();
-        SetCanvaGroup(0f, false, false);
+
+        // le pop up disparait
+        SetCanvaGroup(0f, false, false);  
     }
 
     // change les valeurs du canva group
