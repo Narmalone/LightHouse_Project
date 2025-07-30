@@ -21,6 +21,11 @@ public class SubtitlesLanguages : EnumWrapper, IConfigurable
     public override void SetIndex(int index) => _languages = (ELanguages)index;
     public override int GetIndex() => (int)_languages;
 
+    public override void SetParameter()
+    {
+
+    }
+
     public bool HasChanged()
     {
         return _languages != _defaultLanguages;

@@ -20,6 +20,11 @@ public class DisplayMode : EnumWrapper, IConfigurable
     public override void SetIndex(int index) => _displayMode = (EDisplayMode)index;
     public override int GetIndex() => (int)_displayMode;
 
+    public override void SetParameter()
+    {
+
+    }
+
     public bool HasChanged()
     {
         return _displayMode != _defaultDisplayMode;

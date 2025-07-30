@@ -21,6 +21,11 @@ public class SubtitlesSizes : EnumWrapper, IConfigurable
     public override void SetIndex(int index) => _size = (ESizes)index;
     public override int GetIndex() => (int)_size;
 
+    public override void SetParameter()
+    {
+
+    }
+
     public bool HasChanged()
     {
         return _size != _defaultSize;

@@ -16,6 +16,7 @@ public abstract class EnumWrapper : MonoBehaviour
     public abstract string GetName(int index);
     public abstract void SetIndex(int index);
     public abstract int GetIndex();
+    public abstract void SetParameter();
 
     public void OnClic(bool add)
     {
@@ -34,6 +35,7 @@ public abstract class EnumWrapper : MonoBehaviour
         int index = Mathf.Clamp(GetIndex() + 1, 0, GetCount() - 1);
         SetIndex(index);
         SetDisplayText();
+        SetParameter();
     }
 
     protected void Decrement()
@@ -41,6 +43,7 @@ public abstract class EnumWrapper : MonoBehaviour
         int index = Mathf.Clamp(GetIndex() - 1, 0, GetCount() - 1);
         SetIndex(index);
         SetDisplayText();
+        SetParameter();
     }
 
     protected void SetDisplayText()

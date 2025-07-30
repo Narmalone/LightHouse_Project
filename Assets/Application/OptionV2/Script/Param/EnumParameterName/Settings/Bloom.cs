@@ -19,6 +19,11 @@ public class Bloom : EnumWrapper, IConfigurable
     public override void SetIndex(int index) => _quality = (EQuality)index;
     public override int GetIndex() => (int)_quality;
 
+    public override void SetParameter()
+    {
+
+    }
+
     public bool HasChanged()
     {
         return _defaultQuality != _quality;

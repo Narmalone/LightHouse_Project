@@ -22,6 +22,11 @@ public class ComputerTheme : EnumWrapper, IConfigurable
     public override void SetIndex(int index) => _color = (EColors)index;
     public override int GetIndex() => (int)_color;
 
+    public override void SetParameter()
+    {
+
+    }
+
     public bool HasChanged()
     {
         return _color != _defaultColor;

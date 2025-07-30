@@ -20,6 +20,11 @@ public class AntiAliasing : EnumWrapper, IConfigurable
     public override void SetIndex(int index) => _activableQuality = (EActivableQuality)index;
     public override int GetIndex() => (int)_activableQuality;
 
+    public override void SetParameter()
+    {
+
+    }
+
     public bool HasChanged()
     {
         return _activableQuality != _defaultActivableQuality;
