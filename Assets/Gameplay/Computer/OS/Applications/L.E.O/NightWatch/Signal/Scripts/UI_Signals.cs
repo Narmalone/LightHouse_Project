@@ -5,6 +5,7 @@ public class UI_Signals : NightWatchReportWindow
     [SerializeField] private SignalInfoController SignalPrefab;
     [SerializeField] private RectTransform _signalLayoutParent;
     [SerializeField] private BoatAnomaliesDatabase _boatAnomaliesDatabase;
+    [SerializeField] private Sprite AnomalyIcon;
 
     private void Awake()
     {
@@ -19,6 +20,7 @@ public class UI_Signals : NightWatchReportWindow
     private void BoatAnomaliesDatabase_OnAnomalyAdded()
     {
         var instance = Instantiate(SignalPrefab, _signalLayoutParent);
+        instance.StartTimer(_boatAnomaliesDatabase.TimeToReportAnomalies);
         //Instantiate the prefab
         //Get the arrival date
         //set up the timer (careful about timers, if we leave application it's still running) !

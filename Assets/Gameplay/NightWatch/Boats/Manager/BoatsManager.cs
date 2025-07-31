@@ -40,6 +40,7 @@ public class BoatsManager : MonoBehaviour
 
     private void Awake()
     {
+        BoatsHandlerData.Boats.Clear();
         TimeHandlerData.OnTimeSegmentChanged += HandleTimeSegmentChange;
     }
 
@@ -47,6 +48,7 @@ public class BoatsManager : MonoBehaviour
     {
         TimeHandlerData.OnTimeSegmentChanged -= HandleTimeSegmentChange;
         _anomaliesDatabase.ResetAll();
+        BoatsHandlerData.Boats.Clear();
     }
 
     private void Start()
@@ -103,6 +105,8 @@ public class BoatsManager : MonoBehaviour
         Boat boat = Instantiate(_prefab);
         TryAddAnomaly(boat);
         _controllers.Add(boat);
+        BoatsHandlerData.Boats.Add(boat);
+        //to doo, make an event when the boat has done it's path then unload events / remove from lists
     }
 
     private void DespawnAllBoats()

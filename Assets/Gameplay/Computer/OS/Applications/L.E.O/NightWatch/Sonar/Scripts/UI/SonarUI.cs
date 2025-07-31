@@ -3,6 +3,7 @@ using LightHouse.Game.Computer.NightWatch.Sonar;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ public class SonarUI : MonoBehaviour
     public Sonar _sonar => SonarHandlerData.Sonar;                          // Référence au script de détection
     [SerializeField] private RectTransform _sonnarPannel;             // UI circulaire représentant le radar
     [SerializeField] private SonarDotController _sonarDotPrefab;            // Prefab représentant un bateau
+    [SerializeField] private TextMeshProUGUI _bottomInfoText;
 
     [SerializeField] private bool UpdateRadarRoutineEnabled = true;
     [SerializeField] private float SonarDelay = 5.0f;
@@ -117,6 +119,8 @@ public class SonarUI : MonoBehaviour
                 dotInstance.SetDotSprite(item.DotSprite);
                 dot = dotInstance;
                 _activeDots[item.UniqueID] = dot;
+                dotInstance.SetSonarElement(item);
+                dotInstance.SonarDotClicked += DotInstance_SonarDotClicked;
             }
 
             dot.RectTransform.anchoredPosition = uiPos;
@@ -129,6 +133,7 @@ public class SonarUI : MonoBehaviour
         {
             if (!detectedThisFrame.Contains(kvp.Key))
             {
+                kvp.Value.SonarDotClicked -= DotInstance_SonarDotClicked; 
                 Destroy(kvp.Value.gameObject);
                 keysToRemove.Add(kvp.Key);
             }
@@ -142,6 +147,10 @@ public class SonarUI : MonoBehaviour
         StartCoroutine(AnimatePingRoutine());
     }
 
+    private void DotInstance_SonarDotClicked(string obj)
+    {
+        _bottomInfoText.text = obj;
+    }
 
     private IEnumerator AnimatePingRoutine()
     {

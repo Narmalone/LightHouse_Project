@@ -31,8 +31,7 @@ public class UI_BoatReportController : NightWatchReportWindow
     {
         IPF_enterBoatName.onValueChanged.AddListener(OnEnterBoatNameChanged);
         _nationalitiesDropdown.onValueChanged.AddListener(OnFlagDropdownChanged);
-        _summaryFlag.sprite = null;
-        _summaryFlag.color = new Color(1, 1, 1, 0);
+
         SetupFlagsDropdown();
         SetupAnomalyButtons();
 
@@ -85,8 +84,17 @@ public class UI_BoatReportController : NightWatchReportWindow
                 if (!anomalyCorrect) Debug.Log("→ Mauvaise anomalie");
             }
         }
-        var instance = Instantiate(_nightWatchSendDatasPrefab, this.transform);
+        var instance = Instantiate(_nightWatchSendDatasPrefab, _nightWatch.transform as RectTransform);
+        var rectTransform = instance.transform as RectTransform;;
+        rectTransform.anchoredPosition = Vector3.zero;
         instance.IsSuccessfull = isSuccessFull;
+        if (isSuccessFull)
+        {
+            var boatInstance = BoatsHandlerData.Boats.Find(x => x.Data.Name == BoatNameInput && x.Data.NationalityFlag == _selectedFlag);
+            Debug.Log(boatInstance);
+            if (boatInstance != null) Debug.Log("L'instance du bateau a été trouvée, l'anomalie va être résolue");
+            boatInstance.AnomalyController.RemoveAnomaly();
+        }
     }
     private void SetupAnomalyButtons()
     {
@@ -104,6 +112,9 @@ public class UI_BoatReportController : NightWatchReportWindow
     {
         _dropdownFlag.sprite = null;
         List<TMP_Dropdown.OptionData> datas = new List<TMP_Dropdown.OptionData>();
+        TMP_Dropdown.OptionData noneData = new TMP_Dropdown.OptionData();
+        noneData.text = "None";
+        datas.Add(noneData);
         foreach (var config in _nationalityManager.PossibleConfigs)
         {
             TMP_Dropdown.OptionData optionData = new TMP_Dropdown.OptionData();
@@ -111,6 +122,9 @@ public class UI_BoatReportController : NightWatchReportWindow
             optionData.image = config.Flag;
             datas.Add(optionData);
         }
+        _summaryFlag.gameObject.SetActive(false);
+        _dropdownFlag.gameObject.SetActive(false);
+
         _nationalitiesDropdown.AddOptions(datas);
         _nationalitiesDropdown.value = 0;
     }
@@ -123,13 +137,27 @@ public class UI_BoatReportController : NightWatchReportWindow
 
     private void OnFlagDropdownChanged(int arg0)
     {
-        _selectedFlag = _nationalityManager.PossibleConfigs[arg0].Flag;
-        if(arg0 > 0 && _summaryFlag.color.a == 0)
+        if (arg0 <= 0)
         {
-            _summaryFlag.color = new Color(1, 1, 1, 1);
+            _selectedFlag = null;
         }
-        _dropdownFlag.sprite = _selectedFlag;
-        _summaryFlag.sprite = _selectedFlag;
+        else
+        {
+            _selectedFlag = _nationalityManager.PossibleConfigs[arg0 - 1].Flag;
+        }
+        if (arg0 > 0)
+        {
+            _dropdownFlag.gameObject.SetActive(true);
+            _summaryFlag.gameObject.SetActive(true);
+            _dropdownFlag.sprite = _selectedFlag;
+            _summaryFlag.sprite = _selectedFlag;
+        }
+        else if(arg0 == 0)
+        {
+            _summaryFlag.gameObject.SetActive(false);
+            _dropdownFlag.gameObject.SetActive(false);
+        }
+        
     }
 
     private void UpdateSummaryReport()

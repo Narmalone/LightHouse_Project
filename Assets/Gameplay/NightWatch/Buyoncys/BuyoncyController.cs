@@ -15,9 +15,11 @@ public class BuyoncyController : MonoBehaviour, ISonarable
     [SerializeField] private Color _aliveColor = Color.green;
     [SerializeField] private Color _deadColor = Color.red;
     [SerializeField] private Light _lifeLight;
+    public int BuyoncyID = -1;
 
     public event Action OnBroken;
     public event Action OnRepaired;
+    public event Action ForceDotUpdate;
 
     public float CurrentSpeed { get; set; } = 1.0f;
 
@@ -33,6 +35,7 @@ public class BuyoncyController : MonoBehaviour, ISonarable
     [field: SerializeField] public Color DotColor { get; set; }
     [field: SerializeField] public Vector2 DotSize { get; set; }
     [field: SerializeField] public Sprite DotSprite { get; set; }
+    [field: SerializeField] public string SonarInfo { get; set; }
 
     private Timer _timer;
     public float CurrentLifeTime;
@@ -62,6 +65,7 @@ public class BuyoncyController : MonoBehaviour, ISonarable
     {
         _timer.StartTimer();
         _lifeLight.color = _aliveColor;
+        SonarInfo = "#" + BuyoncyID.ToString("D2");
     }
 
     private void Update()

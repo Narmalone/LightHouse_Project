@@ -22,7 +22,7 @@ namespace LightHouse.Game.Computer.OS
         #region Runtime References
 
         protected OS _os;
-        protected ComputerApp _currentInstance;
+        [SerializeField] protected ComputerApp _currentInstance;
         private RectTransform _runningAppsParent => _os.RunningAppParent;
 
         #endregion

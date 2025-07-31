@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using System;
 
 [System.Serializable]
 public class HeightsLerpers
@@ -27,6 +28,7 @@ public class NightWatchSendDatas : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _reportResultHeaderText;
     [SerializeField] private HeightLerper _mainLerp;
     [SerializeField] private HeightLerper _contentLerper;
+    [SerializeField] private Button _okCancelButton;
 
     [Header("Heights Settings")]
     [SerializeField] private HeightsLerpers _pending;
@@ -59,23 +61,25 @@ public class NightWatchSendDatas : MonoBehaviour
     private Coroutine _loadingRoutine;
     private GameObject _lastContentOpened;
 
+    private void Awake()
+    {
+        _okCancelButton.onClick.AddListener(OnOkCliqued);
+    }
+
+    private void OnDestroy()
+    {
+        _okCancelButton.onClick.RemoveListener(OnOkCliqued);
+    }
+
+    private void OnOkCliqued()
+    {
+        Destroy(this.gameObject);
+    }
+
     private void Start()
     {
         EnterPendingState();
         SwitchTo(DataStatus.Loading);
-    }
-
-    private void Update()
-    {
-        // Debug trigger
-        if (Input.GetKeyDown(KeyCode.N))
-            SwitchTo(DataStatus.Loading);
-        if (Input.GetKeyDown(KeyCode.S))
-            SwitchTo(DataStatus.Success);
-        if (Input.GetKeyDown(KeyCode.F))
-            SwitchTo(DataStatus.Failed);
-        if (Input.GetKeyDown(KeyCode.D))
-            SwitchTo(DataStatus.DataMissmatch);
     }
 
     /// <summary>

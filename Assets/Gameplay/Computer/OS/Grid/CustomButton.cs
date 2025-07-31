@@ -8,6 +8,7 @@ public class CustomUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                               IPointerClickHandler
 {
     public Action<CustomUIButton> OnClick;
+    public int DetectWhenMultipleClicks = 2;
     public Action OnDoubleClick { get; set; }
 
     public Color normalColor = Color.white;
@@ -19,8 +20,13 @@ public class CustomUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     private void Awake()
     {
-        _image = GetComponent<Image>();
+        if (_image == null) _image = GetComponent<Image>();
         _image.color = normalColor;
+    }
+
+    private void OnValidate()
+    {
+        if(_image == null) _image = GetComponent<Image>();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -39,7 +45,7 @@ public class CustomUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         _isSelected = true;
         OnClick?.Invoke(this);
-        if (eventData.clickCount >= 2)
+        if (eventData.clickCount >= DetectWhenMultipleClicks)
         {
             OnDoubleClick?.Invoke();
         }

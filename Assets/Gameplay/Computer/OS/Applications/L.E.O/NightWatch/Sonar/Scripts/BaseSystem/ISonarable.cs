@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace LightHouse.Game.Computer.NightWatch.Sonar
@@ -12,6 +13,9 @@ namespace LightHouse.Game.Computer.NightWatch.Sonar
         public Sprite DotSprite { get; set; }
         public Color DotColor { get; set; }
         public Vector2 DotSize { get; set; }
+        public string SonarInfo { get; set; }
+
+        public event Action ForceDotUpdate;
     }
 
 }

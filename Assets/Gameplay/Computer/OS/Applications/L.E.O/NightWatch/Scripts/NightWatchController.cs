@@ -39,6 +39,14 @@ public class NightWatchController : LEOWindow
         }
     }
 
+    private void OnValidate()
+    {
+        foreach(var w in _windows)
+        {
+            w.SetNightWatch(this);
+        }
+    }
+
 
     public override void Open()
     {
