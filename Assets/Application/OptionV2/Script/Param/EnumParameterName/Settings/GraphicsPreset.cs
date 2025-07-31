@@ -21,11 +21,6 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
     public override void SetIndex(int index) => _quality = (EQuality)index;
     public override int GetIndex() => (int)_quality;
 
-    public override void SetParameter()
-    {
-
-    }
-
     public bool HasChanged()
     {
         return _defaultQuality != _quality;
@@ -35,8 +30,8 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            //Debug.Log("Graphics Preset apply");
             _appliedQuality = _quality;
+            Debug.Log("Graphics Preset : " + QualitySettings.GetQualityLevel());
         }
     }
 
@@ -44,7 +39,6 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            //Debug.Log("Graphics Preset reset");
             _quality = _defaultQuality;
             _appliedQuality = _defaultQuality;
             SetDisplayText();
@@ -54,5 +48,17 @@ public class GraphicsPreset : EnumWrapper, IConfigurable
     public bool HasBeenApplied()
     {
         return _appliedQuality == _quality;
+    }
+
+    public override void SetParameter()
+    {
+        switch (_appliedQuality)
+        {
+            case EQuality.Low: QualitySettings.SetQualityLevel(GetIndex());break;
+            case EQuality.Medium: QualitySettings.SetQualityLevel(GetIndex());break;
+            case EQuality.High: QualitySettings.SetQualityLevel(GetIndex());break;
+            case EQuality.Epic: QualitySettings.SetQualityLevel(GetIndex());break;
+            case EQuality.Ultra: QualitySettings.SetQualityLevel(GetIndex());break;
+        }
     }
 }

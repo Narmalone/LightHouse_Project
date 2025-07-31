@@ -3,39 +3,35 @@ using UnityEngine;
 
 public class AntiAliasing : EnumWrapper, IConfigurable
 {
-    [SerializeField] private EActivableQuality _activableQuality;
-    [SerializeField] private EActivableQuality _defaultActivableQuality;
-    [SerializeField] private EActivableQuality _appliedActivableQuality;
+    [SerializeField] private EAntiAliasing _antiAliasing;
+    [SerializeField] private EAntiAliasing _defaultAntiAliasing;
+    [SerializeField] private EAntiAliasing _appliedAntiAliasing;
 
     private new void Start()
     {
         base.Start();
-        _defaultActivableQuality = EActivableQuality.Disable;
-        _appliedActivableQuality = _activableQuality;
+        _defaultAntiAliasing = EAntiAliasing.Disable;
+        _appliedAntiAliasing = _antiAliasing;
     }
 
-    public override string[] GetNames() => System.Enum.GetNames(typeof(EActivableQuality));
-    public override int GetCount() => System.Enum.GetValues(typeof(EActivableQuality)).Length;
+    public override string[] GetNames() => System.Enum.GetNames(typeof(EAntiAliasing));
+    public override int GetCount() => System.Enum.GetValues(typeof(EAntiAliasing)).Length;
     public override string GetName(int index) => GetNames()[index];
-    public override void SetIndex(int index) => _activableQuality = (EActivableQuality)index;
-    public override int GetIndex() => (int)_activableQuality;
+    public override void SetIndex(int index) => _antiAliasing = (EAntiAliasing)index;
+    public override int GetIndex() => (int)_antiAliasing;
 
-    public override void SetParameter()
-    {
-
-    }
 
     public bool HasChanged()
     {
-        return _activableQuality != _defaultActivableQuality;
+        return _antiAliasing != _defaultAntiAliasing;
     }
 
     public void Apply()
     {
         if (HasChanged())
         {
-            //Debug.Log("Anti-Aliasing apply");
-            _appliedActivableQuality = _activableQuality;
+            _appliedAntiAliasing = _antiAliasing;
+            Debug.Log("Anti-Aliasing : " + QualitySettings.antiAliasing);
         }
     }
 
@@ -43,15 +39,33 @@ public class AntiAliasing : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            //Debug.Log("Anti-Aliasing reset");
-            _activableQuality = _defaultActivableQuality;
-            _appliedActivableQuality = _defaultActivableQuality;
+            _antiAliasing = _defaultAntiAliasing;
+            _appliedAntiAliasing = _defaultAntiAliasing;
             SetDisplayText();
         }
     }
 
     public bool HasBeenApplied()
     {
-        return _appliedActivableQuality == _activableQuality;
+        return _appliedAntiAliasing == _antiAliasing;
+    }
+
+    public override void SetParameter()
+    {
+        switch (_antiAliasing)
+        {
+            case EAntiAliasing.Disable:
+                QualitySettings.antiAliasing = 0;
+                break;
+            case EAntiAliasing.MSAAx2:
+                QualitySettings.antiAliasing = 2;
+                break;
+            case EAntiAliasing.MSAAx4:
+                QualitySettings.antiAliasing = 4;
+                break;
+            case EAntiAliasing.MSAAx8:
+                QualitySettings.antiAliasing = 8;
+                break;
+        }
     }
 }

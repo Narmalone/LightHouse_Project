@@ -22,7 +22,21 @@ public class ShadowsQualities : EnumWrapper, IConfigurable
 
     public override void SetParameter()
     {
-
+        switch (_quality)
+        {
+            case EQuality.Low:
+                break;
+            case EQuality.Medium:
+                break;
+            case EQuality.High:
+                break;
+            case EQuality.Epic:
+                break;
+            case EQuality.Ultra:
+                break;
+            default:
+                break;
+        }
     }
 
     public bool HasChanged()

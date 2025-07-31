@@ -20,11 +20,6 @@ public class DisplayMode : EnumWrapper, IConfigurable
     public override void SetIndex(int index) => _displayMode = (EDisplayMode)index;
     public override int GetIndex() => (int)_displayMode;
 
-    public override void SetParameter()
-    {
-
-    }
-
     public bool HasChanged()
     {
         return _displayMode != _defaultDisplayMode;
@@ -34,8 +29,8 @@ public class DisplayMode : EnumWrapper, IConfigurable
     {
         if (HasChanged() && !HasBeenApplied())
         {
-            //Debug.Log("DisplayMode apply");
             _appliedDisplayMode = _displayMode;
+            Debug.Log("DisplayMode : " + Screen.fullScreenMode);
         }
     }
 
@@ -43,7 +38,6 @@ public class DisplayMode : EnumWrapper, IConfigurable
     {
         if (HasChanged())
         {
-            //Debug.Log("DisplayMode reset");
             _displayMode = _defaultDisplayMode;
             _appliedDisplayMode = _defaultDisplayMode;
             SetDisplayText();
@@ -53,5 +47,20 @@ public class DisplayMode : EnumWrapper, IConfigurable
     public bool HasBeenApplied()
     {
         return _appliedDisplayMode == _displayMode;
+    }
+    public override void SetParameter()
+    {
+        switch (_displayMode)
+        {
+            case EDisplayMode.Windowed:
+                Screen.fullScreenMode = FullScreenMode.Windowed;
+                break;
+            case EDisplayMode.FullScreenWindowed:
+                Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+                break;
+            case EDisplayMode.FullScreen:
+                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                break;
+        }
     }
 }

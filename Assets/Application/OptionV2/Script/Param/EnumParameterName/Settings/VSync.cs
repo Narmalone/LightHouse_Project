@@ -54,18 +54,10 @@ public class VSync : EnumWrapper, IConfigurable
     {
         switch (_appliedvsync)
         {
-            case EVsync.Disable:
-                QualitySettings.vSyncCount = 0;
-                break;
-            case EVsync.X1:
-                QualitySettings.vSyncCount = 1;
-                break;
-            case EVsync.X2:
-                QualitySettings.vSyncCount = 2;       
-                break;
-            default:
-                QualitySettings.vSyncCount = 0;
-                break;
+            case EVsync.Disable : QualitySettings.vSyncCount = 0; break;
+            case EVsync.X1 : QualitySettings.vSyncCount = 1; break;
+            case EVsync.X2 : QualitySettings.vSyncCount = 2; break;
+            default:QualitySettings.vSyncCount = 0; break;
         }
     }
 }

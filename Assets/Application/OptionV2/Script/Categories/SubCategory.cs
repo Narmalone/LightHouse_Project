@@ -95,7 +95,7 @@ public class SubCategory : MonoBehaviour, IDisplayable
                 if (configurable.HasChanged())
                 {
                     configurable.Apply(); // applique
-                    Debug.Log (configurable + " : Appliqué");
+                    //Debug.Log (configurable + " : Appliqué");
                 }
             }
             else
@@ -103,8 +103,7 @@ public class SubCategory : MonoBehaviour, IDisplayable
                 if (configurable.HasChanged())
                 {
                     configurable.Reset(); // réinitialise
-                    Debug.Log (configurable + " : Réinitialisé");
-
+                    //Debug.Log (configurable + " : Réinitialisé");
                 }
             }
         }
