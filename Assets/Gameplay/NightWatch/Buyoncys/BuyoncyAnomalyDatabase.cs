@@ -4,42 +4,38 @@ using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
-public class BoatAnomalyDatas : ISignal
+public class BuyoncyAnomalyDatas : ISignal
 {
-    public string BoatName;
-    public AnomalyType AnomalyType;
-    public float RemainingTime { get; set; } // Timer restant
+    public int ID;
+    public float RemainingTime { get; set; }
 
-    public string Key => BoatName;
+    public string Key => ID.ToString("00");
 
-    public string DisplayText => BoatName;
+    public string DisplayText => ID.ToString("00");
+
 }
 
-
-[CreateAssetMenu(fileName = "AnomalyDatabase", menuName = "LightHouse/Boats/New Anomaly Database")]
-public class BoatAnomaliesDatabase : ScriptableObject
+[CreateAssetMenu(fileName = "BuyoncyAnomalyDatabase", menuName = "LightHouse/Buyoncies/New Database")]
+public class BuyoncyAnomalyDatabase : ScriptableObject
 {
     public float TimeToReportAnomalies = 300f;  // en secondes
-
-    private readonly List<BoatAnomalyDatas> _anomalies = new List<BoatAnomalyDatas>();
+    public List<BuyoncyAnomalyDatas> _anomalies = new List<BuyoncyAnomalyDatas>();
 
     public event Action<ISignal> OnAnomalyAdded;
     public event Action<ISignal> OnAnomalyRemoved;
 
-    public void SetAnomaly(string boatName, AnomalyType anomalyType)
+    public void SetAnomaly(int id)
     {
-        var existing = _anomalies.Find(a => a.BoatName == boatName);
+        var existing = _anomalies.Find(a => a.ID == id);
         if (existing != null)
         {
-            existing.AnomalyType = anomalyType;
             existing.RemainingTime = TimeToReportAnomalies;
         }
         else
         {
-            var data = new BoatAnomalyDatas
+            var data = new BuyoncyAnomalyDatas
             {
-                BoatName = boatName,
-                AnomalyType = anomalyType,
+                ID = id,
                 RemainingTime = TimeToReportAnomalies
             };
             _anomalies.Add(data);
@@ -47,9 +43,9 @@ public class BoatAnomaliesDatabase : ScriptableObject
         }
     }
 
-    public void RemoveAnomaly(string boatName)
+    public void RemoveAnomaly(int id)
     {
-        var anomaly = _anomalies.Find(a => a.BoatName == boatName);
+        var anomaly = _anomalies.Find(a => a.ID == id);
         if (anomaly != null)
         {
             _anomalies.Remove(anomaly);
@@ -57,17 +53,14 @@ public class BoatAnomaliesDatabase : ScriptableObject
         }
     }
 
-    public IReadOnlyList<BoatAnomalyDatas> GetAnomalies() => _anomalies;
+    public IReadOnlyList<BuyoncyAnomalyDatas> GetAnomalies() => _anomalies;
 
     /// <summary>
     /// Retourne true si, dans la base, le bateau <paramref name="boatName"/> a bien l’anomalie <paramref name="expectedAnomaly"/>.
     /// </summary>
-    public bool HasAnomaly(string boatName, AnomalyType expectedAnomaly)
+    public bool HasAnomaly(int id)
     {
-        return _anomalies.Exists(a =>
-            a.BoatName == boatName
-            && a.AnomalyType == expectedAnomaly
-        );
+        return _anomalies.Exists(a => a.ID == id);
     }
 
     /// <summary>
@@ -81,7 +74,7 @@ public class BoatAnomaliesDatabase : ScriptableObject
 
         // on supprime en fin de frame pour éviter les problèmes d’itération
         var expired = _anomalies.Where(a => a.RemainingTime <= 0f).ToList();
-        /*foreach (var a in expired)
+       /* foreach (var a in expired)
         {
             _anomalies.Remove(a);
             OnAnomalyRemoved?.Invoke(a);
@@ -92,5 +85,5 @@ public class BoatAnomaliesDatabase : ScriptableObject
     {
         _anomalies.Clear();
     }
-}
 
+}

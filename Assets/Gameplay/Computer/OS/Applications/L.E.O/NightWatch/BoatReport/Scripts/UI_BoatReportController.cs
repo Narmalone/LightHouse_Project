@@ -21,11 +21,12 @@ public class UI_BoatReportController : NightWatchReportWindow
     [SerializeField] private Button B_resetAll;
 
     private string _boatNameInput;
-    private string _selectedAnomaly;
+    private AnomalyType _selectedAnomalyType;
+    private string _selectedAnomalyText;
     private Sprite _selectedFlag;
 
     public string BoatNameInput => _boatNameInput;
-    public string SelectedAnomaly => _selectedAnomaly;
+    public AnomalyType SelectedAnomaly => _selectedAnomalyType;
 
     private void Awake()
     {
@@ -68,7 +69,7 @@ public class UI_BoatReportController : NightWatchReportWindow
             Debug.Log($"Bateau correspondant: {data.Name}");
 
             bool flagCorrect = data.NationalityFlag == _selectedFlag;
-            bool anomalyCorrect = _anomalyDatabase.HasAnomaly(data.Name, _selectedAnomaly);
+            bool anomalyCorrect = _anomalyDatabase.HasAnomaly(data.Name, _selectedAnomalyType);
 
             if (flagCorrect && anomalyCorrect)
             {
@@ -91,7 +92,6 @@ public class UI_BoatReportController : NightWatchReportWindow
         if (isSuccessFull)
         {
             var boatInstance = BoatsHandlerData.Boats.Find(x => x.Data.Name == BoatNameInput && x.Data.NationalityFlag == _selectedFlag);
-            Debug.Log(boatInstance);
             if (boatInstance != null) Debug.Log("L'instance du bateau a été trouvée, l'anomalie va être résolue");
             boatInstance.AnomalyController.RemoveAnomaly();
         }
@@ -102,7 +102,8 @@ public class UI_BoatReportController : NightWatchReportWindow
         {
             anomalyButton.AnomalyButton.onClick.AddListener(() =>
             {
-                _selectedAnomaly = anomalyButton.AnomalyText.text;
+                _selectedAnomalyText = anomalyButton.AnomalyText.text;
+                _selectedAnomalyType = anomalyButton.AnomalyDefinition.Type;
                 UpdateSummaryReport();
             });
         }
@@ -162,6 +163,6 @@ public class UI_BoatReportController : NightWatchReportWindow
 
     private void UpdateSummaryReport()
     {
-        _summaryReportText.text = _selectedAnomaly + " on " + _boatNameInput;
+        _summaryReportText.text = _selectedAnomalyText + " on " + _boatNameInput;
     }
 }

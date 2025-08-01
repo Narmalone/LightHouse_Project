@@ -17,7 +17,7 @@ public class BuyoncyController : MonoBehaviour, ISonarable
     [SerializeField] private Light _lifeLight;
     public int BuyoncyID = -1;
 
-    public event Action OnBroken;
+    public event Action<BuyoncyController> OnBroken;
     public event Action OnRepaired;
     public event Action ForceDotUpdate;
 
@@ -89,7 +89,7 @@ public class BuyoncyController : MonoBehaviour, ISonarable
 
     public void BreakDown()
     {
-        OnBroken?.Invoke();
+        OnBroken?.Invoke(this);
         _lifeLight.color = _deadColor;
     }
 

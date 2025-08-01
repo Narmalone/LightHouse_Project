@@ -7,11 +7,11 @@ public class CompassArrowElement : MonoBehaviour
 {
     public event Action<CompassArrowElement> CompassArrow;
     [SerializeField] private WindOrientationType _windOrientation;
-    [SerializeField] private CustomUIButton _button;
+    [SerializeField] private UI_CustomButton _button;
     [SerializeField] private TextMeshProUGUI _cardinalText;
 
     public WindOrientationType WindOrientation => _windOrientation;
-    public CustomUIButton Button => _button;
+    public UI_CustomButton Button => _button;
 
     private void Awake()
     {
@@ -23,7 +23,7 @@ public class CompassArrowElement : MonoBehaviour
         _button.OnClick -= OnCliqued;
     }
 
-    private void OnCliqued(CustomUIButton button)
+    private void OnCliqued(UI_CustomButton button)
     {
         CompassArrow?.Invoke(this);
     }

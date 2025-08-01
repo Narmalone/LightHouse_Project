@@ -14,7 +14,7 @@ public abstract class LEOWindow : MonoBehaviour, ILEOWindow
         _canvasGroup.alpha = 1f;
         _canvasGroup.interactable = true;
         _canvasGroup.blocksRaycasts = true;
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
     }
 
     public virtual void Close()
@@ -22,6 +22,6 @@ public abstract class LEOWindow : MonoBehaviour, ILEOWindow
         _canvasGroup.alpha = 0f;
         _canvasGroup.interactable = false;
         _canvasGroup.blocksRaycasts = false;
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 }

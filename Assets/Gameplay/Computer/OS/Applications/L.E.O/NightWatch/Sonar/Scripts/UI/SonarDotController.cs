@@ -7,7 +7,7 @@ public class SonarDotController : MonoBehaviour
 {
     [SerializeField] private RectTransform _rectTransform;
     [SerializeField] private Image _dotImage;
-    [SerializeField] private CustomUIButton _myButton;
+    [SerializeField] private UI_CustomButton _myButton;
 
     private ISonarable _sonarElement;
     public ISonarable SonarElement
@@ -38,7 +38,7 @@ public class SonarDotController : MonoBehaviour
         _myButton.OnClick += OnButtonCliqued;
     }
 
-    private void OnButtonCliqued(CustomUIButton button)
+    private void OnButtonCliqued(UI_CustomButton button)
     {
         SonarDotClicked?.Invoke(_sonarElement.SonarInfo);
     }

@@ -15,7 +15,7 @@ namespace LightHouse.Game.Computer.OS
         [SerializeField] private bool _allowMultipleInstance = true;
 
         [Header("UI Elements")]
-        [SerializeField] private CustomUIButton _customButton;
+        [SerializeField] private UI_CustomButton _customButton;
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace LightHouse.Game.Computer.OS
         protected virtual void OnValidate()
         {
             if (_customButton == null)
-                _customButton = GetComponent<CustomUIButton>();
+                _customButton = GetComponent<UI_CustomButton>();
         }
 
         #endregion

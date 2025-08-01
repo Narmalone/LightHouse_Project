@@ -4,10 +4,10 @@ using UnityEngine.EventSystems;
 using System;
 
 [RequireComponent(typeof(Image))]
-public class CustomUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
+public class UI_CustomButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
                               IPointerClickHandler
 {
-    public Action<CustomUIButton> OnClick;
+    public Action<UI_CustomButton> OnClick;
     public int DetectWhenMultipleClicks = 2;
     public Action OnDoubleClick { get; set; }
 
@@ -16,12 +16,12 @@ public class CustomUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public Color selectedColor = new Color(0.7f, 0.7f, 1.2f);
 
     private Image _image;
+    public Image Image => _image;
     public bool _isSelected = false;
 
     private void Awake()
     {
         if (_image == null) _image = GetComponent<Image>();
-        _image.color = normalColor;
     }
 
     private void OnValidate()
@@ -56,6 +56,7 @@ public class CustomUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         _isSelected = false;
         _image.color = normalColor;
     }
+
     public void Select()
     {
         _isSelected = true;

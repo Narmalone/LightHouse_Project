@@ -13,6 +13,7 @@ public enum ELEOWindow
 
 public class LEOApplication : ComputerApp
 {
+    [SerializeField] private TabCanvas _tabCanvas;
     [SerializeField] private LEOWindow[] _windows;
     [SerializeField] private LEOWindowButton[] _windowsButton;
     [SerializeField] private NightWatchController _nightWatchController;
@@ -20,6 +21,8 @@ public class LEOApplication : ComputerApp
     private Dictionary<ELEOWindow, LEOWindow> _windowMap;
     public LEOWindow CurrentActiveWindow { get; private set; }
     public NightWatchController NightWatch => _nightWatchController;
+
+    private bool _firstTimeOpening = false;
 
     protected override void Awake()
     {
@@ -42,12 +45,6 @@ public class LEOApplication : ComputerApp
         }
     }
 
-    private void Start()
-    {
-        if (isActiveAndEnabled) State = E_ComputerAppState.Opened;
-        ShowWindow(ELEOWindow.Menu);
-    }
-
     private void OnValidate()
     {
         _windows = GetComponentsInChildren<LEOWindow>();
@@ -67,6 +64,7 @@ public class LEOApplication : ComputerApp
             Debug.LogWarning($"Window type {type} not found.");
             return;
         }
+        if (isActiveAndEnabled) State = E_ComputerAppState.Opened;
 
         if (newWindow == CurrentActiveWindow)
             return;
@@ -76,7 +74,19 @@ public class LEOApplication : ComputerApp
         CurrentActiveWindow.Open();
     }
 
-    public override void OnOpen() { }
-    public override void OnClose() { }
+    public override void OnOpen() 
+    {
+        _tabCanvas.EnableCanvasGroup();
+
+        if (!_firstTimeOpening)
+        {
+            ShowWindow(ELEOWindow.Menu);
+            _firstTimeOpening = true;
+        }
+    }
+    public override void OnClose() 
+    {
+        _tabCanvas.DisableCanvasGroup();
+    }
     public override void OnMinimize() { }
 }

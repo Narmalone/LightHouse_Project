@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2547922438385213995}
-  - component: {fileID: 2447263941272531660}
+  - component: {fileID: 5163613824524355576}
   m_Layer: 0
   m_Name: SignalsInfosHistory_X
   m_TagString: Untagged
@@ -30,8 +30,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5737088249753389920}
-  - {fileID: 5793183790288167590}
-  - {fileID: 7653863239551221469}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -39,7 +37,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 520, y: 55}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2447263941272531660
+--- !u!114 &5163613824524355576
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48,12 +46,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 572032818914725982}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f26a6fc9343dc7744a5b42ce66469184, type: 3}
+  m_Script: {fileID: 11500000, guid: 6119ec1b32cb14144852b5711736524b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _signalTypeText: {fileID: 0}
-  _signalTimeDateText: {fileID: 0}
-  _signalFailureTimerText: {fileID: 0}
+  Icon: {fileID: 4950048175870370715}
+  _arrivalDateText: {fileID: 4742755163179767801}
+  _completionState: {fileID: 2381912343506177660}
 --- !u!1 &951005543400074606
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,7 +139,7 @@ GameObject:
   - component: {fileID: 2345186455797813882}
   - component: {fileID: 1911924981563553159}
   m_Layer: 0
-  m_Name: SignalInfoBackground
+  m_Name: SignalInfoOutline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -158,7 +156,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5793183790288167590}
   m_Father: {fileID: 2547922438385213995}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -216,7 +215,7 @@ GameObject:
   - component: {fileID: 5798000960048551643}
   - component: {fileID: 5348019154622379517}
   m_Layer: 0
-  m_Name: SignalInfoBackground_1
+  m_Name: SignalInfoBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -229,16 +228,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2932538524419833071}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2547922438385213995}
+  m_Children:
+  - {fileID: 7653863239551221469}
+  m_Father: {fileID: 5737088249753389920}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -20, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 484, y: 48}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5798000960048551643
@@ -303,7 +303,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7163056858971682250}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -311,12 +311,12 @@ RectTransform:
   - {fileID: 3552302747124844819}
   - {fileID: 1231284516459587593}
   - {fileID: 7861935610970728933}
-  m_Father: {fileID: 2547922438385213995}
+  m_Father: {fileID: 5793183790288167590}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -22.5, y: 0.6046009}
-  m_SizeDelta: {x: -25, y: 12.6147}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &634019379870764840
 MonoBehaviour:
@@ -578,3 +578,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 9004215834621609299}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4742755163179767801 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4405857617976185514, guid: bc9935ad3be9c914f9180208af63c488,
+    type: 3}
+  m_PrefabInstance: {fileID: 9004215834621609299}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -33,6 +33,8 @@ public class Boat : MonoBehaviour, ISonarable
     [SerializeField] private Color AliveDotColor;
     [SerializeField] private Color DeathDotColor;
 
+    public event Action OnBoatProgressEnded;
+
     public event Action ForceDotUpdate;
 
     private float _defaultRadioFrequency;
@@ -69,7 +71,7 @@ public class Boat : MonoBehaviour, ISonarable
     {
         if (_controller.Progress >= 1.0f)
         {
-            Destroy(this.gameObject);
+            OnBoatProgressEnded?.Invoke();
         }
     }
 

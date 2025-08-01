@@ -18,9 +18,9 @@ public class BoatAnomalyController : MonoBehaviour
 
     public void RemoveAnomaly()
     {
+        OnAnomalyResolved?.Invoke();
         Destroy(_currentAnomaly.gameObject);
         _currentAnomaly = null;
-        OnAnomalyResolved?.Invoke();
     }
 
     public BoatAnomaly GetActiveAnomaly() => _currentAnomaly;

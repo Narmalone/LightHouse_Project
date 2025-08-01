@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2747483867529814178}
   - component: {fileID: 5099154048804291746}
+  - component: {fileID: 867369601292217199}
   m_Layer: 0
   m_Name: BuoyElement_X
   m_TagString: Untagged
@@ -37,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 190, y: 245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5099154048804291746
 MonoBehaviour:
@@ -65,6 +66,25 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &867369601292217199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5272460975402049329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77c6448d97f5af5468bd469501e734a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentState: 0
+  _button: {fileID: 6660584504110370267}
+  _statusText: {fileID: 2657237638037002608}
+  _buoyIDText: {fileID: 7856021827354631970}
+  _uncheckedColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  _invalidColor: {r: 1, g: 0, b: 0, a: 1}
+  _validColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6943986439631028647
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,7 +173,7 @@ GameObject:
   - component: {fileID: 1137127025186908225}
   - component: {fileID: 6660584504110370267}
   m_Layer: 0
-  m_Name: BuoyImage
+  m_Name: BuoyButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -239,7 +259,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0, g: 1, b: 0.69907475, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
@@ -312,7 +332,7 @@ PrefabInstance:
     - target: {fileID: 4770457166630168781, guid: bc9935ad3be9c914f9180208af63c488,
         type: 3}
       propertyPath: m_Name
-      value: Base_Computer_Text_1
+      value: Status_Text
       objectReference: {fileID: 0}
     - target: {fileID: 7918172733636259162, guid: bc9935ad3be9c914f9180208af63c488,
         type: 3}
@@ -419,6 +439,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc9935ad3be9c914f9180208af63c488, type: 3}
+--- !u!114 &2657237638037002608 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4405857617976185514, guid: bc9935ad3be9c914f9180208af63c488,
+    type: 3}
+  m_PrefabInstance: {fileID: 1856793271625649114}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8369842612265789056 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7918172733636259162, guid: bc9935ad3be9c914f9180208af63c488,
@@ -476,7 +508,7 @@ PrefabInstance:
     - target: {fileID: 4770457166630168781, guid: bc9935ad3be9c914f9180208af63c488,
         type: 3}
       propertyPath: m_Name
-      value: Base_Computer_Text
+      value: BuoyID_Text
       objectReference: {fileID: 0}
     - target: {fileID: 7918172733636259162, guid: bc9935ad3be9c914f9180208af63c488,
         type: 3}
@@ -589,3 +621,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5774443838166486408}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7856021827354631970 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4405857617976185514, guid: bc9935ad3be9c914f9180208af63c488,
+    type: 3}
+  m_PrefabInstance: {fileID: 5774443838166486408}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

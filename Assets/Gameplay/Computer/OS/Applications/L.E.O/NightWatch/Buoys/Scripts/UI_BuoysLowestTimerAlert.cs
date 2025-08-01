@@ -1,25 +1,23 @@
-Ôªøusing System.Linq;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
-public class BoatAnomalyTimerController : MonoBehaviour
+public class UI_BuoysLowestTimerAlert : MonoBehaviour
 {
-    [SerializeField] private BoatAnomaliesDatabase _database;
+    [SerializeField] private BuyoncyAnomalyDatabase _database;
     [SerializeField] private TextMeshProUGUI _timerText;
 
     private void Start()
     {
-        // On cache par d√©faut si aucune anomalie
+        // On cache par dÈfaut si aucune anomalie
         _timerText.text = 0f.ToString("00:00");
     }
 
     private void Update()
     {
-        // 1) On fait enfin d√©cr√©menter les timers DANS la database
+        // 1) On fait enfin dÈcrÈmenter les timers DANS la database
         _database.TickTimers(Time.deltaTime);
 
-        // 2) On r√©cup√®re la liste active
+        // 2) On rÈcupËre la liste active
         var anomalies = _database.GetAnomalies();
         if (anomalies.Count == 0)
         {
@@ -27,7 +25,7 @@ public class BoatAnomalyTimerController : MonoBehaviour
             return;
         }
 
-        // 3) On affiche toujours la premi√®re anomalie (la plus ‚Äúvieille‚Äù si ta liste est ordonn√©e par insertion)
+        // 3) On affiche toujours la premiËre anomalie (la plus ìvieilleî si ta liste est ordonnÈe par insertion)
         var first = anomalies[0];
         float remaining = first.RemainingTime;
         int minutes = Mathf.FloorToInt(remaining / 60f);

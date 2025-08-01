@@ -47,7 +47,7 @@ public class BoatsManager : MonoBehaviour
     private void OnDestroy()
     {
         TimeHandlerData.OnTimeSegmentChanged -= HandleTimeSegmentChange;
-        _anomaliesDatabase.ResetAll();
+        _anomaliesDatabase.ResetAnomalies();
         BoatsHandlerData.Boats.Clear();
     }
 
@@ -106,7 +106,22 @@ public class BoatsManager : MonoBehaviour
         TryAddAnomaly(boat);
         _controllers.Add(boat);
         BoatsHandlerData.Boats.Add(boat);
+        boat.AnomalyController.OnAnomalyResolved += () => AnomalyController_OnAnomalyResolved(boat);
+        boat.OnBoatProgressEnded += () => Boat_OnBoatProgressEnded(boat);
         //to doo, make an event when the boat has done it's path then unload events / remove from lists
+    }
+
+    private void AnomalyController_OnAnomalyResolved(Boat boat)
+    {
+        boat.AnomalyController.OnAnomalyResolved -= () => AnomalyController_OnAnomalyResolved(boat);
+        _anomaliesDatabase.RemoveAnomaly(boat.Data.Name);
+    }
+
+    private void Boat_OnBoatProgressEnded(Boat boat)
+    {
+        boat.OnBoatProgressEnded -= () => Boat_OnBoatProgressEnded(boat);
+        BoatsHandlerData.Boats.Remove(boat);
+        Destroy(boat.gameObject);
     }
 
     private void DespawnAllBoats()
@@ -174,7 +189,7 @@ public class BoatsManager : MonoBehaviour
     private void TryAddAnomaly(Boat boat)
     {
         if (Random.value > _anomalyChances) return;
-
+        if (WeatherHandlerData.CurrentWeather == null) return;
         foreach (var config in _anomalyConfigsByWeather)
         {
             if (config.weatherType == WeatherHandlerData.CurrentWeather.WeatherType)
@@ -186,7 +201,7 @@ public class BoatsManager : MonoBehaviour
                 {
                     var anomaly =  def.InstantiateAndAttach(boat);
                     boat.AnomalyController.AddAnomaly(anomaly);
-                    _anomaliesDatabase.SetAnomaly(boat.Data.Name, def.AnomalyName);
+                    _anomaliesDatabase.SetAnomaly(boat.Data.Name, def.Type);
                 }
                 else
                     Debug.LogWarning($"No prefab defined for anomaly: {anomalyType.Value}");

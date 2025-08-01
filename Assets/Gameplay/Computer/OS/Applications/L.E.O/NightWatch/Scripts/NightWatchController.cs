@@ -57,14 +57,15 @@ public class NightWatchController : LEOWindow
         }
     }
 
-    private void Start()
+    public override void Close()
     {
-        SwitchTo(E_NightWatchMode.Boat);
+        base.Close();
+        _sonarUIController.StopRadar();
     }
 
-    private void OnDisable()
+    private void Start()
     {
-        _sonarUIController.StopRadar();
+        SwitchTo(E_NightWatchMode.Signals);
     }
 
     public void SwitchTo(E_NightWatchMode target)
