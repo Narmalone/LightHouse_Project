@@ -46,7 +46,7 @@ public class UI_Signals : NightWatchReportWindow
         ui.Initialize(model, icon);
 
         ui.OnTimerEnded += HandleExpired;
-
+        Debug.Log("cc");
         _active[model.Key] = ui;
     }
 
@@ -65,7 +65,7 @@ public class UI_Signals : NightWatchReportWindow
             BoatDB.RemoveAnomaly(boat.BoatName);
         else if (model is BuyoncyAnomalyDatas buoy)
             BuoyDB.RemoveAnomaly(buoy.ID);*/
-        OnAnomalyRemoved(model);
+        RemoveUI(model);
        /* if(model is BoatAnomalyDatas datas)
         {
             BoatDB.RemoveAnomaly(boat.BoatName);
@@ -75,6 +75,17 @@ public class UI_Signals : NightWatchReportWindow
 
     private void OnAnomalyRemoved(ISignal model)
     {
+        var history = Instantiate(HistorySignalPrefab, HistoryParent);
+        history.SetInfos(
+            icon: model is BoatAnomalyDatas ? BoatIcon : BuoyIcon,
+            arrivalDate: model.DisplayText,
+            completionValidation: ValidIcon
+        );
+        RemoveUI(model);
+    }
+
+    private void RemoveUI(ISignal model)
+    {
         if (_active.TryGetValue(model.Key, out var ui))
         {
             ui.OnTimerEnded -= HandleExpired;
@@ -83,4 +94,5 @@ public class UI_Signals : NightWatchReportWindow
             _active.Remove(model.Key);
         }
     }
+
 }

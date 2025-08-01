@@ -4,7 +4,7 @@ public interface ISignal
     string Key { get; }
 
     /// <summary>Texte à afficher (BoatName, “Buoy ID: 3”, etc.)</summary>
-    string DisplayText { get; }
+    string DisplayText { get; set; }
 
     /// <summary>Temps restant en secondes.</summary>
     float RemainingTime { get; set; }
