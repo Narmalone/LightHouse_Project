@@ -11,7 +11,7 @@ public class BuyoncyAnomalyDatas : ISignal
 
     public string Key => ID.ToString("00");
 
-    public string DisplayText => ID.ToString("00");
+    public string DisplayText { get; set; }
 
 }
 

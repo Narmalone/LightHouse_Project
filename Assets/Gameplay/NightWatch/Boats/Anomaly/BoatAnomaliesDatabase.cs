@@ -12,7 +12,7 @@ public class BoatAnomalyDatas : ISignal
 
     public string Key => BoatName;
 
-    public string DisplayText => BoatName;
+    public string DisplayText { get; set; }
 }
 
 
@@ -21,7 +21,7 @@ public class BoatAnomaliesDatabase : ScriptableObject
 {
     public float TimeToReportAnomalies = 300f;  // en secondes
 
-    private readonly List<BoatAnomalyDatas> _anomalies = new List<BoatAnomalyDatas>();
+    public List<BoatAnomalyDatas> _anomalies = new List<BoatAnomalyDatas>();
 
     public event Action<ISignal> OnAnomalyAdded;
     public event Action<ISignal> OnAnomalyRemoved;

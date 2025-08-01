@@ -22,6 +22,7 @@ public class BuyoncyManager : MonoBehaviour
             var controller = _buyoncies[i];
             controller.OnBroken -= BuyoncyManager_OnBroken;
         }
+        _anomalyDatabase.ResetAnomalies();
     }
 
     private void BuyoncyManager_OnBroken(BuyoncyController controller)
