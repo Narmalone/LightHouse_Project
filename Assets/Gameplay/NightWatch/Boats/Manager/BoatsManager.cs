@@ -201,7 +201,7 @@ public class BoatsManager : MonoBehaviour
                 {
                     var anomaly =  def.InstantiateAndAttach(boat);
                     boat.AnomalyController.AddAnomaly(anomaly);
-                    _anomaliesDatabase.SetAnomaly(boat.Data.Name, def.Type);
+                    _anomaliesDatabase.SetAnomaly(boat.Data.Name, def.Type, boat.RadioFrenquency.ToString() + " MHz");
                 }
                 else
                     Debug.LogWarning($"No prefab defined for anomaly: {anomalyType.Value}");

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LightHouse.Game.DayNightSystem;
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ public class UI_BuoysReportController : NightWatchReportWindow
     [SerializeField] private Button _sendReportButton;
     [SerializeField] private Button _resetAllButton;
     private UI_Buoy _lastSelectedBuoy;
+    private int _attemptCount = 0;
 
     private void Awake()
     {
@@ -22,6 +24,16 @@ public class UI_BuoysReportController : NightWatchReportWindow
 
         _resetAllButton.onClick.AddListener(OnResetCliqued);
         _sendReportButton.onClick.AddListener(OnSendReportCliqued);
+        TimeHandlerData.OnTimeSegmentChanged += OnTimeSegmentChanged;
+    }
+
+    private void OnTimeSegmentChanged(TimeOfDaySegment segment)
+    {
+        if (segment != TimeOfDaySegment.Morning) return;
+        foreach(var buoy in _buoys)
+        {
+            buoy.SwitchTo(UI_BuoyState.Unchecked);
+        }
     }
 
     private void OnSendReportCliqued()
@@ -40,53 +52,48 @@ public class UI_BuoysReportController : NightWatchReportWindow
         int correctCount = 0;
         int errorCount = 0;
 
-        // 2. Pour chaque bouée UI, on compare et on met à jour l'état
         foreach (var buoy in _buoys)
         {
             bool shouldBeInvalid = anomalyIds.Contains(buoy.ID);
-            bool isMarkedInvalid = buoy.CurrentState == UI_BuoyState.Invalid;
-            bool isCorrect = false;
+            var state = buoy.CurrentState;
 
-            if (shouldBeInvalid)
+            // On ne compte que si le joueur a marqué la bouée (Valid ou Invalid)
+            if (state == UI_BuoyState.Unchecked)
+                continue;
+
+            bool isMarkedInvalid = state == UI_BuoyState.Invalid;
+            bool isMarkedValid = state == UI_BuoyState.Valid;
+
+            if (shouldBeInvalid && isMarkedInvalid)
             {
-                // Devrait être invalid → on met en Invalid
-                buoy.SwitchTo(UI_BuoyState.Invalid);
-
-                if (isMarkedInvalid)
-                {
-                    correctCount++;
-                    isCorrect = true;
-                }
-                else
-                    errorCount++;
+                // Anomalie + Invalid → correct
+                correctCount++;
+                _anomalyDatabase.RemoveAnomaly(buoy.ID);
+            }
+            else if (!shouldBeInvalid && isMarkedValid)
+            {
+                // Pas d'anomalie + Valid → correct
+                correctCount++;
             }
             else
             {
-                // Devrait être valid → on met en Valid
-                buoy.SwitchTo(UI_BuoyState.Valid);
-
-                if (!isMarkedInvalid)
-                {
-                    correctCount++;
-                    isCorrect = true;
-                }
-                else
-                    errorCount++;
-            }
-
-            if (isCorrect)
-            {
-                _anomalyDatabase.RemoveAnomaly(buoy.ID);
+                // Tout autre combinaison ("Invalid" là où il n'y a pas d'anomalie,
+                // ou "Valid" là où il y a une anomalie) → erreur
+                errorCount++;
+                buoy.SwitchTo(UI_BuoyState.Failed);
             }
         }
 
-        Debug.Log($"Validation terminée : {correctCount} correct(s), {errorCount} erreur(s).");
+        Debug.Log($"Validation terminée : {correctCount} marquage(s) correct(s), {errorCount} erreur(s).");
 
-        // 3. Affiche la fenêtre de résultat
+        // Affiche la fenêtre de résultat
         var resultWindow = Instantiate(_sendDatasPrefab, transform as RectTransform);
         resultWindow.IsSuccessfull = (errorCount == 0);
-    }
 
+        // Gestion du compteur de tentatives
+        if (errorCount > 0) _attemptCount++;
+        else _attemptCount = 0;
+    }
     private void OnResetCliqued()
     {
         SetAllBuoysState(UI_BuoyState.Unchecked);
@@ -114,6 +121,8 @@ public class UI_BuoysReportController : NightWatchReportWindow
             buoy.OnBuoyCliqued -= UI_BuoysReportController_OnBuoyCliqued;
         }
         _resetAllButton.onClick.RemoveListener(OnResetCliqued);
+        _sendReportButton.onClick.RemoveListener(OnSendReportCliqued);
+        TimeHandlerData.OnTimeSegmentChanged -= OnTimeSegmentChanged;
     }
 
     private void OnValidate()

@@ -40,6 +40,8 @@ public class BuyoncyController : MonoBehaviour, ISonarable
     private Timer _timer;
     public float CurrentLifeTime;
 
+    public bool IsAlive => CurrentLifeTime > 0f;
+
     private void Awake()
     {
         _timer = new Timer(GetRandomLifeTime());
@@ -47,6 +49,15 @@ public class BuyoncyController : MonoBehaviour, ISonarable
         _timer.OnTimerComplete += OnTimerCompleted;
         WeatherHandlerData.OnWeatherTypeChanged += OnWeatherChanged;
         SonarHandlerData.Register(this);
+        TimeHandlerData.OnTimeSegmentChanged += OnTimeSegmentChanged;
+    }
+
+    private void OnTimeSegmentChanged(TimeOfDaySegment segment)
+    {
+        if(!IsAlive)
+        {
+            Repaired();
+        }
     }
 
     private void OnDestroy()

@@ -13,6 +13,22 @@ public class BuyoncyManager : MonoBehaviour
             controller.BuyoncyID = i + 1;
             controller.OnBroken += BuyoncyManager_OnBroken;
         }
+        _anomalyDatabase.OnAnomalyRemoved += AnomalyDatabase_OnAnomalyRemoved;
+    }
+
+    private void AnomalyDatabase_OnAnomalyRemoved(ISignal obj)
+    {
+        foreach(var buoy in _buyoncies)
+        {
+            if(obj is BuyoncyAnomalyDatas datas)
+            {
+                if(datas.ID == buoy.BuyoncyID)
+                {
+                    buoy.Repaired();
+                    break;
+                }
+            }
+        }
     }
 
     private void OnDestroy()
@@ -23,6 +39,7 @@ public class BuyoncyManager : MonoBehaviour
             controller.OnBroken -= BuyoncyManager_OnBroken;
         }
         _anomalyDatabase.ResetAnomalies();
+        _anomalyDatabase.OnAnomalyRemoved -= AnomalyDatabase_OnAnomalyRemoved;
     }
 
     private void BuyoncyManager_OnBroken(BuyoncyController controller)

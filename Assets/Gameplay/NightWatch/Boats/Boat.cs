@@ -38,6 +38,7 @@ public class Boat : MonoBehaviour, ISonarable
     public event Action ForceDotUpdate;
 
     private float _defaultRadioFrequency;
+    public float RadioFrenquency => _defaultRadioFrequency;
 
     private void Awake()
     {
@@ -51,6 +52,7 @@ public class Boat : MonoBehaviour, ISonarable
 
         _defaultRadioFrequency = UnityEngine.Random.Range(157f, 162f);
         _defaultRadioFrequency = (float)Math.Round(_defaultRadioFrequency, 2);
+        SonarInfo = _defaultRadioFrequency.ToString() + " MHz";
     }
 
     private void AnomalyController_OnAnomalyResolved()
@@ -63,7 +65,7 @@ public class Boat : MonoBehaviour, ISonarable
     private void AnomalyController_OnAnomalyAdded()
     {
         DotColor = DeathDotColor;
-        SonarInfo = 156.8f.ToString() + " MHz";
+        //SonarInfo = 156.8f.ToString() + " MHz";
         ForceDotUpdate?.Invoke();
     }
 

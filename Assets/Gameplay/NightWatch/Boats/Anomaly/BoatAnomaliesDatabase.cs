@@ -26,13 +26,14 @@ public class BoatAnomaliesDatabase : ScriptableObject
     public event Action<ISignal> OnAnomalyAdded;
     public event Action<ISignal> OnAnomalyRemoved;
 
-    public void SetAnomaly(string boatName, AnomalyType anomalyType)
+    public void SetAnomaly(string boatName, AnomalyType anomalyType, string displayText)
     {
         var existing = _anomalies.Find(a => a.BoatName == boatName);
         if (existing != null)
         {
             existing.AnomalyType = anomalyType;
             existing.RemainingTime = TimeToReportAnomalies;
+            existing.DisplayText = displayText;
         }
         else
         {
@@ -40,7 +41,8 @@ public class BoatAnomaliesDatabase : ScriptableObject
             {
                 BoatName = boatName,
                 AnomalyType = anomalyType,
-                RemainingTime = TimeToReportAnomalies
+                RemainingTime = TimeToReportAnomalies,
+                DisplayText = displayText //Radio frequency
             };
             _anomalies.Add(data);
             OnAnomalyAdded?.Invoke(data);

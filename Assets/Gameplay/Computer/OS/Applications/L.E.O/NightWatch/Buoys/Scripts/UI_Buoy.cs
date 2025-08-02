@@ -49,7 +49,7 @@ public class UI_Buoy : MonoBehaviour
     {
         int targetState = 0;
 
-        if ((int)_currentState + 1 >= Enum.GetValues(typeof(UI_BuoyState)).Length)
+        if ((int)_currentState + 1 >= Enum.GetValues(typeof(UI_BuoyState)).Length || _currentState + 1 == UI_BuoyState.Failed)
             targetState = 0;
         else
             targetState = (int)_currentState + 1;
@@ -78,6 +78,10 @@ public class UI_Buoy : MonoBehaviour
             case UI_BuoyState.Invalid:
                 EnterInvalidState();
                 break;
+
+            case UI_BuoyState.Failed:
+                EnterFailedState();
+                break;
         }
 
         _currentState = nextState;
@@ -93,6 +97,12 @@ public class UI_Buoy : MonoBehaviour
     {
         _button.targetGraphic.color = _invalidColor;
         _statusText.text = "Invalid";
+    }
+
+    private void EnterFailedState()
+    {
+        _button.interactable = false;
+        _statusText.text = "Failed";
     }
 
     private void EnterValidState()

@@ -36,7 +36,8 @@ public class BuyoncyAnomalyDatabase : ScriptableObject
             var data = new BuyoncyAnomalyDatas
             {
                 ID = id,
-                RemainingTime = TimeToReportAnomalies
+                RemainingTime = TimeToReportAnomalies,
+                DisplayText = "Anomaly Detected"
             };
             _anomalies.Add(data);
             OnAnomalyAdded?.Invoke(data);

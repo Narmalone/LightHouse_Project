@@ -44,9 +44,12 @@ public class UI_Signals : NightWatchReportWindow
 
         var ui = Instantiate(SignalPrefab, SignalParent);
         ui.Initialize(model, icon);
+        if(model is BoatAnomalyDatas)
+        {
+            ui.Icon.rectTransform.eulerAngles = new Vector3(0, 0, -90f);
+        }
 
         ui.OnTimerEnded += HandleExpired;
-        Debug.Log("cc");
         _active[model.Key] = ui;
     }
 
@@ -60,17 +63,9 @@ public class UI_Signals : NightWatchReportWindow
             completionValidation: InvalidIcon
         );
 
-        // Supprime en base selon le type concret
-        /*if (model is BoatAnomalyDatas boat)
-            BoatDB.RemoveAnomaly(boat.BoatName);
-        else if (model is BuyoncyAnomalyDatas buoy)
-            BuoyDB.RemoveAnomaly(buoy.ID);*/
+        if (model is BoatAnomalyDatas)
+            history.Icon.rectTransform.eulerAngles = new Vector3(0, 0, -90f);
         RemoveUI(model);
-       /* if(model is BoatAnomalyDatas datas)
-        {
-            BoatDB.RemoveAnomaly(boat.BoatName);
-        }*/
-        Debug.Log("Active");
     }
 
     private void OnAnomalyRemoved(ISignal model)

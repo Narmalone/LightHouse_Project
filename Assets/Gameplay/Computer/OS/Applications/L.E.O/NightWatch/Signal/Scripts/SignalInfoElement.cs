@@ -13,6 +13,7 @@ public class SignalInfoElement : MonoBehaviour
     public string Key => _model.Key;
 
     public event Action<ISignal> OnTimerEnded;
+    public Image Icon => _icon;
 
     public void Initialize(ISignal model, Sprite icon)
     {
