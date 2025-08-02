@@ -29,6 +29,7 @@ public class UI_Buoy : MonoBehaviour
 
     public Button Button => _button;
     public UI_BuoyState CurrentState => _currentState;
+    public bool HasBeenReportedToday { get; set; }
 
     private void Awake()
     {
@@ -82,9 +83,19 @@ public class UI_Buoy : MonoBehaviour
             case UI_BuoyState.Failed:
                 EnterFailedState();
                 break;
+
+            case UI_BuoyState.Reported:
+                EnterReportedState();
+                break;
         }
 
         _currentState = nextState;
+    }
+
+    private void EnterReportedState()
+    {
+        _button.interactable = false;
+        _statusText.text = "Reported";
     }
 
     private void EnterUncheckedState()

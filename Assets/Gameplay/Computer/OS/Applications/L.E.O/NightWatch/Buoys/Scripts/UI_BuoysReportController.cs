@@ -58,7 +58,7 @@ public class UI_BuoysReportController : NightWatchReportWindow
             var state = buoy.CurrentState;
 
             // On ne compte que si le joueur a marqué la bouée (Valid ou Invalid)
-            if (state == UI_BuoyState.Unchecked)
+            if (state == UI_BuoyState.Unchecked || buoy.HasBeenReportedToday)
                 continue;
 
             bool isMarkedInvalid = state == UI_BuoyState.Invalid;
@@ -69,6 +69,8 @@ public class UI_BuoysReportController : NightWatchReportWindow
                 // Anomalie + Invalid → correct
                 correctCount++;
                 _anomalyDatabase.RemoveAnomaly(buoy.ID);
+                buoy.HasBeenReportedToday = true;
+                buoy.SwitchTo(UI_BuoyState.Reported);
             }
             else if (!shouldBeInvalid && isMarkedValid)
             {

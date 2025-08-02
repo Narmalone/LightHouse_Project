@@ -41,6 +41,7 @@ public class BuyoncyController : MonoBehaviour, ISonarable
     public float CurrentLifeTime;
 
     public bool IsAlive => CurrentLifeTime > 0f;
+    public bool HasBeenRepairedToday { get; set; } = false;
 
     private void Awake()
     {
@@ -54,10 +55,15 @@ public class BuyoncyController : MonoBehaviour, ISonarable
 
     private void OnTimeSegmentChanged(TimeOfDaySegment segment)
     {
-        if(!IsAlive)
+        if(segment == TimeOfDaySegment.Morning)
         {
-            Repaired();
+            if (!IsAlive)
+            {
+                Repaired();
+            }
+            HasBeenRepairedToday = false;
         }
+       
     }
 
     private void OnDestroy()
@@ -81,6 +87,7 @@ public class BuyoncyController : MonoBehaviour, ISonarable
 
     private void Update()
     {
+        if (HasBeenRepairedToday) return;
         if(TimeUtility.IsTimeInRange(TimeHandlerData.CurrentTime, _nightWatchConfig.BuyoncysDecayStartHour, _nightWatchConfig.BuyoncysDecayEndHour))
         {
             _timer.Tick(Time.deltaTime, CurrentSpeed);

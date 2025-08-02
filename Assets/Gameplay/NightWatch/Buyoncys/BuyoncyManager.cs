@@ -25,6 +25,7 @@ public class BuyoncyManager : MonoBehaviour
                 if(datas.ID == buoy.BuyoncyID)
                 {
                     buoy.Repaired();
+                    buoy.HasBeenRepairedToday = true;
                     break;
                 }
             }
