@@ -4,6 +4,7 @@ using UnityEngine;
 public class BoatAnomalyDefinition : ScriptableObject
 {
     public AnomalyType Type;
+    public string AnomalyName;
     public BoatAnomaly Prefab;
 
     public BoatAnomaly InstantiateAndAttach(Boat boat)

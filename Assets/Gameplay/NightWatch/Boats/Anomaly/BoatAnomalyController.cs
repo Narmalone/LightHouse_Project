@@ -1,22 +1,27 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class BoatAnomalyController : MonoBehaviour
 {
-    private List<BoatAnomaly> activeAnomalies = new();
+    private BoatAnomaly _currentAnomaly = null;
     [SerializeField] private float _minAnomalyProgress = 0.1f;
     [SerializeField] private float _maxAnomalyProgress = 0.5f;
+    public event Action OnAnomalyAdded;
+    public event Action OnAnomalyResolved;
 
-    public void AddAnomaly(BoatAnomaly anomalyPrefab)
+    public void AddAnomaly(BoatAnomaly anomalyInstance)
     {
-        activeAnomalies.Add(anomalyPrefab);
+        _currentAnomaly = anomalyInstance;
+        OnAnomalyAdded?.Invoke();
     }
 
-    public void RemoveAnomaly(BoatAnomaly anomaly)
+    public void RemoveAnomaly()
     {
-        activeAnomalies.Remove(anomaly);
-        Destroy(anomaly);
+        OnAnomalyResolved?.Invoke();
+        Destroy(_currentAnomaly.gameObject);
+        _currentAnomaly = null;
     }
 
-    public IReadOnlyList<BoatAnomaly> GetActiveAnomalies() => activeAnomalies;
+    public BoatAnomaly GetActiveAnomaly() => _currentAnomaly;
 }

@@ -127,7 +127,6 @@ namespace LightHouse.Game.Rendering
             {
                 from = _nightProfile;
                 to = _morningProfile;
-                Debug.Log("morning");
                 t = timeOfDay / 6;
             }
 

@@ -13,6 +13,7 @@ public class BoatsManager : MonoBehaviour
     private List<Boat> _controllers = new();
     [SerializeField] private AnomalyConfiguration[] _anomalyConfigsByWeather;
     [SerializeField] private BoatAnomalyDefinition[] _anomalyPrefabs;
+    [SerializeField] private BoatAnomaliesDatabase _anomaliesDatabase;
 
     [Header("Spawn Settings")]
     [SerializeField] private NightWatchConfiguration _nightWatchConfig;
@@ -37,14 +38,17 @@ public class BoatsManager : MonoBehaviour
 
     #region === Unity Events ===
 
-    private void OnEnable()
+    private void Awake()
     {
+        BoatsHandlerData.Boats.Clear();
         TimeHandlerData.OnTimeSegmentChanged += HandleTimeSegmentChange;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         TimeHandlerData.OnTimeSegmentChanged -= HandleTimeSegmentChange;
+        _anomaliesDatabase.ResetAnomalies();
+        BoatsHandlerData.Boats.Clear();
     }
 
     private void Start()
@@ -101,6 +105,23 @@ public class BoatsManager : MonoBehaviour
         Boat boat = Instantiate(_prefab);
         TryAddAnomaly(boat);
         _controllers.Add(boat);
+        BoatsHandlerData.Boats.Add(boat);
+        boat.AnomalyController.OnAnomalyResolved += () => AnomalyController_OnAnomalyResolved(boat);
+        boat.OnBoatProgressEnded += () => Boat_OnBoatProgressEnded(boat);
+        //to doo, make an event when the boat has done it's path then unload events / remove from lists
+    }
+
+    private void AnomalyController_OnAnomalyResolved(Boat boat)
+    {
+        boat.AnomalyController.OnAnomalyResolved -= () => AnomalyController_OnAnomalyResolved(boat);
+        _anomaliesDatabase.RemoveAnomaly(boat.Data.Name);
+    }
+
+    private void Boat_OnBoatProgressEnded(Boat boat)
+    {
+        boat.OnBoatProgressEnded -= () => Boat_OnBoatProgressEnded(boat);
+        BoatsHandlerData.Boats.Remove(boat);
+        Destroy(boat.gameObject);
     }
 
     private void DespawnAllBoats()
@@ -168,35 +189,20 @@ public class BoatsManager : MonoBehaviour
     private void TryAddAnomaly(Boat boat)
     {
         if (Random.value > _anomalyChances) return;
-
+        if (WeatherHandlerData.CurrentWeather == null) return;
         foreach (var config in _anomalyConfigsByWeather)
         {
-#if UNITY_EDITOR
-            //Debug
-            if(WeatherHandlerData.CurrentWeather == null)
-            {
-                var anomalyType = config.PickRandomAnomaly();
-                var def = GetAnomalyDefinition(anomalyType.Value);
-
-                
-                if (def != null)
-                {
-                    var re = def.InstantiateAndAttach(boat);
-                    boat.AnomalyController.AddAnomaly(re);
-                }
-                else
-                    Debug.LogWarning($"No prefab defined for anomaly: {anomalyType.Value}");
-
-                return;
-            }
-#endif
             if (config.weatherType == WeatherHandlerData.CurrentWeather.WeatherType)
             {
                 var anomalyType = config.PickRandomAnomaly();
                 var def = GetAnomalyDefinition(anomalyType.Value);
 
                 if (def != null)
-                    def.InstantiateAndAttach(boat);
+                {
+                    var anomaly =  def.InstantiateAndAttach(boat);
+                    boat.AnomalyController.AddAnomaly(anomaly);
+                    _anomaliesDatabase.SetAnomaly(boat.Data.Name, def.Type, boat.RadioFrenquency.ToString() + " MHz");
+                }
                 else
                     Debug.LogWarning($"No prefab defined for anomaly: {anomalyType.Value}");
             }

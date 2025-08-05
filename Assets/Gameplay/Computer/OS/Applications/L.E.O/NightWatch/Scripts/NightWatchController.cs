@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public enum E_NightWatchMode
 {
     Boat,
-    Buoys
+    Buoys,
+    Signals
 }
 
 public class NightWatchController : LEOWindow
@@ -38,6 +39,14 @@ public class NightWatchController : LEOWindow
         }
     }
 
+    private void OnValidate()
+    {
+        foreach(var w in _windows)
+        {
+            w.SetNightWatch(this);
+        }
+    }
+
 
     public override void Open()
     {
@@ -48,14 +57,15 @@ public class NightWatchController : LEOWindow
         }
     }
 
-    private void Start()
+    public override void Close()
     {
-        SwitchTo(E_NightWatchMode.Boat);
+        base.Close();
+        _sonarUIController.StopRadar();
     }
 
-    private void OnDisable()
+    private void Start()
     {
-        _sonarUIController.StopRadar();
+        SwitchTo(E_NightWatchMode.Signals);
     }
 
     public void SwitchTo(E_NightWatchMode target)

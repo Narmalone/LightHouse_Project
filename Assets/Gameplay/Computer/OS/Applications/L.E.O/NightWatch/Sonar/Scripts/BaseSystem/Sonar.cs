@@ -25,7 +25,6 @@ namespace LightHouse.Game.Computer.NightWatch.Sonar
                     // ✔️ Détection : le bateau est dans la sphère
                     if (!sonarItem.IsDetectedBySonar)
                     {
-                        Debug.Log("Nouvel Objet détecté : " + sonarItem.Name);
                         sonarItem.IsDetectedBySonar = true;
                         sonarItem.UniqueID = SonarIDAllocator.AllocateID();
                     }

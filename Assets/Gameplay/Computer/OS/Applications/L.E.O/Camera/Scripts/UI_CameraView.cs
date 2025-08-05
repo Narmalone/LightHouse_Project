@@ -52,7 +52,8 @@ namespace LightHouse.Game.Computer.UI
             
             if(_fullScreenInstance.isActiveAndEnabled) _fullScreenInstance.DayText.text = _dayText.text;
 
-            UpdateCompassByCameraDirection();
+            if(_cameraSystem != null)
+                UpdateCompassByCameraDirection();
         }
 
         private void OnDestroy()
