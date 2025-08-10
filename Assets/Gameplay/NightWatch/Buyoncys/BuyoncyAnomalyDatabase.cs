@@ -12,7 +12,6 @@ public class BuyoncyAnomalyDatas : ISignal
     public string Key => ID.ToString("00");
 
     public string DisplayText { get; set; }
-
 }
 
 [CreateAssetMenu(fileName = "BuyoncyAnomalyDatabase", menuName = "LightHouse/Buyoncies/New Database")]
@@ -53,6 +52,19 @@ public class BuyoncyAnomalyDatabase : ScriptableObject
             OnAnomalyRemoved?.Invoke(anomaly);
         }
     }
+
+    public void RemoveAnomalies(List<int> ids)
+    {
+        // On collecte toutes les anomalies à supprimer (évite les problèmes de foreach sur liste modifiée)
+        var toRemove = _anomalies.Where(a => ids.Contains(a.ID)).ToList();
+
+        foreach (var anomaly in toRemove)
+        {
+            _anomalies.Remove(anomaly);
+            OnAnomalyRemoved?.Invoke(anomaly);
+        }
+    }
+
 
     public IReadOnlyList<BuyoncyAnomalyDatas> GetAnomalies() => _anomalies;
 

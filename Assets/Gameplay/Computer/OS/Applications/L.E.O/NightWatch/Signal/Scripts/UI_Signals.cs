@@ -76,6 +76,10 @@ public class UI_Signals : NightWatchReportWindow
             arrivalDate: model.DisplayText,
             completionValidation: ValidIcon
         );
+
+        if(model is BoatAnomalyDatas)
+            history.Icon.rectTransform.eulerAngles = new Vector3(0, 0, -90f);
+
         RemoveUI(model);
     }
 

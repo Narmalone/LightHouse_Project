@@ -7,7 +7,9 @@ public enum ELEOWindow
     Menu,
     NightWatch,
     CameraView,
-    Meteo
+    Meteo,
+    Mails,
+    Maintenance
 }
 
 
