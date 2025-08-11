@@ -1,35 +1,40 @@
+using LightHouse.Game.Computer.LEO.NightWatch;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public class NightWatchWindowButton : MonoBehaviour
+namespace LightHouse.Game.Computer.NightWatch
 {
-    [SerializeField] private E_NightWatchMode _targetWindow;
-    [SerializeField] private NightWatchController _controller;
-    [SerializeField] private Button _button;
-
-    private void Reset()
+    [RequireComponent(typeof(Button))]
+    public class NightWatchWindowButton : MonoBehaviour
     {
-        _button = GetComponent<Button>();
-    }
+        [SerializeField] private E_NightWatchMode _targetWindow;
+        [SerializeField] private NightWatchController _controller;
+        [SerializeField] private Button _button;
 
-    private void Awake()
-    {
-        if (_button != null)
-            _button.onClick.AddListener(OnClick);
-        else
-            Debug.LogWarning($"No Button component found on {gameObject.name}");
-    }
-
-    private void OnClick()
-    {
-        if (_controller != null)
+        private void Reset()
         {
-            _controller.SwitchTo(_targetWindow);
+            _button = GetComponent<Button>();
         }
-        else
+
+        private void Awake()
         {
-            Debug.LogWarning("NightWatchController reference not set.");
+            if (_button != null)
+                _button.onClick.AddListener(OnClick);
+            else
+                Debug.LogWarning($"No Button component found on {gameObject.name}");
+        }
+
+        private void OnClick()
+        {
+            if (_controller != null)
+            {
+                _controller.SwitchTo(_targetWindow);
+            }
+            else
+            {
+                Debug.LogWarning("NightWatchController reference not set.");
+            }
         }
     }
+
 }

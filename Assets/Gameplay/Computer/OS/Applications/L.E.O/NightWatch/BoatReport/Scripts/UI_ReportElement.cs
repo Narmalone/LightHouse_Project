@@ -1,0 +1,22 @@
+using TMPro;
+using UnityEngine;
+
+public class UI_ReportElement : MonoBehaviour
+{
+    [SerializeField] private TextMeshProUGUI _reasonTxt;
+    [SerializeField] private TextMeshProUGUI _moneyResultTxt;
+
+    public TextMeshProUGUI ReasonText => _reasonTxt;
+    public TextMeshProUGUI MoneyResult => _moneyResultTxt;
+
+    public void SetReason(string reason)
+    {
+        _reasonTxt.text = reason;
+    }
+
+    public void SetMoneyResult(string moneyResult, Color textColor)
+    {
+        _moneyResultTxt.text = moneyResult;
+        _moneyResultTxt.color = textColor;
+    }
+}

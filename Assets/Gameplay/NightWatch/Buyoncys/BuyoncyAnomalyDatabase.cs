@@ -9,7 +9,7 @@ public class BuyoncyAnomalyDatas : ISignal
     public int ID;
     public float RemainingTime { get; set; }
 
-    public string Key => ID.ToString("00");
+    public string Key => ID.ToString();
 
     public string DisplayText { get; set; }
 }
@@ -22,6 +22,9 @@ public class BuyoncyAnomalyDatabase : ScriptableObject
 
     public event Action<ISignal> OnAnomalyAdded;
     public event Action<ISignal> OnAnomalyRemoved;
+    public event Action<BuyoncyAnomalyDatas> OnAnomalyExpired;
+
+    public event Action<ISignal> TryForceRemoveAnomaly;
 
     public void SetAnomaly(int id)
     {
@@ -66,7 +69,7 @@ public class BuyoncyAnomalyDatabase : ScriptableObject
     }
 
 
-    public IReadOnlyList<BuyoncyAnomalyDatas> GetAnomalies() => _anomalies;
+    public List<BuyoncyAnomalyDatas> GetAnomalies() => _anomalies;
 
     /// <summary>
     /// Retourne true si, dans la base, le bateau <paramref name="boatName"/> a bien l’anomalie <paramref name="expectedAnomaly"/>.
@@ -87,11 +90,10 @@ public class BuyoncyAnomalyDatabase : ScriptableObject
 
         // on supprime en fin de frame pour éviter les problèmes d’itération
         var expired = _anomalies.Where(a => a.RemainingTime <= 0f).ToList();
-       /* foreach (var a in expired)
+        foreach (var a in expired)
         {
-            _anomalies.Remove(a);
-            OnAnomalyRemoved?.Invoke(a);
-        }*/
+            OnAnomalyExpired?.Invoke(a);
+        }
     }
 
     public void ResetAnomalies()

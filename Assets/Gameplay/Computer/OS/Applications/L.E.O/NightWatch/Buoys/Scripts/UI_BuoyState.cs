@@ -1,8 +1,13 @@
-public enum UI_BuoyState 
+
+namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
 {
-    Unchecked,
-    Valid,
-    Invalid,
-    Failed,
-    Reported
+    public enum UI_BuoyState
+    {
+        Unchecked,
+        Valid,
+        Invalid,
+        Failed,
+        Reported,
+        Expired
+    }
 }

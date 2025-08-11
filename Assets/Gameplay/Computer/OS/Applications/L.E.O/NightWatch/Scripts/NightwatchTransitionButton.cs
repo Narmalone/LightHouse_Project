@@ -1,13 +1,17 @@
 using UnityEngine;
 
-public class NightwatchTransitionButton : LEOWindowButton
+namespace LightHouse.Game.Computer.LEO.NightWatch
 {
-    [SerializeField] private NightWatchController controller => App.NightWatch;
-    [SerializeField] private E_NightWatchMode _mode;
-
-    public override void OnClick()
+    public class NightwatchTransitionButton : LEOWindowButton
     {
-        base.OnClick();
-        controller.SwitchTo(_mode);
+        [SerializeField] private NightWatchController controller => App.NightWatch;
+        [SerializeField] private E_NightWatchMode _mode;
+
+        public override void OnClick()
+        {
+            base.OnClick();
+            controller.SwitchTo(_mode);
+        }
     }
+
 }

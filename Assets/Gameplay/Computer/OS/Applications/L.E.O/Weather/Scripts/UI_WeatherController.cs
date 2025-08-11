@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class UI_WeatherController : LEOWindow
+namespace LightHouse.Game.Computer.LEO.Weather
 {
-   
+    public class UI_WeatherController : LEOWindow
+    {
+
+    }
 }

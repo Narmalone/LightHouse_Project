@@ -10,6 +10,7 @@ public class SignalInfoElement : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _timerText;
 
     private ISignal _model;
+    public ISignal Model => _model;
     public string Key => _model.Key;
 
     public event Action<ISignal> OnTimerEnded;
