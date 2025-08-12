@@ -1,6 +1,7 @@
-﻿using LightHouse.Game.DayNightSystem;
+﻿using LightHouse.Game.Buyoncies;
 using LightHouse.Game.Computer.LEO.NightWatch.Signals;
-using LightHouse.Game.Buyoncies;
+using LightHouse.Game.DayNightSystem;
+using LightHouse.Money;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -276,10 +277,10 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
             int errorsCount,
             IReadOnlyList<float> times)
         {
-            float total = 0;
+            int total = 0;
             if (correctValidBuoys > 0)
             {
-                int correctValidAmount = MoneyCalculator.ValidFlat(correctValidBuoys, _moneyResultDatabase);
+                int correctValidAmount = BuoyMoneyCalculator.ValidFlat(correctValidBuoys, _moneyResultDatabase);
                 CreateReportElement(parent, $"Correct Valid Buoys x{correctValidBuoys}",
                     $"+ {correctValidAmount}$", Color.green);
                 total += correctValidAmount;
@@ -287,24 +288,26 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
 
             if (correctInvalidBuoys > 0)
             {
-                int correctInvalidAmount = MoneyCalculator.InvalidFlat(correctInvalidBuoys, _moneyResultDatabase);
+                int correctInvalidAmount = BuoyMoneyCalculator.InvalidFlat(correctInvalidBuoys, _moneyResultDatabase);
                 CreateReportElement(parent, $"Correct Invalid Buoys x{correctInvalidBuoys}",
                     $"+ {correctInvalidAmount}$", Color.green);
-                int bonus = MoneyCalculator.BonusFromTimes(times, _anomalyDatabase.TimeToReportAnomalies, _moneyResultDatabase);
+                int bonus = BuoyMoneyCalculator.BonusFromTimes(times, _anomalyDatabase.TimeToReportAnomalies, _moneyResultDatabase);
                 CreateReportElement(parent, "Correct invalid speed report", $"+ {bonus}$", Color.green);
                 total += correctInvalidAmount + bonus;
             }
 
             if (errorsCount > 0)
             {
-                int missmatchAmount = MoneyCalculator.MissmatchFlat(errorsCount, _moneyResultDatabase);
+                int missmatchAmount = BuoyMoneyCalculator.MissmatchFlat(errorsCount, _moneyResultDatabase);
                 CreateReportElement(parent, $"Missmatch Buoys: {errorsCount}",
                     $"- {missmatchAmount}$", Color.red);
                 total -= missmatchAmount;
             }
 
+            PlayerCurrency.Add(total);
+
             //Total
-            CreateReportElement(parent, "Total:", $"{total}", total > 0 ? Color.green : Color.red);
+            CreateReportElement(parent, "Total: ", $"{(total > 0 ? "+ " : "- ")}{total}", total > 0 ? Color.green : Color.red);
         }
 
         /// <summary>

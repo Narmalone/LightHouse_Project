@@ -1,4 +1,6 @@
 ﻿using LightHouse.Game.Boats;
+using LightHouse.Game.Computer.LEO.NightWatch.Buoys;
+using LightHouse.Money;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -17,6 +19,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         [Header("Data References")]
         [SerializeField] private BoatsNationalitiesManager _nationalityManager;
         [SerializeField] private BoatAnomaliesDatabase _anomalyDatabase;
+        [SerializeField] private SO_BoatMoneyResults _moneyResultDatabase; // équivalent à _moneyResultDatabase des bouées
 
         [Header("UI Elements - Anomaly Selection")]
         [SerializeField] private AnomalyReportButton[] _anomalyButtons;
@@ -39,7 +42,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         [Header("UI Prefabs")]
         [SerializeField] private UI_NightWatchPopup_ReportDatas _sendDatasPrefab;
-
+        [SerializeField] private UI_ReportElement _reportElementPrefab;
         #endregion
 
         #region Private Fields
@@ -49,6 +52,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         private string _selectedAnomalyText;
         private Sprite _selectedFlag;
 
+        private int _attemptCount;
         #endregion
 
         #region Public Properties
@@ -119,6 +123,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
                     _selectedAnomalyText = btn.AnomalyText.text;
                     _selectedAnomalyType = btn.AnomalyDefinition.Type;
                     UpdateSummaryReport();
+                    OnBoatsUIEventsChanged();
                 });
             }
         }
@@ -149,10 +154,23 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         #region UI Event Handlers
 
+        private void OnBoatsUIEventsChanged()
+        {
+            if (_boatNameInput == string.Empty && _selectedFlag == null && _selectedAnomalyText == string.Empty)
+            {
+                _sendReportButton.interactable = false;
+            }
+            else
+            {
+                _sendReportButton.interactable = true;
+            }
+        }
+
         private void OnBoatNameChanged(string name)
         {
             _boatNameInput = name;
             UpdateSummaryReport();
+            OnBoatsUIEventsChanged();
         }
 
         private void OnFlagDropdownChanged(int index)
@@ -173,6 +191,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             }
 
             UpdateSummaryReport();
+            OnBoatsUIEventsChanged();
         }
 
         private void OnResetAllClicked()
@@ -190,6 +209,15 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         private void OnSendReportClicked()
         {
+            EvaluateAndShowResults();
+        }
+
+        #endregion
+
+        #region Private Helpers
+
+        private void EvaluateAndShowResults()
+        {
             var boatName = BoatNameInput;
             var selectedFlag = _selectedFlag;
             var selectedAnomaly = _selectedAnomalyType;
@@ -201,15 +229,30 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             {
                 if (status == DataStatus.Success)
                 {
-                    _anomalyDatabase.RemoveAnomaly(boatName);
 
                     var boatInstance = BoatsHandlerData.Boats
                         .Find(x => x.Data.Name == boatName && x.Data.NationalityFlag == selectedFlag);
+
+                    _anomalyDatabase.TryGetAnomaly(boatName, out BoatAnomalyDatas datas);
+                    GenerateReportElements(
+                        popup,
+                        popup.SuccessContent,
+                        status,
+                        datas
+                    );
+
+                    popup.RefreshLayouts();
 
                     if (boatInstance != null)
                         boatInstance.AnomalyController.RemoveAnomaly();
                     else
                         Debug.LogWarning("Bateau introuvable pour la résolution in-game.");
+
+                    _attemptCount = 0;
+                }
+                else
+                {
+                    _attemptCount++;
                 }
             };
 
@@ -225,9 +268,39 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             });
         }
 
-        #endregion
+        private void GenerateReportElements(UI_NightWatchPopup_ReportDatas datas, RectTransform parent, DataStatus status, BoatAnomalyDatas anomalyDatas)
+        {
+            int total = 0;
 
-        #region Private Helpers
+            //Valid
+            int validValue = BoatMoneyCalculator.ValidFlat(_moneyResultDatabase);
+            CreateReportElement(parent, "Boat reported", $"+ {validValue}$", Color.green);
+            total += validValue;
+
+            if(_attemptCount > 0)
+            {
+                int penalty = BoatMoneyCalculator.MissmatchFlat(_attemptCount, _moneyResultDatabase);
+                CreateReportElement(parent, $"Attempt Count: {_attemptCount}", $" -{penalty}$", Color.red);
+                total -= penalty;
+            }
+
+            int bonusFromTime = BoatMoneyCalculator.BonusFromTime(anomalyDatas.RemainingTime, _anomalyDatabase.TimeToReportAnomalies, _moneyResultDatabase);
+            total += bonusFromTime;
+
+            PlayerCurrency.Add(total);
+
+            CreateReportElement(parent, "Speed report bonus", $"+ {bonusFromTime}$", Color.green);
+
+            CreateReportElement(parent, "Total: ", $"{(total > 0 ? "+ " : "- ")}{total}", total > 0 ? Color.green : Color.red);
+        }
+
+        private void CreateReportElement(RectTransform parent, string reason, string amount, Color color)
+        {
+            var element = Instantiate(_reportElementPrefab, parent.transform);
+            element.SetReason(reason);
+            element.SetMoneyResult(amount, color);
+        }
+
 
         private void UpdateSummaryReport()
         {

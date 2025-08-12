@@ -7,6 +7,13 @@ using UnityEngine;
 
 namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
 {
+    public enum SignalHistoryType
+    {
+        None,
+        Reported,
+        Expired,
+        Failed
+    }
     /// <summary>
     /// Contrôleur UI pour l'affichage en temps réel des signaux (bateaux et bouées)
     /// et de leur historique après validation ou expiration.
@@ -110,7 +117,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
             }
 
             if (generateHistory)
-                CreateHistoryEntry(model, isValid ? _validIcon : _invalidIcon);
+                CreateHistoryEntry(model, isValid ? _validIcon : _invalidIcon, isValid ? SignalHistoryType.Reported : SignalHistoryType.Failed);
 
             RemoveSignalUI(model);
         }
@@ -135,7 +142,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
         /// </summary>
         private void HandleExpired(ISignal model)
         {
-            CreateHistoryEntry(model, _invalidIcon);
+            CreateHistoryEntry(model, _invalidIcon, SignalHistoryType.Expired);
             RemoveSignalUI(model);
         }
 
@@ -144,7 +151,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
         /// </summary>
         private void OnAnomalyRemoved(ISignal model)
         {
-            CreateHistoryEntry(model, _validIcon);
+            CreateHistoryEntry(model, _validIcon, SignalHistoryType.Reported);
             RemoveSignalUI(model);
         }
 
@@ -195,14 +202,14 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
         /// <summary>
         /// Crée une entrée dans l'historique des signaux avec l'icône de validation appropriée.
         /// </summary>
-        private void CreateHistoryEntry(ISignal model, Sprite validationIcon)
+        private void CreateHistoryEntry(ISignal model, Sprite validationIcon, SignalHistoryType type)
         {
             var icon = GetSignalIcon(model);
             var historyElement = Instantiate(_historySignalPrefab, _historyParent);
 
             historyElement.SetInfos(
                 icon: icon,
-                arrivalDate: model.DisplayText,
+                reason: type.ToString(),
                 completionValidation: validationIcon
             );
 

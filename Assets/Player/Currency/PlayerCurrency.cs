@@ -1,23 +1,25 @@
 using System;
-using UnityEngine;
 
-public static class PlayerCurrency
+namespace LightHouse.Money
 {
-    public static int Balance { get; private set; }
-
-    public static event Action<int> OnBalanceChanged;
-
-    public static void Add(int amount)
+    public static class PlayerCurrency
     {
-        Balance += amount;
-        OnBalanceChanged?.Invoke(Balance);
-    }
+        public static int Balance { get; private set; }
 
-    public static bool TrySpend(int amount)
-    {
-        if (Balance < amount) return false;
-        Balance -= amount;
-        OnBalanceChanged?.Invoke(Balance);
-        return true;
+        public static event Action<int> OnBalanceChanged;
+
+        public static void Add(int amount)
+        {
+            Balance += amount;
+            OnBalanceChanged?.Invoke(Balance);
+        }
+
+        public static bool TrySpend(int amount)
+        {
+            if (Balance < amount) return false;
+            Balance -= amount;
+            OnBalanceChanged?.Invoke(Balance);
+            return true;
+        }
     }
 }

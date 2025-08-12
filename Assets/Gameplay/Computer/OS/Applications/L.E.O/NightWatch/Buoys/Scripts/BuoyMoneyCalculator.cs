@@ -6,7 +6,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
     /// <summary>
     /// Calculs d'argent : plat + bonus basé sur une courbe/temps.
     /// </summary>
-    public static class MoneyCalculator
+    public static class BuoyMoneyCalculator
     {
         public static int ValidFlat(int count, SO_BuoyMoneyResults cfg) =>
             count * cfg.CorrectValidBuoyReport;

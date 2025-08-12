@@ -162,20 +162,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rb: {fileID: 8996113524597791322}
   _boatsManager: {fileID: 11400000, guid: 58a894bbfbbedb3469b8980a53871cf7, type: 2}
-  _data:
-    Name: 
-    NationalityFlag: {fileID: 0}
   _randomPointController: {fileID: 11400000, guid: 839a28127a1206e44b247a971794f7c2,
     type: 2}
   _controller: {fileID: 1195200945405775138}
   _anomalyController: {fileID: 7646295309562820759}
-  <DotColor>k__BackingField: {r: 1, g: 0.7137255, b: 0.28627452, a: 1}
+  _data:
+    Name: 
+    NationalityFlag: {fileID: 0}
+  _aliveDotColor: {r: 0.83137256, g: 0.5529412, b: 0.13725491, a: 1}
+  _deathDotColor: {r: 0.764151, g: 0.17661981, b: 0.1826219, a: 1}
+  <DotColor>k__BackingField: {r: 0.8301887, g: 0.55217534, b: 0.13705944, a: 1}
   <DotSize>k__BackingField: {x: 70, y: 70}
   <DotSprite>k__BackingField: {fileID: 21300000, guid: e5632e6227598544384ff451c3da13e2,
     type: 3}
   <SonarInfo>k__BackingField: 
-  AliveDotColor: {r: 1, g: 0.7137255, b: 0.28627452, a: 1}
-  DeathDotColor: {r: 0.5566038, g: 0.09189212, b: 0.10475198, a: 1}
 --- !u!114 &8143109087810621634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,8 +247,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2950b7d054e9934ba44c665b203acdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minAnomalyProgress: 0.1
-  _maxAnomalyProgress: 0.5
+  _minAnomalyProgress: 0
+  _maxAnomalyProgress: 0.01
 --- !u!1 &3651872384639202431
 GameObject:
   m_ObjectHideFlags: 0

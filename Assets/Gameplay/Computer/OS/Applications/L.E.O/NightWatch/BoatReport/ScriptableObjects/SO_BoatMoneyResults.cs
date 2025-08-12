@@ -1,24 +1,19 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
+namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 {
-    [CreateAssetMenu(fileName = "Money_Buoy_Config_", menuName = "LightHouse/LEO/NightWatch/Buoys/New Money Config")]
-    public class SO_BuoyMoneyResults : ScriptableObject
+    [CreateAssetMenu(fileName = "Money_Boat_Config_", menuName = "LightHouse/LEO/NightWatch/Boats/New Money Config")]
+    public class SO_BoatMoneyResults : ScriptableObject
     {
         /// <summary>
-        /// Montant le joueur gagne quand il donne la validitée correcte d'une bouée
+        /// Montant le joueur gagne quand il donne la validitée correcte d'un bateau
         /// </summary>
-        public int CorrectValidBuoyReport = 10;
-
-        /// <summary>
-        /// Montant que le joueur gagne quand il donne l'invaliditée correcte d'une bouée
-        /// </summary>
-        public int CorrectInvalidReport = 15;
+        public int CorrectValidBoatReport = 25;
 
         /// <summary>
         /// Montant que le joueur perds par bouée inccorecte
         /// </summary>
-        public int AmountLostPerMissmatch = 5;
+        public int AmountLostPerAttempt = 10;
 
         /// <summary>
         /// Lorsqu'une bouée est invalide, plus le joueur signale vite la bouée qui est invalide plus il gagne d'argent
@@ -29,7 +24,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         /// Montant maximum si le joueur signale une bouée invalide et qu'il la signale presque instantanément
         /// Cette valeur diminue jusqu'à attendre 0 au bout de 5min par exemple.
         /// </summary>
-        public int MaxMoneyOnOverTime = 20;
-
+        public int MaxMoneyOnOverTime = 35;
     }
 }
