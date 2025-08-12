@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LightHouse.Game.Computer.NightWatch.Sonar
+namespace LightHouse.Game.Sonar.Core
 {
     public class Sonar : MonoBehaviour
     {

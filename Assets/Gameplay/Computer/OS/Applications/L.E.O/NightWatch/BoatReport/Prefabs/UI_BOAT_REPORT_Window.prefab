@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 8781727017948824442}
   - component: {fileID: 1949603513787990775}
   m_Layer: 0
-  m_Name: BOAT_REPORT_Window
+  m_Name: UI_BOAT_REPORT_Window
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -154,7 +154,7 @@ MonoBehaviour:
   _nationalityManager: {fileID: 11400000, guid: 58a894bbfbbedb3469b8980a53871cf7,
     type: 2}
   _anomalyDatabase: {fileID: 11400000, guid: 1e5dfb53b13d54f4a8836f1a4e08dc80, type: 2}
-  _anomaliesButton:
+  _anomalyButtons:
   - {fileID: 6177642323678365719}
   - {fileID: 3050388946771798205}
   - {fileID: 2033131722055840540}
@@ -162,16 +162,16 @@ MonoBehaviour:
   - {fileID: 8882041604826634881}
   - {fileID: 4462931789324490403}
   - {fileID: 3306112538066106598}
-  _nightWatchSendDatasPrefab: {fileID: 174829986923151849, guid: ad0a2a36830f4794c9a5ebf654e75364,
-    type: 3}
   _anomalyTimerController: {fileID: 0}
   _nationalitiesDropdown: {fileID: 289070755880414548}
   _dropdownFlag: {fileID: 3332338938516434869}
   _summaryFlag: {fileID: 8281908752189215035}
-  IPF_enterBoatName: {fileID: 620535074721972291}
+  _boatNameInputField: {fileID: 620535074721972291}
   _summaryReportText: {fileID: 3524529353624806379}
-  B_sendReport: {fileID: 4332480317297930539}
-  B_resetAll: {fileID: 8720188990956854944}
+  _sendReportButton: {fileID: 4332480317297930539}
+  _resetAllButton: {fileID: 8720188990956854944}
+  _sendDatasPrefab: {fileID: 174829986923151849, guid: ad0a2a36830f4794c9a5ebf654e75364,
+    type: 3}
 --- !u!225 &1949603513787990775
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1671,6 +1671,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7217969339571788176, guid: 8f43c1093b2278945b656813326d528b,
+        type: 3}
+      propertyPath: m_Name
+      value: IPF_BoatName
       objectReference: {fileID: 0}
     - target: {fileID: 7376655234084246146, guid: 8f43c1093b2278945b656813326d528b,
         type: 3}

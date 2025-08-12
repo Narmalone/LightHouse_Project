@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 383fcc60f856abb4d9669bc144719d1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefab: {fileID: 3713984935334522967, guid: 2a07b518b49a98d419ad5d7e7c793d41, type: 3}
+  _boatPrefab: {fileID: 3713984935334522967, guid: 2a07b518b49a98d419ad5d7e7c793d41,
+    type: 3}
+  _anomaliesDatabase: {fileID: 11400000, guid: 1e5dfb53b13d54f4a8836f1a4e08dc80, type: 2}
   _anomalyConfigsByWeather:
   - {fileID: 11400000, guid: 9aa5119c8bcf9e94480c755db98537ff, type: 2}
   - {fileID: 11400000, guid: 231939c3567bbe1458f499777b58162a, type: 2}
@@ -53,11 +55,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7df9d522e46808642a1edc4427d60c59, type: 2}
   - {fileID: 11400000, guid: 68750dfe63ee96846b889c8bb0d3183f, type: 2}
   - {fileID: 11400000, guid: c4c8814f5b4bed04f830bd21c4e5aa0b, type: 2}
-  _anomalyPrefabs:
+  _anomalyDefinitions:
   - {fileID: 11400000, guid: 76f7b322d69984548a298b48d0d425b2, type: 2}
-  _anomaliesDatabase: {fileID: 11400000, guid: 1e5dfb53b13d54f4a8836f1a4e08dc80, type: 2}
   _nightWatchConfig: {fileID: 11400000, guid: 8eafe6945fed5c74ca472bddc6939963, type: 2}
   _minBoatsSpawnDuringNight: 2
   _maxBoatsSpawnDuringNight: 4
   _despawnAllBoatsOnMorning: 0
-  _anomalyChances: 0.3
+  _anomalyChance: 0.3

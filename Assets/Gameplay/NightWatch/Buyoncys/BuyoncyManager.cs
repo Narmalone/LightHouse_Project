@@ -1,55 +1,60 @@
 using UnityEngine;
+using LightHouse.Game.Signals;
 
-public class BuyoncyManager : MonoBehaviour
+namespace LightHouse.Game.Buyoncies
 {
-    [SerializeField] private BuyoncyController[] _buyoncies;
-    [SerializeField] private BuyoncyAnomalyDatabase _anomalyDatabase;
-
-    private void Awake()
+    public class BuyoncyManager : MonoBehaviour
     {
-        for (int i = 0; i < _buyoncies.Length; i++)
-        {
-            var controller = _buyoncies[i];          // capture locale, pas 'i'
-            controller.BuyoncyID = i + 1;
-            controller.OnBroken += BuyoncyManager_OnBroken;
-        }
-        _anomalyDatabase.OnAnomalyRemoved += AnomalyDatabase_OnAnomalyRemoved;
-    }
+        [SerializeField] private BuyoncyController[] _buyoncies;
+        [SerializeField] private BuyoncyAnomalyDatabase _anomalyDatabase;
 
-    private void AnomalyDatabase_OnAnomalyRemoved(ISignal obj)
-    {
-        foreach(var buoy in _buyoncies)
+        private void Awake()
         {
-            if(obj is BuyoncyAnomalyDatas datas)
+            for (int i = 0; i < _buyoncies.Length; i++)
             {
-                if(datas.ID == buoy.BuyoncyID)
+                var controller = _buyoncies[i];          // capture locale, pas 'i'
+                controller.BuyoncyID = i + 1;
+                controller.OnBroken += BuyoncyManager_OnBroken;
+            }
+            _anomalyDatabase.OnAnomalyRemoved += AnomalyDatabase_OnAnomalyRemoved;
+        }
+
+        private void AnomalyDatabase_OnAnomalyRemoved(ISignal obj)
+        {
+            foreach (var buoy in _buyoncies)
+            {
+                if (obj is BuyoncyAnomalyDatas datas)
                 {
-                    buoy.Repaired();
-                    buoy.HasBeenRepairedToday = true;
-                    break;
+                    if (datas.ID == buoy.BuyoncyID)
+                    {
+                        buoy.Repair();
+                        buoy.HasBeenRepairedToday = true;
+                        break;
+                    }
                 }
             }
         }
-    }
 
-    private void OnDestroy()
-    {
-        for (int i = 0; i < _buyoncies.Length; i++)
+        private void OnDestroy()
         {
-            var controller = _buyoncies[i];
-            controller.OnBroken -= BuyoncyManager_OnBroken;
+            for (int i = 0; i < _buyoncies.Length; i++)
+            {
+                var controller = _buyoncies[i];
+                controller.OnBroken -= BuyoncyManager_OnBroken;
+            }
+            _anomalyDatabase.ResetAnomalies();
+            _anomalyDatabase.OnAnomalyRemoved -= AnomalyDatabase_OnAnomalyRemoved;
         }
-        _anomalyDatabase.ResetAnomalies();
-        _anomalyDatabase.OnAnomalyRemoved -= AnomalyDatabase_OnAnomalyRemoved;
-    }
 
-    private void BuyoncyManager_OnBroken(BuyoncyController controller)
-    {
-        _anomalyDatabase.SetAnomaly(controller.BuyoncyID);
-    }
+        private void BuyoncyManager_OnBroken(BuyoncyController controller)
+        {
+            _anomalyDatabase.SetAnomaly(controller.BuyoncyID);
+        }
 
-    private void OnValidate()
-    {
-        _buyoncies = GetComponentsInChildren<BuyoncyController>();
+        private void OnValidate()
+        {
+            _buyoncies = GetComponentsInChildren<BuyoncyController>();
+        }
     }
 }
+

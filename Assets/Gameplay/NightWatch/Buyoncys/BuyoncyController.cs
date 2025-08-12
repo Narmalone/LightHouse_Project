@@ -1,120 +1,190 @@
-using LightHouse.Game.Computer.NightWatch.Sonar;
+using LightHouse.Game.Sonar.Core;
 using LightHouse.Game.DayNightSystem;
 using LightHouse.Weather;
 using System;
 using UnityEngine;
 
-public class BuyoncyController : MonoBehaviour, ISonarable
+namespace LightHouse.Game.Buyoncies
 {
-    [SerializeField] private Rigidbody _rb;
-    [SerializeField] private WeatherConfigDatabase _weatherDefinitionDatabase;
-    [SerializeField] private NightWatchConfiguration _nightWatchConfig;
-    [SerializeField] private float _minimumInitialLifeTime = 60f;
-    [SerializeField] private float _maximumInitialLifeTime = 350f;
-
-    [SerializeField] private Color _aliveColor = Color.green;
-    [SerializeField] private Color _deadColor = Color.red;
-    [SerializeField] private Light _lifeLight;
-    public int BuyoncyID = -1;
-
-    public event Action<BuyoncyController> OnBroken;
-    public event Action OnRepaired;
-    public event Action ForceDotUpdate;
-
-    public float CurrentSpeed { get; set; } = 1.0f;
-
-    public string Name => this.gameObject.name;
-
-    public int UniqueID { get; set; }
-    public bool IsDetectedBySonar { get ; set; }
-
-    public Vector3 Position => _rb.position;
-
-    public Vector3 RotationAngles => _rb.transform.eulerAngles;
-
-    [field: SerializeField] public Color DotColor { get; set; }
-    [field: SerializeField] public Vector2 DotSize { get; set; }
-    [field: SerializeField] public Sprite DotSprite { get; set; }
-    [field: SerializeField] public string SonarInfo { get; set; }
-
-    private Timer _timer;
-    public float CurrentLifeTime;
-
-    public bool IsAlive => CurrentLifeTime > 0f;
-    public bool HasBeenRepairedToday { get; set; } = false;
-
-    private void Awake()
+    /// <summary>
+    /// Contrôleur d'une bouée (Buyoncy) dans le monde.
+    /// Gère son état de vie/mort, sa détection sonar et sa réaction à l'environnement.
+    /// </summary>
+    public class BuyoncyController : MonoBehaviour, ISonarable
     {
-        _timer = new Timer(GetRandomLifeTime());
-        CurrentLifeTime = _timer.GetTimeRemaining();
-        _timer.OnTimerComplete += OnTimerCompleted;
-        WeatherHandlerData.OnWeatherTypeChanged += OnWeatherChanged;
-        SonarHandlerData.Register(this);
-        TimeHandlerData.OnTimeSegmentChanged += OnTimeSegmentChanged;
-    }
+        #region Serialized Fields
 
-    private void OnTimeSegmentChanged(TimeOfDaySegment segment)
-    {
-        if(segment == TimeOfDaySegment.Morning)
+        [Header("References")]
+        [SerializeField] private Rigidbody _rigidbody;
+        [SerializeField] private WeatherConfigDatabase _weatherDatabase;
+        [SerializeField] private NightWatchConfiguration _nightWatchConfig;
+        [SerializeField] private Light _lifeLight;
+
+        [Header("Lifetime Settings")]
+        [SerializeField] private float _minInitialLifetime = 60f;
+        [SerializeField] private float _maxInitialLifetime = 350f;
+
+        [Header("Colors")]
+        [SerializeField] private Color _aliveColor = Color.green;
+        [SerializeField] private Color _deadColor = Color.red;
+
+        [Header("Sonar Display")]
+        [field: SerializeField] public Color DotColor { get; set; }
+        [field: SerializeField] public Vector2 DotSize { get; set; }
+        [field: SerializeField] public Sprite DotSprite { get; set; }
+        [field: SerializeField] public string SonarInfo { get; set; }
+
+        #endregion
+
+        #region Public Properties
+
+        public int BuyoncyID { get; set; } = -1;
+        public int UniqueID { get; set; }
+        public bool IsDetectedBySonar { get; set; }
+        public Vector3 Position => _rigidbody.position;
+        public Vector3 RotationAngles => _rigidbody.transform.eulerAngles;
+
+        public float CurrentSpeed { get; private set; } = 1.0f;
+        public float CurrentLifeTime { get; private set; }
+        public bool IsAlive => CurrentLifeTime > 0f;
+        public bool HasBeenRepairedToday { get; set; } = false;
+
+        public string Name => gameObject.name;
+
+        #endregion
+
+        #region Events
+
+        public event Action<BuyoncyController> OnBroken;
+        public event Action OnRepaired;
+
+#pragma warning disable
+        public event Action ForceDotUpdate;
+
+        #endregion
+
+        #region Private Fields
+
+        private Timer _timer;
+
+        #endregion
+
+        #region Unity Lifecycle
+
+        private void Awake()
         {
-            if (!IsAlive)
+            InitializeTimer();
+            RegisterEvents();
+            SonarHandlerData.Register(this);
+        }
+
+        private void Start()
+        {
+            _timer.StartTimer();
+            _lifeLight.color = _aliveColor;
+            SonarInfo = $"#{BuyoncyID:D2}";
+        }
+
+        private void Update()
+        {
+            if (HasBeenRepairedToday) return;
+
+            if (TimeUtility.IsTimeInRange(TimeHandlerData.CurrentTime,
+                                          _nightWatchConfig.BuyoncysDecayStartHour,
+                                          _nightWatchConfig.BuyoncysDecayEndHour))
             {
-                Repaired();
+                _timer.Tick(Time.deltaTime, CurrentSpeed);
+                CurrentLifeTime = _timer.GetTimeRemaining();
             }
-            HasBeenRepairedToday = false;
         }
-       
-    }
 
-    private void OnDestroy()
-    {
-        WeatherHandlerData.OnWeatherTypeChanged -= OnWeatherChanged;
-        SonarHandlerData.Unregister(this);
-    }
-
-    private void OnWeatherChanged(WeatherType type)
-    {
-        var weatherParameters = _weatherDefinitionDatabase.GetDefinition(type);
-        CurrentSpeed = weatherParameters.DangerLevel;
-    }
-
-    private void Start()
-    {
-        _timer.StartTimer();
-        _lifeLight.color = _aliveColor;
-        SonarInfo = "#" + BuyoncyID.ToString("D2");
-    }
-
-    private void Update()
-    {
-        if (HasBeenRepairedToday) return;
-        if(TimeUtility.IsTimeInRange(TimeHandlerData.CurrentTime, _nightWatchConfig.BuyoncysDecayStartHour, _nightWatchConfig.BuyoncysDecayEndHour))
+        private void OnDestroy()
         {
-            _timer.Tick(Time.deltaTime, CurrentSpeed);
-            CurrentLifeTime = _timer.GetTimeRemaining();
+            UnregisterEvents();
+            SonarHandlerData.Unregister(this);
         }
-    }
 
-    public float GetRandomLifeTime()
-    {
-        return UnityEngine.Random.Range(_minimumInitialLifeTime, _maximumInitialLifeTime);
-    }
+        #endregion
 
-    private void OnTimerCompleted()
-    {
-        BreakDown();
-    }
+        #region Initialization
 
-    public void BreakDown()
-    {
-        OnBroken?.Invoke(this);
-        _lifeLight.color = _deadColor;
-    }
+        private void InitializeTimer()
+        {
+            _timer = new Timer(GetRandomLifetime());
+            CurrentLifeTime = _timer.GetTimeRemaining();
+            _timer.OnTimerComplete += OnTimerCompleted;
+        }
 
-    public void Repaired()
-    {
-        _timer.ResetTimer(GetRandomLifeTime());
-        OnRepaired?.Invoke();
-        _lifeLight.color = _aliveColor;
+        private void RegisterEvents()
+        {
+            WeatherHandlerData.OnWeatherTypeChanged += OnWeatherChanged;
+            TimeHandlerData.OnTimeSegmentChanged += OnTimeSegmentChanged;
+        }
+
+        private void UnregisterEvents()
+        {
+            WeatherHandlerData.OnWeatherTypeChanged -= OnWeatherChanged;
+            TimeHandlerData.OnTimeSegmentChanged -= OnTimeSegmentChanged;
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void OnWeatherChanged(WeatherType type)
+        {
+            var weatherParameters = _weatherDatabase.GetDefinition(type);
+            CurrentSpeed = weatherParameters.DangerLevel;
+        }
+
+        private void OnTimeSegmentChanged(TimeOfDaySegment segment)
+        {
+            if (segment == TimeOfDaySegment.Morning)
+            {
+                if (!IsAlive)
+                    Repair();
+
+                HasBeenRepairedToday = false;
+            }
+        }
+
+        private void OnTimerCompleted()
+        {
+            BreakDown();
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Casse la bouée et déclenche l’événement OnBroken.
+        /// </summary>
+        public void BreakDown()
+        {
+            OnBroken?.Invoke(this);
+            _lifeLight.color = _deadColor;
+        }
+
+        /// <summary>
+        /// Répare la bouée et redémarre son cycle de vie.
+        /// </summary>
+        public void Repair()
+        {
+            _timer.ResetTimer(GetRandomLifetime());
+            OnRepaired?.Invoke();
+            _lifeLight.color = _aliveColor;
+        }
+
+        #endregion
+
+        #region Utility
+
+        private float GetRandomLifetime()
+        {
+            return UnityEngine.Random.Range(_minInitialLifetime, _maxInitialLifetime);
+        }
+
+        #endregion
     }
 }

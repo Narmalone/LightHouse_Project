@@ -1,7 +1,7 @@
 using LightHouse.Game.Computer.LEO.NightWatch.Buoys;
 using LightHouse.Game.Computer.LEO.NightWatch.Signals;
+using LightHouse.Game.Computer.LEO.NightWatch.Sonar;
 using LightHouse.Game.Computer.OS;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,7 +22,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         [SerializeField] private LEOWindowButton _backButton;
         [SerializeField] private LEOWindowButton _switchToCamera;
         [SerializeField] private NightWatchReportWindow[] _windows;
-        [SerializeField] private SonarUI _sonarUIController;
+        [SerializeField] private UI_Sonar _sonarUIController;
         [SerializeField] private UI_BuoysReportController _buoysReportController;
         [SerializeField] private UI_Signals _signalsController;
 

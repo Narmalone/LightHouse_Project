@@ -1,36 +1,79 @@
+using LightHouse.Game.Buyoncies;
 using TMPro;
 using UnityEngine;
 
-public class UI_BuoysLowestTimerAlert : MonoBehaviour
+namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
 {
-    [SerializeField] private BuyoncyAnomalyDatabase _database;
-    [SerializeField] private TextMeshProUGUI _timerText;
-
-    private void Start()
+    /// <summary>
+    /// Affiche en permanence le timer restant pour l'anomalie de bouée
+    /// la plus urgente (temps restant le plus bas).
+    /// </summary>
+    public class UI_BuoysLowestTimerAlert : MonoBehaviour
     {
-        // On cache par défaut si aucune anomalie
-        _timerText.text = 0f.ToString("00:00");
-    }
+        #region Serialized Fields
 
-    private void Update()
-    {
-        // 1) On fait enfin décrémenter les timers DANS la database
-        _database.TickTimers(Time.deltaTime);
+        [Header("References")]
+        [SerializeField] private BuyoncyAnomalyDatabase _database;
 
-        // 2) On récupère la liste active
-        var anomalies = _database.GetAnomalies();
-        if (anomalies.Count == 0)
+        [Header("UI Elements")]
+        [SerializeField] private TextMeshProUGUI _timerText;
+
+        #endregion
+
+        #region Unity Lifecycle
+
+        private void Start()
         {
-            _timerText.text = 0f.ToString("00:00");
-            return;
+            UpdateTimerDisplay(0f); // Valeur par défaut
         }
 
-        // 3) On affiche toujours la première anomalie (la plus “vieille” si ta liste est ordonnée par insertion)
-        var first = anomalies[0];
-        float remaining = first.RemainingTime;
-        int minutes = Mathf.FloorToInt(remaining / 60f);
-        int seconds = Mathf.FloorToInt(remaining % 60f);
+        private void Update()
+        {
+            // 1) Mise à jour interne de la base (décrémentation timers)
+            _database.TickTimers(Time.deltaTime);
 
-        _timerText.text = $"{minutes:00}:{seconds:00}";
+            // 2) Récupération de l'anomalie la plus urgente
+            var anomalies = _database.GetAnomalies();
+            if (anomalies.Count == 0)
+            {
+                UpdateTimerDisplay(0f);
+                return;
+            }
+
+            var lowest = GetLowestRemainingTime(anomalies);
+            UpdateTimerDisplay(lowest);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Retourne le temps restant le plus bas parmi les anomalies données.
+        /// </summary>
+        private float GetLowestRemainingTime(System.Collections.Generic.IReadOnlyList<BuyoncyAnomalyDatas> anomalies)
+        {
+            float lowest = float.MaxValue;
+
+            foreach (var anomaly in anomalies)
+            {
+                if (anomaly.RemainingTime < lowest)
+                    lowest = anomaly.RemainingTime;
+            }
+
+            return lowest;
+        }
+
+        /// <summary>
+        /// Met à jour l'affichage du timer au format MM:SS.
+        /// </summary>
+        private void UpdateTimerDisplay(float remainingTime)
+        {
+            int minutes = Mathf.FloorToInt(remainingTime / 60f);
+            int seconds = Mathf.FloorToInt(remainingTime % 60f);
+            _timerText.text = $"{minutes:00}:{seconds:00}";
+        }
+
+        #endregion
     }
 }

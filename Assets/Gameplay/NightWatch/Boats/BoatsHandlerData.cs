@@ -1,7 +1,16 @@
 using System.Collections.Generic;
-using UnityEngine;
 
-public static class BoatsHandlerData
+namespace LightHouse.Game.Boats
 {
-    public static List<Boat> Boats = new List<Boat>();
+    /// <summary>
+    /// Classe permettant de récupérer des informations générales sur les bateaux
+    /// </summary>
+    public static class BoatsHandlerData
+    {
+        /// <summary>
+        /// Liste des bateaux actuellement présents dans le monde
+        /// </summary>
+        public static List<Boat> Boats = new List<Boat>();
+    }
+
 }

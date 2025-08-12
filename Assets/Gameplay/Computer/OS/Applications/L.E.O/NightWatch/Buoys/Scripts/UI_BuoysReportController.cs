@@ -1,5 +1,6 @@
 ﻿using LightHouse.Game.DayNightSystem;
 using LightHouse.Game.Computer.LEO.NightWatch.Signals;
+using LightHouse.Game.Buyoncies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         [Header("UI References")]
         [SerializeField] private UI_Buoy[] _buoys;
         [SerializeField] private BuyoncyAnomalyDatabase _anomalyDatabase;
-        [SerializeField] private NightWatchSendDatas _sendDatasPrefab;
+        [SerializeField] private UI_NightWatchPopup_ReportDatas _sendDatasPrefab;
         [SerializeField] private Button _sendReportButton;
         [SerializeField] private Button _resetAllButton;
         [SerializeField] private UI_ReportElement _reportElementPrefab;
@@ -268,7 +269,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         /// Génère les éléments UI affichant les gains/pertes.
         /// </summary>
         private void GenerateReportElements(
-            NightWatchSendDatas datas,
+            UI_NightWatchPopup_ReportDatas datas,
             RectTransform parent,
             int correctValidBuoys,
             int correctInvalidBuoys,

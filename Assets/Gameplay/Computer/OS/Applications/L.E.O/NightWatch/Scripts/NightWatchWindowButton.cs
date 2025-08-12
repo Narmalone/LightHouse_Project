@@ -1,8 +1,7 @@
-using LightHouse.Game.Computer.LEO.NightWatch;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.NightWatch
+namespace LightHouse.Game.Computer.LEO.NightWatch
 {
     [RequireComponent(typeof(Button))]
     public class NightWatchWindowButton : MonoBehaviour

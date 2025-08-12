@@ -1,38 +1,105 @@
+using LightHouse.Game.Signals;
 using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SignalInfoElement : MonoBehaviour
+namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
 {
-    [SerializeField] private Image _icon;
-    [SerializeField] private TextMeshProUGUI _label;
-    [SerializeField] private TextMeshProUGUI _timerText;
-
-    private ISignal _model;
-    public ISignal Model => _model;
-    public string Key => _model.Key;
-
-    public event Action<ISignal> OnTimerEnded;
-    public Image Icon => _icon;
-
-    public void Initialize(ISignal model, Sprite icon)
+    /// <summary>
+    /// Élément UI affichant un signal actif (icône, label, timer).
+    /// </summary>
+    public class SignalInfoElement : MonoBehaviour
     {
-        _model = model;
-        _icon.sprite = icon;
-        _label.text = model.DisplayText;
-    }
+        #region Serialized Fields
 
-    void Update()
-    {
-        if (_model.RemainingTime <= 0f)
+        [Header("UI References")]
+        [SerializeField] private Image _icon;
+        [SerializeField] private TextMeshProUGUI _label;
+        [SerializeField] private TextMeshProUGUI _timerText;
+
+        #endregion
+
+        #region Private Fields
+
+        private ISignal _model;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>Modèle de données associé à cet élément UI.</summary>
+        public ISignal Model => _model;
+
+        /// <summary>Clé unique du signal (souvent utilisée pour l'identification rapide).</summary>
+        public string Key => _model?.Key;
+
+        /// <summary>Accès direct à l'icône de l'élément.</summary>
+        public Image Icon => _icon;
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Émis lorsque le timer atteint zéro ou moins.
+        /// </summary>
+        public event Action<ISignal> OnTimerEnded;
+
+        #endregion
+
+        #region Initialization
+
+        /// <summary>
+        /// Initialise l'élément avec un modèle et son icône.
+        /// </summary>
+        public void Initialize(ISignal model, Sprite icon)
         {
-            OnTimerEnded?.Invoke(_model);
-            return;
+            if (model == null)
+            {
+                Debug.LogWarning("[SignalInfoElement] Initialize appelé avec un modèle nul.");
+                return;
+            }
+
+            _model = model;
+            _icon.sprite = icon;
+            _label.text = model.DisplayText;
         }
 
-        int m = Mathf.FloorToInt(_model.RemainingTime / 60f);
-        int s = Mathf.FloorToInt(_model.RemainingTime % 60f);
-        _timerText.text = $"{m:00}:{s:00}";
+        #endregion
+
+        #region Unity Lifecycle
+
+        private void Update()
+        {
+            if (_model == null)
+                return;
+
+            // Vérifie expiration
+            if (_model.RemainingTime <= 0f)
+            {
+                OnTimerEnded?.Invoke(_model);
+                return;
+            }
+
+            // Met à jour l'affichage du temps restant
+            UpdateTimerDisplay(_model.RemainingTime);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Formatte et applique le temps restant dans le label timer.
+        /// </summary>
+        private void UpdateTimerDisplay(float remainingSeconds)
+        {
+            int minutes = Mathf.FloorToInt(remainingSeconds / 60f);
+            int seconds = Mathf.FloorToInt(remainingSeconds % 60f);
+            _timerText.text = $"{minutes:00}:{seconds:00}";
+        }
+
+        #endregion
     }
 }

@@ -1,104 +1,145 @@
+using LightHouse.Game.Signals;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[System.Serializable]
-public class BuyoncyAnomalyDatas : ISignal
+namespace LightHouse.Game.Buyoncies
 {
-    public int ID;
-    public float RemainingTime { get; set; }
-
-    public string Key => ID.ToString();
-
-    public string DisplayText { get; set; }
-}
-
-[CreateAssetMenu(fileName = "BuyoncyAnomalyDatabase", menuName = "LightHouse/Buyoncies/New Database")]
-public class BuyoncyAnomalyDatabase : ScriptableObject
-{
-    public float TimeToReportAnomalies = 300f;  // en secondes
-    public List<BuyoncyAnomalyDatas> _anomalies = new List<BuyoncyAnomalyDatas>();
-
-    public event Action<ISignal> OnAnomalyAdded;
-    public event Action<ISignal> OnAnomalyRemoved;
-    public event Action<BuyoncyAnomalyDatas> OnAnomalyExpired;
-
-    public event Action<ISignal> TryForceRemoveAnomaly;
-
-    public void SetAnomaly(int id)
+    /// <summary>
+    /// Représente les données d'une anomalie sur une bouée.
+    /// </summary>
+    [Serializable]
+    public class BuyoncyAnomalyDatas : ISignal
     {
-        var existing = _anomalies.Find(a => a.ID == id);
-        if (existing != null)
+        public int ID;
+        public float RemainingTime { get; set; }
+        public string DisplayText { get; set; }
+
+        /// <summary>
+        /// Clé unique du signal (format brut de l'ID).
+        /// </summary>
+        public string Key => ID.ToString();
+    }
+
+    /// <summary>
+    /// Base de données des anomalies de bouées.
+    /// Gère l'ajout, la suppression, la mise à jour et l'expiration automatique.
+    /// </summary>
+    [CreateAssetMenu(fileName = "BuyoncyAnomalyDatabase", menuName = "LightHouse/Buyoncies/New Database")]
+    public class BuyoncyAnomalyDatabase : ScriptableObject
+    {
+        #region Serialized Fields
+
+        [Tooltip("Durée en secondes pendant laquelle une anomalie peut être reportée avant d'expirer.")]
+        [SerializeField] private float _timeToReportAnomalies = 300f;
+
+        [SerializeField, HideInInspector]
+        private List<BuyoncyAnomalyDatas> _anomalies = new List<BuyoncyAnomalyDatas>();
+
+        #endregion
+
+        #region Events
+
+        public event Action<ISignal> OnAnomalyAdded;
+        public event Action<ISignal> OnAnomalyRemoved;
+        public event Action<BuyoncyAnomalyDatas> OnAnomalyExpired;
+
+        #endregion
+
+        #region Properties
+
+        public float TimeToReportAnomalies => _timeToReportAnomalies;
+
+        #endregion
+
+        #region Public API
+
+        /// <summary>
+        /// Ajoute ou réinitialise une anomalie pour une bouée donnée.
+        /// </summary>
+        public void SetAnomaly(int id)
         {
-            existing.RemainingTime = TimeToReportAnomalies;
-        }
-        else
-        {
-            var data = new BuyoncyAnomalyDatas
+            var existing = _anomalies.Find(a => a.ID == id);
+            if (existing != null)
             {
-                ID = id,
-                RemainingTime = TimeToReportAnomalies,
-                DisplayText = "Anomaly Detected"
-            };
-            _anomalies.Add(data);
-            OnAnomalyAdded?.Invoke(data);
-        }
-    }
+                existing.RemainingTime = _timeToReportAnomalies;
+            }
+            else
+            {
+                var data = new BuyoncyAnomalyDatas
+                {
+                    ID = id,
+                    RemainingTime = _timeToReportAnomalies,
+                    DisplayText = "Anomaly Detected"
+                };
 
-    public void RemoveAnomaly(int id)
-    {
-        var anomaly = _anomalies.Find(a => a.ID == id);
-        if (anomaly != null)
+                _anomalies.Add(data);
+                OnAnomalyAdded?.Invoke(data);
+            }
+        }
+
+        /// <summary>
+        /// Supprime une anomalie par son ID.
+        /// </summary>
+        public void RemoveAnomaly(int id)
         {
-            _anomalies.Remove(anomaly);
-            OnAnomalyRemoved?.Invoke(anomaly);
+            var anomaly = _anomalies.Find(a => a.ID == id);
+            if (anomaly != null)
+            {
+                _anomalies.Remove(anomaly);
+                OnAnomalyRemoved?.Invoke(anomaly);
+            }
         }
-    }
 
-    public void RemoveAnomalies(List<int> ids)
-    {
-        // On collecte toutes les anomalies à supprimer (évite les problèmes de foreach sur liste modifiée)
-        var toRemove = _anomalies.Where(a => ids.Contains(a.ID)).ToList();
-
-        foreach (var anomaly in toRemove)
+        /// <summary>
+        /// Supprime une liste d'anomalies.
+        /// </summary>
+        public void RemoveAnomalies(List<int> ids)
         {
-            _anomalies.Remove(anomaly);
-            OnAnomalyRemoved?.Invoke(anomaly);
+            var toRemove = _anomalies.Where(a => ids.Contains(a.ID)).ToList();
+
+            foreach (var anomaly in toRemove)
+            {
+                _anomalies.Remove(anomaly);
+                OnAnomalyRemoved?.Invoke(anomaly);
+            }
         }
-    }
 
+        /// <summary>
+        /// Retourne toutes les anomalies en cours.
+        /// </summary>
+        public IReadOnlyList<BuyoncyAnomalyDatas> GetAnomalies() => _anomalies;
 
-    public List<BuyoncyAnomalyDatas> GetAnomalies() => _anomalies;
+        /// <summary>
+        /// Vérifie si une anomalie est enregistrée pour l'ID donné.
+        /// </summary>
+        public bool HasAnomaly(int id) => _anomalies.Exists(a => a.ID == id);
 
-    /// <summary>
-    /// Retourne true si, dans la base, le bateau <paramref name="boatName"/> a bien l’anomalie <paramref name="expectedAnomaly"/>.
-    /// </summary>
-    public bool HasAnomaly(int id)
-    {
-        return _anomalies.Exists(a => a.ID == id);
-    }
-
-    /// <summary>
-    /// Appelée chaque frame par ton controller : décrémente le temps restant,
-    /// retire les anomalies expirées et déclenche OnAnomalyRemoved pour chacune.
-    /// </summary>
-    public void TickTimers(float deltaTime)
-    {
-        for (int i = 0; i < _anomalies.Count; i++)
-            _anomalies[i].RemainingTime -= deltaTime;
-
-        // on supprime en fin de frame pour éviter les problèmes d’itération
-        var expired = _anomalies.Where(a => a.RemainingTime <= 0f).ToList();
-        foreach (var a in expired)
+        /// <summary>
+        /// Met à jour le temps restant des anomalies et déclenche leur expiration si nécessaire.
+        /// </summary>
+        public void TickTimers(float deltaTime)
         {
-            OnAnomalyExpired?.Invoke(a);
+            for (int i = 0; i < _anomalies.Count; i++)
+                _anomalies[i].RemainingTime -= deltaTime;
+
+            var expired = _anomalies.Where(a => a.RemainingTime <= 0f).ToList();
+            foreach (var anomaly in expired)
+            {
+                OnAnomalyExpired?.Invoke(anomaly);
+            }
         }
-    }
 
-    public void ResetAnomalies()
-    {
-        _anomalies.Clear();
-    }
+        /// <summary>
+        /// Supprime toutes les anomalies.
+        /// </summary>
+        public void ResetAnomalies()
+        {
+            _anomalies.Clear();
+        }
 
+        #endregion
+    }
 }

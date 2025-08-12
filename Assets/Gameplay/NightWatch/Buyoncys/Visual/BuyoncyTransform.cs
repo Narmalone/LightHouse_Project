@@ -8,6 +8,8 @@ public class BuyoncyTransform : MonoBehaviour
 
     [Header(" --- PRÉCISION --- ")]
     [SerializeField, Range(1, 2000)] private int maxIterations = 20;
+
+#pragma warning disable
     [SerializeField] private float smoothFactor = 10f;
 
     private WaterSimSearchData _simData;

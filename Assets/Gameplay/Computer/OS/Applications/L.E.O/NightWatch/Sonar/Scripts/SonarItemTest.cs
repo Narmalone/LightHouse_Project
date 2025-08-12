@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.NightWatch.Sonar
+namespace LightHouse.Game.Sonar.Core
 {
     public class SonarItemTest : MonoBehaviour, ISonarable
     {
         [SerializeField] private string _name;
 
+#pragma warning disable
         public event Action ForceDotUpdate;
 
         public string Name => _name;
