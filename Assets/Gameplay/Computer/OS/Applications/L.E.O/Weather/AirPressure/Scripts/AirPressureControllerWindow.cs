@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,10 +45,8 @@ public class AirPressureControllerWindow : MonoBehaviour
 
     }
 
-
-
     private void OnValidate()
     {
-        _airPressureButtons = GetComponentsInChildren<PressureButton>();
+        _airPressureButtons = GetComponentsInChildren<PressureButton>().Reverse().ToArray();
     }
 }

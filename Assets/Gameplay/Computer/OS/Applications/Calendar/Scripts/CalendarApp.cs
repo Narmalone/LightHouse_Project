@@ -96,13 +96,13 @@ namespace LightHouse.Game.Computer.Calendar
         {
             if (currentDay < 2) return;
 
-            var target = _calendarDays[currentDay - 2];
+            var target = _calendarDays[currentDay - 1];
             ApplyColorToDay(target, _basicColors.ScrollbarBorder, _basicColors.IconTint, _basicColors.WindowBorder);
         }
 
         private void UpdateCurrentDayUI(byte currentDay)
         {
-            var target = _calendarDays[currentDay - 1];
+            var target = _calendarDays[currentDay];
             ApplyColorToDay(target, _basicColors.ButtonCloseBorder, _basicColors.IconTint, _basicColors.ButtonCloseBorder);
         }
 

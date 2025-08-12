@@ -50,7 +50,7 @@ namespace LightHouse.Game.DayNightSystem
 
         private void Awake()
         {
-            currentDay = 1;
+            //currentDay = 1;
             TimeHandlerData.CurrentDay = currentDay;
             TimeHandlerData.CurrentTime = currentTime;
         }

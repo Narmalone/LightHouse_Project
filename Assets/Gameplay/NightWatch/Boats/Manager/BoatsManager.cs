@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using LightHouse.Game.Nightwatch;
 using LightHouse.Game.DayNightSystem;
 using LightHouse.Weather;
 
@@ -22,7 +23,7 @@ namespace LightHouse.Game.Boats
         [SerializeField] private BoatAnomalyDefinition[] _anomalyDefinitions;
 
         [Header("Spawn Settings")]
-        [SerializeField] private NightWatchConfiguration _nightWatchConfig;
+        [SerializeField] private SO_NightWatchConfiguration _nightWatchConfig;
         [SerializeField, Min(0)] private byte _minBoatsSpawnDuringNight = 2;
         [SerializeField, Min(0)] private byte _maxBoatsSpawnDuringNight = 4;
 

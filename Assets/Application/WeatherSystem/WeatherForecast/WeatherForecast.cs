@@ -6,7 +6,8 @@ namespace LightHouse.Weather
 {
     public class WeatherForecast : MonoBehaviour
     {
-        public WeatherGenerator WeatherGenerator;
+        public TimeConfiguration TimeConfig;
+        public WeatherTimeline WeatherGenerator;
 
         public List<WeatherData> MorningsDatas = new List<WeatherData>();
         public List<WeatherData> MiddaysDatas = new List<WeatherData>();
@@ -15,12 +16,12 @@ namespace LightHouse.Weather
 
         private void Awake()
         {
-            WeatherGenerator.OnWeatherGenerated += WeatherGenerator_OnWeatherGenerated;
+            WeatherTimeline.OnWeatherGenerated += WeatherGenerator_OnWeatherGenerated;
         }
 
         private void OnDestroy()
         {
-            WeatherGenerator.OnWeatherGenerated -= WeatherGenerator_OnWeatherGenerated;
+            WeatherTimeline.OnWeatherGenerated -= WeatherGenerator_OnWeatherGenerated;
         }
 
         private void WeatherGenerator_OnWeatherGenerated()
@@ -30,12 +31,12 @@ namespace LightHouse.Weather
             EveningDatas.Clear();
             MiddnightDatas.Clear();
 
-            int totalDays = WeatherGenerator.TimeConfig.TotalDays;
+            int totalDays = TimeConfig.TotalDays;
 
             for (byte day = 0; day < totalDays; day++)
             {
-                var timeline = WeatherGenerator.Timeline;
-                var config = WeatherGenerator.TimeConfig;
+                var timeline = WeatherGenerator;
+                var config = TimeConfig;
 
                 MorningsDatas.Add(WeatherUtils.GetWeatherAt(day, 6f, timeline, config));
                 MiddaysDatas.Add(WeatherUtils.GetWeatherAt(day, 12f, timeline, config));

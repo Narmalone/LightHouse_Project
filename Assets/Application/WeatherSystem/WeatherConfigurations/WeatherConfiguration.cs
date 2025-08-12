@@ -7,6 +7,8 @@ namespace LightHouse.Weather
     {
         public WeatherType Type;
         public float DangerLevel = 1.0f;
+        public float MinWeatherDuration = 120.0f;
+        public float MaxWeatherDuration = 360.0f;
 
         [Header("Conditions")]
         public Vector2 HumidityRange = new Vector2(60f, 100f);

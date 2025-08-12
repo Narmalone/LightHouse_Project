@@ -1,6 +1,7 @@
 using LightHouse.Game.Sonar.Core;
 using LightHouse.Game.DayNightSystem;
 using LightHouse.Weather;
+using LightHouse.Game.Nightwatch;
 using System;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace LightHouse.Game.Buyoncies
         [Header("References")]
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private WeatherConfigDatabase _weatherDatabase;
-        [SerializeField] private NightWatchConfiguration _nightWatchConfig;
+        [SerializeField] private SO_NightWatchConfiguration _nightWatchConfig;
         [SerializeField] private Light _lifeLight;
 
         [Header("Lifetime Settings")]
