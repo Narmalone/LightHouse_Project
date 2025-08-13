@@ -21,7 +21,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         [Header("UI References")]
         [SerializeField] private UI_Buoy[] _buoys;
         [SerializeField] private BuyoncyAnomalyDatabase _anomalyDatabase;
-        [SerializeField] private UI_NightWatchPopup_ReportDatas _sendDatasPrefab;
+        [SerializeField] private UI_ReportDatasPopup _sendDatasPrefab;
         [SerializeField] private Button _sendReportButton;
         [SerializeField] private Button _resetAllButton;
         [SerializeField] private UI_ReportElement _reportElementPrefab;
@@ -252,7 +252,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
                 {
                     GenerateReportElements(
                         popup,
-                        popup.SuccessContent,
+                        popup.BodyParentContent,
                         result.CorrectValidCount,
                         result.CorrectInvalidCount,
                         result.ErrorCount,
@@ -270,7 +270,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         /// Génère les éléments UI affichant les gains/pertes.
         /// </summary>
         private void GenerateReportElements(
-            UI_NightWatchPopup_ReportDatas datas,
+            UI_ReportDatasPopup datas,
             RectTransform parent,
             int correctValidBuoys,
             int correctInvalidBuoys,
@@ -316,7 +316,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         private void CreateReportElement(RectTransform parent, string reason, string amount, Color color)
         {
             var element = Instantiate(_reportElementPrefab, parent.transform);
-            element.SetReason(reason);
+            element.SetDescription(reason);
             element.SetMoneyResult(amount, color);
         }
 

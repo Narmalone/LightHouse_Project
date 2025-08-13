@@ -2438,16 +2438,6 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.92156863
       objectReference: {fileID: 0}
-    - target: {fileID: 8276059534571273398, guid: 7a848f15429dd1d47adc93b096d425f9,
-        type: 3}
-      propertyPath: m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8276059534571273398, guid: 7a848f15429dd1d47adc93b096d425f9,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3051,13 +3041,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51d5bb6b09d790041bd384343dc6f2f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _airPressureButtons:
-  - {fileID: 5008658273387294749}
-  - {fileID: 5106313624944566020}
-  - {fileID: 8220113918033357186}
-  - {fileID: 954663039877273491}
+  _pressureButtons:
   - {fileID: 7379560247303423318}
+  - {fileID: 954663039877273491}
+  - {fileID: 8220113918033357186}
+  - {fileID: 5106313624944566020}
+  - {fileID: 5008658273387294749}
   _selectedHpaText: {fileID: 1344300494641135327}
+  _activeColor: {r: 1, g: 0.8116398, b: 0, a: 1}
+  _inactiveColor: {r: 0.92156863, g: 0.65882355, b: 0.2627451, a: 1}
+  _autoSelectFirstOnStart: 1
 --- !u!1001 &7149794216945951555
 PrefabInstance:
   m_ObjectHideFlags: 0

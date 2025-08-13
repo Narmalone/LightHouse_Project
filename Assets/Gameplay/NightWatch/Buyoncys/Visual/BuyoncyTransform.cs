@@ -7,6 +7,7 @@ public class BuyoncyTransform : MonoBehaviour
     [SerializeField] private WaterSurface _water;
 
     [Header(" --- PRÉCISION --- ")]
+#pragma warning disable
     [SerializeField, Range(1, 2000)] private int maxIterations = 20;
 
 #pragma warning disable

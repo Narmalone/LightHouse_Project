@@ -9,7 +9,7 @@ public class UI_ReportElement : MonoBehaviour
     public TextMeshProUGUI ReasonText => _reasonTxt;
     public TextMeshProUGUI MoneyResult => _moneyResultTxt;
 
-    public void SetReason(string reason)
+    public void SetDescription(string reason)
     {
         _reasonTxt.text = reason;
     }

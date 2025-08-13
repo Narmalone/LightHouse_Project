@@ -2,35 +2,82 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public class PressureButton : MonoBehaviour
+namespace LightHouse.Game.Computer.LEO.Weather
 {
-    [SerializeField] private Button _button;
-    [SerializeField] private float _minAirPressure = 980.0f;
-    [SerializeField] private float _maxAirPressure = 980.0f;
-    public event Action<PressureButton> OnClick;
-
-    public Button Button => _button;
-    public float MinAirPressure => _minAirPressure;
-    public float MaxAirPressure => _maxAirPressure;
-
-    private void Awake()
+    /// <summary>
+    /// Bouton de sélection d'une plage de pression atmosphérique (en hPa).
+    /// Relaye le clic via l'événement <see cref="OnClick"/>.
+    /// </summary>
+    [DisallowMultipleComponent]
+    [RequireComponent(typeof(Button))]
+    public sealed class PressureButton : MonoBehaviour
     {
-        _button.onClick.AddListener(OnButtonCliqued);
-    }
+        #region Serialized Fields
 
-    private void OnDestroy()
-    {
-        _button.onClick.RemoveListener(OnButtonCliqued);
-    }
+        [Header("Wiring")]
+        [SerializeField] private Button _button;
 
-    private void OnValidate()
-    {
-        if (_button != null) _button = GetComponent<Button>();
-    }
+        [Header("Pressure Range (hPa)")]
+        [SerializeField] private float _minAirPressure = 980f;
+        [SerializeField] private float _maxAirPressure = 1010f;
 
-    private void OnButtonCliqued()
-    {
-        OnClick?.Invoke(this);
+        #endregion
+
+        #region Events
+
+        /// <summary>Émis quand l'utilisateur clique ce bouton.</summary>
+        public event Action<PressureButton> OnClick;
+
+        #endregion
+
+        #region Public API
+
+        public Button Button => _button;
+        public float MinAirPressure => _minAirPressure;
+        public float MaxAirPressure => _maxAirPressure;
+
+        #endregion
+
+        #region Unity Lifecycle
+
+        private void Awake()
+        {
+            // Récupération de la référence si oubliée dans l'inspecteur
+            if (_button == null)
+                _button = GetComponent<Button>();
+
+            _button.onClick.AddListener(OnButtonClicked);
+        }
+
+        private void OnDestroy()
+        {
+            if (_button != null)
+                _button.onClick.RemoveListener(OnButtonClicked);
+        }
+
+        private void OnValidate()
+        {
+            if (_button == null)
+                _button = GetComponent<Button>();
+
+            // Sécurité : si bornes inversées on corrige
+            if (_maxAirPressure < _minAirPressure)
+            {
+                float tmp = _minAirPressure;
+                _minAirPressure = _maxAirPressure;
+                _maxAirPressure = tmp;
+            }
+        }
+
+        #endregion
+
+        #region Handlers
+
+        private void OnButtonClicked()
+        {
+            OnClick?.Invoke(this);
+        }
+
+        #endregion
     }
 }

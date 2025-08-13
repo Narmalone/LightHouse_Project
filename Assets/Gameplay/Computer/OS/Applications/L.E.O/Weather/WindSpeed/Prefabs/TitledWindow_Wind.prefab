@@ -2188,9 +2188,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b56d73ddd6e46654cbe2613791d4e75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IPF_windSpeed: {fileID: 2692502040265377273}
-  _beaufortLevel: {fileID: 6641432113255516677}
-  fces:
+  _windSpeedInput: {fileID: 2692502040265377273}
+  _beaufortLabel: {fileID: 6641432113255516677}
+  _compassController: {fileID: 4781457359678156998}
+  _beaufortScales:
   - Level: 0
     MinWindSpeed: 0
     MaxWindSpeed: 1
@@ -2279,7 +2280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d632f8d506e847841b7e6e2df65af6dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttons:
+  _buttons:
   - {fileID: 5331992438902040622}
   - {fileID: 718977814675994591}
   - {fileID: 4308422286766895865}
@@ -2288,6 +2289,7 @@ MonoBehaviour:
   - {fileID: 1301736102064079349}
   - {fileID: 6509204348122684508}
   - {fileID: 7824466369061281090}
+  _autoSelectFirstOnStart: 1
 --- !u!1 &6176775697288111396 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5508368841949881573, guid: 2649edbb908940a47b71c9d94055458f,
@@ -4121,8 +4123,13 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 363200149403307624, guid: 38ffe5b67399fe84c9618d2777bc00f1,
         type: 3}
+      propertyPath: m_text
+      value: e.g 63,5
+      objectReference: {fileID: 0}
+    - target: {fileID: 363200149403307624, guid: 38ffe5b67399fe84c9618d2777bc00f1,
+        type: 3}
       propertyPath: m_fontSize
-      value: 20
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 363200149403307624, guid: 38ffe5b67399fe84c9618d2777bc00f1,
         type: 3}
@@ -4152,7 +4159,7 @@ PrefabInstance:
     - target: {fileID: 3246964056983023775, guid: 38ffe5b67399fe84c9618d2777bc00f1,
         type: 3}
       propertyPath: m_fontSize
-      value: 20
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 3246964056983023775, guid: 38ffe5b67399fe84c9618d2777bc00f1,
         type: 3}

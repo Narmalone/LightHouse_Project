@@ -4,17 +4,17 @@ namespace LightHouse.Money
 {
     public static class PlayerCurrency
     {
-        public static int Balance { get; private set; }
+        public static float Balance { get; private set; }
 
-        public static event Action<int> OnBalanceChanged;
+        public static event Action<float> OnBalanceChanged;
 
-        public static void Add(int amount)
+        public static void Add(float amount)
         {
             Balance += amount;
             OnBalanceChanged?.Invoke(Balance);
         }
 
-        public static bool TrySpend(int amount)
+        public static bool TrySpend(float amount)
         {
             if (Balance < amount) return false;
             Balance -= amount;

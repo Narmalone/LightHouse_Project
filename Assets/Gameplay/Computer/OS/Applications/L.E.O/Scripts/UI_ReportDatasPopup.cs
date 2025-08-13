@@ -4,7 +4,7 @@ using System.Collections;
 using TMPro;
 using System;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch
+namespace LightHouse.Game.Computer.LEO
 {
     public enum DataStatus
     {
@@ -15,11 +15,12 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         Success
     }
 
-    public class UI_NightWatchPopup_ReportDatas : MonoBehaviour
+    public class UI_ReportDatasPopup : MonoBehaviour
     {
         [Header("UI References")]
         [SerializeField] private Slider _progressBar;
         [SerializeField] private Image _reportResultHeaderImage;
+        [SerializeField] private TextMeshProUGUI _windowTitleText;
         [SerializeField] private TextMeshProUGUI _reportResultHeaderText;
         [SerializeField] private HeightLerper _mainLerp;
         [SerializeField] private HeightLerper _contentLerper;
@@ -31,12 +32,11 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         [SerializeField] private float _loadingDuration = 3f;
 
         [Header("Success")]
-        [SerializeField] private RectTransform _successContent;
+        [SerializeField] private RectTransform _bodyParentContent;
         [SerializeField] private Color _successImageColor = Color.green;
         [SerializeField] private string _sucessText;
 
         [Header("Failure")]
-        [SerializeField] private RectTransform _failureContent;
         [SerializeField] private Color _failedImageColor = Color.red;
         [SerializeField] private string _failedText;
 
@@ -53,7 +53,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         private Func<DataStatus> _resolveStatus;
 
         public event Action<DataStatus> OnLoadingCompleted;
-        public RectTransform SuccessContent => _successContent;
+        public RectTransform BodyParentContent => _bodyParentContent;
 
         private void Awake()
         {
@@ -104,8 +104,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
             return status switch
             {
                 DataStatus.Loading => _loadingContent.gameObject,
-                DataStatus.Success => _successContent.gameObject,
-                DataStatus.Failed => _failureContent.gameObject,
+                DataStatus.Success => _bodyParentContent.gameObject,
+                DataStatus.Failed => _bodyParentContent.gameObject,
                 DataStatus.DataMissmatch => _missmatchContent.gameObject,
                 _ => null
             };

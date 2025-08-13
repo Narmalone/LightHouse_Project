@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4032754357897554694}
   - component: {fileID: 174829986923151849}
   m_Layer: 0
-  m_Name: NightWatch_Popup_SendDatas
+  m_Name: UI_ReportDatasPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,11 +47,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 52672473095212904}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83278ff440953664b9d2bf43d0e9cfaa, type: 3}
+  m_Script: {fileID: 11500000, guid: 41700d38ee988c2429fd91ccdb533721, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _progressBar: {fileID: 2636291563989596652}
   _reportResultHeaderImage: {fileID: 4628908196508868593}
+  _windowTitleText: {fileID: 2636582408018056681}
   _reportResultHeaderText: {fileID: 8149032541632913342}
   _mainLerp: {fileID: 4130467003980533787}
   _contentLerper: {fileID: 2331381624025734417}
@@ -81,13 +82,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _loadingDuration: 1.5
-  _successContent: {fileID: 1142257253287358103}
+  _loadingDuration: 2
+  _bodyParentContent: {fileID: 1142257253287358103}
   _successImageColor: {r: 0, g: 1, b: 0, a: 1}
-  _sucessText: SUCCESS
-  _failureContent: {fileID: 638458059874871604}
+  _sucessText: REPORT SUCCESFULL
   _failedImageColor: {r: 1, g: 0, b: 0, a: 1}
-  _failedText: FAILED
+  _failedText: FAILURE
   _missmatchContent: {fileID: 478952330381056694}
   _missMatchColor: {r: 1, g: 0, b: 0, a: 1}
   _missmatchText: DATA MISSMATCH
@@ -254,7 +254,6 @@ RectTransform:
   m_Children:
   - {fileID: 3801033820157192096}
   - {fileID: 1142257253287358103}
-  - {fileID: 638458059874871604}
   - {fileID: 478952330381056694}
   m_Father: {fileID: 8277621874098090398}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -826,83 +825,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
---- !u!1 &5443813996164260980
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 638458059874871604}
-  - component: {fileID: 6120524091084386505}
-  - component: {fileID: 8662077708177793874}
-  m_Layer: 0
-  m_Name: FailContent
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &638458059874871604
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5443813996164260980}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8809761781860927161}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 288.865, y: -149.6}
-  m_SizeDelta: {x: 577.73, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6120524091084386505
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5443813996164260980}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
---- !u!114 &8662077708177793874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5443813996164260980}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 0
-  m_VerticalFit: 2
 --- !u!1 &6311341206997781799
 GameObject:
   m_ObjectHideFlags: 0
@@ -1006,7 +928,7 @@ GameObject:
   - component: {fileID: 7527476901356829441}
   - component: {fileID: 3885662606977964666}
   m_Layer: 0
-  m_Name: SuccessBody
+  m_Name: BodyParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2564,6 +2486,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TargetHeight: 400
   LerpSpeed: 5
+--- !u!114 &2636582408018056681 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7589650121388259948, guid: 2649edbb908940a47b71c9d94055458f,
+    type: 3}
+  m_PrefabInstance: {fileID: 5603849206833688453}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2765776026278716366 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7757131008579685451, guid: 2649edbb908940a47b71c9d94055458f,

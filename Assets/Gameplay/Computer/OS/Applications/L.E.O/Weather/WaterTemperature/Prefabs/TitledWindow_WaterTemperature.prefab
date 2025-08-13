@@ -1161,43 +1161,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc6a27cd80dde69489b9329f79bcb741, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IPF_Temperature: {fileID: 172735202169333824}
-  _airThermometerShader: {fileID: 2100000, guid: b3927bc6eb68e224f86ce78372cc014c,
-    type: 2}
+  _temperatureInputField: {fileID: 172735202169333824}
   _thermometerImage: {fileID: 3357010120928911741}
+  _thermometerMaterial: {fileID: 2100000, guid: b3927bc6eb68e224f86ce78372cc014c,
+    type: 2}
+  _fillAmountProperty: _FillAmount
   _tipTitleText: {fileID: 1440905233407725539}
   _tipDescriptionText: {fileID: 6499470833810004333}
-  _minTemp: 0
-  _maxTemp: 30
-  Tips:
-  - Title: Frozen water
-    Description: You can walk on it
-    TipMinTemperature: -500000
-    TipMaxTemperature: 0
-  - Title: Very cold water
-    Description: Close to being frozen
-    TipMinTemperature: 0
-    TipMaxTemperature: 5
-  - Title: Cold water
-    Description: Cold, don't swim in it
-    TipMinTemperature: 5
-    TipMaxTemperature: 10
-  - Title: Cool temperature
-    Description: Perfect for an invigorating shower
-    TipMinTemperature: 10
-    TipMaxTemperature: 18
-  - Title: Temperate temperature
-    Description: Ideal
-    TipMinTemperature: 18
-    TipMaxTemperature: 25
-  - Title: Warm water
-    Description: Beware of burns
-    TipMinTemperature: 25
-    TipMaxTemperature: 35
-  - Title: Abnormally hot
-    Description: Danger, it's not normal
-    TipMinTemperature: 35
-    TipMaxTemperature: 500000
+  _minTemperature: -10
+  _maxTemperature: 30
+  _tips:
+  - Title: Icy Water
+    Description: "Dangerous immersion (<10\xB0C). Full wetsuit or avoid entering"
+    TipMinTemperature: -20
+    TipMaxTemperature: 2
+  - Title: Cold
+    Description: Rapid hypothermia possible. Thick wetsuit recommended.
+    TipMinTemperature: 2
+    TipMaxTemperature: 15
+  - Title: Cool
+    Description: Tolerable for short periods. Light thermal protection advised.
+    TipMinTemperature: 15
+    TipMaxTemperature: 20
+  - Title: Comfortable
+    Description: Good endurance at the surface. Watch wind and currents.
+    TipMinTemperature: 20
+    TipMaxTemperature: 26
+  - Title: Very Warm
+    Description: Faster fatigue and dehydration. Hydrate frequently.
+    TipMinTemperature: 26
+    TipMaxTemperature: 36
 --- !u!224 &7757819837292541096 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7757131008579685451, guid: 2649edbb908940a47b71c9d94055458f,
@@ -1979,7 +1972,7 @@ PrefabInstance:
     - target: {fileID: 7918172733636259162, guid: bc9935ad3be9c914f9180208af63c488,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -68.175
+      value: -64.175
       objectReference: {fileID: 0}
     - target: {fileID: 7918172733636259162, guid: bc9935ad3be9c914f9180208af63c488,
         type: 3}

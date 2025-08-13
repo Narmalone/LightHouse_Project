@@ -2532,7 +2532,7 @@ PrefabInstance:
     - target: {fileID: 1674077533888593541, guid: 2649edbb908940a47b71c9d94055458f,
         type: 3}
       propertyPath: m_Name
-      value: TitledWindow_AirTemperature Variant
+      value: TitledWindow_AirTemperature
       objectReference: {fileID: 0}
     - target: {fileID: 2212664845828832211, guid: 2649edbb908940a47b71c9d94055458f,
         type: 3}
@@ -2826,43 +2826,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc6a27cd80dde69489b9329f79bcb741, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IPF_Temperature: {fileID: 5856248143276029680}
-  _airThermometerShader: {fileID: 2100000, guid: 557ba75607a45864ab4175906eafee33,
-    type: 2}
+  _temperatureInputField: {fileID: 5856248143276029680}
   _thermometerImage: {fileID: 9058499735162978253}
+  _thermometerMaterial: {fileID: 2100000, guid: 557ba75607a45864ab4175906eafee33,
+    type: 2}
+  _fillAmountProperty: _FillAmount
   _tipTitleText: {fileID: 4674490965044810067}
   _tipDescriptionText: {fileID: 653863215981250525}
-  _minTemp: -10
-  _maxTemp: 40
-  Tips:
-  - Title: Freezing cold
-    Description: Watch out for frostbite!
-    TipMinTemperature: -50000
-    TipMaxTemperature: -5
-  - Title: Winter cool
-    Description: A warm jacket and gloves are all you need
-    TipMinTemperature: -5
-    TipMaxTemperature: 5
-  - Title: Fresh but bearable
-    Description: Slightly cool but watch the wind.
-    TipMinTemperature: 5
-    TipMaxTemperature: 12
-  - Title: Ideal temperature
-    Description: Enjoy the good weather
-    TipMinTemperature: 12
-    TipMaxTemperature: 20
-  - Title: A little hot
-    Description: Hydrate regularly
-    TipMinTemperature: 20
-    TipMaxTemperature: 26
-  - Title: High heat
-    Description: Stay in the shade
-    TipMinTemperature: 26
-    TipMaxTemperature: 32
-  - Title: Heatwaves
-    Description: Health hazard
-    TipMinTemperature: 32
-    TipMaxTemperature: 40000
+  _minTemperature: -10
+  _maxTemperature: 30
+  _tips:
+  - Title: Biting Cold
+    Description: Hypothermia risk. Wear multiple layers, gloves, and a hat.
+    TipMinTemperature: -20
+    TipMaxTemperature: 0
+  - Title: Chilly
+    Description: Bring a windproof jacket. Light activity helps you stay warm.
+    TipMinTemperature: 0
+    TipMaxTemperature: 6
+  - Title: Mild
+    Description: Comfortable conditions. Light layers; keep an eye on the wind.
+    TipMinTemperature: 6
+    TipMaxTemperature: 14
+  - Title: Temperate
+    Description: Great working weather. Stay hydrated and use sun protection.
+    TipMinTemperature: 14
+    TipMaxTemperature: 25
+  - Title: Hot
+    Description: Heat exhaustion risk. Use a cap, sunscreen, and take shade breaks.
+    TipMinTemperature: 22
+    TipMaxTemperature: 45
 --- !u!1001 &6103129314655315245
 PrefabInstance:
   m_ObjectHideFlags: 0

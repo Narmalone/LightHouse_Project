@@ -41,7 +41,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         [SerializeField] private Button _resetAllButton;
 
         [Header("UI Prefabs")]
-        [SerializeField] private UI_NightWatchPopup_ReportDatas _sendDatasPrefab;
+        [SerializeField] private UI_ReportDatasPopup _sendDatasPrefab;
         [SerializeField] private UI_ReportElement _reportElementPrefab;
         #endregion
 
@@ -236,7 +236,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
                     _anomalyDatabase.TryGetAnomaly(boatName, out BoatAnomalyDatas datas);
                     GenerateReportElements(
                         popup,
-                        popup.SuccessContent,
+                        popup.BodyParentContent,
                         status,
                         datas
                     );
@@ -268,7 +268,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             });
         }
 
-        private void GenerateReportElements(UI_NightWatchPopup_ReportDatas datas, RectTransform parent, DataStatus status, BoatAnomalyDatas anomalyDatas)
+        private void GenerateReportElements(UI_ReportDatasPopup datas, RectTransform parent, DataStatus status, BoatAnomalyDatas anomalyDatas)
         {
             int total = 0;
 
@@ -297,7 +297,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         private void CreateReportElement(RectTransform parent, string reason, string amount, Color color)
         {
             var element = Instantiate(_reportElementPrefab, parent.transform);
-            element.SetReason(reason);
+            element.SetDescription(reason);
             element.SetMoneyResult(amount, color);
         }
 
