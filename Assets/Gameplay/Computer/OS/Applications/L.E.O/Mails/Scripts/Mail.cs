@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.MailSystem
+namespace LightHouse.Game.Computer.LEO.Mails
 {
     [System.Serializable]
-    public class Mail
+    public class MailDatas
     {
         public string ExpeditorName;
         public string MailObject;
