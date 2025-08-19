@@ -2,7 +2,7 @@
 
 namespace LightHouse.Game.Sonar.Core
 {
-    public class Sonar : MonoBehaviour
+    public class SonarDetector : MonoBehaviour
     {
         public bool EnableSonarDetector = true;
         public float DetectionRange = 100f;

@@ -27,7 +27,10 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private Material _instanceMaterial;
 
-        public event Action<string> SonarDotClicked;
+        /// <summary>
+        /// Sonar infos, dot image
+        /// </summary>
+        public event Action<string, Image> SonarDotClicked;
 
         void Awake()
         {
@@ -42,7 +45,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private void OnButtonCliqued(UI_CustomButton button)
         {
-            SonarDotClicked?.Invoke(_sonarElement.SonarInfo);
+            SonarDotClicked?.Invoke(_sonarElement.SonarInfo, _dotImage);
         }
 
         private void OnDestroy()

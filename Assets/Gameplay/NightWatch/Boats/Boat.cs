@@ -1,4 +1,5 @@
 using LightHouse.Game.Sonar.Core;
+using LightHouse.Game.Boats.Frequencies;
 using System;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace LightHouse.Game.Boats
         [Header("References")]
         [SerializeField] private Rigidbody _rb;
         [SerializeField] private BoatsNationalitiesManager _boatsManager;
+        [SerializeField] private BoatFrequencyAllocator _frequencyAllocator;
         [SerializeField] private VectorPathDatabase _randomPointController;
         [SerializeField] private BoidController _controller;
         [SerializeField] private BoatAnomalyController _anomalyController;
@@ -45,8 +47,6 @@ namespace LightHouse.Game.Boats
         public Vector3 Position => _rb.position;
         public Vector3 RotationAngles => _rb.transform.eulerAngles;
 
-        public float RadioFrequency => _defaultRadioFrequency;
-
         #endregion
 
         #region Events
@@ -58,19 +58,12 @@ namespace LightHouse.Game.Boats
 
         #region Private Fields
 
-        private float _defaultRadioFrequency;
+        [SerializeField] private float _radioFrequencyMHz;
+        public float RadioFrequency => _radioFrequencyMHz;
 
         #endregion
 
         #region Unity Lifecycle
-
-        private void Awake()
-        {
-            InitializeBoatData();
-            InitializeMovement();
-            InitializeAnomalyEvents();
-            InitializeRadioFrequency();
-        }
 
         private void LateUpdate()
         {
@@ -81,11 +74,22 @@ namespace LightHouse.Game.Boats
         {
             CleanupBoatData();
             CleanupAnomalyEvents();
+
+            if (_frequencyAllocator != null)
+                _frequencyAllocator.ReleaseFrequencyMHz(_radioFrequencyMHz);
         }
 
         #endregion
 
         #region Initialization
+
+        public void Initialize()
+        {
+            InitializeBoatData();
+            InitializeMovement();
+            InitializeAnomalyEvents();
+            InitializeRadioFrequency();
+        }
 
         private void InitializeBoatData()
         {
@@ -108,9 +112,17 @@ namespace LightHouse.Game.Boats
 
         private void InitializeRadioFrequency()
         {
-            _defaultRadioFrequency = UnityEngine.Random.Range(157f, 162f);
-            _defaultRadioFrequency = (float)Math.Round(_defaultRadioFrequency, 2);
-            SonarInfo = $"{_defaultRadioFrequency} MHz";
+            if (_frequencyAllocator == null)
+            {
+                Debug.LogError("[Boat] FrequencyAllocator manquant.");
+                _radioFrequencyMHz = 157f;
+            }
+            else
+            {
+                _radioFrequencyMHz = _frequencyAllocator.AllocateUniqueFrequencyMHz();
+            }
+            SonarInfo = BoatFrequencyAllocator.FormatFrequencyForDisplay(_radioFrequencyMHz);
+            Debug.Log("allocated frequency");
         }
 
         #endregion
@@ -153,14 +165,12 @@ namespace LightHouse.Game.Boats
         private void HandleAnomalyResolved()
         {
             DotColor = _aliveDotColor;
-            SonarInfo = $"{_defaultRadioFrequency} MHz";
             ForceDotUpdate?.Invoke();
         }
 
         private void HandleAnomalyAdded()
         {
             DotColor = _deathDotColor;
-            //SonarInfo = "156.8 MHz"; // Exemple si besoin de changer aussi la fréquence
             ForceDotUpdate?.Invoke();
         }
 

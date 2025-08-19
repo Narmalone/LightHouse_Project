@@ -105,7 +105,7 @@ namespace LightHouse.Game.Computer.LEO.Weather.Temperature
         /// </summary>
         private void OnTemperatureInputChanged(string raw)
         {
-            if (TryParseFloatFlexible(raw, out float value))
+            if (FloatExtension.TryParse(raw, out float value))
             {
                 SetTemperature(value);
             }
@@ -186,20 +186,6 @@ namespace LightHouse.Game.Computer.LEO.Weather.Temperature
         {
             if (_thermometerMaterial == null) return;
             _thermometerMaterial.SetFloat(_fillAmountProperty, Mathf.Clamp01(normalized));
-        }
-
-        /// <summary>
-        /// Parse un float en tolérant '.' et ',' comme séparateur décimal.
-        /// </summary>
-        private static bool TryParseFloatFlexible(string s, out float value)
-        {
-            // On tente d’abord la culture invariante (point)
-            if (float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
-                return true;
-
-            // On remplace la virgule par point si besoin
-            var replaced = s?.Replace(',', '.');
-            return float.TryParse(replaced, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
         }
 
         #endregion

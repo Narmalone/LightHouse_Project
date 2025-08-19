@@ -1,4 +1,4 @@
-using LightHouse.Audio;
+ï»¿using LightHouse.Audio;
 using LightHouse.Game.Sonar.Core;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,38 +8,75 @@ using UnityEngine.UI;
 
 namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 {
+    /// <summary>
+    /// UI Sonar : dots, balayage et lien visuel (dot -> label du bas).
+    /// Le lien utilise un Pivot (RectTransform) + une Image enfant (barre).
+    /// </summary>
     public class UI_Sonar : MonoBehaviour
     {
-        [Header("Références UI")]
-        public LightHouse.Game.Sonar.Core.Sonar _sonar => SonarHandlerData.Sonar;                          // Référence au script de détection
-        [SerializeField] private RectTransform _sonnarPannel;             // UI circulaire représentant le radar
-        [SerializeField] private SonarDotController _sonarDotPrefab;            // Prefab représentant un bateau
+        #region Serialized â€” RÃ©fÃ©rences & Look
+
+        [Header("RÃ©fÃ©rences UI")]
+        public SonarDetector _sonar => SonarHandlerData.Sonar;
+        [SerializeField] private RectTransform _sonarPanel;
+
+        // âš ï¸ Dans la scÃ¨ne : Pivot (RectTransform) avec une Image en enfant.
+        [Header("Selected Link (Pivot -> Image)")]
+        [SerializeField] private Color _selectedDorColor = Color.yellow; 
+        [SerializeField] private RectTransform _selectedDotLinkPivot;  // lâ€™objet "Pivot" (parent)
+        [SerializeField] private RectTransform _selectedDotLinkImage;  // lâ€™Image enfant (pivot = (0,0.5) recommandÃ©)
+
+        [SerializeField] private SonarDotController _sonarDotPrefab;
         [SerializeField] private TextMeshProUGUI _bottomInfoText;
 
-        [SerializeField] private bool UpdateRadarRoutineEnabled = true;
-        [SerializeField] private float SonarDelay = 5.0f;
+        [Header("Balayage / Ping")]
+        [SerializeField] private bool _updateRadarRoutineEnabled = true;
+        [SerializeField] private float _sonarDelay = 5f;
+        [SerializeField] private RectTransform _radarSweepLine;
+        [SerializeField] private Material _sweepLineShader;
+        [SerializeField] private float _sweepRotationSpeed = 72f;
 
-        [Header("Effets visuels")]
-        [SerializeField] private RectTransform radarSweepLine;
-        [SerializeField] private Material SweepLineShader;
+        [Header("Ping visuel")]
         [SerializeField] private Image _sonarPingImage;
-        [SerializeField] private float sweepRotationSpeed = 72f; // degrés par seconde (360° en 5s)
-        [SerializeField] private float pingDuration = 0.5f;
+        [SerializeField] private float _pingDuration = 0.5f;
+        [SerializeField] private float _pingStartSize = 100f;
+        [SerializeField] private float _pingMaxSize = 500f;
 
-        [Header("Ping Sizes")]
-        [SerializeField] private float _pingStartSize = 100.0f;
-        [SerializeField] private float _pingMaxSize = 500.0f;
-
-        [Header("Sounds")]
+        [Header("Son")]
         [SerializeField] private AudioSource _sonarPingAudioSource;
         [SerializeField] private EffectAudio _sonarPingClip;
 
-        private float _currentSweepAngle = 0f;
+        [Header("Link Layout")]
+        [Tooltip("DÃ©calage vertical (px) pour placer le dÃ©part juste sous le dot.")]
+        [SerializeField] private float _dotStartYOffset = 8f;
+
+        [Tooltip("Petit espace (px) laissÃ© au dÃ©part du trait.")]
+        [SerializeField] private float _startGap = 6f;
+
+        [Tooltip("Petit espace (px) laissÃ© avant le label.")]
+        [SerializeField] private float _endGap = 12f;
+
+        #endregion
+
+        #region Runtime state
+
         private readonly Dictionary<int, SonarDotController> _activeDots = new();
+        private float _currentSweepAngle;
+        private Canvas _canvas;
+        private Camera _uiCamera;
+
+        // Lien actif
+        private RectTransform _linkFrom;   // dot sÃ©lectionnÃ© (RectTransform du dot)
+        private RectTransform _linkTo;     // label du bas (rectTransform)
+        private bool _linkActive;
+
+        #endregion
+
+        #region Unity lifecycle
 
         private void OnValidate()
         {
-            if (_sonarPingClip != null)
+            if (_sonarPingClip != null && _sonarPingClip.clips != null && _sonarPingClip.clips.Length > 0)
             {
                 _sonarPingAudioSource.clip = _sonarPingClip.clips[0];
                 _sonarPingAudioSource.spatialBlend = _sonarPingClip._spatialBlend;
@@ -49,38 +86,38 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private void Awake()
         {
-            _sonarPingAudioSource.clip = _sonarPingClip.clips[0];
-            _sonarPingAudioSource.spatialBlend = _sonarPingClip._spatialBlend;
-            _sonarPingAudioSource.volume = _sonarPingClip.volume;
+            _canvas = GetComponentInParent<Canvas>();
+            _uiCamera = (_canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+                ? _canvas.worldCamera : null;
+
+            if (_sonarPingClip != null && _sonarPingClip.clips != null && _sonarPingClip.clips.Length > 0)
+            {
+                _sonarPingAudioSource.clip = _sonarPingClip.clips[0];
+                _sonarPingAudioSource.spatialBlend = _sonarPingClip._spatialBlend;
+                _sonarPingAudioSource.volume = _sonarPingClip.volume;
+            }
         }
 
         private void Update()
         {
-            if (SweepLineShader != null)
+            if (_sweepLineShader != null)
             {
-                // Incrémenter manuellement l'angle
-                _currentSweepAngle += sweepRotationSpeed * Time.deltaTime;
-                _currentSweepAngle %= 360f;
-
-                // Envoyer au shader
-                SweepLineShader.SetFloat("_SweepAngle", _currentSweepAngle);
+                _currentSweepAngle = (_currentSweepAngle + _sweepRotationSpeed * Time.deltaTime) % 360f;
+                _sweepLineShader.SetFloat("_SweepAngle", _currentSweepAngle);
             }
         }
 
-        public void StartRadar()
-        {
-            StartCoroutine(UpdateRadarRoutine());
-        }
+        #endregion
 
-        public void StopRadar()
-        {
-            StopAllCoroutines();
-        }
+        #region Radar loop
+
+        public void StartRadar() => StartCoroutine(UpdateRadarRoutine());
+        public void StopRadar() => StopAllCoroutines();
 
         private IEnumerator UpdateRadarRoutine()
         {
-            var wait = new WaitForSeconds(SonarDelay);
-            while (UpdateRadarRoutineEnabled)
+            var wait = new WaitForSeconds(_sonarDelay);
+            while (_updateRadarRoutineEnabled)
             {
                 UpdateRadar();
                 yield return wait;
@@ -89,108 +126,140 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private void UpdateRadar()
         {
-            float panelRadius = Mathf.Min(_sonnarPannel.rect.width, _sonnarPannel.rect.height) / 2f;
-            Vector3 sonarPosition = _sonar.transform.position;
-            Quaternion inverseRotation = Quaternion.Inverse(_sonar.transform.rotation);
+            float panelRadius = Mathf.Min(_sonarPanel.rect.width, _sonarPanel.rect.height) * 0.5f;
+            Vector3 sonarPos = _sonar.transform.position;
+            Quaternion invRot = Quaternion.Inverse(_sonar.transform.rotation);
 
-            // Réutiliser une liste statique pour éviter des allocations
             var detectedThisFrame = new HashSet<int>();
 
-            // Phase 1 : Ajout ou mise à jour des dots actifs
             foreach (var item in SonarHandlerData.SonarItems)
             {
-                if (!item.IsDetectedBySonar)
-                    continue;
+                if (!item.IsDetectedBySonar) continue;
 
                 detectedThisFrame.Add(item.UniqueID);
 
-                Vector3 offset = item.Position - sonarPosition;
-                Vector2 flatOffset = new Vector2(offset.x, offset.z);
-                Vector2 localPos = inverseRotation * flatOffset;
-
-                Vector2 uiPos = localPos / _sonar.DetectionRange * panelRadius;
+                Vector3 offset = item.Position - sonarPos;
+                Vector2 flat = new Vector2(offset.x, offset.z);
+                Vector2 local = invRot * flat;
+                Vector2 uiPos = local / _sonar.DetectionRange * panelRadius;
                 if (uiPos.sqrMagnitude > panelRadius * panelRadius)
                     uiPos = uiPos.normalized * panelRadius;
 
-                if (!_activeDots.TryGetValue(item.UniqueID, out SonarDotController dot))
+                if (!_activeDots.TryGetValue(item.UniqueID, out var dot))
                 {
-                    var dotInstance = Instantiate(_sonarDotPrefab, _sonnarPannel);
-                    dotInstance.SetDotColor(item.DotColor); // couleur personnalisée
-                    dotInstance.SetDotSize(item.DotSize);
-                    dotInstance.SetDotSprite(item.DotSprite);
-                    dot = dotInstance;
+                    dot = Instantiate(_sonarDotPrefab, _sonarPanel);
+                    dot.SetDotColor(item.DotColor);
+                    dot.SetDotSize(item.DotSize);
+                    dot.SetDotSprite(item.DotSprite);
+                    dot.SetSonarElement(item);
+                    dot.SonarDotClicked += OnDotClicked;
                     _activeDots[item.UniqueID] = dot;
-                    dotInstance.SetSonarElement(item);
-                    dotInstance.SonarDotClicked += DotInstance_SonarDotClicked;
                 }
 
                 dot.RectTransform.anchoredPosition = uiPos;
                 dot.SetDotRotation(item.RotationAngles);
             }
 
-            // Phase 2 : Nettoyage des anciens dots
-            var keysToRemove = new List<int>();
-            foreach (var kvp in _activeDots)
+            var toRemove = new List<int>();
+            foreach (var kv in _activeDots)
             {
-                if (!detectedThisFrame.Contains(kvp.Key))
+                if (!detectedThisFrame.Contains(kv.Key))
                 {
-                    kvp.Value.SonarDotClicked -= DotInstance_SonarDotClicked;
-                    Destroy(kvp.Value.gameObject);
-                    keysToRemove.Add(kvp.Key);
+                    kv.Value.SonarDotClicked -= OnDotClicked;
+                    Destroy(kv.Value.gameObject);
+                    toRemove.Add(kv.Key);
                 }
             }
-
-            foreach (var key in keysToRemove)
-            {
-                _activeDots.Remove(key);
-            }
+            foreach (var id in toRemove) _activeDots.Remove(id);
 
             StartCoroutine(AnimatePingRoutine());
         }
 
-        private void DotInstance_SonarDotClicked(string obj)
+        #endregion
+
+        #region Selection link (dot -> bottom text)
+
+        private void OnDotClicked(string display, Image dotRect)
         {
-            _bottomInfoText.text = obj;
+            _bottomInfoText.text = display;
+
+            // place the pivot just under the clicked dot (same parent as the dots)
+            _selectedDotLinkPivot.gameObject.SetActive(true);
+            _selectedDotLinkPivot.anchoredPosition = dotRect.rectTransform.anchoredPosition + Vector2.down * 20f;
+
+            CalculateRotation();
         }
+
+        private void CalculateRotation()
+        {
+            // On travaille dans l'espace local du parent du pivot
+            var parent = (RectTransform)_selectedDotLinkPivot.parent;
+
+            // Convertit les 2 positions monde -> espace local du parent
+            Vector2 from = (Vector2)parent.InverseTransformPoint(_selectedDotLinkPivot.position);
+            Vector2 to = (Vector2)parent.InverseTransformPoint(_bottomInfoText.rectTransform.position);
+            CalculateDotLinkHeight(from, to);
+
+            // Direction local pivot -> bottom text
+            Vector2 dir = to - from;
+
+            // - Si la barre pointe "vers le haut" en local :
+            float angleZ = Vector2.SignedAngle(Vector2.up, dir);
+            // - Si elle pointe "vers le bas", utilise Vector2.down
+            // float angleZ = Vector2.SignedAngle(Vector2.down, dir);
+
+            // Applique UNIQUEMENT une rotation locale autour de Z
+            _selectedDotLinkPivot.localRotation = Quaternion.AngleAxis(angleZ, Vector3.forward);
+        }
+
+        private void CalculateDotLinkHeight(Vector2 from, Vector2 to)
+        {
+            Vector2 dir = to - from;
+            _selectedDotLinkImage.sizeDelta = new Vector2(_selectedDotLinkImage.rect.width, dir.magnitude);
+        }
+
+
+
+        public void ClearSelectionLink()
+        {
+            _linkActive = false;
+            _linkFrom = _linkTo = null;
+            if (_selectedDotLinkPivot != null)
+                _selectedDotLinkPivot.gameObject.SetActive(false);
+        }
+
+        #endregion
+
+        #region Ping animation
 
         private IEnumerator AnimatePingRoutine()
         {
-            if (_sonarPingImage == null)
-                yield break;
+            if (_sonarPingImage == null) yield break;
 
             _sonarPingImage.gameObject.SetActive(true);
             _sonarPingAudioSource?.Play();
 
-            // Reset couleur
-            Color startColor = _sonarPingImage.color;
-            startColor.a = 0.4f;
-            _sonarPingImage.color = startColor;
+            Color c0 = _sonarPingImage.color; c0.a = 0.4f;
+            _sonarPingImage.color = c0;
 
-            // Taille initiale et finale
             float t = 0f;
-            float pingStartSize = _pingStartSize; // pixels (par ex, commence petit)
-            float pingMaxSize = _pingMaxSize;  // dépasse largement le radar (dépend de ton canvas)
-
-
-            while (t < pingDuration)
+            while (t < _pingDuration)
             {
                 t += Time.deltaTime;
-                float progress = t / pingDuration;
+                float k = t / _pingDuration;
 
-                // Taille croissante
-                float size = Mathf.Lerp(pingStartSize, pingMaxSize, progress);
+                float size = Mathf.Lerp(_pingStartSize, _pingMaxSize, k);
                 _sonarPingImage.rectTransform.sizeDelta = new Vector2(size, size);
 
-                // Alpha décroissant
-                Color c = _sonarPingImage.color;
-                c.a = Mathf.Lerp(0.4f, 0f, progress);
+                var c = _sonarPingImage.color;
+                c.a = Mathf.Lerp(0.4f, 0f, k);
                 _sonarPingImage.color = c;
 
                 yield return null;
             }
-
             _sonarPingImage.gameObject.SetActive(false);
         }
-    }
 
+        #endregion
+    }
 }

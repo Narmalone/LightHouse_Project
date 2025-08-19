@@ -12,7 +12,6 @@ public static class SonarIDAllocator
         {
             int id = _availableIDs.Min;
             _availableIDs.Remove(id);
-            Debug.Log($"allocated ID {id}");
             return id;
         }
 

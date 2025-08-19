@@ -24,8 +24,8 @@ namespace LightHouse.Game.Boats
 
         [Header("Spawn Settings")]
         [SerializeField] private SO_NightWatchConfiguration _nightWatchConfig;
-        [SerializeField, Min(0)] private byte _minBoatsSpawnDuringNight = 2;
-        [SerializeField, Min(0)] private byte _maxBoatsSpawnDuringNight = 4;
+        [SerializeField] private byte _minBoatsSpawnDuringNight = 2;
+        [SerializeField] private byte _maxBoatsSpawnDuringNight = 4;
 
         [Header("Time Settings")]
         [SerializeField] private bool _despawnAllBoatsOnMorning = false;
@@ -146,6 +146,9 @@ namespace LightHouse.Game.Boats
         {
             var boat = Instantiate(_boatPrefab);
 
+            boat.Initialize();
+            Debug.Log("initialize completed");
+            Debug.Log(boat.RadioFrequency);
             // Essai d'ajout d'anomalie selon météo/paramètres
             TryAttachRandomAnomaly(boat);
 
@@ -321,7 +324,7 @@ namespace LightHouse.Game.Boats
             boat.AnomalyController.AddAnomaly(def);
 
             // Enregistrement côté base (affichage, report, etc.)
-            _anomaliesDatabase.SetAnomaly(boat.Data.Name, def.Type, $"{boat.RadioFrequency} MHz");
+            _anomaliesDatabase.SetAnomaly(boat.Data.Name, boat.RadioFrequency, def.Type, $"{boat.RadioFrequency} MHz");
         }
 
         /// <summary>

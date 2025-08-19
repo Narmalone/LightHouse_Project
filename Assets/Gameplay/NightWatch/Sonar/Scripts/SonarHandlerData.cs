@@ -17,7 +17,7 @@ namespace LightHouse.Game.Sonar.Core
         /// <summary>
         /// Référence globale au sonar actif.
         /// </summary>
-        public static Sonar Sonar;
+        public static SonarDetector Sonar;
 
         #endregion
 

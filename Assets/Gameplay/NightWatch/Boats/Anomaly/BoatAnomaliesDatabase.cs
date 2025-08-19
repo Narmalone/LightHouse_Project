@@ -17,17 +17,22 @@ namespace LightHouse.Game.Boats
         [Tooltip("Nom unique du bateau (sert de clé).")]
         public string BoatName;
 
+        [Tooltip("Fréquence unique du bateau")]
+        public float BoatFrequency;
+
         [Tooltip("Type fonctionnel de l'anomalie.")]
         public AnomalyType AnomalyType;
 
         /// <summary>Temps restant avant expiration (secondes).</summary>
         public float RemainingTime { get; set; }
 
+        public int TryAmount { get; set; }
+
         /// <summary>Texte d'affichage (ex: radio, infos diverses).</summary>
         public string DisplayText { get; set; }
 
         /// <inheritdoc/>
-        public string Key => BoatName;
+        public string Key => BoatFrequency.ToString();
     }
 
     #endregion
@@ -49,7 +54,7 @@ namespace LightHouse.Game.Boats
         [SerializeField] private bool _autoRemoveOnExpire = false;
 
         [Header("Storage")]
-        [SerializeField, HideInInspector]
+        [SerializeField]
         private List<BoatAnomalyDatas> _anomalies = new();
 
         #endregion
@@ -75,7 +80,7 @@ namespace LightHouse.Game.Boats
         /// <param name="boatName">Nom unique du bateau.</param>
         /// <param name="anomalyType">Type d'anomalie.</param>
         /// <param name="displayText">Texte d'affichage (ex: "159.2 MHz").</param>
-        public void SetAnomaly(string boatName, AnomalyType anomalyType, string displayText)
+        public void SetAnomaly(string boatName, float frequency, AnomalyType anomalyType, string displayText)
         {
             if (string.IsNullOrWhiteSpace(boatName))
             {
@@ -88,7 +93,9 @@ namespace LightHouse.Game.Boats
             {
                 existing.AnomalyType = anomalyType;
                 existing.RemainingTime = _timeToReportAnomalies;
+                existing.BoatFrequency = frequency;
                 existing.DisplayText = displayText;
+                existing.TryAmount = 0;
                 // Pas d'event "updated" pour garder l'API simple.
             }
             else
@@ -96,9 +103,11 @@ namespace LightHouse.Game.Boats
                 var data = new BoatAnomalyDatas
                 {
                     BoatName = boatName,
+                    BoatFrequency = frequency,
                     AnomalyType = anomalyType,
                     RemainingTime = _timeToReportAnomalies,
-                    DisplayText = displayText
+                    DisplayText = displayText,
+                    TryAmount = 0
                 };
                 _anomalies.Add(data);
                 OnAnomalyAdded?.Invoke(data);
@@ -122,6 +131,16 @@ namespace LightHouse.Game.Boats
         public bool TryGetAnomaly(string boatName, out BoatAnomalyDatas anomaly)
         {
             anomaly = _anomalies.Find(a => a.BoatName == boatName);
+            return anomaly != null;
+        }
+
+        /// <summary>
+        /// Essaie de récupérer l'anomaly d'un bateau par fréquences
+        /// </summary>
+        /// <returns></returns>
+        public bool TryGetAnomaly(float frequency, out BoatAnomalyDatas anomaly)
+        {
+            anomaly = _anomalies.Find(a => a.BoatFrequency == frequency);
             return anomaly != null;
         }
 

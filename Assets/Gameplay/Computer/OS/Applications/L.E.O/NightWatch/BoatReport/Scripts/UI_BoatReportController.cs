@@ -1,7 +1,10 @@
 ﻿using LightHouse.Game.Boats;
+using LightHouse.Game.Boats.Frequencies;
 using LightHouse.Game.Computer.LEO.NightWatch.Buoys;
 using LightHouse.Money;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +36,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         [Header("UI Elements - Boat Name")]
         [SerializeField] private TMP_InputField _boatNameInputField;
 
+        [Header("UI Elements - Boat Frequency")]
+        [SerializeField] private TMP_InputField _boatFrequencyInputField;
+
         [Header("UI Elements - Summary")]
         [SerializeField] private TextMeshProUGUI _summaryReportText;
 
@@ -48,11 +54,10 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         #region Private Fields
 
         private string _boatNameInput;
+        private float _selectedBoatFrequency;
         private AnomalyType _selectedAnomalyType;
         private string _selectedAnomalyText;
         private Sprite _selectedFlag;
-
-        private int _attemptCount;
         #endregion
 
         #region Public Properties
@@ -136,6 +141,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         {
             _boatNameInputField.onValueChanged.AddListener(OnBoatNameChanged);
             _nationalitiesDropdown.onValueChanged.AddListener(OnFlagDropdownChanged);
+            _boatFrequencyInputField.onValueChanged.AddListener(OnBoatFrequencyChanged);
 
             _sendReportButton.onClick.AddListener(OnSendReportClicked);
             _resetAllButton.onClick.AddListener(OnResetAllClicked);
@@ -145,6 +151,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         {
             _boatNameInputField.onValueChanged.RemoveListener(OnBoatNameChanged);
             _nationalitiesDropdown.onValueChanged.RemoveListener(OnFlagDropdownChanged);
+            _boatFrequencyInputField.onValueChanged.RemoveListener(OnBoatFrequencyChanged);
 
             _sendReportButton.onClick.RemoveListener(OnSendReportClicked);
             _resetAllButton.onClick.RemoveListener(OnResetAllClicked);
@@ -171,6 +178,23 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             _boatNameInput = name;
             UpdateSummaryReport();
             OnBoatsUIEventsChanged();
+        }
+
+        private void OnBoatFrequencyChanged(string arg0)
+        {
+            if(FloatExtension.TryParse(arg0, out float result))
+            {
+                _selectedBoatFrequency = result;
+                //know if it's valid
+                if (_anomalyDatabase.TryGetAnomaly(result, out BoatAnomalyDatas datas))
+                {
+                    Debug.Log($"bateau avec nomalie trouvé à la fréquence: {result}, son nom est {datas.BoatName}");
+                }
+            }
+            else
+            {
+                _selectedBoatFrequency = 0.0f;
+            }
         }
 
         private void OnFlagDropdownChanged(int index)
@@ -218,55 +242,136 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         private void EvaluateAndShowResults()
         {
-            var boatName = BoatNameInput;
-            var selectedFlag = _selectedFlag;
-            var selectedAnomaly = _selectedAnomalyType;
-
             var popup = Instantiate(_sendDatasPrefab, _nightWatch.transform as RectTransform);
             (popup.transform as RectTransform).anchoredPosition = Vector3.zero;
 
+            // Quand l'UI a fini son "loading"
             popup.OnLoadingCompleted += status =>
             {
-                if (status == DataStatus.Success)
+                if (status != DataStatus.Success) return;
+
+                // On a réussi → on récupère les datas du bateau pour afficher le récap + donner l’argent
+                if (_anomalyDatabase.TryGetAnomaly(_boatNameInput, out var dataByName))
                 {
-
-                    var boatInstance = BoatsHandlerData.Boats
-                        .Find(x => x.Data.Name == boatName && x.Data.NationalityFlag == selectedFlag);
-
-                    _anomalyDatabase.TryGetAnomaly(boatName, out BoatAnomalyDatas datas);
-                    GenerateReportElements(
-                        popup,
-                        popup.BodyParentContent,
-                        status,
-                        datas
-                    );
-
+                    GenerateReportElements(popup, popup.BodyParentContent, status, dataByName);
                     popup.RefreshLayouts();
 
+                    // Résolution côté monde
+                    var boatInstance = BoatsHandlerData.Boats
+                        .Find(x => x.Data.Name == dataByName.BoatName && x.Data.NationalityFlag == _selectedFlag);
                     if (boatInstance != null)
                         boatInstance.AnomalyController.RemoveAnomaly();
                     else
                         Debug.LogWarning("Bateau introuvable pour la résolution in-game.");
-
-                    _attemptCount = 0;
                 }
                 else
                 {
-                    _attemptCount++;
+                    // fallback : si on a matché par fréquence uniquement
+                    if (_anomalyDatabase.TryGetAnomaly(_selectedBoatFrequency, out var dataByFreq))
+                    {
+                        GenerateReportElements(popup, popup.BodyParentContent, status, dataByFreq);
+                        popup.RefreshLayouts();
+
+                        var boatInstance = BoatsHandlerData.Boats
+                            .Find(x => x.Data.Name == dataByFreq.BoatName && x.Data.NationalityFlag == _selectedFlag);
+                        if (boatInstance != null)
+                            boatInstance.AnomalyController.RemoveAnomaly();
+                    }
                 }
             };
 
+            // Toute la logique d'évaluation se fait ici (et retourne Success ou Mismatch)
             popup.StartLoading(() =>
             {
-                if (!_nationalityManager.FindName(boatName, out BoatData data))
-                    return DataStatus.DataMissmatch;
-
-                bool flagCorrect = data.NationalityFlag == selectedFlag;
-                bool anomalyCorrect = _anomalyDatabase.HasAnomaly(data.Name, selectedAnomaly);
-
-                return (flagCorrect && anomalyCorrect) ? DataStatus.Success : DataStatus.DataMissmatch;
+                return EvaluateSubmission(
+                    out var _ /*matched*/,
+                    out bool nameOK,
+                    out bool freqOK,
+                    out bool flagOK,
+                    out bool typeOK
+                );
             });
         }
+
+        /// <summary>
+        /// Vérifie la soumission et gère les TryAmount.
+        /// Règle de succès : nameOK && freqOK && flagOK && typeOK.
+        /// </summary>
+        private DataStatus EvaluateSubmission(
+            out BoatAnomalyDatas matched,
+            out bool nameOK,
+            out bool freqOK,
+            out bool flagOK,
+            out bool typeOK)
+        {
+            matched = null;
+            nameOK = _anomalyDatabase.TryGetAnomaly(_boatNameInput, out var byName);
+            freqOK = _anomalyDatabase.TryGetAnomaly(_selectedBoatFrequency, out var byFreq);
+
+            // Déterminer le "candidat" final
+            if (nameOK && freqOK)
+            {
+                // Cas où nom et fréquence pointent des bateaux différents → ambigu
+                if (byName.BoatName != byFreq.BoatName)
+                {
+                    byName.TryAmount++;   // l’utilisateur a donné un nom valide mais mauvaise fréquence
+                    byFreq.TryAmount++;   // …et une fréquence valide mais mauvais nom
+                    flagOK = false;
+                    typeOK = false;
+                    return DataStatus.DataMissmatch;
+                }
+                matched = byName; // (== byFreq)
+            }
+            else if (nameOK)
+            {
+                matched = byName;
+            }
+            else if (freqOK)
+            {
+                matched = byFreq;
+            }
+            else
+            {
+                // Ni nom ni fréquence → impossible d’identifier le bateau
+                flagOK = false;
+                typeOK = false;
+                return DataStatus.DataMissmatch;
+            }
+
+            // À partir d’ici on sait quel bateau est visé (matched)
+            typeOK = _anomalyDatabase.HasAnomaly(matched.BoatName, _selectedAnomalyType);
+            flagOK = IsFlagCorrectFor(matched.BoatName, _selectedFlag);
+
+            bool allOK = nameOK && freqOK && flagOK && typeOK;
+
+            // Incréments TryAmount quand l’utilisateur visait ce bateau mais s’est trompé sur un point
+            if (!allOK)
+            {
+                // S’il a trouvé par le nom mais pas la fréquence → 1 erreur
+                if (nameOK && !freqOK) byName.TryAmount++;
+
+                // S’il a trouvé par la fréquence mais pas le nom → 1 erreur
+                if (freqOK && !nameOK) byFreq.TryAmount++;
+
+                // Si nom & fréquence pointent le même bateau mais drapeau/type faux → 1 erreur
+                if (nameOK && freqOK && (byName.BoatName == byFreq.BoatName) && (!flagOK || !typeOK))
+                    matched.TryAmount++;
+            }
+
+            return allOK ? DataStatus.Success : DataStatus.DataMissmatch;
+        }
+
+        /// <summary>
+        /// Vérifie que le drapeau sélectionné correspond au bateau indiqué.
+        /// </summary>
+        private bool IsFlagCorrectFor(string boatName, Sprite selectedFlag)
+        {
+            if (selectedFlag == null) return false;
+            if (_nationalityManager.FindName(boatName, out BoatData data))
+                return data.NationalityFlag == selectedFlag;
+            return false;
+        }
+
 
         private void GenerateReportElements(UI_ReportDatasPopup datas, RectTransform parent, DataStatus status, BoatAnomalyDatas anomalyDatas)
         {
@@ -277,10 +382,10 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             CreateReportElement(parent, "Boat reported", $"+ {validValue}$", Color.green);
             total += validValue;
 
-            if(_attemptCount > 0)
+            if(anomalyDatas.TryAmount > 0)
             {
-                int penalty = BoatMoneyCalculator.MissmatchFlat(_attemptCount, _moneyResultDatabase);
-                CreateReportElement(parent, $"Attempt Count: {_attemptCount}", $" -{penalty}$", Color.red);
+                int penalty = BoatMoneyCalculator.MissmatchFlat(anomalyDatas.TryAmount, _moneyResultDatabase);
+                CreateReportElement(parent, $"Attempt Count: {anomalyDatas.TryAmount}", $" -{penalty}$", Color.red);
                 total -= penalty;
             }
 

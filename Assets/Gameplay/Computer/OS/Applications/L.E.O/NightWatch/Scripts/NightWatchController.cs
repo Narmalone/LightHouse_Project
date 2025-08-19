@@ -67,10 +67,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         public override void Open()
         {
             base.Open();
-            if (_manager.State == E_ComputerAppState.Opened && _manager.OS.PlayerOnComputer)
-            {
-                _sonarUIController.StartRadar();
-            }
+            _sonarUIController.StartRadar();
         }
 
         public override void Close()

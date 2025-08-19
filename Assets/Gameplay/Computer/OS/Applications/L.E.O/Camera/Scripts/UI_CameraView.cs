@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.Camera
+namespace LightHouse.Game.Computer.LEO.CameraSystem
 {
     /// <summary>
     /// UI logic for interacting with the camera system: zoom, fullscreen, render.
