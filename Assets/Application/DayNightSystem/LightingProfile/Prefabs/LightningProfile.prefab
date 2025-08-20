@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 527226274518182437}
   - component: {fileID: 5308856138974102242}
   m_Layer: 0
-  m_Name: DayNightVolume
+  m_Name: GlobalVolume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -96,13 +96,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ed637ca9d7988d43851f378e636393b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sunLight: {fileID: 5349152579774314446}
-  moonLight: {fileID: 7676850547779284496}
-  globalVolume: {fileID: 5308856138974102242}
-  nightProfile: {fileID: 11400000, guid: 17e370971a9ba654494b6b3c7aeb567e, type: 2}
-  morningProfile: {fileID: 11400000, guid: 7a326ab33fdd64e4a813f06e19f0ca80, type: 2}
-  dayProfile: {fileID: 11400000, guid: d45bd407ddb53f54c9b2da739e463962, type: 2}
-  eveningProfile: {fileID: 11400000, guid: 912d93a208a1b274699707262eeefa39, type: 2}
+  _sunController: {fileID: 6301997829669502092}
+  _moonController: {fileID: 1975194891817360409}
+  _globalVolume: {fileID: 5308856138974102242}
+  _nightProfile: {fileID: 11400000, guid: cbf2d72d27213ec4c99694ab45d6089c, type: 2}
+  _morningProfile: {fileID: 11400000, guid: 57e547b64bef7114ca73b35dee7feb1c, type: 2}
+  _dayProfile: {fileID: 11400000, guid: a35eae51baf05594aa98ae42de94601a, type: 2}
+  _eveningProfile: {fileID: 11400000, guid: 16522c6de23b902469249e3b7a059f8f, type: 2}
+  _sunFadeStart: 17.5
+  _sunFadeEnd: 19
+  _sunFadeColor: {r: 0, g: 0, b: 0, a: 1}
+  _sunFadeIntensityTarget: 0
 --- !u!1001 &1717171330904113388
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -111,6 +115,31 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7802425434332776158}
     m_Modifications:
+    - target: {fileID: 918122378082835701, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: _fadeInEndHour
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516717717489602219, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: flareTint.g
+      value: 0.9144672
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516717717489602219, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: flareTint.r
+      value: 0.7028302
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516717717489602219, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: sunIntensity
+      value: 50000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1516717717489602219, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: celestialBodyShadingSource
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4429136606755636326, guid: 250f251a50005164ebc11aef8be00e84,
         type: 3}
       propertyPath: m_Name
@@ -171,12 +200,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 250f251a50005164ebc11aef8be00e84, type: 3}
---- !u!108 &7676850547779284496 stripped
-Light:
-  m_CorrespondingSourceObject: {fileID: 9033438947184996092, guid: 250f251a50005164ebc11aef8be00e84,
+--- !u!114 &1975194891817360409 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 918122378082835701, guid: 250f251a50005164ebc11aef8be00e84,
     type: 3}
   m_PrefabInstance: {fileID: 1717171330904113388}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89c652c53125e854592234bcfd5bc5cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8298691234951074755 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7277326132644303663, guid: 250f251a50005164ebc11aef8be00e84,
@@ -191,6 +226,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7802425434332776158}
     m_Modifications:
+    - target: {fileID: 3266990325021817911, guid: 6056fec803173ad4da29e9b8cd978722,
+        type: 3}
+      propertyPath: _lightData
+      value: 
+      objectReference: {fileID: 8317875304291084043}
     - target: {fileID: 4014995050377825093, guid: 6056fec803173ad4da29e9b8cd978722,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -251,15 +291,33 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6056fec803173ad4da29e9b8cd978722, type: 3}
---- !u!108 &5349152579774314446 stripped
-Light:
-  m_CorrespondingSourceObject: {fileID: 3467664136859842421, guid: 6056fec803173ad4da29e9b8cd978722,
-    type: 3}
-  m_PrefabInstance: {fileID: 8801053773107265723}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5592273914686557182 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4014995050377825093, guid: 6056fec803173ad4da29e9b8cd978722,
     type: 3}
   m_PrefabInstance: {fileID: 8801053773107265723}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6301997829669502092 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3266990325021817911, guid: 6056fec803173ad4da29e9b8cd978722,
+    type: 3}
+  m_PrefabInstance: {fileID: 8801053773107265723}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2536e881550af194f828b6d5ed6312a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8317875304291084043 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 670077854836860848, guid: 6056fec803173ad4da29e9b8cd978722,
+    type: 3}
+  m_PrefabInstance: {fileID: 8801053773107265723}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1,112 +1,132 @@
-﻿using System.Reflection;
-using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
+﻿using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
 namespace LightHouse.Game.DayNightSystem
 {
-    public class MoonController : MonoBehaviour
+    public class MoonController : MonoBehaviour, ITimeCycleObserver
     {
-        public Light moonLight;
-        public Vector3 orbitBaseDirection = new Vector3(-30f, 0f, 0f);
-        public float orbitCycleDays = 29.5f;
+        #region References
 
-        private TimeManager timeManager;
+        [Header("References")]
+        [SerializeField] private Light _moonLight;
+        [SerializeField] private HDAdditionalLightData _lightData;
 
-        public float maxEarthShineIntensity = 500.0f;
+        #endregion
 
-        private HDAdditionalLightData lightData;
+        #region Orbital Settings
+
+        [Header("Orbital Parameters")]
+        [SerializeField] private Vector3 _orbitDirectionEachDay = new Vector3(-30f, 0f, 0f);
+        [SerializeField] private float _orbitCycleDays = 29.5f;
+
+        #endregion
+
+        #region Lighting Parameters
+
+        [Header("Light Settings")]
+        [SerializeField] private float _moonMaxIntensity = 41000f;
+        [SerializeField] private float _maxEarthShineIntensity = 500f;
+        [SerializeField] private float _moonFlareSize = 14f;
+        [SerializeField] private float _moonFlareFallOff = 6f;
+        [SerializeField] private float _moonMaxFlareMultiplier = 0.3f;
+
+        #endregion
+
+        #region Fade Timings
+
+        [Header("Fade Timings (hours)")]
+        [SerializeField] private float _fadeInStartHour = 18f;
+        [SerializeField] private float _fadeInEndHour = 20f;
+        [SerializeField] private float _fadeOutStartHour = 4f;
+        [SerializeField] private float _fadeOutEndHour = 5.9f;
+
+        #endregion
+
+        #region Internal State
+
+        #endregion
+
+        #region Properties
+
+        public Light MoonLight => _moonLight;
+
+        #endregion
+
+        #region Unity Lifecycle
 
         private void Start()
         {
-            lightData = moonLight.GetComponent<HDAdditionalLightData>(); // CelestialBody est un MonoBehaviour non exposé
-            timeManager = FindFirstObjectByType<TimeManager>();
-            if (timeManager != null)
-            {
-                TimeManager.OnTimeSegmentChanged += HandleSegmentChanged;
-                UpdateMoonRotation(); // force la première rotation
-            }
+            UpdateMoonRotation(); //Force first rotation
         }
 
-        private void HandleSegmentChanged(TimeOfDaySegment segment)
+        #endregion
+
+        #region Time Cycle
+
+        public void OnTimeChanged(float timeOfDay)
         {
-            moonLight.enabled = timeManager.currentTime >= 18f || timeManager.currentTime <= 6f;
-            if (segment == TimeOfDaySegment.Midday)
-            {
-                UpdateMoonRotation();
-            }
-        }
-
-        private void UpdateMoonRotation()
-        {
-            if (timeManager == null) return;
-
-            // Ratio du cycle lunaire (0 → 1)
-            float dayRatio = (timeManager.currentDay % orbitCycleDays) / orbitCycleDays;
-
-            // Angle d'orbite lunaire autour de Y (360° sur 29.5 jours)
-            float orbitalAngle = dayRatio * 360f;
-
-            // Direction opposée au soleil = on inverse le vecteur
-            Vector3 orbitalDirection = Quaternion.Euler(orbitBaseDirection.x, orbitalAngle, 0f) * Vector3.forward;
-
-            // Appliquer direction au light
-            moonLight.transform.rotation = Quaternion.LookRotation(-orbitalDirection, Vector3.up);
-        }
-
-        public float moonMaxIntensity = 0.3f;
-        public float moonFlareSize = 14.0f;
-        public float moonFlareFallOff = 6.0f;
-        public float moonMaxFlareMultiplier = 0.3f;
-        public float earthShine = 300f;
-        public float fadeInStart = 18f;
-        public float fadeInEnd = 20f;
-        public float fadeOutStart = 4f;
-        public float fadeOutEnd = 5.9f;
-
-        private void Update()
-        {
-            if (timeManager == null || moonLight == null)
+            if (_moonLight == null || _lightData == null)
                 return;
+            ApplyFadeAndLighting(timeOfDay);
+        }
 
+        private void ApplyFadeAndLighting(float time)
+        {
             float t = 0f;
 
-            if (timeManager.currentTime >= fadeInStart && timeManager.currentTime <= fadeInEnd)
+            if (time >= _fadeInStartHour && time <= _fadeInEndHour)
             {
-                t = Mathf.InverseLerp(fadeInStart, fadeInEnd, timeManager.currentTime);
+                // Fade in ex: 18-20h
+                t = Mathf.InverseLerp(_fadeInStartHour, _fadeInEndHour, time);
             }
-            else if ((timeManager.currentTime > fadeInEnd && timeManager.currentTime <= 24f) ||
-                     (timeManager.currentTime >= 0f && timeManager.currentTime < fadeOutStart))
+            else if ((time > _fadeInEndHour && time <= 24f) || (time >= 0f && time < _fadeOutStartHour))
             {
+                // Full intensity ex: 20h - 4h
                 t = 1f;
             }
-            else if (timeManager.currentTime >= fadeOutStart && timeManager.currentTime <= fadeOutEnd)
+            else if (time >= _fadeOutStartHour && time <= _fadeOutEndHour)
             {
-                t = 1f - Mathf.InverseLerp(fadeOutStart, fadeOutEnd, timeManager.currentTime); // ✅ Inversion
+                // Fade out ex: 4h-6h
+                t = 1f - Mathf.InverseLerp(_fadeOutStartHour, _fadeOutEndHour, time);
             }
             else
             {
+                //No moon during day but overlaping is possible
                 t = 0f;
             }
 
-            moonLight.intensity = t * moonMaxIntensity;
-            lightData.earthshine = t * maxEarthShineIntensity;
-            lightData.flareFalloff = t * moonFlareFallOff;
-            lightData.flareSize = t * moonFlareSize;
-            lightData.flareMultiplier = t * moonMaxFlareMultiplier;
-            moonLight.enabled = moonLight.intensity > 0.01f;
+            _moonLight.intensity = t * _moonMaxIntensity;
+            _moonLight.enabled = _moonLight.intensity > 0.01f;
+
+            _lightData.earthshine = t * _maxEarthShineIntensity;
+            _lightData.flareFalloff = t * _moonFlareFallOff;
+            _lightData.flareSize = t * _moonFlareSize;
+            _lightData.flareMultiplier = t * _moonMaxFlareMultiplier;
         }
 
+
+        #endregion
+
+        #region Orbital Logic
+
+        private void UpdateMoonRotation()
+        {
+            float dayRatio = (TimeHandlerData.CurrentDay % _orbitCycleDays) / _orbitCycleDays;
+            float orbitalAngle = dayRatio * 360f;
+
+            Vector3 orbitalDirection = Quaternion.Euler(_orbitDirectionEachDay.x, orbitalAngle, 0f) * Vector3.forward;
+            _moonLight.transform.rotation = Quaternion.LookRotation(-orbitalDirection, Vector3.up);
+        }
+
+        #endregion
+
+        #region Public API
 
         public float GetLunarPhase()
         {
-            return ((float)timeManager.currentDay % orbitCycleDays) / orbitCycleDays;
+            return (TimeHandlerData.CurrentDay % _orbitCycleDays) / _orbitCycleDays;
         }
 
-        private void OnDestroy()
-        {
-            if (timeManager != null)
-                TimeManager.OnTimeSegmentChanged -= HandleSegmentChanged;
-        }
+        #endregion
     }
 }

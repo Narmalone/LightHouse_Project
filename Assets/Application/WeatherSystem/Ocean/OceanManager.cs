@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using LightHouse.Game.DayNightSystem;
+using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
 namespace LightHouse.Weather.Ocean
@@ -24,7 +25,7 @@ namespace LightHouse.Weather.Ocean
 
         private void Update()
         {
-            if (WeatherManager.CurrentWeather == null || SunLight == null) return;
+            if (WeatherManager == null || WeatherManager.CurrentWeather == null || SunLight == null) return;
 
             var weather = WeatherManager.CurrentWeather;
 

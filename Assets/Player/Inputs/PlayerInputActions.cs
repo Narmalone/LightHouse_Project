@@ -207,15 +207,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""CameraZoom"",
-                    ""type"": ""Button"",
-                    ""id"": ""6c0121f5-4b02-42f2-a70f-2ddbe41e18f9"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -625,15 +616,173 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""PauseMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Computer"",
+            ""id"": ""4c25a619-fac4-4bdf-a841-08590d661074"",
+            ""actions"": [
+                {
+                    ""name"": ""CameraControl_Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""ad739fe8-080d-49bc-b2aa-5bccbbf5dda3"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""CameraControl_Zoom"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""99bacaa5-ca79-426f-9774-81f0b06636a4"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
                     ""name"": """",
-                    ""id"": ""21bf7ec7-3f5d-4682-9110-f4a8eb7fefcf"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""id"": ""e488234b-a26b-4246-8134-5c4cf0ff3fa0"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""WASD"",
+                    ""id"": ""7097c5ee-5011-4620-a896-4e6fb20cc904"",
+                    ""path"": ""Dpad"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CameraZoom"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""281f5ab1-9642-404f-be79-2a0c85ea5d53"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""a1220415-8dbd-4a38-970a-0577077529bc"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""71e29567-7e6a-4b57-b80d-5bfbe4b38cf5"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""a8f08c1e-dfd4-443e-af2c-ca1a6aa5272f"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""a56e255a-610e-42d8-8512-9982c0f98131"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""d837c131-af41-4c2d-abb4-8e9f4fa86101"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""b2bc5cee-f681-4437-955f-81beed8346f6"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""97be9e17-122e-459b-b76a-a889c95c26aa"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""68792b44-7ff9-4806-9616-4d7fed8ba0da"",
+                    ""path"": ""<XRController>/{Primary2DAxis}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""613efb71-6dc6-4909-9f38-e9181bb309e1"",
+                    ""path"": ""<Joystick>/stick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Joystick"",
+                    ""action"": ""CameraControl_Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac98fafd-8b17-4211-8bb8-e721500a3194"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraControl_Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1221,7 +1370,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Select = m_Player.FindAction("Select", throwIfNotFound: true);
         m_Player_OptionsMenu = m_Player.FindAction("OptionsMenu", throwIfNotFound: true);
         m_Player_PauseMenu = m_Player.FindAction("PauseMenu", throwIfNotFound: true);
-        m_Player_CameraZoom = m_Player.FindAction("CameraZoom", throwIfNotFound: true);
+        // Computer
+        m_Computer = asset.FindActionMap("Computer", throwIfNotFound: true);
+        m_Computer_CameraControl_Move = m_Computer.FindAction("CameraControl_Move", throwIfNotFound: true);
+        m_Computer_CameraControl_Zoom = m_Computer.FindAction("CameraControl_Zoom", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1243,6 +1395,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     ~@PlayerInputActions()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInputActions.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Computer.enabled, "This will cause a leak and performance issues, PlayerInputActions.Computer.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInputActions.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Debug.enabled, "This will cause a leak and performance issues, PlayerInputActions.Debug.Disable() has not been called.");
     }
@@ -1333,7 +1486,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Select;
     private readonly InputAction m_Player_OptionsMenu;
     private readonly InputAction m_Player_PauseMenu;
-    private readonly InputAction m_Player_CameraZoom;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1397,10 +1549,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/PauseMenu".
         /// </summary>
         public InputAction @PauseMenu => m_Wrapper.m_Player_PauseMenu;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/CameraZoom".
-        /// </summary>
-        public InputAction @CameraZoom => m_Wrapper.m_Player_CameraZoom;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1466,9 +1614,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @PauseMenu.started += instance.OnPauseMenu;
             @PauseMenu.performed += instance.OnPauseMenu;
             @PauseMenu.canceled += instance.OnPauseMenu;
-            @CameraZoom.started += instance.OnCameraZoom;
-            @CameraZoom.performed += instance.OnCameraZoom;
-            @CameraZoom.canceled += instance.OnCameraZoom;
         }
 
         /// <summary>
@@ -1519,9 +1664,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @PauseMenu.started -= instance.OnPauseMenu;
             @PauseMenu.performed -= instance.OnPauseMenu;
             @PauseMenu.canceled -= instance.OnPauseMenu;
-            @CameraZoom.started -= instance.OnCameraZoom;
-            @CameraZoom.performed -= instance.OnCameraZoom;
-            @CameraZoom.canceled -= instance.OnCameraZoom;
         }
 
         /// <summary>
@@ -1555,6 +1697,113 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Computer
+    private readonly InputActionMap m_Computer;
+    private List<IComputerActions> m_ComputerActionsCallbackInterfaces = new List<IComputerActions>();
+    private readonly InputAction m_Computer_CameraControl_Move;
+    private readonly InputAction m_Computer_CameraControl_Zoom;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Computer".
+    /// </summary>
+    public struct ComputerActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ComputerActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Computer/CameraControl_Move".
+        /// </summary>
+        public InputAction @CameraControl_Move => m_Wrapper.m_Computer_CameraControl_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "Computer/CameraControl_Zoom".
+        /// </summary>
+        public InputAction @CameraControl_Zoom => m_Wrapper.m_Computer_CameraControl_Zoom;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Computer; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ComputerActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ComputerActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ComputerActions" />
+        public void AddCallbacks(IComputerActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ComputerActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ComputerActionsCallbackInterfaces.Add(instance);
+            @CameraControl_Move.started += instance.OnCameraControl_Move;
+            @CameraControl_Move.performed += instance.OnCameraControl_Move;
+            @CameraControl_Move.canceled += instance.OnCameraControl_Move;
+            @CameraControl_Zoom.started += instance.OnCameraControl_Zoom;
+            @CameraControl_Zoom.performed += instance.OnCameraControl_Zoom;
+            @CameraControl_Zoom.canceled += instance.OnCameraControl_Zoom;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ComputerActions" />
+        private void UnregisterCallbacks(IComputerActions instance)
+        {
+            @CameraControl_Move.started -= instance.OnCameraControl_Move;
+            @CameraControl_Move.performed -= instance.OnCameraControl_Move;
+            @CameraControl_Move.canceled -= instance.OnCameraControl_Move;
+            @CameraControl_Zoom.started -= instance.OnCameraControl_Zoom;
+            @CameraControl_Zoom.performed -= instance.OnCameraControl_Zoom;
+            @CameraControl_Zoom.canceled -= instance.OnCameraControl_Zoom;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ComputerActions.UnregisterCallbacks(IComputerActions)" />.
+        /// </summary>
+        /// <seealso cref="ComputerActions.UnregisterCallbacks(IComputerActions)" />
+        public void RemoveCallbacks(IComputerActions instance)
+        {
+            if (m_Wrapper.m_ComputerActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ComputerActions.AddCallbacks(IComputerActions)" />
+        /// <seealso cref="ComputerActions.RemoveCallbacks(IComputerActions)" />
+        /// <seealso cref="ComputerActions.UnregisterCallbacks(IComputerActions)" />
+        public void SetCallbacks(IComputerActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ComputerActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ComputerActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ComputerActions" /> instance referencing this action map.
+    /// </summary>
+    public ComputerActions @Computer => new ComputerActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -1955,13 +2204,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPauseMenu(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Computer" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ComputerActions.AddCallbacks(IComputerActions)" />
+    /// <seealso cref="ComputerActions.RemoveCallbacks(IComputerActions)" />
+    public interface IComputerActions
+    {
         /// <summary>
-        /// Method invoked when associated input action "CameraZoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "CameraControl_Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnCameraZoom(InputAction.CallbackContext context);
+        void OnCameraControl_Move(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CameraControl_Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCameraControl_Zoom(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

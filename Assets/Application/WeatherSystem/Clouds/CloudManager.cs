@@ -3,6 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 using System.Collections.Generic;
 using LightHouse.Utilities;
+using LightHouse.Game.DayNightSystem;
 
 namespace LightHouse.Weather.Clouds
 {

@@ -41,7 +41,8 @@ AudioSource:
   m_GameObject: {fileID: 59587073423175903}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -877702430156661237, guid: 3bebce89c8dadc849a0312cb46e1ec10, type: 2}
+  OutputAudioMixerGroup: {fileID: -877702430156661237, guid: 3bebce89c8dadc849a0312cb46e1ec10,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: f64e5e83f96785e4f815b907649c2077, type: 3}
   m_Resource: {fileID: 8300000, guid: f64e5e83f96785e4f815b907649c2077, type: 3}
   m_PlayOnAwake: 1
@@ -160,6 +161,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7561910852966727341}
+  - {fileID: 8106977101592754965}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7799946464831760991
@@ -176,7 +178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WaterMaterial: {fileID: 2100000, guid: add1552d5be1f404fb71e5f0bf2d4cf1, type: 2}
   WaterLensMaterial: {fileID: 2100000, guid: 77ae82d967345ca4eb5d9f59f81d2ffc, type: 2}
-  RainVFX: {fileID: 0}
+  RainVFX: {fileID: 4400682788051539780}
   RippleStrength: 0
   WaterMask: 1
   Smoothness: 0
@@ -185,3 +187,83 @@ MonoBehaviour:
   RainMinVelocity: {x: 0, y: -24, z: 0}
   RainMaxVelocity: {x: 0, y: -30, z: 0}
   mixer: {fileID: 24100000, guid: 3bebce89c8dadc849a0312cb46e1ec10, type: 2}
+--- !u!1001 &8040595201820708241
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 829991908606585678}
+    m_Modifications:
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -146.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.51
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -88.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3007786492766409755, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_Name
+      value: RainVFX
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e9ecc18b5507d7640a68e443672cd63d, type: 3}
+--- !u!2083052967 &4400682788051539780 stripped
+VisualEffect:
+  m_CorrespondingSourceObject: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
+    type: 3}
+  m_PrefabInstance: {fileID: 8040595201820708241}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8106977101592754965 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
+    type: 3}
+  m_PrefabInstance: {fileID: 8040595201820708241}
+  m_PrefabAsset: {fileID: 0}
