@@ -162,6 +162,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rb: {fileID: 8996113524597791322}
   _boatsManager: {fileID: 11400000, guid: 58a894bbfbbedb3469b8980a53871cf7, type: 2}
+  _frequencyAllocator: {fileID: 11400000, guid: 1168e7205d74d6844b50a03169371df6,
+    type: 2}
   _randomPointController: {fileID: 11400000, guid: 839a28127a1206e44b247a971794f7c2,
     type: 2}
   _controller: {fileID: 1195200945405775138}
@@ -177,8 +179,6 @@ MonoBehaviour:
     type: 3}
   <SonarInfo>k__BackingField: 
   _radioFrequencyMHz: 0
-  _frequencyAllocator: {fileID: 11400000, guid: 1168e7205d74d6844b50a03169371df6,
-    type: 2}
 --- !u!114 &8143109087810621634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,8 +250,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2950b7d054e9934ba44c665b203acdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minAnomalyProgress: 0
-  _maxAnomalyProgress: 0.01
+  _minAnomalyProgress: 0.1
+  _maxAnomalyProgress: 0.5
 --- !u!1 &3651872384639202431
 GameObject:
   m_ObjectHideFlags: 0

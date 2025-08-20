@@ -8,7 +8,7 @@ namespace LightHouse.Game.Sonar.Core
         [SerializeField] private string _name;
 
 #pragma warning disable
-        public event Action ForceDotUpdate;
+        public Action ForceDotUpdate { get; set; }
 
         public string Name => _name;
 

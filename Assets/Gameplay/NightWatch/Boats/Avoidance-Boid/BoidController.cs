@@ -89,6 +89,7 @@ public class BoidController : MonoBehaviour
         _rb.rotation = Quaternion.LookRotation(initialForward, Vector3.up);
 
         StartCoroutine(EnablePhysics());
+        _progress = 0.0f;
     }
 
     private IEnumerator EnablePhysics()

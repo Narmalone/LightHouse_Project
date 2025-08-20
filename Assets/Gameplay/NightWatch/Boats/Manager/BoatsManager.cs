@@ -52,6 +52,7 @@ namespace LightHouse.Game.Boats
         private bool _hasScheduledToday = false;
 
         // Délégués stockés pour désabonnements propres
+        private readonly Dictionary<Boat, Action> _onAnomalyPointHandlers = new();
         private readonly Dictionary<Boat, Action> _onAnomalyResolvedHandlers = new();
         private readonly Dictionary<Boat, Action> _onProgressEndedHandlers = new();
 
@@ -145,23 +146,27 @@ namespace LightHouse.Game.Boats
         private void SpawnBoat()
         {
             var boat = Instantiate(_boatPrefab);
-
             boat.Initialize();
-            Debug.Log("initialize completed");
-            Debug.Log(boat.RadioFrequency);
-            // Essai d'ajout d'anomalie selon météo/paramètres
-            TryAttachRandomAnomaly(boat);
 
             // Référencement
             _spawnedBoats.Add(boat);
             BoatsHandlerData.Boats.Add(boat);
 
-            // Abonnements (on stocke les délégués pour bien se désabonner plus tard)
-            Action resolvedHandler = () => OnBoatAnomalyResolved(boat);
-            Action progressEndedHandler = () => OnBoatProgressEnded(boat);
+            // --- Abonnements ---
+            // OnAnomalyPointReached
+            Action anomalyPointHandler = () => OnBoatAnomalyPointReached(boat);
+            boat.OnAnomalyPointReached += anomalyPointHandler;
+            _onAnomalyPointHandlers[boat] = anomalyPointHandler;
 
+            // OnAnomalyResolved
+            Action resolvedHandler = () => OnBoatAnomalyResolved(boat);
             boat.AnomalyController.OnAnomalyResolved += resolvedHandler;
+            _onAnomalyResolvedHandlers[boat] = resolvedHandler;
+
+            // OnBoatProgressEnded
+            Action progressEndedHandler = () => OnBoatProgressEnded(boat);
             boat.OnBoatProgressEnded += progressEndedHandler;
+            _onProgressEndedHandlers[boat] = progressEndedHandler;
 
             _onAnomalyResolvedHandlers[boat] = resolvedHandler;
             _onProgressEndedHandlers[boat] = progressEndedHandler;
@@ -195,6 +200,7 @@ namespace LightHouse.Game.Boats
             }
 
             _spawnedBoats.Clear();
+            _onAnomalyPointHandlers.Clear();
             _onAnomalyResolvedHandlers.Clear();
             _onProgressEndedHandlers.Clear();
         }
@@ -205,6 +211,12 @@ namespace LightHouse.Game.Boats
         private void UnsubscribeBoat(Boat boat)
         {
             if (boat == null) return;
+
+            if (_onAnomalyPointHandlers.TryGetValue(boat, out var pointHandler))
+            {
+                boat.OnAnomalyPointReached -= pointHandler;
+                _onAnomalyPointHandlers.Remove(boat);
+            }
 
             if (_onAnomalyResolvedHandlers.TryGetValue(boat, out var resolvedHandler))
             {
@@ -295,6 +307,19 @@ namespace LightHouse.Game.Boats
         #endregion
 
         #region Anomaly Management
+
+        // Appelé quand le bateau atteint le "point anomalie"
+        private void OnBoatAnomalyPointReached(Boat boat)
+        {
+            TryAttachRandomAnomaly(boat);
+
+            //Unsubscrible automatically because we only want to call it once per boat
+            if (_onAnomalyPointHandlers.TryGetValue(boat, out var h))
+            {
+                boat.OnAnomalyPointReached -= h;
+                _onAnomalyPointHandlers.Remove(boat);
+            }
+        }
 
         /// <summary>
         /// Attache éventuellement une anomalie aléatoire au bateau selon la météo et la probabilité configurée.

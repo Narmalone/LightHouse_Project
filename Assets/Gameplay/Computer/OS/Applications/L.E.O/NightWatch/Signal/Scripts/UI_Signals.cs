@@ -207,14 +207,23 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
             var icon = GetSignalIcon(model);
             var historyElement = Instantiate(_historySignalPrefab, _historyParent);
 
+            string reasonTxt = "";
+
+            if (model is BoatAnomalyDatas boatdatas)
+            {
+                historyElement.Icon.rectTransform.eulerAngles = new Vector3(0, 0, -90f);
+                reasonTxt = boatdatas.BoatName + " : " + boatdatas.AnomalyType.ToString();
+            }
+            else if(model is BuyoncyAnomalyDatas buyoncydatas)
+            {
+                reasonTxt = "Defective Buoy: " + buyoncydatas.ID.ToString("00");
+            }
+
             historyElement.SetInfos(
                 icon: icon,
-                reason: type.ToString(),
+                reason: reasonTxt,
                 completionValidation: validationIcon
             );
-
-            if (model is BoatAnomalyDatas)
-                historyElement.Icon.rectTransform.eulerAngles = new Vector3(0, 0, -90f);
         }
 
         /// <summary>

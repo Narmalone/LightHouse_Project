@@ -22,7 +22,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         // ⚠️ Dans la scène : Pivot (RectTransform) avec une Image en enfant.
         [Header("Selected Link (Pivot -> Image)")]
-        [SerializeField] private Color _selectedDorColor = Color.yellow; 
         [SerializeField] private RectTransform _selectedDotLinkPivot;  // l’objet "Pivot" (parent)
         [SerializeField] private RectTransform _selectedDotLinkImage;  // l’Image enfant (pivot = (0,0.5) recommandé)
 
@@ -62,13 +61,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private readonly Dictionary<int, SonarDotController> _activeDots = new();
         private float _currentSweepAngle;
-        private Canvas _canvas;
-        private Camera _uiCamera;
 
-        // Lien actif
-        private RectTransform _linkFrom;   // dot sélectionné (RectTransform du dot)
-        private RectTransform _linkTo;     // label du bas (rectTransform)
-        private bool _linkActive;
+        private Image _selectedDot = null;
 
         #endregion
 
@@ -86,9 +80,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private void Awake()
         {
-            _canvas = GetComponentInParent<Canvas>();
-            _uiCamera = (_canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay)
-                ? _canvas.worldCamera : null;
 
             if (_sonarPingClip != null && _sonarPingClip.clips != null && _sonarPingClip.clips.Length > 0)
             {
@@ -96,6 +87,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
                 _sonarPingAudioSource.spatialBlend = _sonarPingClip._spatialBlend;
                 _sonarPingAudioSource.volume = _sonarPingClip.volume;
             }
+            _selectedDotLinkImage.gameObject.SetActive(false);
         }
 
         private void Update()
@@ -153,6 +145,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
                     dot.SetDotSprite(item.DotSprite);
                     dot.SetSonarElement(item);
                     dot.SonarDotClicked += OnDotClicked;
+                    dot.SonarDotForcedUpdated += OnDotForceUpdated;
                     _activeDots[item.UniqueID] = dot;
                 }
 
@@ -166,6 +159,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
                 if (!detectedThisFrame.Contains(kv.Key))
                 {
                     kv.Value.SonarDotClicked -= OnDotClicked;
+                    kv.Value.SonarDotForcedUpdated -= OnDotForceUpdated;
                     Destroy(kv.Value.gameObject);
                     toRemove.Add(kv.Key);
                 }
@@ -173,21 +167,44 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
             foreach (var id in toRemove) _activeDots.Remove(id);
 
             StartCoroutine(AnimatePingRoutine());
+
+            if(_selectedDot != null)
+            {
+                _selectedDotLinkPivot.anchoredPosition = _selectedDot.rectTransform.anchoredPosition + Vector2.down * 20f;
+                CalculateRotation();
+            }
+           
         }
 
         #endregion
 
-        #region Selection link (dot -> bottom text)
+        #region DOT Callbacks
 
-        private void OnDotClicked(string display, Image dotRect)
+        private void OnDotForceUpdated(Image dotUpdated)
         {
+            _selectedDotLinkPivot.anchoredPosition = dotUpdated.rectTransform.anchoredPosition + Vector2.down * 20f;
+            CalculateRotation();
+        }
+
+        private void OnDotClicked(string display, Image dotImg)
+        {
+            if(dotImg == _selectedDot)
+            {
+                if (_selectedDotLinkImage.gameObject.activeInHierarchy)
+                    _selectedDotLinkImage.gameObject.SetActive(false);
+                _selectedDot = null;
+                return;
+            }
             _bottomInfoText.text = display;
 
             // place the pivot just under the clicked dot (same parent as the dots)
-            _selectedDotLinkPivot.gameObject.SetActive(true);
-            _selectedDotLinkPivot.anchoredPosition = dotRect.rectTransform.anchoredPosition + Vector2.down * 20f;
+            if(!_selectedDotLinkImage.gameObject.activeInHierarchy)
+                _selectedDotLinkImage.gameObject.SetActive(true);
+
+            _selectedDotLinkPivot.anchoredPosition = dotImg.rectTransform.anchoredPosition + Vector2.down * 20f;
 
             CalculateRotation();
+            _selectedDot = dotImg;
         }
 
         private void CalculateRotation()
@@ -218,12 +235,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
             _selectedDotLinkImage.sizeDelta = new Vector2(_selectedDotLinkImage.rect.width, dir.magnitude);
         }
 
-
-
         public void ClearSelectionLink()
         {
-            _linkActive = false;
-            _linkFrom = _linkTo = null;
             if (_selectedDotLinkPivot != null)
                 _selectedDotLinkPivot.gameObject.SetActive(false);
         }

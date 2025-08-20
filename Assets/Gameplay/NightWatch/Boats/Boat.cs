@@ -51,8 +51,9 @@ namespace LightHouse.Game.Boats
 
         #region Events
 
+        public event Action OnAnomalyPointReached;
         public event Action OnBoatProgressEnded;
-        public event Action ForceDotUpdate;
+        public Action ForceDotUpdate { get; set; }
 
         #endregion
 
@@ -122,7 +123,6 @@ namespace LightHouse.Game.Boats
                 _radioFrequencyMHz = _frequencyAllocator.AllocateUniqueFrequencyMHz();
             }
             SonarInfo = BoatFrequencyAllocator.FormatFrequencyForDisplay(_radioFrequencyMHz);
-            Debug.Log("allocated frequency");
         }
 
         #endregion
@@ -154,6 +154,7 @@ namespace LightHouse.Game.Boats
             else if (!_anomalyController.HasBeenTriggered &&
                      _controller.Progress >= _anomalyController.AnomalyTriggerProgress)
             {
+                OnAnomalyPointReached?.Invoke();
                 _anomalyController.TriggerAnomaly(this);
             }
         }

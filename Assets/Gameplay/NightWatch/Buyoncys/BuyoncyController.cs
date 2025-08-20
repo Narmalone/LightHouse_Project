@@ -60,7 +60,7 @@ namespace LightHouse.Game.Buyoncies
         public event Action OnRepaired;
 
 #pragma warning disable
-        public event Action ForceDotUpdate;
+        public Action ForceDotUpdate { get; set; }
 
         #endregion
 

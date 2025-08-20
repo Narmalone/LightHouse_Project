@@ -43,6 +43,12 @@ namespace LightHouse.Game.Boats
 
         #endregion
 
+        private void Awake()
+        {
+            AnomalyTriggerProgress = UnityEngine.Random.Range(_minAnomalyProgress, _maxAnomalyProgress);
+            HasBeenTriggered = false;
+        }
+
         #region Public API
 
         /// <summary>
@@ -51,9 +57,6 @@ namespace LightHouse.Game.Boats
         public void AddAnomaly(BoatAnomalyDefinition definition)
         {
             _currentAnomalyDefinition = definition;
-            AnomalyTriggerProgress = UnityEngine.Random.Range(_minAnomalyProgress, _maxAnomalyProgress);
-            HasBeenTriggered = false;
-
             OnAnomalyAdded?.Invoke();
         }
 

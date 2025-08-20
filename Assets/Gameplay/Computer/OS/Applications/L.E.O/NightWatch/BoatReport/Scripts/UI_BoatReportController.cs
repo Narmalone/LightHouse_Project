@@ -74,6 +74,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             RegisterUIEvents();
             InitializeDropdownOptions();
             InitializeAnomalyButtons();
+            _sendReportButton.interactable = false;
         }
 
         private void OnDestroy()
@@ -163,14 +164,12 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         private void OnBoatsUIEventsChanged()
         {
-            if (_boatNameInput == string.Empty && _selectedFlag == null && _selectedAnomalyText == string.Empty)
-            {
+            if (_boatNameInputField.text.Length <= 0 || _boatFrequencyInputField.text.Length <= 0 ||
+                 _nationalitiesDropdown.value < 0 || _selectedAnomalyText == string.Empty)
                 _sendReportButton.interactable = false;
-            }
-            else
-            {
+            else if (_boatNameInputField.text.Length > 0 && _boatFrequencyInputField.text.Length > 0 &&
+                 _nationalitiesDropdown.value > 0 && _selectedAnomalyText != string.Empty)
                 _sendReportButton.interactable = true;
-            }
         }
 
         private void OnBoatNameChanged(string name)
@@ -195,6 +194,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             {
                 _selectedBoatFrequency = 0.0f;
             }
+            OnBoatsUIEventsChanged();
         }
 
         private void OnFlagDropdownChanged(int index)
@@ -222,6 +222,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         {
             _nationalitiesDropdown.value = 0;
             _boatNameInputField.text = string.Empty;
+            _boatFrequencyInputField.text = string.Empty;
+            
             _selectedFlag = null;
             _selectedAnomalyText = string.Empty;
 
@@ -307,6 +309,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             matched = null;
             nameOK = _anomalyDatabase.TryGetAnomaly(_boatNameInput, out var byName);
             freqOK = _anomalyDatabase.TryGetAnomaly(_selectedBoatFrequency, out var byFreq);
+
+            Debug.Log(nameOK);
+            Debug.Log(freqOK);
 
             // Déterminer le "candidat" final
             if (nameOK && freqOK)

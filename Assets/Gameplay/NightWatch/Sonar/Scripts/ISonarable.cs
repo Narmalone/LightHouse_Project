@@ -14,8 +14,7 @@ namespace LightHouse.Game.Sonar.Core
         public Color DotColor { get; set; }
         public Vector2 DotSize { get; set; }
         public string SonarInfo { get; set; }
-
-        public event Action ForceDotUpdate;
+        public Action ForceDotUpdate{ get; set; }
     }
 
 }

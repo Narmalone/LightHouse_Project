@@ -31,6 +31,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
         /// Sonar infos, dot image
         /// </summary>
         public event Action<string, Image> SonarDotClicked;
+        public event Action<Image> SonarDotForcedUpdated;
 
         void Awake()
         {
@@ -71,6 +72,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private void SonarElement_ForceDotUpdate()
         {
+            SonarDotForcedUpdated?.Invoke(DotImage);
             SetDotColor(SonarElement.DotColor);
             SetDotSprite(SonarElement.DotSprite);
             SetDotSize(SonarElement.DotSize);
