@@ -150,6 +150,13 @@ namespace LightHouse.KinematicCharacterController
             _uncrouchOverlapResults = new Collider[8];
         }
 
+        public void ForceCutVelocity()
+        {
+            _state.Velocity = Vector3.zero; 
+            _state.AccelerationVelocity = Vector3.zero;
+            _moveInputVector = Vector3.zero;
+        }
+
         /// <summary>
         /// Put in a list to ignore the collision with a specific object
         /// </summary>

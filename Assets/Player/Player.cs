@@ -201,6 +201,7 @@ namespace LightHouse.KinematicCharacterController
                     break;
                 case PlayerState.CameraMode:
                     _enableAllCharacterInputs = false;
+                    _playerCharacter.ForceCutVelocity();
                     _inventoryController.Disable();
                     _interactions.Disable();
                     break;

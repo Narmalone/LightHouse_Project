@@ -12,6 +12,7 @@ namespace LightHouse.Game.Computer.LEO
         CameraView,
         Meteo,
         Mails,
+        Supplies,
         Maintenance
     }
 

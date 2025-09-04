@@ -43,7 +43,7 @@ namespace LightHouse.Game.Boats
         private readonly List<Boat> _spawnedBoats = new();
 
         // Planning des heures de spawn (heures "game time")
-        private readonly List<float> _scheduledSpawnTimes = new();
+        public List<float> _scheduledSpawnTimes = new();
 
         // Index du prochain spawn prévu
         private int _nextSpawnIndex = 0;
