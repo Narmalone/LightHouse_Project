@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using LightHouse.Game.Computer.LEO.Supplies;
+using TMPro;
 
 public class OrderController : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI _totalOrderText;
     [SerializeField] private RectTransform _orderParent;
     [SerializeField] private SupplyItem _supplyItemPrefab;
 
     // id -> item instancié côté order
     private readonly Dictionary<int, SupplyItem> _orderItems = new();
+    public int NumberOfItemsInOrder => _orderItems.Keys.Count;
 
     // Events émis vers le manager (quand on clique sur + / - de la liste de commande)
     public event Action<SupplyItemDatas> OnOrderPlus;
@@ -51,6 +54,7 @@ public class OrderController : MonoBehaviour
         {
             var item = kvp.Value;
             if (item == null) continue;
+            item.Mydatas.SelectedAmountToBuy = 0;
             item.PlusCliqued -= HandlePlus;
             item.MinusCliqued -= HandleMinus;
             Destroy(item.gameObject);
@@ -60,4 +64,9 @@ public class OrderController : MonoBehaviour
 
     private void HandlePlus(SupplyItemDatas d) => OnOrderPlus?.Invoke(d);
     private void HandleMinus(SupplyItemDatas d) => OnOrderMinus?.Invoke(d);
+
+    public void UpdateTotalOrderValue(float order)
+    {
+        _totalOrderText.text = order.ToString() + "$";
+    }
 }

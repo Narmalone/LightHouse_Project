@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public enum E_SupplyCategory
 {
     Edibles,

@@ -22,6 +22,8 @@ public class SupplyItem : MonoBehaviour
     {
         _minusButton.onClick.AddListener(OnMinusCliqued);
         _plusButton.onClick.AddListener(OnPlusCliqued);
+
+        _minusButton.interactable = false;
     }
 
     private void OnDestroy()
@@ -34,9 +36,6 @@ public class SupplyItem : MonoBehaviour
     {
         if (Mydatas == null)
             return;
-
-        Mydatas.SelectedAmountToBuy++;
-        UpdateSelectedCountText();
         PlusCliqued?.Invoke(Mydatas);
     }
 
@@ -44,9 +43,6 @@ public class SupplyItem : MonoBehaviour
     {
         if (Mydatas == null)
             return;
-
-        Mydatas.SelectedAmountToBuy--;
-        UpdateSelectedCountText();
         MinusCliqued?.Invoke(Mydatas);
     }
 
@@ -61,6 +57,8 @@ public class SupplyItem : MonoBehaviour
 
     public void UpdateSelectedCountText()
     {
-        _itemAmountText.text = Mydatas.SelectedAmountToBuy.ToString();
+        if (Mydatas.SelectedAmountToBuy <= 0 && _minusButton.interactable) _minusButton.interactable = false;
+        else if (Mydatas.SelectedAmountToBuy > 0 && !_minusButton.interactable) _minusButton.interactable = true;
+            _itemAmountText.text = Mydatas.SelectedAmountToBuy.ToString();
     }
 }

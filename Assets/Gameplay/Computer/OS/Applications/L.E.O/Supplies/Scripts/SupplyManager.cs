@@ -1,135 +1,157 @@
-﻿using AYellowpaper.SerializedCollections;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using LightHouse.Game.Computer.LEO;
 using LightHouse.Game.Computer.LEO.Supplies;
+using LightHouse.Money;
+using UnityEngine.UI;
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class SupplyManager : LEOWindow
 {
+    [Header("Config")]
     [SerializeField] private SupplyConfigurator _configurator;
-    [SerializeField] private RectTransform _orderParent;
-    [SerializeField] private SupplyItem _supplyItemPrefab;
-    [SerializeField] private SerializedDictionary<E_SupplyCategory, RectTransform> _supplyTransforms;
 
-    private SerializedDictionary<int, SupplyItem> _spawnedShopItems = new(); //int == Unique Id, supply item stores the ref of the datas
-    private SerializedDictionary<int, SupplyItem> _spawnedOrderItems = new(); //int == Unique Id, supply item stores the ref of the datas
+    [Header("Controllers")]
+    [SerializeField] private ShopController _shopController;
+    [SerializeField] private OrderController _orderController;
 
+    [SerializeField] private Button _confirmOrderButton;
+    [SerializeField] private Button _resetOrderButton;
 
-    private void Start()
+    private float _totalOrderValue;
+
+    // Copie runtime des datas (recommandé)
+    private Dictionary<E_SupplyCategory, SupplyItemDatas[]> _runtimeConfig;
+
+    public ShopController ShopController => _shopController;
+    public OrderController OrderController => _orderController;
+
+    private void Awake()
     {
-        GenerateSuppliesByConfig(_configurator);
+        BuildRuntimeConfig(_configurator);
+
+        // Brancher les events des controllers
+        _shopController.OnShopPlus += OnShopPlus;
+        _shopController.OnShopMinus += OnShopMinus;
+
+        _orderController.OnOrderPlus += OnOrderPlus;
+        _orderController.OnOrderMinus += OnOrderMinus;
+        _confirmOrderButton.interactable = false;
+
+        _resetOrderButton.onClick.AddListener(OnResetOrderCliqued);
+
+        // Construire le shop à partir des datas runtime
+        _shopController.BuildShop(_runtimeConfig);
+
+        PlayerCurrency.OnBalanceChanged += PlayerCurrency_OnBalanceChanged;
+
+        _shopController.SwitchTo(E_SupplyCategory.Tools);
     }
 
     protected void OnDestroy()
     {
-        ClearItems();
+        // Débrancher proprement
+        _shopController.OnShopPlus -= OnShopPlus;
+        _shopController.OnShopMinus -= OnShopMinus;
+        _orderController.OnOrderPlus -= OnOrderPlus;
+        _orderController.OnOrderMinus -= OnOrderMinus;
+        _resetOrderButton.onClick.RemoveListener(OnResetOrderCliqued);
+        PlayerCurrency.OnBalanceChanged -= PlayerCurrency_OnBalanceChanged;
+
+        _shopController.Clear();
+        _orderController.Clear();
     }
 
-    private void ClearItems()
+    /// <summary>
+    /// Quand la currency change on vérifie déjà si il y'a quelque chose dans le panier
+    /// 
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <exception cref="NotImplementedException"></exception>
+    private void PlayerCurrency_OnBalanceChanged(float obj)
     {
-        foreach (var item in _spawnedShopItems)
-        {
-            if (item.Value == null) continue;
-
-            item.Value.PlusCliqued -= ShopItem_PlusCliqued;
-            item.Value.MinusCliqued -= ShopItem_MinusCliqued;
-
-            Destroy(item.Value.gameObject);
-        }
-
-        foreach (var item in _spawnedOrderItems)
-        {
-            if (item.Value == null) continue;
-
-            item.Value.PlusCliqued -= OrderItem_PlusCliqued;
-            item.Value.MinusCliqued -= OrderItem_MinusCliqued;
-
-            Destroy(item.Value.gameObject);
-        }
-
-        _spawnedShopItems.Clear();
-        _spawnedOrderItems.Clear();
+        throw new NotImplementedException();
     }
 
-    public void GenerateSuppliesByConfig(SupplyConfigurator config)
+    private void BuildRuntimeConfig(SupplyConfigurator src)
     {
-        // Avant de régénérer, nettoyer les anciens items
-        ClearItems();
-
-        foreach (var kvp in config.SupplyConfig)
+        _runtimeConfig = new Dictionary<E_SupplyCategory, SupplyItemDatas[]>();
+        foreach (var kvp in src.SupplyConfig)
         {
-            if (!_supplyTransforms.TryGetValue(kvp.Key, out var parent) || parent == null) continue;
-
-            foreach (var data in kvp.Value)
+            var srcArray = kvp.Value;
+            var clone = new SupplyItemDatas[srcArray.Length];
+            for (int i = 0; i < srcArray.Length; i++)
             {
-                if (data == null) continue;
-
-                SupplyItem newItem = Instantiate(_supplyItemPrefab, parent);
-                newItem.name = data.Name;
-                newItem.Initialize(data);
-
-                newItem.PlusCliqued += ShopItem_PlusCliqued;
-                newItem.MinusCliqued += ShopItem_MinusCliqued;
-                _spawnedShopItems.Add(data.UniqueID, newItem);
+                var d = srcArray[i];
+                clone[i] = new SupplyItemDatas
+                {
+                    UniqueID = d.UniqueID,
+                    Name = d.Name,
+                    Cost = d.Cost,
+                    SelectedAmountToBuy = 0
+                };
             }
+            _runtimeConfig[kvp.Key] = clone;
         }
     }
 
-    private void ShopItem_MinusCliqued(LightHouse.Game.Computer.LEO.Supplies.SupplyItemDatas obj)
+    // ======== Gestion des clics émis par les controllers ========
+
+    private void OnShopPlus(SupplyItemDatas d)
     {
-        UpdateOrderItem(obj);
+        d.SelectedAmountToBuy = Mathf.Max(0, d.SelectedAmountToBuy + 1);
+        _shopController.RefreshShopItem(d);
+        _orderController.UpdateOrderFor(d);
+        _totalOrderValue += d.Cost;
+        UpdateOrderUI();
     }
 
-    private void ShopItem_PlusCliqued(LightHouse.Game.Computer.LEO.Supplies.SupplyItemDatas obj)
+    private void OnShopMinus(SupplyItemDatas d)
     {
-        UpdateOrderItem(obj);
+        d.SelectedAmountToBuy = Mathf.Max(0, d.SelectedAmountToBuy - 1);
+        _shopController.RefreshShopItem(d);
+        _orderController.UpdateOrderFor(d);
+        _totalOrderValue -= d.Cost;
+        UpdateOrderUI();
     }
 
-    public void UpdateOrderItem(SupplyItemDatas datas)
+    private void OnOrderPlus(SupplyItemDatas d)
     {
-        //si le truc pour l'ordre n'éxiste pas on la génère sinon on l'a trouve
-        if (datas.SelectedAmountToBuy > 0 && !_spawnedOrderItems.TryGetValue(datas.UniqueID, out SupplyItem undefinedItem))
+        d.SelectedAmountToBuy = Mathf.Max(0, d.SelectedAmountToBuy + 1);
+        _shopController.RefreshShopItem(d);
+        _orderController.UpdateOrderFor(d);
+        _totalOrderValue += d.Cost;
+        UpdateOrderUI();
+    }
+
+    private void OnOrderMinus(SupplyItemDatas d)
+    {
+        d.SelectedAmountToBuy = Mathf.Max(0, d.SelectedAmountToBuy - 1);
+        _shopController.RefreshShopItem(d);
+        _orderController.UpdateOrderFor(d);
+        _totalOrderValue -= d.Cost;
+        UpdateOrderUI();
+    }
+
+
+    private void OnResetOrderCliqued()
+    {
+        _totalOrderValue = 0;
+        _orderController.Clear();
+        _shopController.RefreshAllShopItem();
+        UpdateOrderUI();
+    }
+
+    private void UpdateOrderUI()
+    {
+        _orderController.UpdateTotalOrderValue(_totalOrderValue);
+        if(_totalOrderValue > PlayerCurrency.Balance || _orderController.NumberOfItemsInOrder <= 0)
         {
-            var newSupplyItemInfos = Instantiate(_supplyItemPrefab, _orderParent);
-            newSupplyItemInfos.Initialize(datas);
-            newSupplyItemInfos.MinusCliqued += OrderItem_MinusCliqued;
-            newSupplyItemInfos.PlusCliqued += OrderItem_PlusCliqued;
-            _spawnedOrderItems.Add(datas.UniqueID, newSupplyItemInfos);
-            newSupplyItemInfos.UpdateSelectedCountText();
+            _confirmOrderButton.interactable = false;
         }
-        else if (datas.SelectedAmountToBuy > 0 && _spawnedOrderItems.TryGetValue(datas.UniqueID, out SupplyItem findedItem))
+        else
         {
-            findedItem.UpdateSelectedCountText();
+            _confirmOrderButton.interactable = true;
         }
-        //si on les a enlevé et qu'il existe alors on le détruit
-        else if(datas.SelectedAmountToBuy <= 0 && _spawnedOrderItems.TryGetValue(datas.UniqueID, out SupplyItem existingItem))
-        {
-            existingItem.PlusCliqued -= OrderItem_PlusCliqued;
-            existingItem.MinusCliqued -= OrderItem_MinusCliqued;
-            _spawnedOrderItems.Remove(datas.UniqueID);
-            Destroy(existingItem.gameObject);
-        }
-    }
-
-    private void OrderItem_PlusCliqued(SupplyItemDatas datas)
-    {
-        //update shop item count
-        UpdateShopItem(datas);
-    }
-
-    private void OrderItem_MinusCliqued(SupplyItemDatas datas)
-    {
-        //update shop item count
-        UpdateShopItem(datas);
-    }
-
-    private void UpdateShopItem(SupplyItemDatas datas)
-    {
-        if (datas == null) return;
-
-        // Rafraîchir l'item Shop s’il existe
-        if (_spawnedShopItems.TryGetValue(datas.UniqueID, out var shopItem) && shopItem != null)
-            shopItem.UpdateSelectedCountText();
     }
 }

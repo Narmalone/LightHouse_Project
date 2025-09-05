@@ -7,8 +7,8 @@ namespace LightHouse.Game.Computer.LEO.Supplies
     {
         public int UniqueID;
         public string Name;
-        public int Cost = 15;
-        [System.NonSerialized] public int CurrentStockCount;
+        public float Cost;
+        [System.NonSerialized] public float CurrentStockCount;
         [System.NonSerialized] public int SelectedAmountToBuy; //non serialized because stored in a scriptable object
                                                                //so it will be stored while in runtime
     }
