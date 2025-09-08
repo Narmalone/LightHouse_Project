@@ -1,16 +1,103 @@
 ﻿using LightHouse.Game.Boats;
-using LightHouse.Game.Boats.Frequencies;
-using LightHouse.Game.Computer.LEO.NightWatch.Buoys;
 using LightHouse.Money;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 {
+    [System.Serializable]
+    public struct MoneyBoatLine
+    {
+        public string Label;
+        public Color LabelColor;
+        public int Value; // peut être négatif pour les pénalités
+
+        public MoneyBoatLine(string label, Color color, int amount)
+        {
+            Label = label;
+            LabelColor = color;
+            Value = amount;
+        }
+    }
+
+    // Un bateau = 3 lignes (flat, bonus, pénalité)
+    [System.Serializable]
+    public struct MoneyBoatBreakdown
+    {
+        public string BoatName; // pratique pour l'affichage "par bateau"
+        public MoneyBoatLine FlatAmountWon;   // ex: +200
+        public MoneyBoatLine BonusFromTime;   // ex: +50
+        public MoneyBoatLine NumberOfTry;     // ex: -60  (pénalité)
+
+        public MoneyBoatBreakdown(
+            string boatName,
+            MoneyBoatLine flatLineInfo,
+            MoneyBoatLine bonusFromTimeInfo,
+            MoneyBoatLine numberOfTryLine)
+        {
+            BoatName = boatName;
+            FlatAmountWon = flatLineInfo;
+            BonusFromTime = bonusFromTimeInfo;
+            NumberOfTry = numberOfTryLine;
+        }
+
+        public int TotalForThisBoat()
+            => FlatAmountWon.Value + BonusFromTime.Value + NumberOfTry.Value;
+    }
+
+    // Cumul de plusieurs bateaux pour la session/nuit
+    [System.Serializable]
+    public struct MoneyAllBoatsBreakdown
+    {
+        public List<MoneyBoatBreakdown> AllBoats;
+
+        public void EnsureInit()
+        {
+            if (AllBoats == null) AllBoats = new List<MoneyBoatBreakdown>();
+        }
+
+        public void Add(MoneyBoatBreakdown boatBk)
+        {
+            EnsureInit();
+            AllBoats.Add(boatBk);
+        }
+
+        public void Reset()
+        {
+            EnsureInit();
+            AllBoats.Clear();
+        }
+
+        public int GetTotalFlat()
+        {
+            EnsureInit();
+            int total = 0;
+            foreach (var b in AllBoats) total += b.FlatAmountWon.Value;
+            return total;
+        }
+
+        public int GetTotalBonusFromTime()
+        {
+            EnsureInit();
+            int total = 0;
+            foreach (var b in AllBoats) total += b.BonusFromTime.Value;
+            return total;
+        }
+
+        public int GetTotalNumberOfTry()
+        {
+            EnsureInit();
+            int total = 0;
+            foreach (var b in AllBoats) total += b.NumberOfTry.Value;
+            return total;
+        }
+
+        public int GetGrandTotal()
+            => GetTotalFlat() + GetTotalBonusFromTime() + GetTotalNumberOfTry();
+    }
+
     /// <summary>
     /// Contrôleur UI pour le rapport d'anomalie sur les bateaux.
     /// Gère la sélection du nom, du drapeau, du type d'anomalie, et l'envoi de rapport.
@@ -58,12 +145,17 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         private AnomalyType _selectedAnomalyType;
         private string _selectedAnomalyText;
         private Sprite _selectedFlag;
+
+        public MoneyAllBoatsBreakdown TodayAllBoatsBreakdown { get; private set; }
+
         #endregion
 
         #region Public Properties
 
         public string BoatNameInput => _boatNameInput;
         public AnomalyType SelectedAnomaly => _selectedAnomalyType;
+
+        public bool IsReportedToday = false;
 
         #endregion
 
@@ -75,6 +167,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             InitializeDropdownOptions();
             InitializeAnomalyButtons();
             _sendReportButton.interactable = false;
+
+            TodayAllBoatsBreakdown.EnsureInit();
         }
 
         private void OnDestroy()
@@ -242,47 +336,91 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         #region Private Helpers
 
+        // ----------------------------
+        // CALCUL (par bateau)
+        // ----------------------------
+        private MoneyBoatBreakdown BuildBoatBreakdownFor(
+            BoatAnomalyDatas anomaly,
+            SO_BoatMoneyResults moneyDb,
+            float timeToReportForBonus)
+        {
+            // Base: +valid
+            int baseAmount = BoatMoneyCalculator.ValidFlat(moneyDb);
+
+            // Pénalité essais (négative si >0)
+            int penalty = 0;
+            if (anomaly.TryAmount > 0)
+                penalty = -BoatMoneyCalculator.MissmatchFlat(anomaly.TryAmount, moneyDb);
+
+            // Bonus temps
+            int timeBonus = BoatMoneyCalculator.BonusFromTime(anomaly.RemainingTime, timeToReportForBonus, moneyDb);
+
+            var flatLine = new MoneyBoatLine("Boat reported", Color.green, baseAmount);
+            var bonusLine = new MoneyBoatLine("Speed report bonus", Color.green, timeBonus);
+            var triesLine = new MoneyBoatLine($"Attempt Count: {anomaly.TryAmount}", penalty < 0 ? Color.red : Color.green, penalty);
+
+            return new MoneyBoatBreakdown(anomaly.BoatName, flatLine, bonusLine, triesLine);
+        }
+
+        // --------------------------------------------
+        // ACCUMULATION (global) + économie immédiate
+        // --------------------------------------------
+        private void AccumulateBoatBreakdown(MoneyBoatBreakdown boatBk, bool applyToEconomyNow = true)
+        {
+            TodayAllBoatsBreakdown.Add(boatBk);
+
+            if (applyToEconomyNow)
+                PlayerCurrency.Add(boatBk.TotalForThisBoat());
+        }
+
+        // Reset manuel (appelle-le à l’heure voulue)
+        public void ResetBoatBreakdown()
+        {
+            TodayAllBoatsBreakdown.Reset();
+        }
+
+        // --------------------------------------------
+        // Evaluation principale
+        // --------------------------------------------
         private void EvaluateAndShowResults()
         {
             var popup = Instantiate(_sendDatasPrefab, _nightWatch.transform as RectTransform);
             (popup.transform as RectTransform).anchoredPosition = Vector3.zero;
 
-            // Quand l'UI a fini son "loading"
             popup.OnLoadingCompleted += status =>
             {
                 if (status != DataStatus.Success) return;
 
-                // On a réussi → on récupère les datas du bateau pour afficher le récap + donner l’argent
-                if (_anomalyDatabase.TryGetAnomaly(_boatNameInput, out var dataByName))
-                {
-                    GenerateReportElements(popup, popup.BodyParentContent, status, dataByName);
-                    popup.RefreshLayouts();
+                // Choix du bateau (nom prioritaire, sinon fréquence)
+                BoatAnomalyDatas picked = null;
+                if (_anomalyDatabase.TryGetAnomaly(_boatNameInput, out var byName))
+                    picked = byName;
+                else if (_anomalyDatabase.TryGetAnomaly(_selectedBoatFrequency, out var byFreq))
+                    picked = byFreq;
 
-                    // Résolution côté monde
-                    var boatInstance = BoatsHandlerData.Boats
-                        .Find(x => x.Data.Name == dataByName.BoatName && x.Data.NationalityFlag == _selectedFlag);
-                    if (boatInstance != null)
-                        boatInstance.AnomalyController.RemoveAnomaly();
-                    else
-                        Debug.LogWarning("Bateau introuvable pour la résolution in-game.");
-                }
+                if (picked == null) return;
+
+                // 1) Calcul par bateau
+                var perBoat = BuildBoatBreakdownFor(picked, _moneyResultDatabase, _anomalyDatabase.TimeToReportAnomalies);
+
+                // 2) Accumuler + économie
+                AccumulateBoatBreakdown(perBoat, applyToEconomyNow: true);
+
+                // 3) UI : (A) bateau courant, (B) global
+                GenerateBoatReportElements_ForSingleBoat(popup.BodyParentContent, perBoat);
+                //GenerateBoatReportElements_GlobalRecap(popup.BodyParentContent, TodayAllBoatsBreakdown);
+
+                popup.RefreshLayouts();
+
+                // Résolution monde (inchangé)
+                var boatInstance = BoatsHandlerData.Boats
+                    .Find(x => x.Data.Name == picked.BoatName && x.Data.NationalityFlag == _selectedFlag);
+                if (boatInstance != null)
+                    boatInstance.AnomalyController.RemoveAnomaly();
                 else
-                {
-                    // fallback : si on a matché par fréquence uniquement
-                    if (_anomalyDatabase.TryGetAnomaly(_selectedBoatFrequency, out var dataByFreq))
-                    {
-                        GenerateReportElements(popup, popup.BodyParentContent, status, dataByFreq);
-                        popup.RefreshLayouts();
-
-                        var boatInstance = BoatsHandlerData.Boats
-                            .Find(x => x.Data.Name == dataByFreq.BoatName && x.Data.NationalityFlag == _selectedFlag);
-                        if (boatInstance != null)
-                            boatInstance.AnomalyController.RemoveAnomaly();
-                    }
-                }
+                    Debug.LogWarning("Bateau introuvable pour la résolution in-game.");
             };
 
-            // Toute la logique d'évaluation se fait ici (et retourne Success ou Mismatch)
             popup.StartLoading(() =>
             {
                 return EvaluateSubmission(
@@ -378,30 +516,78 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         }
 
 
-        private void GenerateReportElements(UI_ReportDatasPopup datas, RectTransform parent, DataStatus status, BoatAnomalyDatas anomalyDatas)
+        // ----------------------------
+        // UI (aucun calcul)
+        // ----------------------------
+        private void GenerateBoatReportElements_ForSingleBoat(RectTransform parent, MoneyBoatBreakdown b)
         {
-            int total = 0;
+            CreateHeader(parent, $"Boat Report — {b.BoatName}");
 
-            //Valid
-            int validValue = BoatMoneyCalculator.ValidFlat(_moneyResultDatabase);
-            CreateReportElement(parent, "Boat reported", $"+ {validValue}$", Color.green);
-            total += validValue;
+            // Flat
+            CreateMoneyLine(parent, b.FlatAmountWon);
 
-            if(anomalyDatas.TryAmount > 0)
+            // Bonus temps
+            if (b.BonusFromTime.Value != 0)
+                CreateMoneyLine(parent, b.BonusFromTime);
+
+            // Pénalités essais
+            if (b.NumberOfTry.Value != 0)
+                CreateMoneyLine(parent, b.NumberOfTry);
+
+            int total = b.TotalForThisBoat();
+            CreateReportElement(parent, "Total: ",
+                $"{(total >= 0 ? "+ " : "- ")}{Mathf.Abs(total)}$",
+                total >= 0 ? Color.green : Color.red);
+        }
+
+       /* private void GenerateBoatReportElements_GlobalRecap(RectTransform parent, MoneyAllBoatsBreakdown all)
+        {
+            CreateHeader(parent, "Night Recap");
+
+            int flat = all.GetTotalFlat();
+            int bonus = all.GetTotalBonusFromTime();
+            int tries = all.GetTotalNumberOfTry();
+            int grand = all.GetGrandTotal();
+
+            CreateReportElement(parent, "Total per reports",
+                $"{(flat >= 0 ? "+ " : "- ")}{Mathf.Abs(flat)}$", flat >= 0 ? Color.green : Color.red);
+            CreateReportElement(parent, "Bonuses from time",
+                $"{(bonus >= 0 ? "+ " : "- ")}{Mathf.Abs(bonus)}$", bonus >= 0 ? Color.green : Color.red);
+            CreateReportElement(parent, "Penalties (tries)",
+                $"{(tries >= 0 ? "+ " : "- ")}{Mathf.Abs(tries)}$", tries >= 0 ? Color.green : Color.red);
+
+            CreateReportElement(parent, "Grand total",
+                $"{(grand >= 0 ? "+ " : "- ")}{Mathf.Abs(grand)}$", grand >= 0 ? Color.green : Color.red);
+        }*/
+
+        public MoneyAllBoatsBreakdown GetTodaysResult()
+        {
+            if (!IsReportedToday)
             {
-                int penalty = BoatMoneyCalculator.MissmatchFlat(anomalyDatas.TryAmount, _moneyResultDatabase);
-                CreateReportElement(parent, $"Attempt Count: {anomalyDatas.TryAmount}", $" -{penalty}$", Color.red);
-                total -= penalty;
+                var newInstance = new MoneyAllBoatsBreakdown();
+                newInstance.EnsureInit();
+                return newInstance;
             }
+            return TodayAllBoatsBreakdown;
+        }
 
-            int bonusFromTime = BoatMoneyCalculator.BonusFromTime(anomalyDatas.RemainingTime, _anomalyDatabase.TimeToReportAnomalies, _moneyResultDatabase);
-            total += bonusFromTime;
+        public void OnNightwatchEndedToday()
+        {
+            TodayAllBoatsBreakdown.Reset();
+        }
 
-            PlayerCurrency.Add(total);
+        private void CreateMoneyLine(RectTransform parent, MoneyBoatLine line)
+        {
+            string sign = line.Value >= 0 ? "+ " : "- ";
+            int abs = Mathf.Abs(line.Value);
+            CreateReportElement(parent, line.Label, $"{sign}{abs}$", line.LabelColor);
+        }
 
-            CreateReportElement(parent, "Speed report bonus", $"+ {bonusFromTime}$", Color.green);
-
-            CreateReportElement(parent, "Total: ", $"{(total > 0 ? "+ " : "- ")}{total}", total > 0 ? Color.green : Color.red);
+        private void CreateHeader(RectTransform parent, string title)
+        {
+            var header = Instantiate(_reportElementPrefab, parent.transform);
+            header.SetDescription(title);
+            header.SetMoneyResult("", Color.white);
         }
 
         private void CreateReportElement(RectTransform parent, string reason, string amount, Color color)
@@ -410,7 +596,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             element.SetDescription(reason);
             element.SetMoneyResult(amount, color);
         }
-
 
         private void UpdateSummaryReport()
         {

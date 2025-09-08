@@ -1,6 +1,5 @@
 ﻿using LightHouse.Game.Buyoncies;
 using LightHouse.Game.Computer.LEO.NightWatch.Signals;
-using LightHouse.Game.DayNightSystem;
 using LightHouse.Money;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,28 @@ using UnityEngine.UI;
 
 namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
 {
+
+    public struct MoneyLine
+    {
+        public string Label;
+        public int Amount;       // positif ou négatif
+        public Color Color;
+
+        public MoneyLine(string label, int amount, Color color)
+        {
+            Label = label;
+            Amount = amount;
+            Color = color;
+        }
+    }
+
+    public struct MoneyBreakdown
+    {
+        public int Total;
+        public List<MoneyLine> Lines;
+    }
+
+
     /// <summary>
     /// Contrôleur UI principal pour la gestion des rapports de bouées.
     /// Coordonne l'évaluation, l'affichage des résultats et l'état des bouées.
@@ -29,6 +50,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         [Header("Config")]
         [SerializeField] private SO_BuoyMoneyResults _moneyResultDatabase;
 
+        public BuoyReportResult CurrentTodayResult;
+        public MoneyBreakdown TodayMoneyBreakdown { get; private set; } // “global” pour la session courante
+
         /// <summary>
         /// Hook optionnel : permet à un système externe de demander une suppression forcée à <see cref="UI_Signals"/>.
         /// Param1 = key (ex: "01"), Param2 = generateHistory (true => yes, false => no), Param3 = asValid (true => valid, false => invalid).
@@ -40,7 +64,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         #region Private Fields
 
         private readonly BuoyReportEvaluator _evaluator = new BuoyReportEvaluator();
-        private int _attemptCount;
         public bool IsReportCompleted { get; private set; }
 
         #endregion
@@ -90,7 +113,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
             _anomalyDatabase.OnAnomalyExpired += OnAnomalyExpired;
             _resetAllButton.onClick.AddListener(OnResetClicked);
             _sendReportButton.onClick.AddListener(OnSendReportClicked);
-            TimeHandlerData.OnTimeSegmentChanged += OnTimeSegmentChanged;
         }
 
         /// <summary>
@@ -103,7 +125,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
 
             _resetAllButton.onClick.RemoveListener(OnResetClicked);
             _sendReportButton.onClick.RemoveListener(OnSendReportClicked);
-            TimeHandlerData.OnTimeSegmentChanged -= OnTimeSegmentChanged;
             _anomalyDatabase.OnAnomalyExpired -= OnAnomalyExpired;
         }
 
@@ -126,14 +147,13 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
             UpdateSendReportButton();
         }
 
-        private void OnTimeSegmentChanged(TimeOfDaySegment segment)
-        {
-            if (segment != TimeOfDaySegment.Morning) return;
 
+        public void OnNightwatchEndedToday()
+        {
             ResetBuoysState();
             _sendReportButton.interactable = false;
             IsReportCompleted = false;
-            _attemptCount = 0;
+            CurrentTodayResult = null;
         }
 
         private void OnSendReportClicked()
@@ -185,23 +205,43 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
 
         #region Core Flow
 
+        public BuoyReportResult GetTodaysResult()
+        {
+            //means the player didn't do anything with the buoys during the night
+            if (!IsReportCompleted)
+            {
+                //CurrentTodayResult = new BuoyReportResult(0, 0, _buoys.Length, new List<float> { -1 }, new List<int> { -1 });
+                EvaluateAndShowResults(false);
+                Debug.Log("aucuns report n'a été réalisé cette nuit. Génération");
+            }
+            return CurrentTodayResult;
+        }
+
         /// <summary>
         /// Évalue les rapports de bouées et affiche les résultats.
         /// </summary>
-        private void EvaluateAndShowResults()
+        private void EvaluateAndShowResults(bool showResultPopup = true)
         {
             var anomalies = _anomalyDatabase.GetAnomalies();
             var anomalyMap = anomalies.ToDictionary(a => a.ID, a => a.RemainingTime);
-            var allAnomalyIds = anomalyMap.Keys.ToList(); // ✅ tous les IDs, pas juste ceux à supprimer
+            var allAnomalyIds = anomalyMap.Keys.ToList();
 
-            var result = _evaluator.Evaluate(_buoys, anomalyMap);
+            // 1) Eval
+            CurrentTodayResult = _evaluator.Evaluate(_buoys, anomalyMap);
 
-            // Passer la vérité terrain complète
-            ApplyEvaluationEffects(result, allAnomalyIds);
+            // 2) Appliquer les effets d’état UI (report/failed/suppressions)
+            ApplyEvaluationEffects(CurrentTodayResult, allAnomalyIds);
 
-            ShowResultsPopup(result);
-            _attemptCount = (result.ErrorCount > 0) ? _attemptCount + 1 : 0;
+            // 3) CALCUL ARGENT (ici, hors UI) + side-effects gameplay
+            TodayMoneyBreakdown = CalculateMoney(CurrentTodayResult);  // <-- calcul “global”
+            PlayerCurrency.Add(TodayMoneyBreakdown.Total);             // <-- applique économie ici
+            CurrentTodayResult.TotalEarnedDuringTheNight = TodayMoneyBreakdown.Total;
+
+            // 4) UI : uniquement du rendu
+            if(showResultPopup)
+                ShowResultsPopup(CurrentTodayResult, TodayMoneyBreakdown);
         }
+
 
 
         /// <summary>
@@ -241,7 +281,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         /// <summary>
         /// Instancie et configure le popup de résultats.
         /// </summary>
-        private void ShowResultsPopup(BuoyReportResult result)
+        private void ShowResultsPopup(BuoyReportResult result, MoneyBreakdown breakdown)
         {
             var popup = Instantiate(_sendDatasPrefab, _nightWatch.transform as RectTransform);
             (popup.transform as RectTransform).anchoredPosition = Vector3.zero;
@@ -253,10 +293,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
                     GenerateReportElements(
                         popup,
                         popup.BodyParentContent,
-                        result.CorrectValidCount,
-                        result.CorrectInvalidCount,
-                        result.ErrorCount,
-                        result.RemainingTimesForCorrectInvalid);
+                        breakdown); // <-- on passe le breakdown déjà calculé
 
                     popup.RefreshLayouts();
                     IsReportCompleted = ReportCompleted();
@@ -266,49 +303,67 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
             popup.StartLoading(() => DataStatus.Success);
         }
 
+
         /// <summary>
         /// Génère les éléments UI affichant les gains/pertes.
         /// </summary>
-        private void GenerateReportElements(
-            UI_ReportDatasPopup datas,
-            RectTransform parent,
-            int correctValidBuoys,
-            int correctInvalidBuoys,
-            int errorsCount,
-            IReadOnlyList<float> times)
+        private void GenerateReportElements(UI_ReportDatasPopup datas, RectTransform parent, MoneyBreakdown breakdown)
         {
-            int total = 0;
-            if (correctValidBuoys > 0)
+            // 1) Rendu UI des lignes (aucun calcul ici)
+            foreach (var line in breakdown.Lines)
             {
-                int correctValidAmount = BuoyMoneyCalculator.ValidFlat(correctValidBuoys, _moneyResultDatabase);
-                CreateReportElement(parent, $"Correct Valid Buoys x{correctValidBuoys}",
-                    $"+ {correctValidAmount}$", Color.green);
+                string sign = line.Amount >= 0 ? "+ " : "- ";
+                int abs = Mathf.Abs(line.Amount);
+                CreateReportElement(parent, line.Label, $"{sign}{abs}$", line.Color);
+            }
+
+            // 2) Ligne Total
+            var totalColor = breakdown.Total >= 0 ? Color.green : Color.red;
+            string totalSign = breakdown.Total >= 0 ? "+ " : "- ";
+            int totalAbs = Mathf.Abs(breakdown.Total);
+            CreateReportElement(parent, "Total:", $"{totalSign}{totalAbs}$", totalColor);
+        }
+
+
+
+        private MoneyBreakdown CalculateMoney(BuoyReportResult result)
+        {
+            var lines = new List<MoneyLine>();
+            int total = 0;
+
+            if (result.CorrectValidCount > 0)
+            {
+                int correctValidAmount = BuoyMoneyCalculator.ValidFlat(result.CorrectValidCount, _moneyResultDatabase);
+                lines.Add(new MoneyLine($"Correct Valid Buoys x{result.CorrectValidCount}", +correctValidAmount, Color.green));
                 total += correctValidAmount;
             }
 
-            if (correctInvalidBuoys > 0)
+            if (result.CorrectInvalidCount > 0)
             {
-                int correctInvalidAmount = BuoyMoneyCalculator.InvalidFlat(correctInvalidBuoys, _moneyResultDatabase);
-                CreateReportElement(parent, $"Correct Invalid Buoys x{correctInvalidBuoys}",
-                    $"+ {correctInvalidAmount}$", Color.green);
-                int bonus = BuoyMoneyCalculator.BonusFromTimes(times, _anomalyDatabase.TimeToReportAnomalies, _moneyResultDatabase);
-                CreateReportElement(parent, "Correct invalid speed report", $"+ {bonus}$", Color.green);
+                int correctInvalidAmount = BuoyMoneyCalculator.InvalidFlat(result.CorrectInvalidCount, _moneyResultDatabase);
+                lines.Add(new MoneyLine($"Correct Invalid Buoys x{result.CorrectInvalidCount}", +correctInvalidAmount, Color.green));
+
+                int bonus = BuoyMoneyCalculator.BonusFromTimes(
+                    result.RemainingTimesForCorrectInvalid,
+                    _anomalyDatabase.TimeToReportAnomalies,
+                    _moneyResultDatabase);
+
+                if (bonus != 0)
+                    lines.Add(new MoneyLine("Correct invalid speed report", +bonus, Color.green));
+
                 total += correctInvalidAmount + bonus;
             }
 
-            if (errorsCount > 0)
+            if (result.ErrorCount > 0)
             {
-                int missmatchAmount = BuoyMoneyCalculator.MissmatchFlat(errorsCount, _moneyResultDatabase);
-                CreateReportElement(parent, $"Missmatch Buoys: {errorsCount}",
-                    $"- {missmatchAmount}$", Color.red);
-                total -= missmatchAmount;
+                int mismatchAmount = BuoyMoneyCalculator.MissmatchFlat(result.ErrorCount, _moneyResultDatabase);
+                lines.Add(new MoneyLine($"Missmatch Buoys: {result.ErrorCount}", -mismatchAmount, Color.red));
+                total -= mismatchAmount;
             }
 
-            PlayerCurrency.Add(total);
-
-            //Total
-            CreateReportElement(parent, "Total: ", $"{(total > 0 ? "+ " : "- ")}{total}", total > 0 ? Color.green : Color.red);
+            return new MoneyBreakdown { Total = total, Lines = lines };
         }
+
 
         /// <summary>
         /// Instancie et configure un élément de rapport.

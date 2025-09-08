@@ -39,8 +39,14 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
 
             foreach (var buoy in buoys)
             {
-                if (ShouldSkipEvaluation(buoy))
+                /*if (ShouldSkipEvaluation(buoy))
+                    continue;*/
+
+                if(buoy.CurrentState == UI_BuoyState.Unchecked)
+                {
+                    errors++;
                     continue;
+                }
 
                 bool shouldBeInvalid = anomalyRemainingTimes.ContainsKey(buoy.ID);
                 bool isMarkedInvalid = buoy.CurrentState == UI_BuoyState.Invalid;

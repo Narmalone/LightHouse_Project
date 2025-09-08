@@ -1,7 +1,11 @@
+using LightHouse.Game.Computer.LEO.Mails;
+using LightHouse.Game.Computer.LEO.NightWatch.Boats;
 using LightHouse.Game.Computer.LEO.NightWatch.Buoys;
 using LightHouse.Game.Computer.LEO.NightWatch.Signals;
 using LightHouse.Game.Computer.LEO.NightWatch.Sonar;
-using LightHouse.Game.Computer.OS;
+using LightHouse.Game.DayNightSystem;
+using LightHouse.Game.Nightwatch;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,10 +28,17 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         [SerializeField] private NightWatchReportWindow[] _windows;
         [SerializeField] private UI_Sonar _sonarUIController;
         [SerializeField] private UI_BuoysReportController _buoysReportController;
+        [SerializeField] private UI_BoatReportController _boatsReportController;
         [SerializeField] private UI_Signals _signalsController;
+
+        [SerializeField] private SO_NightWatchConfiguration _nightwatchConfig;
 
         private Dictionary<E_NightWatchMode, NightWatchReportWindow> _windowMap;
         private NightWatchReportWindow _activeWindow;
+
+        private bool _isReportDoneToday = false;
+        private MailDatas CurrentNightWatchRecap;
+        public event Action<MailDatas> PleaseSendReport;
 
         private void Awake()
         {
@@ -43,11 +54,13 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
             }
 
             _buoysReportController.OnBuoyReportFailed += BuoysOnReportFailed;
+            TimeHandlerData.OnTimeChanged += OnTimeUpdated;
         }
 
         private void OnDestroy()
         {
             _buoysReportController.OnBuoyReportFailed -= BuoysOnReportFailed;
+            TimeHandlerData.OnTimeChanged -= OnTimeUpdated;
         }
 
         private void BuoysOnReportFailed(string arg1, bool arg2, bool arg3)
@@ -63,6 +76,58 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
             }
         }
 
+        private int _startDay, _endDay;
+
+        private void ComputerNightwatch()
+        {
+            _startDay = TimeHandlerData.CurrentDay;
+            if (_nightwatchConfig.EndHour < _nightwatchConfig.StartHour)
+            {
+                _endDay = _startDay + 1;
+            }
+            else _endDay = _startDay;
+
+        }
+
+        private void OnTimeUpdated(float obj)
+        {
+            if (!_isReportDoneToday && TimeUtility.HasReachedDate(_endDay, _nightwatchConfig.EndHour))
+            {
+                GenerateRecap();
+                _isReportDoneToday = true;
+                _buoysReportController.OnNightwatchEndedToday();
+                _boatsReportController.OnNightwatchEndedToday();
+            }
+            else if(_isReportDoneToday && TimeUtility.HasReachedDate(_endDay, _nightwatchConfig.StartHour))
+            {
+                _isReportDoneToday = false;
+                ComputerNightwatch();
+            }
+        }
+
+        public void GenerateRecap()
+        {
+            BuoyReportResult buoyTodaysResult = _buoysReportController.GetTodaysResult();
+            MoneyAllBoatsBreakdown boatTodaysResult = _boatsReportController.GetTodaysResult();
+
+            var mail = MailGenerator.GenerateMailFromNightwatchTemplate(
+                dateFormat: TimeUtility.FormatCurrentDate(),
+                keeperName: "{Keepers Name}",
+                boatsCorrect: boatTodaysResult.AllBoats.Count,
+                boatsErrors: boatTodaysResult.GetTotalNumberOfTry(),
+                buoysNominal: buoyTodaysResult.CorrectValidCount,
+                buoysDefective: buoyTodaysResult.CorrectInvalidCount,
+                buoysErrors: buoyTodaysResult.ErrorCount,
+                totalEarnings: boatTodaysResult.GetGrandTotal() + buoyTodaysResult.TotalEarnedDuringTheNight,
+                captainsNote: "",
+                TimeHandlerData.CurrentDay,
+                TimeHandlerData.CurrentTime
+                );
+
+            //var mail = MailGenerator.GenerateMailFromNightwatchTemplate();
+
+            PleaseSendReport?.Invoke(mail);
+        }
 
         public override void Open()
         {
@@ -78,6 +143,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
 
         private void Start()
         {
+            ComputerNightwatch();
             SwitchTo(E_NightWatchMode.Signals);
         }
 

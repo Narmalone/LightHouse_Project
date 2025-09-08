@@ -1,4 +1,4 @@
-using UnityEngine;
+using LightHouse.Game.DayNightSystem;
 
 namespace LightHouse.Game.Computer.LEO.Mails
 {
@@ -7,10 +7,15 @@ namespace LightHouse.Game.Computer.LEO.Mails
     {
         public string ExpeditorName;
         public string MailObject;
-        public byte ArrivalDay;
+        public int ArrivalDay;
         public float ArrivalTime;
         public string MailMessage;
         public MailAttachedFile[] Files; 
+
+        public string GetDate()
+        {
+            return TimeUtility.FormatDate(ArrivalDay, ArrivalTime);
+        }
     }
 
 }

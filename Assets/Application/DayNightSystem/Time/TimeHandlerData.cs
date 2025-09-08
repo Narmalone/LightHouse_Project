@@ -13,17 +13,17 @@ namespace LightHouse.Game.DayNightSystem
         /// <summary>
         /// Temps actuel dans la journée (ex : 13.5 = 13h30).
         /// </summary>
-        public static float CurrentTime;
+        public static float CurrentTime { get; set; }
 
         /// <summary>
         /// Jour actuel (démarre à 1).
         /// </summary>
-        public static byte CurrentDay;
+        public static byte CurrentDay { get; set; }
 
         /// <summary>
         /// Segment de la journée actuel (matin, midi, soir, nuit, etc.).
         /// </summary>
-        public static TimeOfDaySegment TimeOfDay;
+        public static TimeOfDaySegment TimeOfDay { get; set; }
 
         #endregion
 
@@ -43,6 +43,8 @@ namespace LightHouse.Game.DayNightSystem
         /// Événement appelé lorsque la journée atteint sa fin.
         /// </summary>
         public static Action OnTimeReachesEnd;
+
+        public static Action<float> OnTimeChanged;
 
         #endregion
     }

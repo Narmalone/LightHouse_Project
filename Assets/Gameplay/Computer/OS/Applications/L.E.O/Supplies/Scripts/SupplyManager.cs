@@ -70,7 +70,7 @@ public class SupplyManager : LEOWindow
     /// <exception cref="NotImplementedException"></exception>
     private void PlayerCurrency_OnBalanceChanged(float obj)
     {
-        throw new NotImplementedException();
+        
     }
 
     private void BuildRuntimeConfig(SupplyConfigurator src)

@@ -15,7 +15,7 @@ public class UI_CustomButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public Color hoverColor = new Color(0.8f, 0.8f, 1f);
     public Color selectedColor = new Color(0.7f, 0.7f, 1.2f);
 
-    private Image _image;
+    [SerializeField] private Image _image;
     public Image Image => _image;
     public bool _isSelected = false;
 

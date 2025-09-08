@@ -1,3 +1,4 @@
+using LightHouse.Game.Computer.LEO.Mails;
 using LightHouse.Game.Computer.LEO.NightWatch;
 using LightHouse.Game.Computer.OS;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace LightHouse.Game.Computer.LEO
         [SerializeField] private LEOWindow[] _windows;
         [SerializeField] private LEOWindowButton[] _windowsButton;
         [SerializeField] private NightWatchController _nightWatchController;
+        [SerializeField] private UI_Mails _mailsController;
 
         private Dictionary<ELEOWindow, LEOWindow> _windowMap;
         public LEOWindow CurrentActiveWindow { get; private set; }
@@ -33,7 +35,18 @@ namespace LightHouse.Game.Computer.LEO
         {
             base.Awake();
             _windowMap = new Dictionary<ELEOWindow, LEOWindow>();
+            _nightWatchController.PleaseSendReport += _nightWatchController_PleaseSendReport;
+        }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _nightWatchController.PleaseSendReport -= _nightWatchController_PleaseSendReport;
+        }
+
+        private void _nightWatchController_PleaseSendReport(MailDatas datas)
+        {
+            _mailsController.GenerateMail(datas);
         }
 
         public override void Initialize(OS.OS os)

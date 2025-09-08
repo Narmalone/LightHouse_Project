@@ -59,7 +59,7 @@ namespace LightHouse.Game.DayNightSystem
         {
             float delta = (24f / (TimeConfig.dayLengthInMinits * 60f)) * Time.deltaTime;
             currentTime += delta;
-            TimeHandlerData.CurrentTime = currentTime;
+            currentTime = Mathf.Clamp(currentTime, 0f, 24f);
 
             if (currentTime >= 24f)
             {
@@ -74,8 +74,10 @@ namespace LightHouse.Game.DayNightSystem
                 }
             }
 
+            TimeHandlerData.CurrentTime = currentTime;
             UpdateTimeSegment();
             NotifyObservers();
+            TimeHandlerData.OnTimeChanged?.Invoke(currentTime);
         }
 
         private void UpdateTimeSegment()

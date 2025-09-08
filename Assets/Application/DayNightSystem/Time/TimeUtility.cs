@@ -27,6 +27,38 @@ namespace LightHouse.Game.DayNightSystem
         }
 
         /// <summary>
+        /// Formate la date
+        /// </summary>
+        public static string FormatDate(int day, float time)
+        {
+            int hour = Mathf.FloorToInt(time);
+            int minute = Mathf.RoundToInt((time - hour) * 60);
+
+            string period = hour < 12 ? "AM" : "PM";
+            int displayHour = hour % 12;
+            if (displayHour == 0) displayHour = 12;
+
+            return $"Day {day:D2} - {displayHour:D2}:{minute:D2} {period}";
+        }
+
+        /// <summary>
+        /// Formate la date actuelle en jeu
+        /// </summary>
+        /// <returns></returns>
+        public static string FormatCurrentDate()
+        {
+            float currentTime = TimeHandlerData.CurrentTime;
+            int hour = Mathf.FloorToInt(currentTime);
+            int minute = Mathf.RoundToInt((currentTime - hour) * 60);
+
+            string period = hour < 12 ? "AM" : "PM";
+            int displayHour = hour % 12;
+            if (displayHour == 0) displayHour = 12;
+
+            return $"Day {TimeHandlerData.CurrentDay:D2} - {displayHour:D2}:{minute:D2} {period}";
+        }
+
+        /// <summary>
         /// Retourne une chaîne formatée "day XX" à partir d'un numéro de jour.
         /// </summary>
         public static string FormatDay(byte day)
@@ -34,13 +66,21 @@ namespace LightHouse.Game.DayNightSystem
             return $"day {day:D2}";
         }
 
-
+        
         /// <summary>
         /// Retourne true si l'heure actuelle a atteint ou dépassé une heure cible (dans une plage cyclique).
         /// </summary>
         public static bool HasReachedHour(float now, float target, float end)
         {
             return IsTimeInRange(now, target, end);
+        }
+
+        /// <summary>
+        /// Retourne true si l'heure actuelle a atteint ou dépassé une heure cible (dans une plage cyclique).
+        /// </summary>
+        public static bool HasReachedDate(int day, float time)
+        {
+            return TimeHandlerData.CurrentDay == day && TimeHandlerData.CurrentTime > time;
         }
 
         /// <summary>

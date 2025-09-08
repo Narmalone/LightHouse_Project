@@ -26,6 +26,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         /// </summary>
         public int ErrorCount { get; }
 
+        public float TotalEarnedDuringTheNight { get; set; }
+
         /// <summary>
         /// Liste des temps restants pour les bouées invalides correctement identifiées.
         /// Utilisé pour calculer les bonus basés sur la vitesse de rapport.
@@ -53,14 +55,15 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
             int correctValidCount,
             int correctInvalidCount,
             int errorCount,
-            IReadOnlyList<float> remainingTimesForCorrectInvalid,
-            IReadOnlyList<int> anomalyIdsToRemove)
+            List<float> remainingTimesForCorrectInvalid,
+            List<int> anomalyIdsToRemove)
         {
             CorrectValidCount = correctValidCount;
             CorrectInvalidCount = correctInvalidCount;
             ErrorCount = errorCount;
             RemainingTimesForCorrectInvalid = remainingTimesForCorrectInvalid;
             AnomalyIdsToRemove = anomalyIdsToRemove;
+            TotalEarnedDuringTheNight = 0f;
         }
 
         #endregion
