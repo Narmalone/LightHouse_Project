@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using LightHouse.Game.Computer.LEO.Supplies;
 using TMPro;
+using AYellowpaper.SerializedCollections;
 
 public class OrderController : MonoBehaviour
 {
@@ -11,8 +12,9 @@ public class OrderController : MonoBehaviour
     [SerializeField] private SupplyItem _supplyItemPrefab;
 
     // id -> item instancié côté order
-    private readonly Dictionary<int, SupplyItem> _orderItems = new();
+    [SerializeField] private SerializedDictionary<int, SupplyItem> _orderItems = new();
     public int NumberOfItemsInOrder => _orderItems.Keys.Count;
+    public SerializedDictionary<int, SupplyItem> OrderItems => _orderItems;
 
     // Events émis vers le manager (quand on clique sur + / - de la liste de commande)
     public event Action<SupplyItemDatas> OnOrderPlus;

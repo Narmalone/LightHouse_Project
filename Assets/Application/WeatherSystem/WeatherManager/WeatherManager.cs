@@ -18,7 +18,7 @@ namespace LightHouse.Weather
         [SerializeField] public WeatherTimeline Timeline;
 
         [Header("Time")]
-        [SerializeField] public TimeConfiguration TimeConfig;
+        [SerializeField] private TimeConfiguration _timeConfig;
 
         #endregion
 
@@ -51,10 +51,13 @@ namespace LightHouse.Weather
 
         private void Awake()
         {
-            _totalSecondsForGame = TimeConfig.GetTotalGameTimeInSeconds();
-            _secondsPerDay = TimeConfig.GetTotalSecondsPerDay();
+            _totalSecondsForGame = _timeConfig.GetTotalGameTimeInSeconds();
+            _secondsPerDay = _timeConfig.GetTotalSecondsPerDay();
+        }
 
-            Timeline.GenerateTimeline(_configDatabase, _totalSecondsForGame);
+        private void Start()
+        {
+            Timeline.GenerateTimeline(_configDatabase, _timeConfig);
 
             // Init segment 0
             _currentIndex = 0;

@@ -1,15 +1,21 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using LightHouse.Game.Computer.LEO;
+﻿using LightHouse.Game.Computer.LEO;
+using LightHouse.Game.Computer.LEO.Mails;
 using LightHouse.Game.Computer.LEO.Supplies;
+using LightHouse.Game.DayNightSystem;
 using LightHouse.Money;
-using UnityEngine.UI;
+using LightHouse.Weather;
+using LightHouse.Weather.Utils;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class SupplyManager : LEOWindow
 {
     [Header("Config")]
     [SerializeField] private SupplyConfigurator _configurator;
+    [SerializeField] private WeatherTimeline _timeline;
+    [SerializeField] private TimeConfiguration _timeConfig;
 
     [Header("Controllers")]
     [SerializeField] private ShopController _shopController;
@@ -26,6 +32,8 @@ public class SupplyManager : LEOWindow
     public ShopController ShopController => _shopController;
     public OrderController OrderController => _orderController;
 
+    public event Action<MailDatas> SendOrderRecapMail;
+
     private void Awake()
     {
         BuildRuntimeConfig(_configurator);
@@ -37,6 +45,7 @@ public class SupplyManager : LEOWindow
         _orderController.OnOrderPlus += OnOrderPlus;
         _orderController.OnOrderMinus += OnOrderMinus;
         _confirmOrderButton.interactable = false;
+        _confirmOrderButton.onClick.AddListener(OnConfirmOrderCliqued);
 
         _resetOrderButton.onClick.AddListener(OnResetOrderCliqued);
 
@@ -55,11 +64,20 @@ public class SupplyManager : LEOWindow
         _shopController.OnShopMinus -= OnShopMinus;
         _orderController.OnOrderPlus -= OnOrderPlus;
         _orderController.OnOrderMinus -= OnOrderMinus;
+        _confirmOrderButton.onClick.RemoveListener(OnConfirmOrderCliqued);
         _resetOrderButton.onClick.RemoveListener(OnResetOrderCliqued);
         PlayerCurrency.OnBalanceChanged -= PlayerCurrency_OnBalanceChanged;
 
         _shopController.Clear();
         _orderController.Clear();
+    }
+
+    private void LateUpdate()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            PlayerCurrency.Add(150);
+        }
     }
 
     /// <summary>
@@ -70,7 +88,42 @@ public class SupplyManager : LEOWindow
     /// <exception cref="NotImplementedException"></exception>
     private void PlayerCurrency_OnBalanceChanged(float obj)
     {
-        
+        UpdateOrderUI();
+    }
+
+    private void OnConfirmOrderCliqued()
+    {
+        List<MailGenerator.SupplyOrderLine> lines = new List<MailGenerator.SupplyOrderLine>();
+        foreach (var itemType in _orderController.OrderItems.Values)
+        {
+           /* for(int i = 0; i < itemType.Mydatas.SelectedAmountToBuy; i++)
+            {
+
+            }*/
+            MailGenerator.SupplyOrderLine newLine = new MailGenerator.SupplyOrderLine(itemType.Mydatas.Name, itemType.Mydatas.SelectedAmountToBuy, itemType.Mydatas.Cost);
+            lines.Add(newLine);
+        }
+
+        //TO DOO savoir si la prochaine météo est à chier à cause d'une tempête / vents, pluie forts
+        var weatherDataWhenWhenShipped = WeatherUtils.GetWeatherAt((byte)(TimeHandlerData.CurrentDay + 2), TimeHandlerData.CurrentTime, _timeline, _timeConfig);
+
+        bool shouldBeDelayed = weatherDataWhenWhenShipped.WindSpeed >= 75f || weatherDataWhenWhenShipped.WeatherType == WeatherType.Stormy 
+            || weatherDataWhenWhenShipped.WeatherType == WeatherType.Windy;
+
+        var mails = MailGenerator.GenerateMailFromSupplyOrderTemplate
+            (
+                dateFormat: TimeUtility.FormatCurrentDate(),
+                keeperName: "Dev-00",
+                items: lines,
+                deliveryInDays: 2,
+                deliveryHour: TimeHandlerData.CurrentTime,
+                arrivalDay: (byte)(TimeHandlerData.CurrentDay + 2),
+                arrivalTime: TimeHandlerData.CurrentTime,
+                isDelayed: shouldBeDelayed
+            );
+
+        SendOrderRecapMail?.Invoke(mails);
+        //SendOrderRecapMail?.Invoke(MailGenerator.GenerateMailFromSupplyOrderTemplate_Demo());
     }
 
     private void BuildRuntimeConfig(SupplyConfigurator src)

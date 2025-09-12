@@ -15,6 +15,8 @@ namespace LightHouse.Weather
 
         public List<WeatherData> Weathers = new();
 
+        public WeatherForecast Forecast = null;
+
         /// <summary>Appelé après régénération complète de la timeline.</summary>
         public static Action OnWeatherGenerated { get; set; }
 
@@ -23,9 +25,11 @@ namespace LightHouse.Weather
         #region Generation
 
         /// <param name="totalTime">Durée totale du jeu (secondes).</param>
-        public void GenerateTimeline(WeatherConfigDatabase database, float totalTime)
+        public void GenerateTimeline(WeatherConfigDatabase database, TimeConfiguration timeConfig)
         {
             Weathers.Clear();
+
+            float totalTime = timeConfig.GetTotalGameTimeInSeconds();
 
             float t = 0f;
             while (t < totalTime)
@@ -58,6 +62,7 @@ namespace LightHouse.Weather
                 t += duration;
             }
 
+            Forecast = new WeatherForecast(timeConfig, this);
             OnWeatherGenerated?.Invoke();
         }
 

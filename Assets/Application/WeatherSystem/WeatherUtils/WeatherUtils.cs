@@ -1,22 +1,49 @@
+﻿using LightHouse.Game.Computer.LEO.Weather.Wind;
 using UnityEngine;
 
 namespace LightHouse.Weather.Utils
 {
+    /// <summary>
+    /// Utilitaires météo :
+    ///  - Interpolations de WeatherData (y compris orientation vent).
+    ///  - Conversion angle ↔ orientation cardinale.
+    ///  - Dérivation d’un WeatherType à partir de seuils (base de définitions).
+    ///  - Accès "timeline" (récupération de la météo au temps T ou jour/heure).
+    ///  - Aides d’affichage (cardinal letters, état de mer simplifié).
+    /// </summary>
     public static class WeatherUtils
     {
-        #region Public API (d�j� ok)
+        #region ======================= Config / Tuning =======================
 
+        // Poids du scoring "DetermineWeatherType". Ajustez selon vos définitions.
+        private const float WEIGHT_IN_RANGE_MAIN = 1f;   // humidité / pression / vent / air
+        private const float WEIGHT_IN_RANGE_WATER = 0.5f; // eau un peu moins discriminant
+
+        // Tolérance numérique.
+        private const float EPS = 1e-5f;
+
+        #endregion
+
+        #region ======================= Public API (Interpolation & Type) =======================
+
+        /// <summary>
+        /// Interpole deux <see cref="WeatherData"/> pour t∈[0..1].
+        /// - Les méta temporelles (Start/Duration) sont gardées depuis <paramref name="from"/>.
+        /// - L’orientation du vent est interpolée circulairement (LerpAngle) et normalisée [0..360).
+        /// - WeatherType hérite de from (t&lt;0.5) ou to (t≥0.5) – simple "step" visuel.
+        /// </summary>
         public static WeatherData LerpWeatherData(WeatherData from, WeatherData to, float t)
         {
             t = Mathf.Clamp01(t);
 
+            // Interpolation angulaire + normalisation
             float rawOrientation = Mathf.LerpAngle(from.WindOrientation, to.WindOrientation, t);
             float normalizedOrientation = NormalizeAngle360(rawOrientation);
 
             return new WeatherData
             {
-                // on ne lerp pas les m�tadonn�es temporelles
-                WeatherType = t < 0.5f ? from.WeatherType : to.WeatherType,
+                // On ne lerp pas les métadonnées temporelles
+                WeatherType = (t < 0.5f) ? from.WeatherType : to.WeatherType,
                 StartTimeInSeconds = from.StartTimeInSeconds,
                 DurationInSeconds = from.DurationInSeconds,
 
@@ -30,13 +57,21 @@ namespace LightHouse.Weather.Utils
             };
         }
 
+        /// <summary>
+        /// Convertit un angle en orientation cardinale discrète.
+        /// 0=N, 45=NE, 90=E, …, 315=NW. L’angle est d’abord normalisé en [0..360).
+        /// </summary>
         public static WindOrientationType AngleToOrientationType(float angle)
         {
             angle = NormalizeAngle360(angle);
-            int sector = Mathf.RoundToInt(angle / 45f) % 8;
+            int sector = Mathf.RoundToInt(angle / 45f) % 8; // 8 secteurs de 45°
             return (WindOrientationType)sector;
         }
 
+        /// <summary>
+        /// Choisit le <see cref="WeatherType"/> le plus cohérent en scorant chaque définition :
+        /// pour chaque range respecté → +poids ; sinon → -poids.
+        /// </summary>
         public static WeatherType DetermineWeatherType(
             float humidity, float pressure, float airTemp, float windSpeed, float waterTemp,
             WeatherConfigDatabase definitionDatabase)
@@ -47,11 +82,11 @@ namespace LightHouse.Weather.Utils
             foreach (var def in definitionDatabase.Definitions)
             {
                 float score = 0f;
-                score += IsInRange(humidity, def.HumidityRange) ? 1f : -1f;
-                score += IsInRange(pressure, def.PressureRange) ? 1f : -1f;
-                score += IsInRange(windSpeed, def.WindSpeedRange) ? 1f : -1f;
-                score += IsInRange(airTemp, def.AirTemperatureRange) ? 1f : -1f;
-                score += IsInRange(waterTemp, def.WaterTemperatureRange) ? 0.5f : -0.5f;
+                score += ScoreRange(humidity, def.HumidityRange, WEIGHT_IN_RANGE_MAIN);
+                score += ScoreRange(pressure, def.PressureRange, WEIGHT_IN_RANGE_MAIN);
+                score += ScoreRange(windSpeed, def.WindSpeedRange, WEIGHT_IN_RANGE_MAIN);
+                score += ScoreRange(airTemp, def.AirTemperatureRange, WEIGHT_IN_RANGE_MAIN);
+                score += ScoreRange(waterTemp, def.WaterTemperatureRange, WEIGHT_IN_RANGE_WATER);
 
                 if (score > bestScore) { bestScore = score; bestMatch = def.Type; }
             }
@@ -60,28 +95,33 @@ namespace LightHouse.Weather.Utils
 
         #endregion
 
-        #region Query helpers (GetWeatherAt)
+        #region ======================= Timeline Query (GetWeatherAt*) =======================
 
         /// <summary>
-        /// Renvoie la m�t�o interpol�e pour un <paramref name="day"/> (0-based) et une <paramref name="hour"/> (0..24).
+        /// Renvoie la météo interpolée pour un <paramref name="day"/> (0-based) et une <paramref name="hour"/> (0..24).
+        /// Si <paramref name="wrap"/> est true, boucle dans la timeline ; sinon clamp au début/fin.
         /// </summary>
-        /// <param name="wrap">
-        /// Si true, l�instant demand� boucle dans la timeline (utile pour une timeline cyclique).
-        /// </param>
-        public static WeatherData GetWeatherAt(byte day, float hour, WeatherTimeline timeline, TimeConfiguration config, bool wrap = false)
+        public static WeatherData GetWeatherAt(
+            byte day, float hour,
+            WeatherTimeline timeline, TimeConfiguration config,
+            bool wrap = false)
         {
             float secondsPerDay = config.GetTotalSecondsPerDay();
-            // clamp l�heure dans [0,24] pour �viter les surprises
+
+            // Clamp l’heure pour éviter des surprises
             float clampedHour = Mathf.Clamp(hour, 0f, 24f);
+
+            // Conversion jour/heure -> secondes de jeu absolues
             float targetTime = day * secondsPerDay + (clampedHour / 24f) * secondsPerDay;
 
             return GetWeatherAtAbsoluteSeconds(targetTime, timeline, wrap);
         }
 
         /// <summary>
-        /// Variante en secondes de jeu absolues (jour + heure d�j� convertis).
+        /// Variante en secondes de jeu absolues (jour + heure déjà convertis).
         /// </summary>
-        public static WeatherData GetWeatherAtAbsoluteSeconds(float gameSeconds, WeatherTimeline timeline, bool wrap = false)
+        public static WeatherData GetWeatherAtAbsoluteSeconds(
+            float gameSeconds, WeatherTimeline timeline, bool wrap = false)
         {
             var weathers = timeline.Weathers;
             if (weathers == null || weathers.Count == 0) return null;
@@ -89,47 +129,85 @@ namespace LightHouse.Weather.Utils
             int last = weathers.Count - 1;
             float timelineEnd = weathers[last].StartTimeInSeconds + weathers[last].DurationInSeconds;
 
-            // boucle ou clamp dans la timeline
-            if (wrap && timelineEnd > 0f) gameSeconds = Mathf.Repeat(gameSeconds, timelineEnd);
-            else gameSeconds = Mathf.Clamp(gameSeconds, 0f, Mathf.Max(0f, timelineEnd - Mathf.Epsilon));
+            // Boucle ou clamp dans la timeline
+            if (wrap && timelineEnd > 0f)
+                gameSeconds = Mathf.Repeat(gameSeconds, timelineEnd);
+            else
+                gameSeconds = Mathf.Clamp(gameSeconds, 0f, Mathf.Max(0f, timelineEnd - Mathf.Epsilon));
 
-            // Recherche lin�aire (suffit largement; passer en binaire si besoin)
+            // Recherche linéaire (suffit largement; passer en binaire si besoin)
             for (int i = 0; i < weathers.Count; i++)
             {
                 var cur = weathers[i];
                 float start = cur.StartTimeInSeconds;
                 float end = start + cur.DurationInSeconds;
 
-                // inclut la fronti�re de fin avec >= sur le segment suivant via la boucle
-                if (gameSeconds < end || (i == last && Mathf.Approximately(gameSeconds, end)))
+                // Inclut la frontière de fin avec >= sur le segment suivant via la boucle
+                bool onLastExactEnd = (i == last && Mathf.Approximately(gameSeconds, end));
+                if (gameSeconds < end || onLastExactEnd)
                 {
-                    // segment suivant : soit le suivant r�el, soit wrap vers le premier, soit cur lui-m�me (constant) en fin de timeline
+                    // Segment suivant : réel, wrap vers le premier, ou cur lui-même (constant) si fin
                     var next = (i < last) ? weathers[i + 1] : (wrap ? weathers[0] : cur);
 
                     float local = gameSeconds - start;
-                    float dur = Mathf.Max(1e-5f, cur.DurationInSeconds);
+                    float dur = Mathf.Max(EPS, cur.DurationInSeconds);
                     float t = Mathf.Clamp01(local / dur);
 
                     return LerpWeatherData(cur, next, t);
                 }
             }
 
-            // fallback robuste
+            // Fallback robuste
             return weathers[last];
         }
 
         #endregion
 
-        #region Helpers
+        #region ======================= Affichage / Libellés =======================
 
+        /// <summary>
+        /// Retourne la lettre cardinale courte pour une orientation (N, NE, E, …).
+        /// </summary>
+        public static string GetCardinalLetter(LightHouse.Weather.WindOrientationType t)
+        {
+            switch (t)
+            {
+                case LightHouse.Weather.WindOrientationType.North: return "N";
+                case LightHouse.Weather.WindOrientationType.North_East: return "NE";
+                case LightHouse.Weather.WindOrientationType.East: return "E";
+                case LightHouse.Weather.WindOrientationType.South_East: return "SE";
+                case LightHouse.Weather.WindOrientationType.South: return "S";
+                case LightHouse.Weather.WindOrientationType.South_West: return "SW";
+                case LightHouse.Weather.WindOrientationType.West: return "W";
+                case LightHouse.Weather.WindOrientationType.North_West: return "NW";
+                default: return "";
+            }
+        }
+
+        #endregion
+
+        #region ======================= Helpers num / scoring =======================
+
+        /// <summary>
+        /// Normalise un angle en degrés dans [0..360).
+        /// </summary>
         public static float NormalizeAngle360(float angle)
         {
             float a = angle % 360f;
             return (a < 0f) ? a + 360f : a;
         }
 
+        /// <summary>
+        /// Test d’appartenance à un intervalle [x..y] (Vector2.x = min, Vector2.y = max).
+        /// </summary>
         private static bool IsInRange(float value, Vector2 range) =>
             value >= range.x && value <= range.y;
+
+        /// <summary>
+        /// Rend +w si la valeur est dans la plage, -w sinon (pour le scoring).
+        /// </summary>
+        private static float ScoreRange(float v, Vector2 range, float weight) =>
+            IsInRange(v, range) ? +weight : -weight;
 
         #endregion
     }

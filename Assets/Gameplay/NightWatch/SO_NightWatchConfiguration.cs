@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace LightHouse.Game.Nightwatch
 {
-    [CreateAssetMenu(fileName = "Nightwatch_", menuName = "LightHouse/Computer/LEO/New Config")]
+    [CreateAssetMenu(fileName = "Nightwatch_", menuName = "LightHouse/Computer/LEO/NightWatch/New Config")]
     public class SO_NightWatchConfiguration : ScriptableObject
     {
         [Header(" --- GLOBAL CONFIG --- ")]

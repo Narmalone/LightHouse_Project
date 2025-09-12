@@ -1,5 +1,6 @@
 using LightHouse.Game.Computer.LEO.Mails;
 using LightHouse.Game.Computer.LEO.NightWatch;
+using LightHouse.Game.Computer.LEO.Weather;
 using LightHouse.Game.Computer.OS;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,11 +24,14 @@ namespace LightHouse.Game.Computer.LEO
         [SerializeField] private LEOWindow[] _windows;
         [SerializeField] private LEOWindowButton[] _windowsButton;
         [SerializeField] private NightWatchController _nightWatchController;
+        [SerializeField] private UI_WeatherController _weatherController;
+        [SerializeField] private SupplyManager _supplyManager;
         [SerializeField] private UI_Mails _mailsController;
 
         private Dictionary<ELEOWindow, LEOWindow> _windowMap;
         public LEOWindow CurrentActiveWindow { get; private set; }
         public NightWatchController NightWatch => _nightWatchController;
+        public UI_WeatherController UI_Weather => _weatherController;
 
         private bool _firstTimeOpening = false;
 
@@ -35,16 +39,29 @@ namespace LightHouse.Game.Computer.LEO
         {
             base.Awake();
             _windowMap = new Dictionary<ELEOWindow, LEOWindow>();
-            _nightWatchController.PleaseSendReport += _nightWatchController_PleaseSendReport;
+            _nightWatchController.SendMailRequested += NightWatchController_SendMailRequested;
+            _weatherController.SendMailRequested += WeatherController_SendMailRequested;
+            _supplyManager.SendOrderRecapMail += SupplyManager_SendOrderRecapMail;
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            _nightWatchController.PleaseSendReport -= _nightWatchController_PleaseSendReport;
+            _nightWatchController.SendMailRequested -= NightWatchController_SendMailRequested;
+            _weatherController.SendMailRequested -= WeatherController_SendMailRequested;
+            _supplyManager.SendOrderRecapMail -= SupplyManager_SendOrderRecapMail;
         }
 
-        private void _nightWatchController_PleaseSendReport(MailDatas datas)
+        private void SupplyManager_SendOrderRecapMail(MailDatas obj)
+        {
+            _mailsController.GenerateMail(obj);
+        }
+
+        private void NightWatchController_SendMailRequested(MailDatas datas)
+        {
+            _mailsController.GenerateMail(datas);
+        }
+        private void WeatherController_SendMailRequested(MailDatas datas)
         {
             _mailsController.GenerateMail(datas);
         }

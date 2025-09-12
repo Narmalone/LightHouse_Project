@@ -448,9 +448,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             nameOK = _anomalyDatabase.TryGetAnomaly(_boatNameInput, out var byName);
             freqOK = _anomalyDatabase.TryGetAnomaly(_selectedBoatFrequency, out var byFreq);
 
-            Debug.Log(nameOK);
-            Debug.Log(freqOK);
-
             // Déterminer le "candidat" final
             if (nameOK && freqOK)
             {
@@ -475,7 +472,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             }
             else
             {
-                // Ni nom ni fréquence → impossible d’identifier le bateau
+                // Ni nom ni fréquence -> impossible d’identifier le bateau
                 flagOK = false;
                 typeOK = false;
                 return DataStatus.DataMissmatch;
@@ -515,9 +512,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             return false;
         }
 
-
         // ----------------------------
-        // UI (aucun calcul)
+        // UI 
         // ----------------------------
         private void GenerateBoatReportElements_ForSingleBoat(RectTransform parent, MoneyBoatBreakdown b)
         {
@@ -539,26 +535,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
                 $"{(total >= 0 ? "+ " : "- ")}{Mathf.Abs(total)}$",
                 total >= 0 ? Color.green : Color.red);
         }
-
-       /* private void GenerateBoatReportElements_GlobalRecap(RectTransform parent, MoneyAllBoatsBreakdown all)
-        {
-            CreateHeader(parent, "Night Recap");
-
-            int flat = all.GetTotalFlat();
-            int bonus = all.GetTotalBonusFromTime();
-            int tries = all.GetTotalNumberOfTry();
-            int grand = all.GetGrandTotal();
-
-            CreateReportElement(parent, "Total per reports",
-                $"{(flat >= 0 ? "+ " : "- ")}{Mathf.Abs(flat)}$", flat >= 0 ? Color.green : Color.red);
-            CreateReportElement(parent, "Bonuses from time",
-                $"{(bonus >= 0 ? "+ " : "- ")}{Mathf.Abs(bonus)}$", bonus >= 0 ? Color.green : Color.red);
-            CreateReportElement(parent, "Penalties (tries)",
-                $"{(tries >= 0 ? "+ " : "- ")}{Mathf.Abs(tries)}$", tries >= 0 ? Color.green : Color.red);
-
-            CreateReportElement(parent, "Grand total",
-                $"{(grand >= 0 ? "+ " : "- ")}{Mathf.Abs(grand)}$", grand >= 0 ? Color.green : Color.red);
-        }*/
 
         public MoneyAllBoatsBreakdown GetTodaysResult()
         {

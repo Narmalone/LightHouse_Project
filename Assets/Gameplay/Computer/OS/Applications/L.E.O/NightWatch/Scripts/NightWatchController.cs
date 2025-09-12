@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 namespace LightHouse.Game.Computer.LEO.NightWatch
 {
     public enum E_NightWatchMode
@@ -36,14 +35,18 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         private Dictionary<E_NightWatchMode, NightWatchReportWindow> _windowMap;
         private NightWatchReportWindow _activeWindow;
 
-        private bool _isReportDoneToday = false;
-        private MailDatas CurrentNightWatchRecap;
-        public event Action<MailDatas> PleaseSendReport;
+        // ---- Etat de cycle journalier ----
+        private int _startDay, _endDay;                 // bornes absolues (jour)
+        private bool _cycleInitialized = false;         // initialisation effectuée pour ce cycle ?
+        private bool _cycleCompleted = false;           // recap déjà envoyé pour ce cycle ?
+
+        public event Action<MailDatas> SendMailRequested;
 
         private void Awake()
         {
             _windowMap = new Dictionary<E_NightWatchMode, NightWatchReportWindow>();
             _backButton.App = _manager;
+
             foreach (var w in _windows)
             {
                 w.Close();
@@ -63,70 +66,16 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
             TimeHandlerData.OnTimeChanged -= OnTimeUpdated;
         }
 
-        private void BuoysOnReportFailed(string arg1, bool arg2, bool arg3)
-        {
-            _signalsController.TryForceRemoveSignal?.Invoke(arg1, arg2, arg3);
-        }
-
         private void OnValidate()
         {
             foreach (var w in _windows)
-            {
                 w.SetNightWatch(this);
-            }
         }
 
-        private int _startDay, _endDay;
-
-        private void ComputerNightwatch()
+        private void Start()
         {
-            _startDay = TimeHandlerData.CurrentDay;
-            if (_nightwatchConfig.EndHour < _nightwatchConfig.StartHour)
-            {
-                _endDay = _startDay + 1;
-            }
-            else _endDay = _startDay;
-
-        }
-
-        private void OnTimeUpdated(float obj)
-        {
-            if (!_isReportDoneToday && TimeUtility.HasReachedDate(_endDay, _nightwatchConfig.EndHour))
-            {
-                GenerateRecap();
-                _isReportDoneToday = true;
-                _buoysReportController.OnNightwatchEndedToday();
-                _boatsReportController.OnNightwatchEndedToday();
-            }
-            else if(_isReportDoneToday && TimeUtility.HasReachedDate(_endDay, _nightwatchConfig.StartHour))
-            {
-                _isReportDoneToday = false;
-                ComputerNightwatch();
-            }
-        }
-
-        public void GenerateRecap()
-        {
-            BuoyReportResult buoyTodaysResult = _buoysReportController.GetTodaysResult();
-            MoneyAllBoatsBreakdown boatTodaysResult = _boatsReportController.GetTodaysResult();
-
-            var mail = MailGenerator.GenerateMailFromNightwatchTemplate(
-                dateFormat: TimeUtility.FormatCurrentDate(),
-                keeperName: "{Keepers Name}",
-                boatsCorrect: boatTodaysResult.AllBoats.Count,
-                boatsErrors: boatTodaysResult.GetTotalNumberOfTry(),
-                buoysNominal: buoyTodaysResult.CorrectValidCount,
-                buoysDefective: buoyTodaysResult.CorrectInvalidCount,
-                buoysErrors: buoyTodaysResult.ErrorCount,
-                totalEarnings: boatTodaysResult.GetGrandTotal() + buoyTodaysResult.TotalEarnedDuringTheNight,
-                captainsNote: "",
-                TimeHandlerData.CurrentDay,
-                TimeHandlerData.CurrentTime
-                );
-
-            //var mail = MailGenerator.GenerateMailFromNightwatchTemplate();
-
-            PleaseSendReport?.Invoke(mail);
+            ArmCycleForDay(TimeHandlerData.CurrentDay);
+            SwitchTo(E_NightWatchMode.Signals);
         }
 
         public override void Open()
@@ -141,10 +90,122 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
             _sonarUIController.StopRadar();
         }
 
-        private void Start()
+        private void BuoysOnReportFailed(string id, bool arg2, bool arg3)
         {
-            ComputerNightwatch();
-            SwitchTo(E_NightWatchMode.Signals);
+            _signalsController.TryForceRemoveSignal?.Invoke(id, arg2, arg3);
+        }
+
+        // ------------------------------------------------------------------------------
+        // Cycle management
+        // ------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Ancre un nouveau cycle sur 'anchorDay'.
+        /// EndDay = anchorDay (+1 si EndHour &lt; StartHour, i.e. cycle qui traverse minuit).
+        /// Reset des flags d'état.
+        /// </summary>
+        private void ArmCycleForDay(int anchorDay)
+        {
+            _startDay = anchorDay;
+            _endDay = _startDay + (_nightwatchConfig.EndHour < _nightwatchConfig.StartHour ? 1 : 0);
+
+            _cycleInitialized = false;
+            _cycleCompleted = false;
+
+            // Debug
+            // Debug.Log($"[Nightwatch] Arm cycle for day={_startDay} (start={_nightwatchConfig.StartHour}h, endDay={_endDay}, end={_nightwatchConfig.EndHour}h)");
+        }
+
+        /// <summary> S'exécute quand on entre dans la fenêtre [start..end). </summary>
+        private void InitializeCycleIfNeeded()
+        {
+            if (_cycleInitialized) return;
+
+            if (TimeUtility.HasReachedDate(_startDay, _nightwatchConfig.StartHour))
+            {
+                _cycleInitialized = true;
+                // Place pour reinit/prepare tes systèmes si besoin (reset de compteurs, etc.)
+                // _buoysReportController.OnNightwatchStartToday(); // si tu as ce hook
+                // _boatsReportController.OnNightwatchStartToday(); // si tu as ce hook
+                // Debug.Log("[Nightwatch] Initialized for current cycle.");
+            }
+        }
+
+        /// <summary> S'exécute UNE SEULE FOIS à l'instant de fin. </summary>
+        private void CompleteCycleIfNeeded()
+        {
+            if (_cycleCompleted) return;
+
+            if (TimeUtility.HasReachedDate(_endDay, _nightwatchConfig.EndHour))
+            {
+                // IMPORTANT : si StartHour == EndHour, on peut arriver ici au même tick que l'init.
+                // L'ordre des appels dans OnTimeUpdated garantit qu'on init d'abord, puis on close.
+                GenerateRecap();
+                _cycleCompleted = true;
+
+                _buoysReportController.OnNightwatchEndedToday();
+                _boatsReportController.OnNightwatchEndedToday();
+                Debug.Log("[Nightwatch] Recap generated (once).");
+            }
+        }
+
+        /// <summary>
+        /// Passe au cycle du lendemain quand on atteint le prochain start.
+        /// Ré-initialisation retardée au lendemain uniquement (évite les boucles).
+        /// </summary>
+        private void AdvanceToNextDayIfNeeded()
+        {
+            if (!_cycleCompleted) return; // On n'avance au lendemain que si le cycle courant est terminé
+
+            int nextStartDay = _startDay + 1;
+
+            if (TimeUtility.HasReachedDate(nextStartDay, _nightwatchConfig.StartHour))
+            {
+                // Armer le nouveau cycle pour le lendemain
+                ArmCycleForDay(nextStartDay);
+
+                // On peut initialiser immédiatement si on est déjà à/au-delà de l'heure de start
+                InitializeCycleIfNeeded();
+                // Debug.Log("[Nightwatch] Advanced to next day and (re)initialized.");
+            }
+        }
+
+        private void OnTimeUpdated(float _)
+        {
+            // 1) Si le cycle d'hier est terminé et qu'on a atteint le START du lendemain -> armer + init
+            AdvanceToNextDayIfNeeded();
+
+            // 2) Initialiser quand on atteint la borne de départ du cycle courant
+            InitializeCycleIfNeeded();
+
+            // 3) Clore quand on atteint la borne de fin du cycle courant (une seule fois)
+            CompleteCycleIfNeeded();
+        }
+
+        // ------------------------------------------------------------------------------
+        // Récap & UI
+        // ------------------------------------------------------------------------------
+
+        public void GenerateRecap()
+        {
+            BuoyReportResult buoyTodaysResult = _buoysReportController.GetTodaysResult();
+            MoneyAllBoatsBreakdown boatTodaysResult = _boatsReportController.GetTodaysResult();
+
+            MailDatas mail = MailGenerator.GenerateMailFromNightwatchTemplate(
+                dateFormat: TimeUtility.FormatCurrentDate(),
+                keeperName: "{Keepers Name}",
+                boatsCorrect: boatTodaysResult.AllBoats.Count,
+                boatsErrors: boatTodaysResult.GetTotalNumberOfTry(),
+                buoysNominal: buoyTodaysResult.CorrectValidCount,
+                buoysDefective: buoyTodaysResult.CorrectInvalidCount,
+                buoysErrors: buoyTodaysResult.ErrorCount,
+                totalEarnings: boatTodaysResult.GetGrandTotal() + buoyTodaysResult.TotalEarnedDuringTheNight,
+                captainsNote: "",
+                arrivalDay: TimeHandlerData.CurrentDay,
+                arrivalTime: TimeHandlerData.CurrentTime
+            );
+
+            SendMailRequested?.Invoke(mail);
         }
 
         public void SwitchTo(E_NightWatchMode target)
@@ -162,7 +223,5 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
                 Debug.LogWarning($"No NightWatch window for type {target}");
             }
         }
-
     }
 }
-

@@ -528,6 +528,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9fc10f7b2d7764e438abb5693052ce99, type: 3}
+--- !u!114 &279505120 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2534725618443307591, guid: 9fc10f7b2d7764e438abb5693052ce99,
+    type: 3}
+  m_PrefabInstance: {fileID: 279505119}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5c652b1c70d3e14d80a69c60f355006, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &332572156
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1518,7 +1530,7 @@ PrefabInstance:
     - target: {fileID: 479686033230738422, guid: 7f5044dbb210b124d8407f6a62907085,
         type: 3}
       propertyPath: currentTime
-      value: 20
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 6853006418761821015, guid: 7f5044dbb210b124d8407f6a62907085,
         type: 3}
@@ -1580,6 +1592,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f5044dbb210b124d8407f6a62907085, type: 3}
+--- !u!108 &1396112615 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 1261347421197418367, guid: 7f5044dbb210b124d8407f6a62907085,
+    type: 3}
+  m_PrefabInstance: {fileID: 1396112614}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1453083851
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,11 +1871,6 @@ PrefabInstance:
       propertyPath: _anomalyChances
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2212473700124291185, guid: ebcf399c18f8f814aaaed7b1881abb40,
-        type: 3}
-      propertyPath: _maxBoatsSpawnDuringNight
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 8210919917960049910, guid: ebcf399c18f8f814aaaed7b1881abb40,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2030,7 +2043,12 @@ PrefabInstance:
         type: 3}
       propertyPath: SunLight
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1396112615}
+    - target: {fileID: 5601232681259205275, guid: ab9cdf1c0905d3849b60a332517e2195,
+        type: 3}
+      propertyPath: WeatherManager
+      value: 
+      objectReference: {fileID: 279505120}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

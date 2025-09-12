@@ -1,15 +1,29 @@
-using LightHouse.Weather;
+Ôªøusing LightHouse.Weather;
 using LightHouse.Game.Computer.LEO.Weather.Pressure;
 using UnityEngine;
 
 namespace LightHouse.Game.Computer.LEO.Weather
 {
+    public struct WeatherPayoutResult
+    {
+        public float Payout;   // argent final gagn√©
+        public float InputValue;
+        public float Accuracy; // EN POURCENT (0..100)
+
+        public WeatherPayoutResult(float payout, float accuracy, float value)
+        {
+            Payout = payout;
+            Accuracy = accuracy;
+            InputValue = value;
+        }
+    }
+
     /// <summary>
-    /// Calcule les gains mÈtÈo :
+    /// Calcule les gains m√©t√©o :
     /// - delta = |input - base|
     /// - delta <= fullMargin     => 100% du gain
     /// - delta >= earningMargin  => 0
-    /// - sinon interpolation via PayoutCurve entre 1 et 0
+    /// - sinon interpolation via PayoutCurve entre 1 et 0 (puis *100 pour accuracy)
     /// </summary>
     public static class WeatherMoneyCalculator
     {
@@ -17,10 +31,22 @@ namespace LightHouse.Game.Computer.LEO.Weather
 
         private const float EPS = 1e-5f;
 
+        private static float Round2(float v) => Mathf.Round(v * 100f) / 100f;
+
         /// <summary>
-        /// …value un payout avec "deadzone" (fullMargin) et coupure (earningMargin).
+        /// Convertit 0..1 -> 0..100 si on d√©tecte une valeur "petite".
+        /// Laisse passer 0..100 tel quel. Utile pour l‚Äôhumidit√©.
         /// </summary>
-        private static float EvaluatePayoutWithDeadzone(
+        private static float ToPercentIf01(float v)
+        {
+            return (v > 0f && v <= 1.0001f) ? v * 100f : v;
+        }
+
+        /// <summary>
+        /// √âvalue un payout avec "deadzone" (fullMargin) et coupure (earningMargin).
+        /// Retourne aussi la pr√©cision (Accuracy en 0..100).
+        /// </summary>
+        private static WeatherPayoutResult EvaluatePayoutWithDeadzone(
             float baseValue,
             float inputValue,
             float maxMoneyWhenCorrect,
@@ -28,12 +54,12 @@ namespace LightHouse.Game.Computer.LEO.Weather
             float earningMargin,
             AnimationCurve payoutCurve)
         {
-            if (maxMoneyWhenCorrect <= 0f) return 0f;
+            if (maxMoneyWhenCorrect <= 0f)
+                return new WeatherPayoutResult(0f, 0f, inputValue);
 
-            // Corrige une config incohÈrente : earning doit Ítre >= full
+            // S'assure que earningMargin >= fullMargin
             if (earningMargin < fullMargin)
             {
-                // swap soft
                 float tmp = earningMargin;
                 earningMargin = fullMargin;
                 fullMargin = tmp;
@@ -41,31 +67,31 @@ namespace LightHouse.Game.Computer.LEO.Weather
 
             float delta = Mathf.Abs(inputValue - baseValue);
 
-            // Zone ‡ 100%
-            if (delta <= fullMargin) return maxMoneyWhenCorrect;
+            // Zone √† 100%
+            if (delta <= fullMargin)
+                return new WeatherPayoutResult(Round2(maxMoneyWhenCorrect), 100f, inputValue);
 
-            // Au-del‡ : 0
-            if (delta >= earningMargin) return 0f;
+            // Au-del√† de earning => 0
+            if (delta >= earningMargin)
+                return new WeatherPayoutResult(0f, 0f, inputValue);
 
-            // Entre les deux : normalise et applique la courbe
+            // Entre les deux : interpolation
             float denom = Mathf.Max(EPS, (earningMargin - fullMargin));
             float x = Mathf.Clamp01((delta - fullMargin) / denom); // 0..1
             float mult = payoutCurve != null ? payoutCurve.Evaluate(x) : (1f - x);
-
-            // Clamp par sÈcuritÈ
             mult = Mathf.Clamp01(mult);
 
-            float payout = maxMoneyWhenCorrect * mult;
+            float payout = Round2(maxMoneyWhenCorrect * mult);
+            float accuracyPct = mult * 100f;
 
-            // Arrondi au centime (optionnel)
-            return Mathf.Round(payout * 100f) / 100f;
+            return new WeatherPayoutResult(payout, accuracyPct, inputValue);
         }
 
         #endregion
 
-        #region Public calculators
+        #region Public calculators (tous retournent PayoutResult)
 
-        public static float CalculateWaterTemperature(float baseTemp, float inputTemp, SO_WeatherMoneyResults cfg)
+        public static WeatherPayoutResult CalculateWaterTemperature(float baseTemp, float inputTemp, SO_WeatherMoneyResults cfg)
         {
             return EvaluatePayoutWithDeadzone(
                 baseTemp, inputTemp,
@@ -76,7 +102,7 @@ namespace LightHouse.Game.Computer.LEO.Weather
             );
         }
 
-        public static float CalculateAirTemperature(float baseTemp, float inputTemp, SO_WeatherMoneyResults cfg)
+        public static WeatherPayoutResult CalculateAirTemperature(float baseTemp, float inputTemp, SO_WeatherMoneyResults cfg)
         {
             return EvaluatePayoutWithDeadzone(
                 baseTemp, inputTemp,
@@ -87,11 +113,14 @@ namespace LightHouse.Game.Computer.LEO.Weather
             );
         }
 
-        public static float CalculateHumidity(float baseValue, float inputValue, SO_WeatherMoneyResults cfg)
+        public static WeatherPayoutResult CalculateHumidity(float baseValue, float inputValue, SO_WeatherMoneyResults cfg)
         {
-            Debug.Log(inputValue);
+            // Normalise automatiquement en pourcents si 0..1 est d√©tect√©
+            float b = ToPercentIf01(baseValue);
+            float i = ToPercentIf01(inputValue);
+
             return EvaluatePayoutWithDeadzone(
-                baseValue, inputValue,
+                b, i,
                 cfg.Humidity_MaxMoneyWhenCorrect,
                 cfg.Humidity_FullMargin,
                 cfg.Humidity_EarningMargin,
@@ -99,8 +128,9 @@ namespace LightHouse.Game.Computer.LEO.Weather
             );
         }
 
-        public static float CalculateWindSpeed(float baseValue, float inputValue, SO_WeatherMoneyResults cfg)
+        public static WeatherPayoutResult CalculateWindSpeed(float baseValue, float inputValue, SO_WeatherMoneyResults cfg)
         {
+            // ‚ö†Ô∏è Assure-toi que baseValue et inputValue sont dans la m√™me unit√© (ex: tous deux en kts).
             return EvaluatePayoutWithDeadzone(
                 baseValue, inputValue,
                 cfg.WindSpeed_MaxMoneyWhenCorrect,
@@ -110,39 +140,39 @@ namespace LightHouse.Game.Computer.LEO.Weather
             );
         }
 
-        public static float CalculateAirPressure(float baseValue, PressureRange datas, SO_WeatherMoneyResults cfg)
+        // Pressure : stocke une valeur repr√©sentative de l‚ÄôINPUT joueur (ex: centre du range)
+        public static WeatherPayoutResult CalculateAirPressure(float baseValue, PressureRange datas, SO_WeatherMoneyResults cfg)
         {
-            return baseValue >= datas.MinPressure && baseValue <= datas.MaxPressure ? cfg.AirPressure_MaxMoneyWhenCorrect : 0f;
+            float inputCenter = 0.5f * (datas.MinPressure + datas.MaxPressure); // <- input
+            bool inRange = baseValue >= datas.MinPressure && baseValue <= datas.MaxPressure;
+
+            return inRange
+                ? new WeatherPayoutResult(Round2(cfg.AirPressure_MaxMoneyWhenCorrect), 100f, inputCenter)
+                : new WeatherPayoutResult(0f, 0f, inputCenter);
         }
 
-        // Wind direction : ‡ brancher plus tard avec DeltaAngle (Ècart circulaire)
-/*        public static float CalculateWindDirection(float baseDeg, float inputDeg, SO_WeatherMoneyResults cfg)
+        // Wind dir : Value doit √™tre l‚Äôorientation choisie par le joueur
+        public static WeatherPayoutResult CalculateWindDirection(WindOrientationType baseOrientation, WindOrientationType inputOrientation, SO_WeatherMoneyResults cfg)
         {
-            float deltaAbs = Mathf.Abs(Mathf.DeltaAngle(baseDeg, inputDeg)); // [0..180]
-                                                                             // baseValue est 0 (Ècart), inputValue = deltaAbs
-            return EvaluatePayoutWithDeadzone(
-                0f, deltaAbs,
-                cfg.WindDirection_MaxMoneyWhenCorrect,
-                cfg.WindDirection_FullMargin,
-                cfg.WindDirection_EarningMargin,
-                cfg.PayoutCurve
-            );
-        }*/
-
-        public static float CalculateWindDirection(WindOrientationType baseOrientation, WindOrientationType windOrientation, SO_WeatherMoneyResults cfg)
-        {
-            return baseOrientation == windOrientation ? cfg.WindDirection_MaxMoneyWhenCorrect : 0.0f;
+            bool ok = (baseOrientation == inputOrientation);
+            return ok
+                ? new WeatherPayoutResult(Round2(cfg.WindDirection_MaxMoneyWhenCorrect), 100f, (float)inputOrientation)
+                : new WeatherPayoutResult(0f, 0f, (float)inputOrientation);
         }
 
         #endregion
 
+        #region Utils d‚Äôaffichage
+
         public static string FormatMoney(float v)
         {
             if (Mathf.Approximately(v, 0f)) return "0";
-            // 0.## pour Èviter trop de dÈcimales
             return (v > 0f ? $"+ {v:0.##}" : $"- {Mathf.Abs(v):0.##}");
         }
 
-        public static Color ColorForAmount(float v) => v > 0f ? Color.green : (Mathf.Approximately(v, 0f) ? Color.gray : Color.red);
+        public static Color ColorForAmount(float v)
+            => v > 0f ? Color.green : (Mathf.Approximately(v, 0f) ? Color.gray : Color.red);
+
+        #endregion
     }
 }

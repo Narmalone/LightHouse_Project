@@ -131,8 +131,8 @@ namespace LightHouse.Game.Computer.LEO.Weather.Temperature
             ApplyTemperatureToUI(CurrentTemperature);
 
             // Optionnel : synchroniser le champ texte si besoin
-            // if (_temperatureInputField != null)
-            //     _temperatureInputField.SetTextWithoutNotify(CurrentTemperature.ToString("0.#", CultureInfo.InvariantCulture));
+            if (_temperatureInputField != null)
+                _temperatureInputField.SetTextWithoutNotify(CurrentTemperature.ToString("0.#", CultureInfo.InvariantCulture));
         }
 
         #endregion
