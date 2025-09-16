@@ -11,10 +11,7 @@ public enum ShipmentPhase
 }
 
 /// <summary>
-/// Automate minimaliste en 2 phases :
-///  - Phase 1 : attendre LEAD (ex: 48h in-game). Si retard météo → on enchaîne un second countdown (ex: +24h).
-///    → Juste AVANT d'ajouter ce retard, on invoke OnInitialShipmentDelayCompleted.
-///  - Phase 2 : quand la phase 1 est finie, on attend le 09:00 du JOUR SUIVANT, puis on livre.
+/// Automate en 2 phases. Le décompte avance avec le TEMPS DE JEU (et pas les secondes réelles).
 /// </summary>
 public sealed class ShipmentSystem
 {
@@ -23,11 +20,14 @@ public sealed class ShipmentSystem
     private readonly TimeConfiguration _cfg;
     private readonly float _dispatchHour;
 
-    private readonly float _leadHours;          // ex. 48h in-game
-    private readonly bool _shouldBeDelayed;    // météo défavorable ?
-    private readonly float _extraDelayHours;    // ex. 24h in-game si delayed
+    private readonly float _leadHours;        // ex. 48h in-game
+    private readonly bool _shouldBeDelayed;  // météo défavorable ?
+    private readonly float _extraDelayHours;  // ex. 24h in-game si delayed
 
-    private bool _firedInitialDelayEvent;       // pour ne pas ré-invoquer l’event
+    private bool _firedInitialDelayEvent;
+
+    // --- NEW: mémorise l'horodatage absolu en HEURES DE JEU pour dériver le delta in-game
+    private float _lastAbsGameHours; // = CurrentDay*24 + CurrentTime
 
     public uint TicketNumber { get; set; }
 
@@ -36,78 +36,81 @@ public sealed class ShipmentSystem
     /// <summary>Temps RÉEL restant dans la phase courante (en secondes réelles).</summary>
     public float RemainingSeconds { get; private set; }
 
-    /// <summary>
-    /// Temps RESTANT exprimé en HEURES **de jeu** (conversion depuis RemainingSeconds).
-    /// Utile pour l’UI (“< 24 h” vs “> 1 j”), les tooltips, etc.
-    /// </summary>
+    /// <summary>Temps RESTANT exprimé en HEURES de jeu (dérivé de RemainingSeconds).</summary>
     public float RemainingGameHours
         => _cfg.RealSecondsToGameHours(Mathf.Max(0f, RemainingSeconds));
 
-    /// <summary>
-    /// Event déclenché à la FIN du lead initial SI le shipment est delayed (avant d’ajouter le retard).
-    /// Idéal pour prévenir l’UI / envoyer un mail “retard confirmé”.
-    /// </summary>
     public event Action OnInitialShipmentDelayCompleted;
-
-    /// <summary>Event déclenché quand on passe en attente du 09:00 (fin de la phase 1).</summary>
     public event Action OnPrepared;
-
-    /// <summary>Event déclenché quand la livraison est effective (09:00 du jour suivant atteint).</summary>
     public event Action OnArrived;
 
     public ShipmentSystem(TimeConfiguration cfg,
                           float leadTimeHours,
                           bool shouldBeDelayed,
                           float additionalDelayHoursIfDelayed,
-                          float dispatchHour = 9f, 
+                          float dispatchHour = 9f,
                           uint ticketNumber = 0)
     {
         _cfg = cfg;
         _dispatchHour = dispatchHour;
-
         _leadHours = Mathf.Max(0f, leadTimeHours);
         _shouldBeDelayed = shouldBeDelayed;
         _extraDelayHours = Mathf.Max(0f, additionalDelayHoursIfDelayed);
+        TicketNumber = ticketNumber;
 
-        // On démarre par le lead initial uniquement.
+        // Phase 1 : on part sur le lead initial (en secondes réelles équivalentes).
         RemainingSeconds = _cfg.GameHoursToRealSeconds(_leadHours);
         Phase = ShipmentPhase.Preparing;
-        TicketNumber = ticketNumber;
+
+        // NEW: initialise l’horloge absolue in-game
+        _lastAbsGameHours = TimeHandlerData.CurrentDay * 24f + TimeHandlerData.CurrentTime;
     }
 
     #endregion
 
     #region Public API
 
-    /// <summary>A appeler chaque frame avec Time.deltaTime (secondes réelles).</summary>
-    public void Tick(float deltaRealSeconds)
+    /// <summary>
+    /// A appeler chaque frame (comme avant) : la méthode ignore les secondes réelles
+    /// et consomme à la place le DELTA d’heures de jeu (via TimeHandlerData).
+    /// </summary>
+    public void Tick(float _ /* deltaRealSeconds (ignoré) */)
     {
-        if (Phase == ShipmentPhase.Completed || deltaRealSeconds <= 0f)
+        if (Phase == ShipmentPhase.Completed)
             return;
 
-        RemainingSeconds -= deltaRealSeconds;
+        // --- NEW: calcule le delta d'heures IN-GAME écoulées depuis le dernier tick
+        float absNow = TimeHandlerData.CurrentDay * 24f + TimeHandlerData.CurrentTime;
+        float deltaGameHours = Mathf.Max(0f, absNow - _lastAbsGameHours);
+        _lastAbsGameHours = absNow;
+
+        if (deltaGameHours <= 0f)
+            return;
+        //
+        // Convertit ce delta d'heures de jeu en secondes réelles équivalentes
+        float deltaRealFromGame = deltaGameHours * _cfg.RealSecondsPerGameHour;
+
+        RemainingSeconds -= deltaRealFromGame;
         if (RemainingSeconds > 0f) return;
 
         switch (Phase)
         {
             case ShipmentPhase.Preparing:
-                // 1) Le lead initial vient de s’achever.
-                //    Si le shipment est delayed, prévenir AVANT d’ajouter le retard.
+                // Fin du lead initial
                 if (_shouldBeDelayed && !_firedInitialDelayEvent)
                 {
                     _firedInitialDelayEvent = true;
                     OnInitialShipmentDelayCompleted?.Invoke();
 
-                    // Démarre le compte à rebours du retard, puis on reste en Preparing.
                     if (_extraDelayHours > 0f)
                     {
+                        // Enchaîne le retard (toujours en Preparing)
                         RemainingSeconds = _cfg.GameHoursToRealSeconds(_extraDelayHours);
-                        // Rester en Preparing pour finir ce délai additionnel
                         return;
                     }
                 }
 
-                // 2) Ici : soit pas de delay, soit le retard vient de se terminer.
+                // Pas de retard ou bien retard terminé → attendre 09:00 du jour SUIVANT
                 RemainingSeconds = ComputeSecondsUntilNextDayDispatch();
                 Phase = ShipmentPhase.WaitingDispatchWindow;
                 OnPrepared?.Invoke();
@@ -126,18 +129,13 @@ public sealed class ShipmentSystem
 
     #region Internals
 
-    /// <summary>
-    /// Calcule (en secondes réelles) le temps à attendre jusqu’au 09:00 **du jour suivant**.
-    /// </summary>
+    /// <summary>Temps réel à attendre jusqu’au 09:00 du JOUR SUIVANT (basé sur l’heure in-game courante).</summary>
     private float ComputeSecondsUntilNextDayDispatch()
     {
-        // Delta jusqu’au prochain 09:00 (peut être aujourd’hui si on est avant 09:00).
         float untilNext9 = _cfg.RealSecondsUntilGameTime(_dispatchHour);
-
-        // Exigence “jour suivant” : si on est avant 09:00, on force +1 jour.
+        // Exigence “jour suivant” : si on est avant 09:00, on rajoute +1 jour in-game.
         if (TimeHandlerData.CurrentTime < _dispatchHour)
             untilNext9 += _cfg.RealSecondsPerGameDay;
-
         return untilNext9;
     }
 

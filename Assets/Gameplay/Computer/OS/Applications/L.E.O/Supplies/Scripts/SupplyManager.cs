@@ -215,7 +215,7 @@ public class SupplyManager : LEOWindow
         for (int i = _shipments.Count - 1; i >= 0; i--)
         {
             var s = _shipments[i];
-            if (s.Phase != ShipmentPhase.Completed)
+            if (s.Phase == ShipmentPhase.Preparing)
                 return s;
         }
         return null;
