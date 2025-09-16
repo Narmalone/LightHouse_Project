@@ -11,7 +11,7 @@ public enum NationalitiesBoats
 }
 
 [System.Serializable]
-public class BoatData
+public class BoatNationalityDatas
 {
     public string Name;
     public Sprite NationalityFlag;
@@ -23,7 +23,7 @@ public class BoatsNationalitiesConfig : ScriptableObject
     public NationalitiesBoats Country;
     public string NationalityName;
     public Sprite Flag;
-    public BoatData[] BoatsDatas;
+    public BoatNationalityDatas[] BoatsDatas;
 
     private void OnValidate()
     {

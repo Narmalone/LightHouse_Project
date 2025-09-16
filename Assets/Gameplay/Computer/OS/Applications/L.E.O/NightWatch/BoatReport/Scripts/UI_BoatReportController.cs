@@ -507,7 +507,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         private bool IsFlagCorrectFor(string boatName, Sprite selectedFlag)
         {
             if (selectedFlag == null) return false;
-            if (_nationalityManager.FindName(boatName, out BoatData data))
+            if (_nationalityManager.FindName(boatName, out BoatNationalityDatas data))
                 return data.NationalityFlag == selectedFlag;
             return false;
         }

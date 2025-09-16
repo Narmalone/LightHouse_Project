@@ -6,13 +6,13 @@ public class BoatsNationalitiesManager : ScriptableObject
 {
     public BoatsNationalitiesConfig[] PossibleConfigs;
 
-    public List<BoatData> PossibleBoatDatas = new();
-    public List<BoatData> CurrentUsedBoatDatas = new();
+    public List<BoatNationalityDatas> PossibleBoatDatas = new();
+    public List<BoatNationalityDatas> CurrentUsedBoatDatas = new();
 
     private void OnValidate()
     {
-        PossibleBoatDatas = new List<BoatData>();
-        CurrentUsedBoatDatas = new List<BoatData>();
+        PossibleBoatDatas = new List<BoatNationalityDatas>();
+        CurrentUsedBoatDatas = new List<BoatNationalityDatas>();
 
         foreach (var config in PossibleConfigs)
         {
@@ -27,7 +27,7 @@ public class BoatsNationalitiesManager : ScriptableObject
         }
     }
 
-    public BoatData Register()
+    public BoatNationalityDatas Register()
     {
         if (PossibleBoatDatas.Count == 0)
         {
@@ -36,7 +36,7 @@ public class BoatsNationalitiesManager : ScriptableObject
         }
 
         int index = Random.Range(0, PossibleBoatDatas.Count);
-        BoatData selected = PossibleBoatDatas[index];
+        BoatNationalityDatas selected = PossibleBoatDatas[index];
 
         // Déplacer vers Used
         PossibleBoatDatas.RemoveAt(index);
@@ -45,7 +45,7 @@ public class BoatsNationalitiesManager : ScriptableObject
         return selected;
     }
 
-    public void Unregister(BoatData data)
+    public void Unregister(BoatNationalityDatas data)
     {
         if (CurrentUsedBoatDatas.Remove(data))
         {
@@ -54,7 +54,7 @@ public class BoatsNationalitiesManager : ScriptableObject
         }
     }
 
-    public bool FindName(string name, out BoatData datas)
+    public bool FindName(string name, out BoatNationalityDatas datas)
     {
         datas = null;
         foreach (var boat in CurrentUsedBoatDatas)

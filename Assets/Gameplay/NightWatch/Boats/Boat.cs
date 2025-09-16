@@ -22,7 +22,7 @@ namespace LightHouse.Game.Boats
         [SerializeField] private BoatAnomalyController _anomalyController;
 
         [Header("Data")]
-        [SerializeField] private BoatData _data;
+        [SerializeField] private BoatNationalityDatas _data;
 
         [Header("Sonar Appearance")]
         [SerializeField] private Color _aliveDotColor;
@@ -38,7 +38,7 @@ namespace LightHouse.Game.Boats
 
         public BoatAnomalyController AnomalyController => _anomalyController;
         public Rigidbody RB => _rb;
-        public BoatData Data => _data;
+        public BoatNationalityDatas Data => _data;
 
         // ISonarable
         public string Name => gameObject.name;
@@ -53,6 +53,7 @@ namespace LightHouse.Game.Boats
 
         public event Action OnAnomalyPointReached;
         public event Action OnBoatProgressEnded;
+        public event Action OnBoatInitialized;
         public Action ForceDotUpdate { get; set; }
 
         #endregion
@@ -90,6 +91,7 @@ namespace LightHouse.Game.Boats
             InitializeMovement();
             InitializeAnomalyEvents();
             InitializeRadioFrequency();
+            OnBoatInitialized?.Invoke();
         }
 
         private void InitializeBoatData()
