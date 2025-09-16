@@ -9,7 +9,7 @@ namespace LightHouse.Weather
         /// Changement non pas lorsqu'une météo est complétée mais lorsqu'on a passée plus de la moitié
         /// de la première météo vers l'autre
         /// </summary>
-        public static Action<WeatherType> OnWeatherTypeChanged;
+        public static Action<WeatherType> OnWeatherTypeChanged { get; set; }
         public static WeatherData CurrentWeather { get; private set; }
 
         public static void SetCurrentWeatherDatas(WeatherData weatherData)

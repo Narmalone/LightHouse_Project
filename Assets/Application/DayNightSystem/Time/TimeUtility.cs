@@ -113,5 +113,36 @@ namespace LightHouse.Game.DayNightSystem
 
             return a.CompareTo(b);
         }
+
+        /// <summary>
+        /// Calcule le (jour, heure) in-game atteints dans <paramref name="hoursAhead"/> heures
+        /// à partir de la date/heure ACTUELLES (TimeHandlerData.CurrentDay/CurrentTime).
+        /// Ex: si on est Day 3 - 21:00 et hoursAhead=12 → Day 4 - 09:00.
+        /// </summary>
+        public static void GetDateAfterHours(float hoursAhead, out byte day, out float time)
+        {
+            GetDateAfterHours(TimeHandlerData.CurrentDay, TimeHandlerData.CurrentTime, hoursAhead, out day, out time);
+        }
+
+        /// <summary>
+        /// Calcule le (jour, heure) in-game atteints dans <paramref name="hoursAhead"/> heures
+        /// en partant de <paramref name="startDay"/> / <paramref name="startHour"/>.
+        /// Ajoute 1 jour par tranche de 24h et reporte le reste en heure.
+        /// </summary>
+        public static void GetDateAfterHours(byte startDay, float startHour, float hoursAhead, out byte day, out float time)
+        {
+            // Sécurités de base
+            float hAhead = Mathf.Max(0f, hoursAhead);
+
+            // Somme des heures à partir de l'heure de départ
+            float totalHours = startHour + hAhead;
+
+            // Nombre entier de jours à ajouter + heure restante [0..24)
+            int daysToAdd = Mathf.FloorToInt(totalHours / 24f);
+            time = Mathf.Repeat(totalHours, 24f);
+
+            // Nouveau jour (on ne touche pas à l'origine : 0, 1, etc.)
+            day = (byte)(startDay + daysToAdd);
+        }
     }
 }

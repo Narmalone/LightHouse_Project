@@ -36,7 +36,7 @@ public class SupplyPopUp : MonoBehaviour
     /// Si &lt; 24h → “H hour(s)”
     /// Si ≥ 24h → “&gt; D day(s)” (arrondi au supérieur)
     /// </summary>
-    private static string FormatEta(float etaHours)
+    public static string FormatEta(float etaHours)
     {
         etaHours = Mathf.Max(0f, etaHours);
 

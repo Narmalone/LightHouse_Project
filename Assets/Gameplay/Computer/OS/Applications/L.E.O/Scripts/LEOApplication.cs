@@ -41,7 +41,7 @@ namespace LightHouse.Game.Computer.LEO
             _windowMap = new Dictionary<ELEOWindow, LEOWindow>();
             _nightWatchController.SendMailRequested += NightWatchController_SendMailRequested;
             _weatherController.SendMailRequested += WeatherController_SendMailRequested;
-            _supplyManager.SendOrderRecapMail += SupplyManager_SendOrderRecapMail;
+            _supplyManager.SendMailRequest += SupplyManager_SendMailRequested;
         }
 
         protected override void OnDestroy()
@@ -49,10 +49,10 @@ namespace LightHouse.Game.Computer.LEO
             base.OnDestroy();
             _nightWatchController.SendMailRequested -= NightWatchController_SendMailRequested;
             _weatherController.SendMailRequested -= WeatherController_SendMailRequested;
-            _supplyManager.SendOrderRecapMail -= SupplyManager_SendOrderRecapMail;
+            _supplyManager.SendMailRequest -= SupplyManager_SendMailRequested;
         }
 
-        private void SupplyManager_SendOrderRecapMail(MailDatas obj)
+        private void SupplyManager_SendMailRequested(MailDatas obj)
         {
             _mailsController.GenerateMail(obj);
         }

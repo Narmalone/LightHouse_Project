@@ -34,7 +34,6 @@ namespace LightHouse.Weather
 
         public int _currentIndex;
         private float _secondsPerDay;
-        private float _totalSecondsForGame;
         private float _currentGameSeconds;
         private float _segmentStart;
         private float _segmentEnd;
@@ -51,7 +50,6 @@ namespace LightHouse.Weather
 
         private void Awake()
         {
-            _totalSecondsForGame = _timeConfig.GetTotalGameTimeInSeconds();
             _secondsPerDay = _timeConfig.GetTotalSecondsPerDay();
         }
 
