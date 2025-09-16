@@ -356,13 +356,15 @@ $@"<line-height={st.LineHeight}%><size={st.BodyPct}%><color={st.Body}>
     [Serializable]
     public sealed class SupplyOrderLine
     {
+        public int ProductId;
         public string Name;
         public int Quantity;
         public string Unit;        // "pcs", "kg", "L", etc. (optionnel)
         public float UnitPrice;   // Prix unitaire (dans la même monnaie que currencySymbol)
 
-        public SupplyOrderLine(string name, int quantity, float unitPrice, string unit = "")
+        public SupplyOrderLine(int productId, string name, int quantity, float unitPrice, string unit = "")
         {
+            ProductId = productId;
             Name = name;
             Quantity = quantity;
             Unit = unit;
@@ -413,6 +415,7 @@ $@"<line-height={st.LineHeight}%><size={st.BodyPct}%><color={st.Body}>
                                                 // Métadonnées MailDatas:
         byte arrivalDay,
         float arrivalTime,
+        uint ticketNumber,
         // Options:
         string expeditorLabel = "Coastal Trading Post",
         string currencySymbol = "$",
@@ -431,7 +434,7 @@ $@"<line-height={st.LineHeight}%><size={st.BodyPct}%><color={st.Body}>
         // ---------- Corps ----------
         var sb = new StringBuilder();
         sb.AppendLine($"<br><b>Dear {Rt.Escape(keeperName)},</b><br><br>");
-        sb.AppendLine("Please find below the summary of your order:<br>");
+        sb.AppendLine($"Please find below the summary of your order [Ticket#{ticketNumber.ToString("000")}]:<br>");
         sb.AppendLine(Rt.Divider(st));
 
         // Titre "Ordered Items"
@@ -486,29 +489,77 @@ $@"<line-height={st.LineHeight}%><size={st.BodyPct}%><color={st.Body}>
         return MakeMailDatas(expeditorLabel, subject, arrivalDay, arrivalTime, message, files);
     }
 
-    /// <summary> Démo rapide. </summary>
-    public static MailDatas GenerateMailFromSupplyOrderTemplate_Demo()
-    {
-        var list = new List<SupplyOrderLine>
-    {
-        new SupplyOrderLine("Diesel",         1200, 1.85f, "L"),
-        new SupplyOrderLine("First-aid kits", 5,    22.0f, "pcs"),
-        new SupplyOrderLine("Flares (SOLAS)", 24,   3.5f,  "pcs"),
-    };
+    #endregion
 
-        return GenerateMailFromSupplyOrderTemplate(
-            dateFormat: TimeUtility.FormatCurrentDate(),
-            keeperName: "A. Morgan",
-            items: list,
-            deliveryInDays: 2,
-            deliveryHour: 9f,           // 09:00 a.m.
-            arrivalDay: 5,
-            arrivalTime: 10.0f,
-            expeditorLabel: "Coastal Trading Post",
-            currencySymbol: "$",
-            isDelayed: false
-        );
+    public static MailDatas BuildShipmentDelayNotice(
+    string dateFormat,
+    string keeperName,
+    uint ticketNumber,
+    byte newDeliveryDay,
+    float newDeliveryHour,          // ex: 9f
+    byte arrivalDay,                // quand le mail arrive en boîte (meta)
+    float arrivalTime,              // idem
+    string expeditorLabel = "Coastal Trading Post",
+    MailStyle? style = null,
+    MailAttachedFile[] files = null)
+    {
+        var st = style ?? MailStyle.Default;
+
+        // En-tête
+        string subject = $"Supply Shipment Delay – {dateFormat}";
+        string head = Rt.Header(subject, $"From : {expeditorLabel}", st);
+
+        // "Day XX - hh:mm AM/PM" (utilise ton utilitaire de formatage in-game)
+        string prettyNewDate = TimeUtility.FormatDate(newDeliveryDay, newDeliveryHour);
+
+        // Corps
+        var sb = new StringBuilder();
+        sb.AppendLine($"<br><b>Dear {Rt.Escape(keeperName)},</b><br><br>");
+        sb.AppendLine($"We regret to inform you that your supply shipment [#{ticketNumber:000}] has been delayed due to bad weather conditions.<br><br>");
+        sb.AppendLine($"The new estimated delivery date is <b>{Rt.Escape(prettyNewDate)}</b>.<br>");
+        sb.AppendLine("<i>We will keep you updated if further changes occur.</i><br><br>");
+        sb.AppendLine("Thank you for your understanding.");
+
+        // Pied + MailDatas
+        string foot = Rt.Footer(expeditorLabel);
+        return MakeMailDatas(expeditorLabel, subject, arrivalDay, arrivalTime, head + sb.ToString() + foot, files);
     }
 
-    #endregion
+    public static MailDatas BuildSupplyDeliverySent(
+    string dateFormat,
+    string keeperName,
+    uint ticketNumber,            // ex: 123 → s’affiche [#123]
+    float etaHour = 9f,           // heure IN-GAME estimée d’arrivée (affichée en 12h “09:00 AM”)
+    // Métadonnées d’arrivée du mail (quand il apparaît dans la boîte) :
+    byte arrivalDay = 0,
+    float arrivalTime = 9.0f,
+    // Options UI :
+    string expeditorLabel = "Coastal Trading Post",
+    MailStyle? style = null,
+    MailAttachedFile[] files = null)
+    {
+        var st = style ?? MailStyle.Default;
+
+        // ---------- Header ----------
+        string subject = $"Supply Delivery Sent – {dateFormat}";
+        string head = Rt.Header(subject, $"From : {expeditorLabel}", st);
+
+        // Heure estimée “autour de 9 a.m.”
+        string etaPretty = TimeUtility.FormatTime12h(etaHour); // ex: "09:00 AM"
+
+        // ---------- Body ----------
+        var sb = new StringBuilder();
+        sb.AppendLine($"<br><b>Dear {Rt.Escape(keeperName)},</b><br><br>");
+        sb.AppendLine($"Your order <b>[#{ticketNumber:000}]</b> is ready to be dispatched.<br>");
+        sb.AppendLine($"It should arrive around <b>{etaPretty.ToLowerInvariant()}</b>.<br><br>");
+        sb.AppendLine("We will keep you informed of the delivery's arrival, so please stay tuned.<br><br>");
+        sb.AppendLine("Best regards,");
+
+        // ---------- Footer + MailDatas ----------
+        string foot = Rt.Footer(expeditorLabel);
+        string message = head + sb.ToString() + foot;
+
+        return MakeMailDatas(expeditorLabel, subject, arrivalDay, arrivalTime, message, files);
+    }
+
 }

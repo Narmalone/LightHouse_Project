@@ -57,8 +57,8 @@ namespace LightHouse.Game.DayNightSystem
 
         private void Update()
         {
-            float delta = (24f / (TimeConfig.dayLengthInMinits * 60f)) * Time.deltaTime;
-            currentTime += delta;
+            float deltaHours = Time.deltaTime / TimeConfig.RealSecondsPerGameHour;
+            currentTime += deltaHours;
             currentTime = Mathf.Clamp(currentTime, 0f, 24f);
 
             if (currentTime >= 24f)
