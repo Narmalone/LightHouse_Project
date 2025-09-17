@@ -15,7 +15,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         #region ===== Config & références =====
 
         [Header("Config")]
-        [SerializeField] private SupplyConfigurator _configurator;
+        [SerializeField] private SO_SupplyConfigurator _configurator;
         [SerializeField] private WeatherTimeline _timeline;
         [SerializeField] private TimeConfiguration _timeConfig;
         [SerializeField] private SO_ShipmentConfiguration _shipmentConfig;
@@ -370,7 +370,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                 _payloadByShipment[s] = new List<MailGenerator.SupplyOrderLine>();
         }
 
-        private void BuildRuntimeConfig(SupplyConfigurator src)
+        private void BuildRuntimeConfig(SO_SupplyConfigurator src)
         {
             _runtimeConfig = new Dictionary<E_SupplyCategory, SupplyItemDatas[]>();
             foreach (var kvp in src.SupplyConfig)
