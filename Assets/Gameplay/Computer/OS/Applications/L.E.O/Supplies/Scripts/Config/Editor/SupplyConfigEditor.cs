@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace LightHouse.Game.Computer.LEO.Supplies
 {
+    /// <summary>
+    /// Script d'editor du Configurateur de Shop
+    /// </summary>
     [CustomEditor(typeof(SO_SupplyConfigurator))]
     public class SupplyConfigEditor : Editor
     {
