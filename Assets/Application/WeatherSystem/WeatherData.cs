@@ -9,7 +9,6 @@ namespace LightHouse.Weather
         Rainy,
         Windy,
         Foggy,
-        Snowy,
         Stormy,
     }
 

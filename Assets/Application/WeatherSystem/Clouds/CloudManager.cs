@@ -52,7 +52,6 @@ namespace LightHouse.Weather.Clouds
             { WeatherType.Windy, Windy },
             { WeatherType.Rainy, Rainy },
             { WeatherType.Foggy, Foggy },
-            { WeatherType.Snowy, Snowy },
             { WeatherType.Stormy, Stormy }
         };
         }
@@ -120,8 +119,6 @@ namespace LightHouse.Weather.Clouds
             Color baseColor = Color.Lerp(new Color(0.85f, 0.9f, 1f), Color.gray, tHumidity);
             if (weather.WeatherType == WeatherType.Stormy)
                 baseColor = new Color(0.25f, 0.25f, 0.3f); // moins noir
-            else if (weather.WeatherType == WeatherType.Snowy)
-                baseColor = Color.Lerp(baseColor, new Color(0.9f, 0.95f, 1f), tTemp);
 
             baseColor *= Mathf.Lerp(0.6f, 1.2f, tTime) * sunIntensity01;
             clouds.scatteringTint.value = baseColor;

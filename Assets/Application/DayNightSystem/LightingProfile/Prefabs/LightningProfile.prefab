@@ -99,14 +99,53 @@ MonoBehaviour:
   _sunController: {fileID: 6301997829669502092}
   _moonController: {fileID: 1975194891817360409}
   _globalVolume: {fileID: 5308856138974102242}
-  _nightProfile: {fileID: 11400000, guid: cbf2d72d27213ec4c99694ab45d6089c, type: 2}
-  _morningProfile: {fileID: 11400000, guid: 57e547b64bef7114ca73b35dee7feb1c, type: 2}
-  _dayProfile: {fileID: 11400000, guid: a35eae51baf05594aa98ae42de94601a, type: 2}
-  _eveningProfile: {fileID: 11400000, guid: 16522c6de23b902469249e3b7a059f8f, type: 2}
+  WeatherProfiles:
+    _serializedList:
+    - Key: 0
+      Value:
+        Night: {fileID: 11400000, guid: 17e370971a9ba654494b6b3c7aeb567e, type: 2}
+        Morning: {fileID: 11400000, guid: 7a326ab33fdd64e4a813f06e19f0ca80, type: 2}
+        Midday: {fileID: 11400000, guid: d45bd407ddb53f54c9b2da739e463962, type: 2}
+        Evening: {fileID: 11400000, guid: 17e370971a9ba654494b6b3c7aeb567e, type: 2}
+    - Key: 1
+      Value:
+        Night: {fileID: 11400000, guid: cbf2d72d27213ec4c99694ab45d6089c, type: 2}
+        Morning: {fileID: 11400000, guid: 57e547b64bef7114ca73b35dee7feb1c, type: 2}
+        Midday: {fileID: 11400000, guid: a35eae51baf05594aa98ae42de94601a, type: 2}
+        Evening: {fileID: 11400000, guid: 16522c6de23b902469249e3b7a059f8f, type: 2}
+    - Key: 2
+      Value:
+        Night: {fileID: 11400000, guid: faa06b519e8755e4ea5f1eb87b85a92d, type: 2}
+        Morning: {fileID: 11400000, guid: 30ae708e99911a644b846cd0cac8d87d, type: 2}
+        Midday: {fileID: 11400000, guid: ce4064ddc30532b42b56449bcfcd1bb5, type: 2}
+        Evening: {fileID: 11400000, guid: 56294a9a6311a674cb414b0cf26eee7d, type: 2}
+    - Key: 3
+      Value:
+        Night: {fileID: 11400000, guid: 17e370971a9ba654494b6b3c7aeb567e, type: 2}
+        Morning: {fileID: 11400000, guid: 7a326ab33fdd64e4a813f06e19f0ca80, type: 2}
+        Midday: {fileID: 11400000, guid: d45bd407ddb53f54c9b2da739e463962, type: 2}
+        Evening: {fileID: 11400000, guid: 912d93a208a1b274699707262eeefa39, type: 2}
+    - Key: 4
+      Value:
+        Night: {fileID: 11400000, guid: 43315fa6c79641e47b8a76f711aa905f, type: 2}
+        Morning: {fileID: 11400000, guid: ee6a3e547bdf7ef48afa72b7d7bb7095, type: 2}
+        Midday: {fileID: 11400000, guid: 44d4f23dd483a38408023d2604accfe6, type: 2}
+        Evening: {fileID: 11400000, guid: a6b2d0c430bee6644bf850b6f5f23673, type: 2}
+    - Key: 5
+      Value:
+        Night: {fileID: 11400000, guid: 72eddba128806a445b9010ba68cf3400, type: 2}
+        Morning: {fileID: 11400000, guid: d6cf8abd73e6acb4880990d1c0e32e49, type: 2}
+        Midday: {fileID: 11400000, guid: 137b9c574b0b5724489832cf3512311b, type: 2}
+        Evening: {fileID: 11400000, guid: 5e8344958dae94a4ebbdf8c23e2d09a6, type: 2}
+  _morningStart: 6
+  _middayStart: 9
+  _eveningStart: 17
+  _nightStart: 20
   _sunFadeStart: 17.5
   _sunFadeEnd: 19
   _sunFadeColor: {r: 0, g: 0, b: 0, a: 1}
   _sunFadeIntensityTarget: 0
+  _weatherBlendDuration: 2
 --- !u!1001 &1717171330904113388
 PrefabInstance:
   m_ObjectHideFlags: 0
