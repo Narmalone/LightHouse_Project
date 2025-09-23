@@ -25,6 +25,10 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         [Range(0f, 23.9f)]
         public float ShipmentDeliveryHour = 9.0f;
 
+        [Header("Shipment Order Config")]
+        [Tooltip("Nombres d'objets maximum que le joueur peut ajouter dans le panier")]
+        public int MaxItemsPerShipment = 30;
+
         #endregion
 
         #region ===== Convenience API (runtime helpers) =====

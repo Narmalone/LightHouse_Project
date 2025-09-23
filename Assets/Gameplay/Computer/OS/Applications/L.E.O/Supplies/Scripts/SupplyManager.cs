@@ -5,6 +5,7 @@ using LightHouse.Weather;
 using LightHouse.Weather.Utils;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         [SerializeField] private OrderController _orderController;
 
         [SerializeField] private Button _confirmOrderButton;
+        [SerializeField] private TextMeshProUGUI _shipmentIsFullTxt;
         [SerializeField] private Button _resetOrderButton;
 
         #endregion
@@ -70,6 +72,9 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             _confirmOrderButton.onClick.AddListener(OnConfirmOrderCliqued);
             _resetOrderButton.onClick.AddListener(OnResetOrderCliqued);
 
+            if (_shipmentIsFullTxt.isActiveAndEnabled)
+                _shipmentIsFullTxt.gameObject.SetActive(false);
+
             // Construire le shop à partir des datas runtime
             _shopController.BuildShop(_runtimeConfig);
 
@@ -111,12 +116,15 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         #region ===== Flux UI (pop-up, boutons) =====
 
-        private void PlayerCurrency_OnBalanceChanged(float obj) => UpdateOrderUI();
+        private void PlayerCurrency_OnBalanceChanged(float obj)
+        {
+            //UpdateOrderUI();
+        }
 
         private void OnConfirmOrderCliqued()
         {
             _currentInstance = Instantiate(_popupPreafb, this.transform as RectTransform);
-            _currentInstance.ConfirmOrderButton.onClick.AddListener(OkConfirmCliqued);
+            _currentInstance.ConfirmOrderButton.onClick.AddListener(OnOrderConfirmedCliqued);
             _currentInstance.CancelOrderButton.onClick.AddListener(OnCancelPopupCliqued);
 
             // ETA affiché : si un shipment est déjà en préparation, on montre son temps restant
@@ -129,7 +137,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         private void OnCancelPopupCliqued() => ClosePopup();
 
-        private void OkConfirmCliqued()
+        private void OnOrderConfirmedCliqued()
         {
             // 1) Lignes de la commande courante
             var lines = BuildOrderLines();
@@ -138,7 +146,6 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             bool shouldBeDelayed = ComputeShouldBeDelayedForEta();
 
             // 3) Ticket + mail de récap programmé sur la date/heure après lead
-            _currentTicket++;
             TimeUtility.GetDateAfterHours(_shipmentConfig.ShipmentSchedule, out byte scheduledDay, out float scheduledTime);
 
             var recapMail = MailGenerator.GenerateMailFromSupplyOrderTemplate(
@@ -160,6 +167,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             {
                 _currentTicket++;
                 open = CreateShipment(shouldBeDelayed, _currentTicket);
+                open.AddItems(lines);
             }
 
             // 5) Ajouter les lignes au payload du shipment sélectionné
@@ -177,7 +185,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         private void ClosePopup()
         {
             if (_currentInstance == null) return;
-            _currentInstance.ConfirmOrderButton.onClick.RemoveListener(OkConfirmCliqued);
+            _currentInstance.ConfirmOrderButton.onClick.RemoveListener(OnOrderConfirmedCliqued);
             _currentInstance.CancelOrderButton.onClick.RemoveListener(OnCancelPopupCliqued);
             Destroy(_currentInstance.gameObject);
             _currentInstance = null;
@@ -187,8 +195,13 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         #region ===== Commande : + / - / reset / total =====
 
+        //CHECKER SI ON DEPASSE DANS LE LAST OPENED SHIPMENT SI ON A TROP D'OBJETS DANS LE STACK ET EMPECHER LE CONFIRM
+
         private void OnShopPlus(SupplyItemDatas d)
         {
+            //attention si c'est null, voir pour créer un shipment temporaire ?
+
+
             d.SelectedAmountToBuy = Mathf.Max(0, d.SelectedAmountToBuy + 1);
             _shopController.RefreshShopItem(d);
             _orderController.UpdateOrderFor(d);
@@ -233,10 +246,60 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         private void UpdateOrderUI()
         {
+            // 1) Mettre à jour le total
             _orderController.UpdateTotalOrderValue(_totalOrderValue);
-            _confirmOrderButton.interactable =
-                _totalOrderValue <= PlayerCurrency.Balance && _orderController.NumberOfItemsInOrder > 0;
+
+            // 2) Conditions de base
+            bool canAfford = _totalOrderValue <= PlayerCurrency.Balance;
+            bool hasItems = _orderController.NumberOfItemsInOrder > 0;
+
+            // 3) Récupérer (ou créer) le shipment
+            var existing = FindLatestOpenShipment();
+            bool createdNew = existing == null;
+
+            var shipment = existing != null ? existing : new ShipmentSystem(_timeConfig, 9999f, false, 0f);
+            int prospectiveQuantity = 0;
+
+            // 4) Si on vient de le créer, ajouter les lignes en attente
+            if (createdNew && OrderController.OrderItems.Count > 0)
+            {
+                var lines = BuildOrderLines();
+                foreach(var line in lines)
+                {
+                    prospectiveQuantity = line.Quantity;
+                }
+                if (lines.Count > 0) shipment.AddItems(lines);
+            }
+            if(existing != null)
+            {
+                var lines = BuildOrderLines();
+                int totalQtty = 0;
+                foreach(var line in lines)
+                {
+                    totalQtty += line.Quantity;
+                }
+                prospectiveQuantity = existing.GetTotalQuantity() + totalQtty;
+                Debug.Log($"{existing.GetTotalQuantity()}");
+            }
+
+            // 5) Capacité du shipment
+            bool underCapacity = prospectiveQuantity > _shipmentConfig.MaxItemsPerShipment;
+            if (underCapacity)
+            {
+                if(!_shipmentIsFullTxt.isActiveAndEnabled)
+                    _shipmentIsFullTxt.gameObject.SetActive(true);
+                _shipmentIsFullTxt.text = $"Your shipment is full please remove: {(shipment.GetTotalQuantity() > _shipmentConfig.MaxItemsPerShipment ? shipment.GetTotalQuantity() - _shipmentConfig.MaxItemsPerShipment : _shipmentConfig.MaxItemsPerShipment - shipment.GetTotalQuantity()) } items in your order";
+            }
+            else
+            {
+                if (_shipmentIsFullTxt.isActiveAndEnabled)
+                    _shipmentIsFullTxt.gameObject.SetActive(false);
+            }
+
+            // 6) Un seul endroit qui décide l'état du bouton
+            _confirmOrderButton.interactable = canAfford && hasItems && !underCapacity;
         }
+
 
         #endregion
 
@@ -251,7 +314,11 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             {
                 var s = _shipments[i];
                 if (s.Phase == ShipmentPhase.Preparing)
+                {
+                    Debug.Log($"shipment finded: {s.TicketNumber} , {s.GetTotalQuantity()}");
                     return s;
+                }
+                    
             }
             return null;
         }

@@ -1,5 +1,7 @@
 ﻿using LightHouse.Game.DayNightSystem;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -67,11 +69,29 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
             // NEW: initialise l’horloge absolue in-game
             _lastAbsGameHours = TimeHandlerData.CurrentDay * 24f + TimeHandlerData.CurrentTime;
+
+            SupplyOrderLines = new List<MailGenerator.SupplyOrderLine>();
+
+            Debug.Log($"Shipment généré avec succès ordre ticket#{ticketNumber}");
         }
 
         #endregion
 
+        public List<MailGenerator.SupplyOrderLine> SupplyOrderLines { get; private set; }
+
         #region Public API
+
+        public void AddItems(List<MailGenerator.SupplyOrderLine> incomingItems)
+        {
+            SupplyOrderLines.AddRange(incomingItems);
+        }
+
+        public int GetTotalQuantity()
+        {
+            int quantity = 0;
+            foreach(var line in SupplyOrderLines){ quantity += line.Quantity; }
+            return quantity;
+        }
 
         /// <summary>
         /// A appeler chaque frame (comme avant) : la méthode ignore les secondes réelles

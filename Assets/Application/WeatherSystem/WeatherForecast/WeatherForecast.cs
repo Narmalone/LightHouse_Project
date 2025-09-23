@@ -27,7 +27,7 @@ namespace LightHouse.Weather
         /// <summary>
         /// Active/Désactive les logs de blend pour le debug.
         /// </summary>
-        private const bool VERBOSE_LOGS = true;
+        private const bool VERBOSE_LOGS = false;
 
         #endregion
 
