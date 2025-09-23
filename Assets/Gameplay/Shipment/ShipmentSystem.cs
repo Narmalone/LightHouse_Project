@@ -41,6 +41,9 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         /// <summary>Temps RÉEL restant dans la phase courante (en secondes réelles).</summary>
         public float RemainingSeconds { get; private set; }
 
+        public float ScheduledHour { get; private set; }
+        public byte ScheduledDay { get; private set; }
+
         /// <summary>Temps RESTANT exprimé en HEURES de jeu (dérivé de RemainingSeconds).</summary>
         public float RemainingGameHours
             => _cfg.RealSecondsToGameHours(Mathf.Max(0f, RemainingSeconds));
@@ -52,6 +55,8 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         public ShipmentSystem(TimeConfiguration cfg,
                               float leadTimeHours,
                               bool shouldBeDelayed,
+                              byte scheduledDay,
+                              float scheduledHour,
                               float additionalDelayHoursIfDelayed,
                               float dispatchHour = 9f,
                               uint ticketNumber = 0)
@@ -60,6 +65,8 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             _dispatchHour = dispatchHour;
             _leadHours = Mathf.Max(0f, leadTimeHours);
             _shouldBeDelayed = shouldBeDelayed;
+            ScheduledDay = scheduledDay;
+            ScheduledHour = scheduledHour;
             _extraDelayHours = Mathf.Max(0f, additionalDelayHoursIfDelayed);
             TicketNumber = ticketNumber;
 

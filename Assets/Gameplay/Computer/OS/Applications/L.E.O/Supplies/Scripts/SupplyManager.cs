@@ -148,6 +148,30 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             // 3) Ticket + mail de récap programmé sur la date/heure après lead
             TimeUtility.GetDateAfterHours(_shipmentConfig.ShipmentSchedule, out byte scheduledDay, out float scheduledTime);
 
+            // 4) Trouver un shipment “ouvert” (Preparing) ou en créer un nouveau
+            var open = FindLatestOpenShipment();
+            if(open != null)
+            {
+                scheduledDay = open.ScheduledDay;
+                scheduledTime = open.ScheduledHour;
+            }
+            if (open == null)
+            {
+                _currentTicket++;
+                open = CreateShipment(scheduledDay, scheduledTime, shouldBeDelayed, _currentTicket);
+            }
+            open.AddItems(lines);
+            // 5) Ajouter les lignes au payload du shipment sélectionné
+            EnsurePayloadList(open);
+            _payloadByShipment[open].AddRange(lines);
+
+            // 6) Paiement et reset du panier
+            PlayerCurrency.Add(-_totalOrderValue);
+            OnResetOrderCliqued();
+
+            // 7) Fermer le pop-up
+            ClosePopup();
+
             var recapMail = MailGenerator.GenerateMailFromSupplyOrderTemplate(
                 dateFormat: TimeUtility.FormatCurrentDate(),
                 keeperName: "Dev-00",
@@ -160,26 +184,6 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                 isDelayed: shouldBeDelayed
             );
             SendMailRequest?.Invoke(recapMail);
-
-            // 4) Trouver un shipment “ouvert” (Preparing) ou en créer un nouveau
-            var open = FindLatestOpenShipment();
-            if (open == null)
-            {
-                _currentTicket++;
-                open = CreateShipment(shouldBeDelayed, _currentTicket);
-                open.AddItems(lines);
-            }
-
-            // 5) Ajouter les lignes au payload du shipment sélectionné
-            EnsurePayloadList(open);
-            _payloadByShipment[open].AddRange(lines);
-
-            // 6) Paiement et reset du panier
-            PlayerCurrency.Add(-_totalOrderValue);
-            OnResetOrderCliqued();
-
-            // 7) Fermer le pop-up
-            ClosePopup();
         }
 
         private void ClosePopup()
@@ -253,42 +257,37 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             bool canAfford = _totalOrderValue <= PlayerCurrency.Balance;
             bool hasItems = _orderController.NumberOfItemsInOrder > 0;
 
-            // 3) Récupérer (ou créer) le shipment
+            // 3) Shipment existant (ou null)
             var existing = FindLatestOpenShipment();
-            bool createdNew = existing == null;
 
-            var shipment = existing != null ? existing : new ShipmentSystem(_timeConfig, 9999f, false, 0f);
-            int prospectiveQuantity = 0;
-
-            // 4) Si on vient de le créer, ajouter les lignes en attente
-            if (createdNew && OrderController.OrderItems.Count > 0)
+            // 4) Quantité de la commande en cours (PANIER)
+            int pendingQty = 0;
+            if (hasItems)
             {
                 var lines = BuildOrderLines();
-                foreach(var line in lines)
-                {
-                    prospectiveQuantity = line.Quantity;
-                }
-                if (lines.Count > 0) shipment.AddItems(lines);
-            }
-            if(existing != null)
-            {
-                var lines = BuildOrderLines();
-                int totalQtty = 0;
-                foreach(var line in lines)
-                {
-                    totalQtty += line.Quantity;
-                }
-                prospectiveQuantity = existing.GetTotalQuantity() + totalQtty;
-                Debug.Log($"{existing.GetTotalQuantity()}");
+                foreach (var l in lines) pendingQty += l.Quantity; // somme, pas écrasement
             }
 
-            // 5) Capacité du shipment
-            bool underCapacity = prospectiveQuantity > _shipmentConfig.MaxItemsPerShipment;
-            if (underCapacity)
+            // 5) Quantité déjà engagée dans le shipment existant
+            int committedQty = existing != null ? existing.GetTotalQuantity() : 0;
+
+            // 6) Quantité après ajout si on validait maintenant
+            int prospectiveQty = committedQty + pendingQty;
+
+            // 7) Capacité
+            int max = _shipmentConfig.MaxItemsPerShipment;
+            bool atOrOverCapacity = prospectiveQty > max;
+
+            // 8) UI message "shipment plein"
+            if (atOrOverCapacity)
             {
-                if(!_shipmentIsFullTxt.isActiveAndEnabled)
+                if (!_shipmentIsFullTxt.isActiveAndEnabled)
                     _shipmentIsFullTxt.gameObject.SetActive(true);
-                _shipmentIsFullTxt.text = $"Your shipment is full please remove: {(shipment.GetTotalQuantity() > _shipmentConfig.MaxItemsPerShipment ? shipment.GetTotalQuantity() - _shipmentConfig.MaxItemsPerShipment : _shipmentConfig.MaxItemsPerShipment - shipment.GetTotalQuantity()) } items in your order";
+
+                int excess = Mathf.Max(0, prospectiveQty - max); // ← clé: on compare au prospectif
+                _shipmentIsFullTxt.text = excess > 0
+                    ? $"Your shipment is full. Please remove {excess} item(s) from your order."
+                    : "Your shipment is full. No additional items can be added.";
             }
             else
             {
@@ -296,8 +295,8 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                     _shipmentIsFullTxt.gameObject.SetActive(false);
             }
 
-            // 6) Un seul endroit qui décide l'état du bouton
-            _confirmOrderButton.interactable = canAfford && hasItems && !underCapacity;
+            // 9) Etat du bouton
+            _confirmOrderButton.interactable = canAfford && hasItems && !atOrOverCapacity;
         }
 
 
@@ -314,21 +313,19 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             {
                 var s = _shipments[i];
                 if (s.Phase == ShipmentPhase.Preparing)
-                {
-                    Debug.Log($"shipment finded: {s.TicketNumber} , {s.GetTotalQuantity()}");
                     return s;
-                }
-                    
             }
             return null;
         }
 
-        private ShipmentSystem CreateShipment(bool isShipmentDelayed, uint ticketOrderNumber)
+        private ShipmentSystem CreateShipment(byte scheduledDay, float scheduledHour, bool isShipmentDelayed, uint ticketOrderNumber)
         {
             var newShipment = new ShipmentSystem(
                 cfg: _timeConfig,
                 leadTimeHours: _shipmentConfig.ShipmentSchedule,         // ex: 48h in-game
                 shouldBeDelayed: isShipmentDelayed,
+                scheduledDay,
+                scheduledHour,
                 additionalDelayHoursIfDelayed: _shipmentConfig.ShipmentDelayTime, // ex: +24h
                 dispatchHour: _shipmentConfig.ShipmentDeliveryHour,      // ex: 9f
                 ticketNumber: ticketOrderNumber
