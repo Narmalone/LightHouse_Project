@@ -70,40 +70,66 @@ namespace LightHouse.Game.DayNightSystem
             ApplyFadeAndLighting(timeOfDay);
         }
 
+        private static float Normalize24(float h)
+        {
+            // renvoie h dans [0,24)
+            h %= 24f;
+            if (h < 0f) h += 24f;
+            return h;
+        }
+
+        private static bool InRangeWrap(float t, float start, float end)
+        {
+            // vrai si t ∈ [start, end) sur un cadran 24h, avec wrap si start > end
+            if (start <= end) return t >= start && t < end;
+            return t >= start || t < end; // ex: [22, 4)
+        }
+
         private void ApplyFadeAndLighting(float time)
         {
-            float t = 0f;
+            time = Normalize24(time);
 
-            if (time >= _fadeInStartHour && time <= _fadeInEndHour)
+            // Fenêtres (autorise wrap si jamais tu mets des heures qui traversent minuit)
+            bool inFadeIn = InRangeWrap(time, _fadeInStartHour, _fadeInEndHour);
+            bool inFull = InRangeWrap(time, _fadeInEndHour, _fadeOutStartHour);
+            bool inFadeOut = InRangeWrap(time, _fadeOutStartHour, _fadeOutEndHour);
+
+            float t = 0f; // 0..1
+            if (inFadeIn)
             {
-                // Fade in ex: 18-20h
-                t = Mathf.InverseLerp(_fadeInStartHour, _fadeInEndHour, time);
+                float u = Mathf.InverseLerp(_fadeInStartHour, _fadeInEndHour, time);
+                t = u;
             }
-            else if ((time > _fadeInEndHour && time <= 24f) || (time >= 0f && time < _fadeOutStartHour))
+            else if (inFull)
             {
-                // Full intensity ex: 20h - 4h
                 t = 1f;
+                Debug.Log("Full moon");
             }
-            else if (time >= _fadeOutStartHour && time <= _fadeOutEndHour)
+            else if (inFadeOut)
             {
-                // Fade out ex: 4h-6h
-                t = 1f - Mathf.InverseLerp(_fadeOutStartHour, _fadeOutEndHour, time);
+                float u = Mathf.InverseLerp(_fadeOutStartHour, _fadeOutEndHour, time);
+                t = 1f - u;
             }
             else
             {
-                //No moon during day but overlaping is possible
-                t = 0f;
+                t = 0f; // plein jour
+                Debug.Log("plein jour");
             }
 
+            // Évite le flicker “enable/disable” autour de 0 : laisse la light ON et joue sur l’intensité
             _moonLight.intensity = t * _moonMaxIntensity;
-            _moonLight.enabled = _moonLight.intensity > 0.01f;
+
+            // Option 1 (recommandé) : ne JAMAIS disable, juste mettre à ~0 (évite l’extinction brutale à minuit)
+            _moonLight.enabled = true;
+
+            // Si tu tiens à éteindre en plein jour, fais-le sans seuils flottants :
+            // _moonLight.enabled = (inFadeIn || inFull || inFadeOut);
 
             _lightData.earthshine = t * _maxEarthShineIntensity;
             _lightData.flareFalloff = t * _moonFlareFallOff;
             _lightData.flareSize = t * _moonFlareSize;
             _lightData.flareMultiplier = t * _moonMaxFlareMultiplier;
         }
-
 
         #endregion
 

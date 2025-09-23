@@ -106,7 +106,7 @@ MonoBehaviour:
         Night: {fileID: 11400000, guid: 17e370971a9ba654494b6b3c7aeb567e, type: 2}
         Morning: {fileID: 11400000, guid: 7a326ab33fdd64e4a813f06e19f0ca80, type: 2}
         Midday: {fileID: 11400000, guid: d45bd407ddb53f54c9b2da739e463962, type: 2}
-        Evening: {fileID: 11400000, guid: 17e370971a9ba654494b6b3c7aeb567e, type: 2}
+        Evening: {fileID: 11400000, guid: 912d93a208a1b274699707262eeefa39, type: 2}
     - Key: 1
       Value:
         Night: {fileID: 11400000, guid: cbf2d72d27213ec4c99694ab45d6089c, type: 2}
@@ -138,9 +138,105 @@ MonoBehaviour:
         Midday: {fileID: 11400000, guid: 137b9c574b0b5724489832cf3512311b, type: 2}
         Evening: {fileID: 11400000, guid: 5e8344958dae94a4ebbdf8c23e2d09a6, type: 2}
   _morningStart: 6
-  _middayStart: 9
+  _middayBlendStart: 9
   _eveningStart: 17
   _nightStart: 20
+  _tNightToMorning:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _tMorningToMidday:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _tMiddayToEvening:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _tEveningToNight:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   _sunFadeStart: 17.5
   _sunFadeEnd: 19
   _sunFadeColor: {r: 0, g: 0, b: 0, a: 1}
