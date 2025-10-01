@@ -11,6 +11,13 @@ namespace LightHouse.Game.DayNightSystem
         public static int ToIndexFromDay(byte day) => Mathf.Max(day - 1, 0);
         public static byte ToDayFromIndex(int index) => (byte)(index + 1);
 
+        public static float Normalize24h(float h)
+        {
+            h %= 24f;
+            if (h < 0f) h += 24f;
+            return h;
+        }
+
         /// <summary>
         /// Formate une heure décimale en format 12h (AM/PM).
         /// </summary>

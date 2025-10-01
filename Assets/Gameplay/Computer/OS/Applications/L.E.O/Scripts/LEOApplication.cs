@@ -5,6 +5,7 @@ using LightHouse.Game.Computer.LEO.Supplies;
 using LightHouse.Game.Computer.OS;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace LightHouse.Game.Computer.LEO
 {
@@ -43,6 +44,16 @@ namespace LightHouse.Game.Computer.LEO
             _nightWatchController.SendMailRequested += NightWatchController_SendMailRequested;
             _weatherController.SendMailRequested += WeatherController_SendMailRequested;
             _supplyManager.SendMailRequest += SupplyManager_SendMailRequested;
+
+            foreach(var btn in _windows)
+            {
+                btn.CloseButton.onClick.AddListener(OnCloseCliqued);
+            }
+        }
+
+        private void OnCloseCliqued()
+        {
+            this.OnClose();
         }
 
         protected override void OnDestroy()
@@ -51,6 +62,11 @@ namespace LightHouse.Game.Computer.LEO
             _nightWatchController.SendMailRequested -= NightWatchController_SendMailRequested;
             _weatherController.SendMailRequested -= WeatherController_SendMailRequested;
             _supplyManager.SendMailRequest -= SupplyManager_SendMailRequested;
+
+            foreach (var btn in _windows)
+            {
+                btn.CloseButton.onClick.RemoveListener(OnCloseCliqued);
+            }
         }
 
         private void SupplyManager_SendMailRequested(MailDatas obj)

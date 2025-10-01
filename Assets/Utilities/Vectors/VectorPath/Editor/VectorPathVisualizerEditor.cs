@@ -45,7 +45,7 @@ public class VectorPathVisualizerEditor : Editor
         {
             Undo.RecordObject(path, "Add Point");
             var list = new System.Collections.Generic.List<Vector3>(path.Paths ?? new Vector3[0]);
-            list.Add(Vector3.zero);
+            list.Add(new Vector3(3f, 0f, 0f));
             path.Paths = list.ToArray();
             EditorUtility.SetDirty(path);
         }

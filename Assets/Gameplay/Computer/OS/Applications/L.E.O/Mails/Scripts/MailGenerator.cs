@@ -354,21 +354,23 @@ $@"<line-height={st.LineHeight}%><size={st.BodyPct}%><color={st.Body}>
     #region Types
 
     [Serializable]
-    public sealed class SupplyOrderLine
+    public sealed class SupplyOrderDatas
     {
         public int ProductId;
         public string Name;
         public int Quantity;
         public string Unit;        // "pcs", "kg", "L", etc. (optionnel)
         public float UnitPrice;   // Prix unitaire (dans la même monnaie que currencySymbol)
+        public GameObject Prefab;
 
-        public SupplyOrderLine(int productId, string name, int quantity, float unitPrice, string unit = "")
+        public SupplyOrderDatas(int productId, string name, int quantity, float unitPrice, GameObject prefab, string unit = "")
         {
             ProductId = productId;
             Name = name;
             Quantity = quantity;
             Unit = unit;
             UnitPrice = unitPrice;
+            Prefab = prefab;
         }
 
         public float LineTotal => Mathf.Max(0, Quantity) * UnitPrice;
@@ -409,7 +411,7 @@ $@"<line-height={st.LineHeight}%><size={st.BodyPct}%><color={st.Body}>
     public static MailDatas GenerateMailFromSupplyOrderTemplate(
         string dateFormat,
         string keeperName,
-        IEnumerable<SupplyOrderLine> items,
+        IEnumerable<SupplyOrderDatas> items,
         int deliveryDay,
         float deliveryHour,                     // ex: 9f => 09:00 a.m.
                                                 // Métadonnées MailDatas:

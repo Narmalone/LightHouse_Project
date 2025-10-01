@@ -17,16 +17,23 @@ namespace LightHouse.Game.Computer
         {
             InitializeServices();
             _computerInteractionSystem.OnObjectInteracted += ComputerInteractionSystem_OnObjectInteracted;
+            _os.OnLeftComputerCalled += Os_OnLeftComputerCalled;
         }
 
         private void OnDestroy()
         {
             _computerInteractionSystem.OnObjectInteracted -= ComputerInteractionSystem_OnObjectInteracted;
+            _os.OnLeftComputerCalled -= Os_OnLeftComputerCalled;
         }
 
         private void ComputerInteractionSystem_OnObjectInteracted()
         {
             ComputerEnter();
+        }
+
+        private void Os_OnLeftComputerCalled()
+        {
+            ComputerExit();
         }
 
         private void InitializeServices()
@@ -39,7 +46,8 @@ namespace LightHouse.Game.Computer
         public void ComputerEnter()
         {
             _cameraController.EnableComputerCamera();
-            _computerInteractionSystem.Collider.enabled = false;
+           _computerInteractionSystem.Collider.enabled = false;
+            //_computerInteractionSystem.gameObject.SetActive(false);
             _os.PlayerOnComputer = true;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -49,7 +57,12 @@ namespace LightHouse.Game.Computer
         public void ComputerExit()
         {
             _cameraController.DisableComputerCamera();
+            _computerInteractionSystem.Collider.enabled = true;
+            //_computerInteractionSystem.gameObject.SetActive(true);
             _os.PlayerOnComputer = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            Player.ForceChangePlayerState?.Invoke(PlayerState.Normal);
         }
     }
 

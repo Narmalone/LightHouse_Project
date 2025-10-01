@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
 namespace LightHouse.Game.DayNightSystem
@@ -54,14 +55,33 @@ namespace LightHouse.Game.DayNightSystem
 
         #region Unity Lifecycle
 
+        private void Awake()
+        {
+            TimeHandlerData.OnTimeSegmentChanged += TimeHandlerData_OnTimeSegmentChanged;
+        }
+
         private void Start()
         {
             UpdateMoonRotation(); //Force first rotation
+            _moonLight.transform.rotation = Quaternion.Euler(_moonLight.transform.rotation.eulerAngles.x, UnityEngine.Random.Range(90f, 270f), _moonLight.transform.rotation.eulerAngles.z);//Force a random yaw
+        }
+
+        private void OnDestroy()
+        {
+            TimeHandlerData.OnTimeSegmentChanged -= TimeHandlerData_OnTimeSegmentChanged;
         }
 
         #endregion
 
         #region Time Cycle
+
+        private void TimeHandlerData_OnTimeSegmentChanged(TimeOfDaySegment segment)
+        {
+            if (segment != TimeOfDaySegment.Midday)
+                return;
+            GetLunarPhase();
+            UpdateMoonRotation();
+        }
 
         public void OnTimeChanged(float timeOfDay)
         {
@@ -103,7 +123,6 @@ namespace LightHouse.Game.DayNightSystem
             else if (inFull)
             {
                 t = 1f;
-                Debug.Log("Full moon");
             }
             else if (inFadeOut)
             {
@@ -113,17 +132,16 @@ namespace LightHouse.Game.DayNightSystem
             else
             {
                 t = 0f; // plein jour
-                Debug.Log("plein jour");
             }
 
             // Évite le flicker “enable/disable” autour de 0 : laisse la light ON et joue sur l’intensité
             _moonLight.intensity = t * _moonMaxIntensity;
 
             // Option 1 (recommandé) : ne JAMAIS disable, juste mettre à ~0 (évite l’extinction brutale à minuit)
-            _moonLight.enabled = true;
+            //_moonLight.enabled = true;
 
             // Si tu tiens à éteindre en plein jour, fais-le sans seuils flottants :
-            // _moonLight.enabled = (inFadeIn || inFull || inFadeOut);
+            _moonLight.enabled = (inFadeIn || inFull || inFadeOut);
 
             _lightData.earthshine = t * _maxEarthShineIntensity;
             _lightData.flareFalloff = t * _moonFlareFallOff;

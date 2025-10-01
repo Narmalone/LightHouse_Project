@@ -18,11 +18,14 @@ namespace LightHouse.Game.Computer.LEO.Supplies
     /// <summary>
     /// Automate en 2 phases. Le décompte avance avec le TEMPS DE JEU (et pas les secondes réelles).
     /// </summary>
+    [System.Serializable]
     public sealed class ShipmentSystem
     {
         #region Fields / Ctor
 
         private readonly TimeConfiguration _cfg;
+
+        private byte _dispatchDay;
         private readonly float _dispatchHour;
 
         private readonly float _leadHours;        // ex. 48h in-game
@@ -39,10 +42,12 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         public ShipmentPhase Phase { get; private set; } = ShipmentPhase.Preparing;
 
         /// <summary>Temps RÉEL restant dans la phase courante (en secondes réelles).</summary>
-        public float RemainingSeconds { get; private set; }
+        [field: SerializeField]public float RemainingSeconds { get; private set; }
 
         public float ScheduledHour { get; private set; }
         public byte ScheduledDay { get; private set; }
+        public float DispatchHour => _dispatchHour;
+        public byte DispatchDay => _dispatchDay;
 
         /// <summary>Temps RESTANT exprimé en HEURES de jeu (dérivé de RemainingSeconds).</summary>
         public float RemainingGameHours
@@ -77,18 +82,18 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             // NEW: initialise l’horloge absolue in-game
             _lastAbsGameHours = TimeHandlerData.CurrentDay * 24f + TimeHandlerData.CurrentTime;
 
-            SupplyOrderLines = new List<MailGenerator.SupplyOrderLine>();
+            SupplyOrderLines = new List<MailGenerator.SupplyOrderDatas>();
 
             Debug.Log($"Shipment généré avec succès ordre ticket#{ticketNumber}");
         }
 
         #endregion
 
-        public List<MailGenerator.SupplyOrderLine> SupplyOrderLines { get; private set; }
+        public List<MailGenerator.SupplyOrderDatas> SupplyOrderLines { get; private set; }
 
         #region Public API
 
-        public void AddItems(List<MailGenerator.SupplyOrderLine> incomingItems)
+        public void AddItems(List<MailGenerator.SupplyOrderDatas> incomingItems)
         {
             SupplyOrderLines.AddRange(incomingItems);
         }
@@ -96,7 +101,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         public int GetTotalQuantity()
         {
             int quantity = 0;
-            foreach(var line in SupplyOrderLines){ quantity += line.Quantity; }
+            foreach(var line in SupplyOrderLines) { quantity += line.Quantity; }
             return quantity;
         }
 
@@ -142,6 +147,11 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
                     // Pas de retard ou bien retard terminé → attendre 09:00 du jour SUIVANT
                     RemainingSeconds = ComputeSecondsUntilNextDayDispatch();
+
+                    _dispatchDay = TimeHandlerData.CurrentDay;
+                    if (TimeHandlerData.CurrentTime > _dispatchHour)
+                        _dispatchDay += 1;
+
                     Phase = ShipmentPhase.WaitingDispatchWindow;
                     OnPrepared?.Invoke();
                     break;
@@ -150,6 +160,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                     // 09:00 du jour suivant atteint → livraison
                     RemainingSeconds = 0f;
                     Phase = ShipmentPhase.Completed;
+
                     OnArrived?.Invoke();
                     break;
             }

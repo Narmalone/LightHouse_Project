@@ -45,11 +45,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         public event Action<MailDatas> SendMailRequest;
 
         // Plusieurs shipments simultanés
-        private readonly List<ShipmentSystem> _shipments = new List<ShipmentSystem>();
-
-        // Payload (lignes) par shipment
-        private readonly Dictionary<ShipmentSystem, List<MailGenerator.SupplyOrderLine>> _payloadByShipment
-            = new Dictionary<ShipmentSystem, List<MailGenerator.SupplyOrderLine>>();
+        //private readonly List<ShipmentSystem> _shipments = new List<ShipmentSystem>();
 
         private uint _currentTicket = 0;
 
@@ -81,6 +77,8 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             PlayerCurrency.OnBalanceChanged += PlayerCurrency_OnBalanceChanged;
 
             _shopController.SwitchTo(E_SupplyCategory.Tools);
+
+            _shipmentConfig.Shipments.Clear();
         }
 
         protected void OnDestroy()
@@ -108,8 +106,8 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         private void Update()
         {
             // Tick chaque shipment
-            for (int i = _shipments.Count - 1; i >= 0; i--)
-                _shipments[i].Tick(Time.deltaTime);
+            for (int i = _shipmentConfig.Shipments.Count - 1; i >= 0; i--)
+                _shipmentConfig.Shipments[i].Tick(Time.deltaTime);
         }
 
         #endregion
@@ -162,8 +160,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             }
             open.AddItems(lines);
             // 5) Ajouter les lignes au payload du shipment sélectionné
-            EnsurePayloadList(open);
-            _payloadByShipment[open].AddRange(lines);
+            //EnsurePayloadList(open);
 
             // 6) Paiement et reset du panier
             PlayerCurrency.Add(-_totalOrderValue);
@@ -199,13 +196,8 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         #region ===== Commande : + / - / reset / total =====
 
-        //CHECKER SI ON DEPASSE DANS LE LAST OPENED SHIPMENT SI ON A TROP D'OBJETS DANS LE STACK ET EMPECHER LE CONFIRM
-
         private void OnShopPlus(SupplyItemDatas d)
         {
-            //attention si c'est null, voir pour créer un shipment temporaire ?
-
-
             d.SelectedAmountToBuy = Mathf.Max(0, d.SelectedAmountToBuy + 1);
             _shopController.RefreshShopItem(d);
             _orderController.UpdateOrderFor(d);
@@ -309,9 +301,9 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         /// </summary>
         private ShipmentSystem FindLatestOpenShipment()
         {
-            for (int i = _shipments.Count - 1; i >= 0; i--)
+            for (int i = _shipmentConfig.Shipments.Count - 1; i >= 0; i--)
             {
-                var s = _shipments[i];
+                var s = _shipmentConfig.Shipments[i];
                 if (s.Phase == ShipmentPhase.Preparing)
                     return s;
             }
@@ -331,8 +323,8 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                 ticketNumber: ticketOrderNumber
             );
 
-            _shipments.Add(newShipment);
-            EnsurePayloadList(newShipment);
+            _shipmentConfig.Shipments.Add(newShipment);
+            //EnsurePayloadList(newShipment);
 
             // Abonnements (pas d’unsubscribe de lambdas inline)
             newShipment.OnInitialShipmentDelayCompleted += () => OnShipmentDelayConfirmed(newShipment);
@@ -342,8 +334,10 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             return newShipment;
         }
 
+
         private void OnShipmentDelayConfirmed(ShipmentSystem s)
         {
+            //A REVOIR CAR SI LE DELAY EST DE MOINS D'UN JOUR CA MARCHE PLUS
             var mail = MailGenerator.BuildShipmentDelayNotice(
                 dateFormat: TimeUtility.FormatCurrentDate(),
                 keeperName: "Dev-00",
@@ -367,12 +361,13 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                 arrivalTime: TimeHandlerData.CurrentTime
             );
             SendMailRequest?.Invoke(mail);
+            _shipmentConfig.ShippingPrepared?.Invoke(s);
         }
 
         private void OnShipmentArrived(ShipmentSystem s)
         {
             // Récupère le payload
-            if (_payloadByShipment.TryGetValue(s, out var lines))
+            if (_shipmentConfig.Shipments.Contains(s))
             {
                 // TODO: appliquer la livraison à l’inventaire ici
                 // Inventory.Add(lines);
@@ -388,25 +383,27 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             }
 
             // Nettoyage
-            _payloadByShipment.Remove(s);
-            _shipments.Remove(s);
+            //_payloadByShipment.Remove(s);
+            _shipmentConfig.Shipments.Remove(s);
         }
 
         #endregion
 
         #region ===== Helpers (mails, météo, payload, runtime config) =====
 
-        private List<MailGenerator.SupplyOrderLine> BuildOrderLines()
+        private List<MailGenerator.SupplyOrderDatas> BuildOrderLines()
         {
-            var lines = new List<MailGenerator.SupplyOrderLine>();
+            var lines = new List<MailGenerator.SupplyOrderDatas>();
             foreach (var itemType in _orderController.OrderItems.Values)
             {
-                lines.Add(new MailGenerator.SupplyOrderLine(
+                lines.Add(new MailGenerator.SupplyOrderDatas(
                     itemType.Mydatas.UniqueID,
                     itemType.Mydatas.Name,
                     itemType.Mydatas.SelectedAmountToBuy,
-                    itemType.Mydatas.Cost
+                    itemType.Mydatas.Cost,
+                    itemType.Mydatas.Prefab
                 ));
+                //Debug.Log(itemType.Mydatas.Prefab.name);
             }
             return lines;
         }
@@ -427,12 +424,16 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                     wdAtEta.WeatherType == WeatherType.Stormy ||
                     wdAtEta.WeatherType == WeatherType.Windy);
         }
-
+/*
         private void EnsurePayloadList(ShipmentSystem s)
         {
+            if (_shipmentConfig.Shipments.Contains(s))
+            {
+                s.SupplyOrderLines = new List<MailGenerator.SupplyOrderLine>();
+            }
             if (!_payloadByShipment.TryGetValue(s, out var _))
                 _payloadByShipment[s] = new List<MailGenerator.SupplyOrderLine>();
-        }
+        }*/
 
         private void BuildRuntimeConfig(SO_SupplyConfigurator src)
         {
@@ -449,6 +450,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                         UniqueID = d.UniqueID,
                         Name = d.Name,
                         Cost = d.Cost,
+                        Prefab = d.Prefab,
                         SelectedAmountToBuy = 0
                     };
                 }

@@ -31,7 +31,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         #region ===== Runtime State =====
 
-        public SupplyItemDatas Mydatas { get; private set; }
+        [field: SerializeField] public SupplyItemDatas Mydatas { get; private set; }
 
         #endregion
 

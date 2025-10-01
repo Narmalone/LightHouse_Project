@@ -1,5 +1,7 @@
 using LightHouse.Game.Computer.OS;
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LightHouse.Game.Computer.LEO
 {
@@ -7,6 +9,7 @@ namespace LightHouse.Game.Computer.LEO
     {
         [SerializeField] private ELEOWindow _type;
         [SerializeField] private CanvasGroup _canvasGroup;
+        public Button CloseButton;
         public CanvasGroup CanvasGroup => _canvasGroup;
         public ELEOWindow Type => _type;
         public OS.OS OSSystem { get; set; }

@@ -75,6 +75,12 @@ namespace LightHouse.Game.Rendering
 
         #region Day segment timings
 
+        [Header("Blend Windows (24h)")]
+        [SerializeField] private Vector2 _nightToMorning = new Vector2(6f, 9f);
+        [SerializeField] private Vector2 _morningToMidday = new Vector2(9f, 12f);
+        [SerializeField] private Vector2 _middayToEvening = new Vector2(15f, 18f);
+        [SerializeField] private Vector2 _eveningToNight = new Vector2(21f, 23f);
+
         [Header("Day Segments (24h)")]
         [SerializeField] private float _morningStart = 6f;
         [SerializeField] private float _middayBlendStart = 9f;
@@ -253,41 +259,90 @@ namespace LightHouse.Game.Rendering
             GetBlendSegments(time, out var fromSeg, out var toSeg, out float t);
             var from = arr[(int)fromSeg] ?? arr[(int)TimeOfDaySegment.Midday];
             var to = arr[(int)toSeg] ?? arr[(int)TimeOfDaySegment.Midday];
+            //Debug.Log($"weather target: {to.name}");
             return ResolveInterpolated(from, to, t);
         }
 
-        private void GetBlendSegments(float time,
-            out TimeOfDaySegment from, out TimeOfDaySegment to, out float t)
+
+        private static float Normalize24(float h)
         {
-            if (time >= _morningStart && time < _middayBlendStart)
-            {
-                from = TimeOfDaySegment.Morning; to = TimeOfDaySegment.Midday;
-                t = Mathf.InverseLerp(_morningStart, _middayBlendStart, time);
-                t = _tMorningToMidday.Evaluate(t);
-            }
-            else if (time >= _middayBlendStart && time < _eveningStart)
-            {
-                from = TimeOfDaySegment.Midday; to = TimeOfDaySegment.Midday; t = 0f; // plateau
-            }
-            else if (time >= _eveningStart && time < _nightStart)
-            {
-                from = TimeOfDaySegment.Midday; to = TimeOfDaySegment.Evening;
-                t = Mathf.InverseLerp(_eveningStart, _nightStart, time);
-                t = _tMiddayToEvening.Evaluate(t);
-            }
-            else if (time >= _nightStart && time <= 24f)
-            {
-                from = TimeOfDaySegment.Evening; to = TimeOfDaySegment.Night;
-                t = Mathf.InverseLerp(_nightStart, 24f, time);
-                t = _tEveningToNight.Evaluate(t);
-            }
-            else
+            h %= 24f; if (h < 0f) h += 24f; return h; // [0,24)
+        }
+
+        private static bool InRangeNoWrap(float t, float start, float end) // [start, end)
+        {
+            return t >= start && t < end;
+        }
+
+
+        private void GetBlendSegments(float time,
+      out TimeOfDaySegment from, out TimeOfDaySegment to, out float t)
+        {
+            time = Normalize24(time);
+
+            // 1) Night → Morning : 06–09
+            if (InRangeNoWrap(time, _nightToMorning.x, _nightToMorning.y))
             {
                 from = TimeOfDaySegment.Night; to = TimeOfDaySegment.Morning;
-                t = Mathf.InverseLerp(0f, _morningStart, time);
+                t = Mathf.InverseLerp(_nightToMorning.x, _nightToMorning.y, time);
                 t = _tNightToMorning.Evaluate(t);
+                return;
             }
 
+            // 2) Morning → Midday : 09–12
+            if (InRangeNoWrap(time, _morningToMidday.x, _morningToMidday.y))
+            {
+                from = TimeOfDaySegment.Morning; to = TimeOfDaySegment.Midday;
+                t = Mathf.InverseLerp(_morningToMidday.x, _morningToMidday.y, time);
+                t = _tMorningToMidday.Evaluate(t);
+                return;
+            }
+
+            // 3) Midday → Evening : 15–18
+            if (InRangeNoWrap(time, _middayToEvening.x, _middayToEvening.y))
+            {
+                from = TimeOfDaySegment.Midday; to = TimeOfDaySegment.Evening;
+                t = Mathf.InverseLerp(_middayToEvening.x, _middayToEvening.y, time);
+                t = _tMiddayToEvening.Evaluate(t);
+                return;
+            }
+
+            // 4) Evening → Night : 21–23
+            if (InRangeNoWrap(time, _eveningToNight.x, _eveningToNight.y))
+            {
+                from = TimeOfDaySegment.Evening; to = TimeOfDaySegment.Night;
+                t = Mathf.InverseLerp(_eveningToNight.x, _eveningToNight.y, time);
+                t = _tEveningToNight.Evaluate(t);
+                return;
+            }
+
+            // --- PLATEAUX ---
+            // Night plateau: [23–24) ∪ [0–6)
+            if (time >= _eveningToNight.y || time < _nightToMorning.x)
+            {
+                from = TimeOfDaySegment.Night; to = TimeOfDaySegment.Night; t = 0f; return;
+            }
+
+            // Morning plateau: [9–9) n'existe pas (fenêtre comblée), mais si tu changes les fenêtres :
+            if (time >= _nightToMorning.y && time < _morningToMidday.x)
+            {
+                from = TimeOfDaySegment.Morning; to = TimeOfDaySegment.Morning; t = 0f; return;
+            }
+
+            // Midday plateau: [12–15)
+            if (time >= _morningToMidday.y && time < _middayToEvening.x)
+            {
+                from = TimeOfDaySegment.Midday; to = TimeOfDaySegment.Midday; t = 0f; return;
+            }
+
+            // Evening plateau: [18–21)
+            if (time >= _middayToEvening.y && time < _eveningToNight.x)
+            {
+                from = TimeOfDaySegment.Evening; to = TimeOfDaySegment.Evening; t = 0f; return;
+            }
+
+            // fallback (ne devrait pas arriver)
+            from = TimeOfDaySegment.Midday; to = TimeOfDaySegment.Midday; t = 0f;
         }
 
         private static ResolvedLighting ResolveInterpolated(LightingProfile a, LightingProfile b, float t)
@@ -389,8 +444,8 @@ namespace LightHouse.Game.Rendering
             _sunController.SunLight.color = r.SunColor;
             _sunController.SunLight.intensity = r.SunIntensity;
             _sunController.SunLight.colorTemperature = r.SunTemperature;
-            _sunController.Lens.intensity = r.FlareIntensity;
-            _sunController.Lens.scale = r.FlareScale;
+            _sunController.SunLens.intensity = r.FlareIntensity;
+            _sunController.SunLens.scale = r.FlareScale;
 
             // --- Exposure ---
             if (_exposure != null)

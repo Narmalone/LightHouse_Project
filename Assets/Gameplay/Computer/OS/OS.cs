@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -38,6 +39,8 @@ namespace LightHouse.Game.Computer.OS
         public bool PlayerOnComputer = false;
         public ComputerServices Services => _services;
 
+        public event Action OnLeftComputerCalled;
+
         #endregion
 
         #region Unity Lifecycle
@@ -60,6 +63,11 @@ namespace LightHouse.Game.Computer.OS
         public void SetService(ComputerServices services)
         {
             this._services = services;
+        }
+
+        public void LeaveOS()
+        {
+            OnLeftComputerCalled?.Invoke();
         }
 
         #endregion

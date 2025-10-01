@@ -140,6 +140,7 @@ GameObject:
   m_Component:
   - component: {fileID: 829991908606585678}
   - component: {fileID: 7799946464831760991}
+  - component: {fileID: 4799480214072415474}
   m_Layer: 0
   m_Name: RainController
   m_TagString: Untagged
@@ -184,10 +185,10 @@ MonoBehaviour:
   RippleStrength: 0.2
   WaterMask: 1
   Smoothness: 1
-  RainMaxIntensity: 10000000
-  RainIntensity: 1
-  RainMinVelocity: {x: 0, y: -24, z: 0}
-  RainMaxVelocity: {x: 0, y: -30, z: 0}
+  RainMaxIntensity: 100000
+  RainIntensity: 0.87288606
+  RainMinVelocity: {x: 0, y: -10, z: 0}
+  RainMaxVelocity: {x: 0, y: -15, z: 0}
   HumidityRainStart: 70
   HumidityRainFull: 95
   DelugeGamma: 2.5
@@ -204,6 +205,27 @@ MonoBehaviour:
   WindSpeed: 100
   LateralFactorAtMax: 1
   mixer: {fileID: 24100000, guid: 3bebce89c8dadc849a0312cb46e1ec10, type: 2}
+--- !u!114 &4799480214072415474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8654615416006127468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fcee2b6cf64c7f4bab806caef7305c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Target: {fileID: 0}
+  TargetPoint: {x: 0, y: 0, z: 0}
+  HoverHeight: 10
+  DeadZoneRadius: 1
+  SnapInsideDeadZone: 0
+  SmoothTime: 0.2
+  MaxSpeed: 50
+  KeepCurrentY: 0
+  FaceTarget: 0
 --- !u!1001 &448357595601962725
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -306,17 +328,17 @@ PrefabInstance:
     - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 444.45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 50.01001
+      value: 1.75
       objectReference: {fileID: 0}
     - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 377.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2239461113887635076, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
@@ -371,12 +393,17 @@ PrefabInstance:
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
-      value: 99999.99
+      value: 68955.13
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[1].m_Value
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Value
+      value: 3.5551012
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
@@ -391,12 +418,12 @@ PrefabInstance:
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.y
-      value: -60
+      value: -26.90294
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[1].m_Value.y
-      value: -60
+      value: -26.90294
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
@@ -431,17 +458,17 @@ PrefabInstance:
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[4].m_Value.x
-      value: 250
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[4].m_Value.y
-      value: 150
+      value: 30.16
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[4].m_Value.z
-      value: 250
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}

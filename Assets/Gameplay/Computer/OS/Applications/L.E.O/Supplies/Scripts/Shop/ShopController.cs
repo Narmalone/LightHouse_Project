@@ -134,6 +134,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
             if (_shopItems.TryGetValue(datas.UniqueID, out var item) && item != null)
                 item.UpdateSelectedCountText();
+            //Debug.Log(item.Mydatas.Prefab.name);
         }
 
         /// <summary>

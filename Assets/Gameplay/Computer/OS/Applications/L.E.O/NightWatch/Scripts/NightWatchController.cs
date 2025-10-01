@@ -7,7 +7,9 @@ using LightHouse.Game.DayNightSystem;
 using LightHouse.Game.Nightwatch;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LightHouse.Game.Computer.LEO.NightWatch
 {
@@ -22,6 +24,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
     {
         [SerializeField] private LEOApplication _manager;
         [SerializeField] private TabCanvas _tabCanvas;
+        [SerializeField] private CanvasGroup _reportCanvas;
         [SerializeField] private LEOWindowButton _backButton;
         [SerializeField] private LEOWindowButton _switchToCamera;
         [SerializeField] private NightWatchReportWindow[] _windows;
@@ -29,6 +32,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         [SerializeField] private UI_BuoysReportController _buoysReportController;
         [SerializeField] private UI_BoatReportController _boatsReportController;
         [SerializeField] private UI_Signals _signalsController;
+        [SerializeField] private Image _backgroundEndedNightwatch;
+        [SerializeField] private TextMeshProUGUI _endedNightwatchText;
 
         [SerializeField] private SO_NightWatchConfiguration _nightwatchConfig;
 
@@ -76,6 +81,12 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         {
             ArmCycleForDay(TimeHandlerData.CurrentDay);
             SwitchTo(E_NightWatchMode.Signals);
+            
+            var time = TimeUtility.FormatTime12h(_nightwatchConfig.StartHour);
+            _endedNightwatchText.text = $"Your job is over for now. \n Please comeback at {time} ";
+            bool mustEnableNightwatchOnStart = TimeHandlerData.CurrentTime > _nightwatchConfig.StartHour;
+            _backgroundEndedNightwatch.gameObject.SetActive(!mustEnableNightwatchOnStart);
+            _reportCanvas.interactable = mustEnableNightwatchOnStart;
         }
 
         public override void Open()
@@ -93,6 +104,16 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
         private void BuoysOnReportFailed(string id, bool arg2, bool arg3)
         {
             _signalsController.TryForceRemoveSignal?.Invoke(id, arg2, arg3);
+        }
+
+        private void EnableReportPannel()
+        {
+            _backgroundEndedNightwatch.gameObject.SetActive(true);
+        }
+
+        private void DisableReportPannel()
+        {
+            _backgroundEndedNightwatch.gameObject.SetActive(false);
         }
 
         // ------------------------------------------------------------------------------
@@ -124,6 +145,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
             if (TimeUtility.HasReachedDate(_startDay, _nightwatchConfig.StartHour))
             {
                 _cycleInitialized = true;
+                _reportCanvas.interactable = true;
+                DisableReportPannel();
+                Debug.Log("disable report pannel");
                 // Place pour reinit/prepare tes systèmes si besoin (reset de compteurs, etc.)
                 // _buoysReportController.OnNightwatchStartToday(); // si tu as ce hook
                 // _boatsReportController.OnNightwatchStartToday(); // si tu as ce hook
@@ -142,6 +166,11 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
                 // L'ordre des appels dans OnTimeUpdated garantit qu'on init d'abord, puis on close.
                 GenerateRecap();
                 _cycleCompleted = true;
+
+                //Faire un reset de la nightwatch, stopper absolument toutes les anomalies,
+                //lancer l'echec du joueur ou la réussite
+                _reportCanvas.interactable = false;
+                EnableReportPannel();
 
                 _buoysReportController.OnNightwatchEndedToday();
                 _boatsReportController.OnNightwatchEndedToday();

@@ -22,6 +22,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         //TO DO::
         //Ajouter le Prefab qui sera instantié...
+        public GameObject Prefab;
 
         #endregion
 

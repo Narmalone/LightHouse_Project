@@ -51,12 +51,12 @@ namespace LightHouse.KinematicCharacterController
         #region UI
         public void Enable()
         {
-            _interactionCanvas.gameObject.SetActive(false);
+            _interactionCanvas.gameObject.SetActive(true);
         }
 
         public void Disable()
         {
-            _interactionCanvas.gameObject.SetActive(true);
+            _interactionCanvas.gameObject.SetActive(false);
         }
 
         #endregion

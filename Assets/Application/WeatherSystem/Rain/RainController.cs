@@ -66,8 +66,6 @@ public class RainController : MonoBehaviour
 
     // VFX extra props (d’après ton graph)
     const string VFX_NoiseIntensity = "NoiseIntensity";
-    const string VFX_Scale1 = "Scale1";
-    const string VFX_Scale2 = "Scale2";
 
     // helpers
     static float Linear01ToDb(float v01) => (v01 <= 0.0001f) ? -80f : 20f * Mathf.Log10(Mathf.Clamp01(v01));
@@ -84,6 +82,16 @@ public class RainController : MonoBehaviour
         return Mathf.Clamp01(t * boost);
     }
 
+    private void Start()
+    {
+        RainIntensity = 0f;
+    }
+
+    // en haut de la classe
+    const float INTENSITY_ON = 0.03f;   // seuil d’activation (3%)
+    const float INTENSITY_OFF = 0.015f;  // seuil d’extinction (1.5%) => hystérésis
+    bool _vfxRunning;                    // état courant
+
     void Update()
     {
         // ---- Mat & Lens
@@ -92,56 +100,72 @@ public class RainController : MonoBehaviour
         WaterMaterial.SetFloat(_smoothnessID, Smoothness);
         WaterLensMaterial.SetFloat(_isRaining, RainIntensity);
 
-        // ---- Densité contrôlée (évite l’overdraw noir)
-        // cible de particules "vivantes" selon l'intensité
-        float targetAliveMin = 2e4f;    // 20k
-        float targetAliveMax = 1.2e5f;  // 120k
-        float targetAlive = Mathf.Lerp(targetAliveMin, targetAliveMax, RainIntensity);
+        // ---- Gestion seuils / hystérésis
+        bool wantRunning = _vfxRunning
+            ? (RainIntensity > INTENSITY_OFF)
+            : (RainIntensity >= INTENSITY_ON);
 
-        // Lifetime (si tu l’exposes dans le VFX sous le nom "Lifetime")
+        if (wantRunning && !_vfxRunning)
+        {
+            RainVFX.Reinit();   // purge buffers & compteurs; évite un “burst” résiduel
+            RainVFX.Play();
+            _vfxRunning = true;
+            if (_rainVolume) _rainVolume.enabled = true;
+        }
+        else if (!wantRunning && _vfxRunning)
+        {
+            // on arrête : plus aucun spawn, laisse mourir les particules, puis Stop()
+            RainVFX.SetFloat(_rateId, 0f);
+            RainVFX.Stop();
+            _vfxRunning = false;
+            if (_rainVolume) _rainVolume.enabled = false;
+        }
+
+        // ---- Densité contrôlée
+        // à 0 → 0, à 1 → targetAliveMax
+        float targetAliveMax = 1.2e5f;
+        float targetAlive = Mathf.Lerp(0f, targetAliveMax, RainIntensity);
+
+        // Lifetime (si exposé)
         float lifetime = Mathf.Lerp(4f, 1.2f, RainIntensity);
         if (RainVFX.HasFloat("Lifetime"))
             RainVFX.SetFloat("Lifetime", lifetime);
 
-        // Spawn rate = alive / lifetime (cap sur ton max)
-        float spawnRate = targetAlive / Mathf.Max(0.1f, lifetime);
+        // Spawn rate = alive / lifetime (capé)
+        float spawnRate = _vfxRunning ? targetAlive / Mathf.Max(0.1f, lifetime) : 0f;
         spawnRate = Mathf.Min(spawnRate, RainMaxIntensity);
         RainVFX.SetFloat(_rateId, spawnRate);
+
         // ---- Turbulence
         float turb = Mathf.Lerp(TurbulenceBase, TurbulenceAtMax, RainIntensity);
-        RainVFX.SetFloat(VFX_NoiseIntensity, turb);
-
-      /*  // ---- Échelle des gouttes (Vector3 !)
-        Vector3 s1 = Vector3.Lerp(new Vector3(DropScale1Base.x, DropScale1Base.y, DropScale1Base.x),
-                                  new Vector3(DropScale1Max.x, DropScale1Max.y, DropScale1Max.x), RainIntensity);
-        Vector3 s2 = Vector3.Lerp(new Vector3(DropScale2Base.x, DropScale2Base.y, DropScale2Base.x),
-                                  new Vector3(DropScale2Max.x, DropScale2Max.y, DropScale2Max.x), RainIntensity);
-        RainVFX.SetVector3(VFX_Scale1, s1);
-        RainVFX.SetVector3(VFX_Scale2, s2);*/
+        RainVFX.SetFloat(VFX_NoiseIntensity, _vfxRunning ? turb : 0f);
 
         // ---- Vitesse & vent
         Vector3 vBase = Vector3.Lerp(RainMinVelocity, RainMaxVelocity, RainIntensity);
         vBase *= Mathf.Lerp(1f, VelocityBoostAtMax, RainIntensity);
         Vector3 lateral = WindDirection.normalized * WindSpeed * (LateralFactorAtMax * RainIntensity);
-        Vector3 v = vBase + lateral;
+        Vector3 v = _vfxRunning ? (vBase + lateral) : Vector3.zero;
         RainVFX.SetVector3(_rainMinVelocityID, v);
         RainVFX.SetVector3(_rainMaxVelocityID, v);
 
         // ---- Audio
         if (mixer != null)
-            mixer.SetFloat("RainVolume", Linear01ToDb(RainIntensity));
+        {
+            float vol01 = _vfxRunning ? RainIntensity : 0f;
+            mixer.SetFloat("RainVolume", Linear01ToDb(vol01));
+        }
     }
-
 
     void LateUpdate()
     {
-        /*// Rebranche ça dès que tu remets la météo en live
         if (WeatherHandlerData.CurrentWeather == null) return;
 
-        // Humidity peut être 0..1 ou 0..100
         float h = WeatherHandlerData.CurrentWeather.Humidity;
         float humidityPercent = (h <= 1.0001f) ? h * 100f : h;
 
-        RainIntensity = MapHumidityToRain01(humidityPercent);*/
+        // Si tu aimes ton “quand il pleut / quand il pleut pas”, on garde la même map,
+        // mais tu peux lisser davantage la base en relevant HumidityRainStart de 1–2 pts.
+        RainIntensity = MapHumidityToRain01(humidityPercent);
     }
+
 }
