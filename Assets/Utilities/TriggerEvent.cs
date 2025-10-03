@@ -27,6 +27,7 @@ namespace LightHouse.Utilities
         protected virtual void OnTriggerEnter(Collider other)
         {
             if (!_useTriggerEnter) return;
+            
             if (GetConditions(other))
             {
                 OnTriggerEntered();

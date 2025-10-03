@@ -5,10 +5,10 @@ namespace LightHouse.Game.World
 {
     public static class GameZoneHandlerData
     {
-        public static event Action<GameZone> OnGameZoneChanged;
-        public static GameZone CurrentZone { get; private set; }
+        public static event Action<ZoneType> OnGameZoneChanged;
+        public static ZoneType CurrentZone { get; private set; }
 
-        public static void SetGameZone(GameZone nextZone)
+        public static void SetGameZone(ZoneType nextZone)
         {
             if (nextZone == CurrentZone) return;
             CurrentZone = nextZone;

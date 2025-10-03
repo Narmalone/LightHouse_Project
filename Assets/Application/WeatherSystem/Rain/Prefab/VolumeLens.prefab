@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4440600510452524979}
   - component: {fileID: 5688972329036578167}
+  - component: {fileID: 33432359594479765}
   m_Layer: 0
   m_Name: VolumeLens
   m_TagString: Untagged
@@ -57,7 +58,8 @@ MonoBehaviour:
     version: 2
     RefIds:
     - rid: 5265225105828217111
-      type: {class: FullScreenCustomPass, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
+      type: {class: FullScreenCustomPass, ns: UnityEngine.Rendering.HighDefinition,
+        asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
         m_Name: Custom Pass
         enabled: 1
@@ -66,12 +68,14 @@ MonoBehaviour:
         clearFlags: 1
         passFoldout: 0
         m_Version: 0
-        fullscreenPassMaterial: {fileID: 2100000, guid: 77ae82d967345ca4eb5d9f59f81d2ffc, type: 2}
+        fullscreenPassMaterial: {fileID: 2100000, guid: 77ae82d967345ca4eb5d9f59f81d2ffc,
+          type: 2}
         materialPassIndex: 0
         materialPassName: META
         fetchColorBuffer: 0
     - rid: 5265225105828217117
-      type: {class: FullScreenCustomPass, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
+      type: {class: FullScreenCustomPass, ns: UnityEngine.Rendering.HighDefinition,
+        asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
         m_Name: Custom Pass
         enabled: 1
@@ -80,7 +84,24 @@ MonoBehaviour:
         clearFlags: 0
         passFoldout: 0
         m_Version: 0
-        fullscreenPassMaterial: {fileID: 2100000, guid: 77ae82d967345ca4eb5d9f59f81d2ffc, type: 2}
+        fullscreenPassMaterial: {fileID: 2100000, guid: 77ae82d967345ca4eb5d9f59f81d2ffc,
+          type: 2}
         materialPassIndex: 0
         materialPassName: META
         fetchColorBuffer: 0
+--- !u!114 &33432359594479765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691936409548675794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37058377f38c9444c9f59c99db1d27a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WaterLensMaterial: {fileID: 2100000, guid: 77ae82d967345ca4eb5d9f59f81d2ffc, type: 2}
+  rainController: {fileID: 0}
+  IsIndoors: 0
+  fadeSpeed: 0.35

@@ -98,7 +98,7 @@ public class RainController : MonoBehaviour
         WaterMaterial.SetFloat(_rippleStrengthID, RippleStrength);
         WaterMaterial.SetFloat(_waterMaskID, WaterMask);
         WaterMaterial.SetFloat(_smoothnessID, Smoothness);
-        WaterLensMaterial.SetFloat(_isRaining, RainIntensity);
+        //WaterLensMaterial.SetFloat(_isRaining, RainIntensity);
 
         // ---- Gestion seuils / hystérésis
         bool wantRunning = _vfxRunning

@@ -46,7 +46,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: f64e5e83f96785e4f815b907649c2077, type: 3}
   m_Resource: {fileID: 8300000, guid: f64e5e83f96785e4f815b907649c2077, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.03
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -186,7 +186,7 @@ MonoBehaviour:
   WaterMask: 1
   Smoothness: 1
   RainMaxIntensity: 100000
-  RainIntensity: 0.87288606
+  RainIntensity: 0.9998593
   RainMinVelocity: {x: 0, y: -10, z: 0}
   RainMaxVelocity: {x: 0, y: -15, z: 0}
   HumidityRainStart: 70
@@ -234,15 +234,20 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 829991908606585678}
     m_Modifications:
+    - target: {fileID: 33432359594479765, guid: 70ee4054b4801ed4f90224f769eab00b,
+        type: 3}
+      propertyPath: rainController
+      value: 
+      objectReference: {fileID: 7799946464831760991}
     - target: {fileID: 1691936409548675794, guid: 70ee4054b4801ed4f90224f769eab00b,
         type: 3}
       propertyPath: m_Name
-      value: RainVolumeFX
+      value: WaterLens
       objectReference: {fileID: 0}
     - target: {fileID: 1691936409548675794, guid: 70ee4054b4801ed4f90224f769eab00b,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4440600510452524979, guid: 70ee4054b4801ed4f90224f769eab00b,
         type: 3}
@@ -393,7 +398,7 @@ PrefabInstance:
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
-      value: 68955.13
+      value: 99953.1
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
@@ -403,7 +408,7 @@ PrefabInstance:
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Value
-      value: 3.5551012
+      value: 3.9995074
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
@@ -418,12 +423,12 @@ PrefabInstance:
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.y
-      value: -26.90294
+      value: -29.996483
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}
       propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[1].m_Value.y
-      value: -26.90294
+      value: -29.996483
       objectReference: {fileID: 0}
     - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
         type: 3}

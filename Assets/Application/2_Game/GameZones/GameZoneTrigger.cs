@@ -5,7 +5,7 @@ namespace LightHouse.Game.World
 {
     public class GameZoneTrigger : TriggerEvent
     {
-        [SerializeField] private GameZone Zone;
+        [SerializeField] private ZoneType Zone;
 
         protected override void OnTriggerEntered()
         {
