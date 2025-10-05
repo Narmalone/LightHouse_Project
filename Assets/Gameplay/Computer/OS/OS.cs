@@ -20,16 +20,21 @@ namespace LightHouse.Game.Computer.OS
         public List<ComputerApp> apps = new List<ComputerApp>();
 
         [Tooltip("Liste des raccourcis associés aux applications.")]
-        public List<ShortCutController> ShortCuts = new List<ShortCutController>();
+        public List<ShortCutController> ShortCuts { get; set; } = new List<ShortCutController>();
 
         [SerializeField]
         [Tooltip("Parent transform pour héberger les applications instanciées.")]
         private RectTransform _runningAppsParent;
 
+        [SerializeField]
+        private ShortcutButtonsManager _shortcutButtonsManager;
+
         /// <summary>
         /// Le parent dans la hiérarchie pour les applications ouvertes.
         /// </summary>
         public RectTransform RunningAppParent => _runningAppsParent;
+
+        public ShortcutButtonsManager ShortcutButtonsManager => _shortcutButtonsManager;
 
         /// <summary>
         /// Dictionnaire des apps ouvertes indexées par nom.
@@ -68,6 +73,7 @@ namespace LightHouse.Game.Computer.OS
         public void LeaveOS()
         {
             OnLeftComputerCalled?.Invoke();
+            ShortcutButtonsManager.SwitchSelectedButton(null);
         }
 
         #endregion

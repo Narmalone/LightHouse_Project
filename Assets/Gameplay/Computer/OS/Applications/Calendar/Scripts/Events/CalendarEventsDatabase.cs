@@ -1,59 +1,72 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightHouse.Game.Computer.Calendar
 {
-    /// <summary>
-    /// Base de données des événements du calendrier.
-    /// Contient les événements ajoutés dynamiquement et les événements de départ configurés en amont.
-    /// </summary>
     [CreateAssetMenu(fileName = "CalendarEventDatabase", menuName = "Calendar/Calendar Event Database")]
     public class CalendarEventDatabase : ScriptableObject
     {
         [Header("Events Data")]
-        public List<CalendarEvent> events = new();            // Événements ajoutés dynamiquement
-        public CalendarEvent[] startingEvents;                 // Événements définis à l’avance (ex. : via l’inspecteur)
+        public List<CalendarEvent> events = new();    // ajoutés dynamiquement au runtime
+        public CalendarEvent[] startingEvents;         // configurés dans l’inspector
 
-        #region Public API
+        public event Action<CalendarEvent> OnEventAdded;
 
-        /// <summary>
-        /// Retourne tous les événements correspondant à un jour spécifique.
-        /// </summary>
-        public List<CalendarEvent> GetEventsForDay(byte day)
+        private static IEnumerable<CalendarEvent> ConcatAll(CalendarEvent[] a, List<CalendarEvent> b)
         {
-            return events.FindAll(e => e.Day == day);
+            if (a != null)
+                for (int i = 0; i < a.Length; i++)
+                    if (a[i] != null) yield return a[i];
+            if (b != null)
+                for (int i = 0; i < b.Count; i++)
+                    if (b[i] != null) yield return b[i];
         }
 
         /// <summary>
-        /// Retourne tous les événements actifs à une heure précise d’un jour donné.
+        /// Génère une table jour -> évènements (toutes occurrences qui tombent dans la plage).
         /// </summary>
-        public List<CalendarEvent> GetEventsForDayAndTime(byte day, float time)
+        public Dictionary<int, List<CalendarEvent>> GetEventsByDayInRange(int startDay, int endDay)
         {
-            return events.FindAll(e =>
-                e.Day == day &&
-                (
-                    (!e.IsTimedEvent && Mathf.Approximately(e.StartTime, time)) ||
-                    (e.IsTimedEvent && time >= e.StartTime && time <= e.EndTime)
-                )
-            );
+            var map = new Dictionary<int, List<CalendarEvent>>(endDay - startDay + 1);
+            foreach (var e in ConcatAll(startingEvents, events))
+            {
+                // On ne pré-enumère pas (pour rester simple) : on teste juste Recurrence.Matches(day)
+                for (int d = startDay; d <= endDay; d++)
+                {
+                    if (!e.Recurrence.Matches(d)) continue;
+                    if (!map.TryGetValue(d, out var list))
+                    {
+                        list = new List<CalendarEvent>();
+                        map[d] = list;
+                    }
+                    list.Add(e);
+                }
+            }
+            return map;
         }
 
-        /// <summary>
-        /// Ajoute un événement dynamiquement à la base.
-        /// </summary>
+        // ------- API simple pour manipuler la DB --------
+
         public void AddEvent(CalendarEvent e)
         {
             events.Add(e);
+            OnEventAdded?.Invoke(e);
         }
 
-        /// <summary>
-        /// Supprime tous les événements liés à un jour spécifique.
-        /// </summary>
-        public void RemoveEventsForDay(byte day)
+        public void ClearRuntimeEvents() => events.Clear();
+
+        // Helpers “Builder-like” si tu veux très simple:
+        public CalendarEvent AddOnce(string desc, int day, float at)
         {
-            events.RemoveAll(e => e.Day == day);
+            var e = new CalendarEvent { Description = desc, StartTime = at, EndTime = -1, StartDay = day, Recurrence = Recurrence.Once(day) };
+            AddEvent(e); return e;
         }
 
-        #endregion
+        public CalendarEvent AddEveryNDays(string desc, int n, int fromDay, float at, float end = -1f)
+        {
+            var e = new CalendarEvent { Description = desc, StartTime = at, EndTime = end, StartDay = fromDay, Recurrence = Recurrence.Every(n, fromDay) };
+            AddEvent(e); return e;
+        }
     }
 }

@@ -1,48 +1,28 @@
 using UnityEngine;
 
-public enum EventRecurrence
-{
-    None,     // Se produit une seule fois à un jour donné
-    Daily,    // Se répète tous les jours à la même heure
-    Weekly,   // Se répète tous les 7 jours à partir de Day
-    Monthly,  // Se répète tous les X jours (ex: tous les 30 jours)
-    Yearly    // Se répète tous les 365 jours
-}
-
 [System.Serializable]
 public class CalendarEvent
 {
-    public byte Day; // Jour d'origine (utile pour "None" ou comme point de départ)
+    [Tooltip("Jour d’origine/concept de départ. Sert aussi d’ancre pour certaines récurrences.")]
+    public int StartDay;
 
     [Range(0f, 24f)] public float StartTime = 0f;
-    [Range(0f, 24f)] public float EndTime = -1f;  // -1 = événement ponctuel
+    [Range(-1f, 24f)] public float EndTime = -1f; // -1 = ponctuel
 
-    public EventRecurrence Recurrence = EventRecurrence.None;
+    public Recurrence Recurrence;
 
     [TextArea] public string Description;
 
     public bool IsTimedEvent => EndTime >= 0f;
 
-    public bool Matches(byte currentDay, float currentTime)
+    public bool Matches(int currentDay, float currentTime)
     {
-        // Vérifie la récursivité jour
-        bool matchesDay = Recurrence switch
-        {
-            EventRecurrence.None => currentDay == Day,
-            EventRecurrence.Daily => true,
-            EventRecurrence.Weekly => (currentDay - Day) % 7 == 0 && (currentDay >= Day),
-            EventRecurrence.Monthly => (currentDay - Day) % 30 == 0 && (currentDay >= Day),
-            EventRecurrence.Yearly => (currentDay - Day) % 365 == 0 && (currentDay >= Day),
-            _ => false
-        };
+        if (!Recurrence.Matches(currentDay)) return false;
 
-        if (!matchesDay)
-            return false;
-
-        // Vérifie l'heure actuelle
         if (IsTimedEvent)
             return currentTime >= StartTime && currentTime <= EndTime;
-        else
-            return Mathf.Approximately(currentTime, StartTime);
+
+        // "ponctuel" = instantané : tolérance au lieu d'égalité stricte
+        return Mathf.Abs(currentTime - StartTime) < 0.01f;
     }
 }

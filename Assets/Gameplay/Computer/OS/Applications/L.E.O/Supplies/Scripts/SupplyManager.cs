@@ -1,4 +1,5 @@
-﻿using LightHouse.Game.Computer.LEO.Mails;
+﻿using LightHouse.Game.Computer.Calendar;
+using LightHouse.Game.Computer.LEO.Mails;
 using LightHouse.Game.DayNightSystem;
 using LightHouse.Money;
 using LightHouse.Weather;
@@ -20,6 +21,7 @@ namespace LightHouse.Game.Computer.LEO.Supplies
         [SerializeField] private WeatherTimeline _timeline;
         [SerializeField] private TimeConfiguration _timeConfig;
         [SerializeField] private SO_ShipmentConfiguration _shipmentConfig;
+        [SerializeField] private CalendarEventDatabase _calendarEventsDatabase;
 
         [Header("Controllers")]
         [SerializeField] private SupplyPopUp _popupPreafb;
@@ -324,6 +326,12 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             );
 
             _shipmentConfig.Shipments.Add(newShipment);
+
+            CalendarEvent evt = CalendarEventBuilder.New("Supply prepared (delayed ?)")
+                .Once(scheduledDay)
+                .At(scheduledHour)
+                .Build();
+            _calendarEventsDatabase.AddEvent(evt);
             //EnsurePayloadList(newShipment);
 
             // Abonnements (pas d’unsubscribe de lambdas inline)
@@ -337,22 +345,28 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         private void OnShipmentDelayConfirmed(ShipmentSystem s)
         {
-            //A REVOIR CAR SI LE DELAY EST DE MOINS D'UN JOUR CA MARCHE PLUS
-            var mail = MailGenerator.BuildShipmentDelayNotice(
+            //A TESTER
+            TimeUtility.GetDateAfterHours(_shipmentConfig.ShipmentDelayTime, out byte day, out float time);
+            MailDatas mail = MailGenerator.BuildShipmentDelayNotice(
                 dateFormat: TimeUtility.FormatCurrentDate(),
                 keeperName: "Dev-00",
                 ticketNumber: s.TicketNumber,
-                newDeliveryDay: (byte)(TimeHandlerData.CurrentDay + 1),
-                newDeliveryHour: TimeHandlerData.CurrentTime,
+                newDeliveryDay: day,
+                newDeliveryHour: time,
                 arrivalDay: TimeHandlerData.CurrentDay,
                 arrivalTime: TimeHandlerData.CurrentTime
             );
+
+            CalendarEvent evt = CalendarEventBuilder.New("Shipment Prepared - Delayed")
+                .Once(day)
+                .At(time)
+                .Build();
             SendMailRequest?.Invoke(mail);
         }
 
         private void OnShipmentPrepared(ShipmentSystem s)
         {
-            var mail = MailGenerator.BuildSupplyDeliverySent(
+            MailDatas mail = MailGenerator.BuildSupplyDeliverySent(
                 dateFormat: TimeUtility.FormatCurrentDate(),
                 keeperName: "Dev-00",
                 ticketNumber: s.TicketNumber,
@@ -360,6 +374,12 @@ namespace LightHouse.Game.Computer.LEO.Supplies
                 arrivalDay: TimeHandlerData.CurrentDay,
                 arrivalTime: TimeHandlerData.CurrentTime
             );
+
+           /* CalendarEvent evt = CalendarEventBuilder.New("Shipment Prepared - Delayed")
+                .Once(day)
+                .At(time)
+                .Build();
+*/
             SendMailRequest?.Invoke(mail);
             _shipmentConfig.ShippingPrepared?.Invoke(s);
         }

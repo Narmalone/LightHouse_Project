@@ -34,11 +34,14 @@ namespace LightHouse.Game.Computer.Calendar
 
         #endregion
 
+        private byte _currentShowedDay = 0;
+
         #region Unity Lifecycle
 
         protected override void Awake()
         {
             base.Awake();
+
             TimeHandlerData.OnDayChanged += OnDayChanged;
 
             // Abonnement au clic sur chaque jour
@@ -47,6 +50,16 @@ namespace LightHouse.Game.Computer.Calendar
                 int index = i; // évite la capture incorrecte dans la closure
                 _calendarDays[i].Button.onClick.AddListener(() => OnClickDay(index));
             }
+            _eventDatabase.OnEventAdded += EventDatabase_OnEventAdded;
+        }
+
+        /// <summary>
+        /// Si le calendrier est actif et qu'on ajoute / remove un event.
+        /// </summary>
+        /// <param name="obj"></param>
+        private void EventDatabase_OnEventAdded(CalendarEvent obj)
+        {
+            ShowDaySummary(_currentShowedDay);
         }
 
         private void Start()
@@ -66,6 +79,10 @@ namespace LightHouse.Game.Computer.Calendar
         protected override void OnDestroy()
         {
             base.OnDestroy();
+
+            _eventDatabase.OnEventAdded -= EventDatabase_OnEventAdded;
+            _eventDatabase.events.Clear();
+
             TimeHandlerData.OnDayChanged -= OnDayChanged;
 
             // Désinscription des clics
@@ -121,7 +138,7 @@ namespace LightHouse.Game.Computer.Calendar
         /// <summary>
         /// Remplit chaque jour du calendrier avec les événements initiaux.
         /// </summary>
-        private void DistributeStartingEventsToCalendar()
+        private void DistributeEventsOverRange(int startDay, int endDay)
         {
             if (_eventDatabase == null || _calendarDays == null || _calendarDays.Length == 0)
             {
@@ -129,20 +146,34 @@ namespace LightHouse.Game.Computer.Calendar
                 return;
             }
 
+            // 1) clear
             foreach (var day in _calendarDays)
                 day.Events.Clear();
 
-            foreach (var evt in _eventDatabase.startingEvents)
-            {
-                if (evt == null) continue;
+            // 2) query DB
+            var byDay = _eventDatabase.GetEventsByDayInRange(startDay, endDay);
 
-                for (int i = 0; i < _calendarDays.Length; i++)
+            // 3) inject dans tes cases
+            for (int i = 0; i < _calendarDays.Length; i++)
+            {
+                int worldDay = startDay + i;
+                if (byDay.TryGetValue(worldDay, out var list))
                 {
-                    byte targetDay = (byte)i;
-                    if (evt.Matches(targetDay, evt.StartTime))
+                    // Option UX: trier par heure
+                    list.Sort((a, b) => a.StartTime.CompareTo(b.StartTime));
+                    foreach (var evt in list)
                         _calendarDays[i].AddEvent(evt);
                 }
             }
+        }
+
+        private void DistributeStartingEventsToCalendar()
+        {
+            // Suppose que la grille représente des jours [0..N-1].
+            // Si ta grille représente “mois courant”, adapte startDay/endDay.
+            int startDay = 0;
+            int endDay = _calendarDays.Length - 1;
+            DistributeEventsOverRange(startDay, endDay);
         }
 
         /// <summary>
@@ -159,6 +190,8 @@ namespace LightHouse.Game.Computer.Calendar
                 _daySummary.text = $"Day {dayIndex + 1:D2}:\n- No events";
                 return;
             }
+
+            _currentShowedDay = dayIndex;
 
             //Handle Notification
             if (_calendarDays[dayIndex].NotificationImg.isActiveAndEnabled)
@@ -211,7 +244,10 @@ namespace LightHouse.Game.Computer.Calendar
         }
 
         public override void OnMinimize() { }
-        public override void OnOpen() { }
+        public override void OnOpen() 
+        {
+            ShowDaySummary(_currentShowedDay);
+        }
 
         #endregion
     }

@@ -15,7 +15,7 @@ namespace LightHouse.Game.Computer.OS
         [SerializeField] private bool _allowMultipleInstance = true;
 
         [Header("UI Elements")]
-        [SerializeField] private UI_CustomButton _customButton;
+        [SerializeField] private ShortcutButton _shortCutButton;
 
         #endregion
 
@@ -31,27 +31,29 @@ namespace LightHouse.Game.Computer.OS
 
         protected virtual void Awake()
         {
-            if (_customButton != null)
-                _customButton.OnDoubleClick += OnDoubleClicked;
+            if (_shortCutButton != null)
+                _shortCutButton.OnClick += OnDoubleClicked;
         }
 
         protected virtual void OnDestroy()
         {
-            if (_customButton != null)
-                _customButton.OnDoubleClick -= OnDoubleClicked;
+            if (_shortCutButton != null)
+                _shortCutButton.OnClick -= OnDoubleClicked;
+            if(_os != null)
+                _os.ShortCuts.Remove(this);
         }
 
         protected virtual void OnValidate()
         {
-            if (_customButton == null)
-                _customButton = GetComponent<UI_CustomButton>();
+            if (_shortCutButton == null)
+                _shortCutButton = GetComponent<ShortcutButton>();
         }
 
         #endregion
 
         #region Core Logic
 
-        private void OnDoubleClicked()
+        private void OnDoubleClicked(ShortcutButton btn)
         {
             OnExecute();
         }
@@ -59,6 +61,7 @@ namespace LightHouse.Game.Computer.OS
         public virtual void Initialize(OS os)
         {
             _os = os;
+            os.ShortcutButtonsManager.Register(_shortCutButton);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using LightHouse.Game.Computer.LEO.Mails;
+﻿using LightHouse.Game.Computer.Calendar;
+using LightHouse.Game.Computer.LEO.Mails;
 using LightHouse.Game.Computer.LEO.NightWatch.Boats;
 using LightHouse.Game.Computer.LEO.NightWatch.Buoys;
 using LightHouse.Game.Computer.LEO.NightWatch.Signals;
@@ -64,6 +65,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
 
         public event Action<MailDatas> SendMailRequested;
 
+        [SerializeField] private CalendarEventDatabase _calendarDatabase;
+
         #endregion
 
         #region Unity lifecycle
@@ -83,6 +86,11 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
 
             _buoysReportController.OnBuoyReportFailed += BuoysOnReportFailed;
             TimeHandlerData.OnTimeChanged += OnTimeUpdated;
+            CalendarEvent evt = CalendarEventBuilder.New("Nightwatch")
+                .Daily()
+                .FromTo(_nightwatchConfig.StartHour, _nightwatchConfig.EndHour)
+                .Build();
+            _calendarDatabase.AddEvent(evt);
         }
 
         private void Start()

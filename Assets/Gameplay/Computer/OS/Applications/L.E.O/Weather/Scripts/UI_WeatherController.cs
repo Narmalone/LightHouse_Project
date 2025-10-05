@@ -1,4 +1,5 @@
-﻿using LightHouse.Game.Computer.LEO.Mails;
+﻿using LightHouse.Game.Computer.Calendar;
+using LightHouse.Game.Computer.LEO.Mails;
 using LightHouse.Game.Computer.LEO.Weather.Humidity;
 using LightHouse.Game.Computer.LEO.Weather.Pressure;
 using LightHouse.Game.Computer.LEO.Weather.Temperature;
@@ -86,6 +87,8 @@ namespace LightHouse.Game.Computer.LEO.Weather
         [SerializeField] private Image _backgroundEndedWeather;
         [SerializeField] private TextMeshProUGUI _endedWeatherText;
 
+        [SerializeField] private CalendarEventDatabase _calendarDatabase;
+
         #endregion
 
         #region State
@@ -128,6 +131,11 @@ namespace LightHouse.Game.Computer.LEO.Weather
             SetPanelInteractive(inRange);
             _panelWasOpen = inRange;
 
+            CalendarEvent evt = CalendarEventBuilder.New("Weather Report")
+                .Daily()
+                .FromTo(_weatherConfig.StartHour, _weatherConfig.EndHour)
+                .Build();
+            _calendarDatabase.AddEvent(evt);
             // Optionnel : forcer une passe logique complète si nécessaire
             // OnTimeUpdated(0f);
         }
