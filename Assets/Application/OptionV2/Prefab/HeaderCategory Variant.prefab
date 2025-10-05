@@ -213,7 +213,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4319338711779218866}
   - component: {fileID: 5513911524312866192}
-  - component: {fileID: 8080836725516558723}
   - component: {fileID: 8534880983832058635}
   m_Layer: 5
   m_Name: ScrollViewGame
@@ -252,36 +251,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5637896713671275725}
   m_CullTransparentMesh: 1
---- !u!114 &8080836725516558723
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5637896713671275725}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &8534880983832058635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3133,7 +3102,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3795413653975718514, guid: 0fa383dc5e5aadc41b4cd9b31f37d411,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7373099996562424717}
   m_SourcePrefab: {fileID: 100100000, guid: 0fa383dc5e5aadc41b4cd9b31f37d411, type: 3}
 --- !u!224 &8284018685243759951 stripped
 RectTransform:
@@ -3141,6 +3114,26 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4624414423305569451}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8395058187517140697 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3795413653975718514, guid: 0fa383dc5e5aadc41b4cd9b31f37d411,
+    type: 3}
+  m_PrefabInstance: {fileID: 4624414423305569451}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7373099996562424717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8395058187517140697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1001 &4650348786675296938
 PrefabInstance:
   m_ObjectHideFlags: 0
