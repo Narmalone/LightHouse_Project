@@ -10,10 +10,10 @@ namespace LightHouse.Game.Options
     /// </summary>
     public class DisplayModeOptionEnumController
     {
-        private readonly OptionEnum _optionEnum;                                   // Ton widget custom
+        private readonly OptionEnum _optionEnum;
         private readonly DisplayModeSetting _setting;
         private readonly LocalizedStringDatabase_Options_Display _optionsDB;
-        private readonly TMP_Text _label;                                          // Label localisé (optionnel)
+        private readonly TMP_Text _label;
 
         // Ordre d’affichage
         private readonly List<DisplayModeOption> _order = new()
@@ -24,7 +24,7 @@ namespace LightHouse.Game.Options
             DisplayModeOption.Windowed
         };
 
-        // Libellés localisés par option (texte final)
+        // Libellés localisés par option
         private readonly Dictionary<DisplayModeOption, string> _labels = new();
 
         public DisplayModeSetting Setting => _setting;
@@ -52,26 +52,25 @@ namespace LightHouse.Game.Options
 
             BuildLocalizedLabels();
 
-            // Remplit les choix (remplacement direct pour éviter les doublons)
+            // Remplit les choix localisés
             var choices = new List<string>(_order.Count);
             foreach (var opt in _order)
                 choices.Add(_labels[opt]);
 
             _optionEnum.Choices = choices;
 
-            // Place l’index courant selon le FullScreenMode actuel
-            _optionEnum.CurrentChoiceIndex = IndexFromUnityMode(Screen.fullScreenMode);
-            _optionEnum.CheckConstraints(_optionEnum.CurrentChoiceIndex);
-            _optionEnum.ForceRebuildUI();
+            // Sélectionne l’état courant
+            int currentIndex = IndexFromUnityMode(Screen.fullScreenMode);
+            _optionEnum.SetSelectedIndex(currentIndex);
 
             // Pousse vers le modèle
-            UpdateSettingFromIndex(_optionEnum.CurrentChoiceIndex);
+            UpdateSettingFromIndex(currentIndex);
 
-            // Écoute les clics utilisateur pour mettre à jour le modèle
-            _optionEnum.LeftButton.onClick.AddListener(OnUserChangedChoice);
-            _optionEnum.RightButton.onClick.AddListener(OnUserChangedChoice);
+            // Écoute l’événement (plus simple que les clics de boutons)
+            _optionEnum.OnValueChanged -= OnOptionChanged;
+            _optionEnum.OnValueChanged += OnOptionChanged;
 
-            // Label de groupe (si fourni)
+            // Label localisé
             if (_label != null)
                 _label.text = _optionsDB.Display_Mode.GetLocalizedString();
         }
@@ -91,8 +90,7 @@ namespace LightHouse.Game.Options
                 choices.Add(_labels[opt]);
 
             _optionEnum.Choices = choices;
-            _optionEnum.CurrentChoiceIndex = prevIndex;
-            _optionEnum.ForceRebuildUI();
+            _optionEnum.SetSelectedIndex(prevIndex);
         }
 
         public void Apply()
@@ -106,27 +104,26 @@ namespace LightHouse.Game.Options
             if (_setting.HasChanged())
             {
                 _setting.Revert();
-                _optionEnum.CurrentChoiceIndex = IndexFromUnityMode(Screen.fullScreenMode);
-                _optionEnum.ForceRebuildUI();
-                UpdateSettingFromIndex(_optionEnum.CurrentChoiceIndex);
+                int idx = IndexFromUnityMode(Screen.fullScreenMode);
+                _optionEnum.SetSelectedIndex(idx);
+                UpdateSettingFromIndex(idx);
             }
         }
 
-        /// <summary>À appeler si tu veux détacher proprement les listeners (ex: OnDestroy du binder).</summary>
+        /// <summary>Détache les callbacks (utile dans OnDestroy).</summary>
         public void Detach()
         {
             if (_optionEnum == null) return;
-            _optionEnum.LeftButton.onClick.RemoveListener(OnUserChangedChoice);
-            _optionEnum.RightButton.onClick.RemoveListener(OnUserChangedChoice);
+            _optionEnum.OnValueChanged -= OnOptionChanged;
         }
 
         public bool HasChanges() => _setting.HasChanged();
 
         // ---------- Internes ----------
 
-        private void OnUserChangedChoice()
+        private void OnOptionChanged(int newIndex)
         {
-            UpdateSettingFromIndex(_optionEnum.CurrentChoiceIndex);
+            UpdateSettingFromIndex(newIndex);
         }
 
         private void UpdateSettingFromIndex(int index)

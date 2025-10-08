@@ -19,7 +19,7 @@ namespace LightHouse.Game.Options
         [SerializeField] private OptionEnum _displayModeDropdown;
 
         [Header("Monitors")]
-        [SerializeField] private TMP_Dropdown _monitorsDropdown;
+        [SerializeField] private OptionEnum _monitorsDropdown;
 
         [Header("Monitors")]
         [SerializeField] private TMP_Dropdown _refreshRateDropdown;
@@ -31,7 +31,7 @@ namespace LightHouse.Game.Options
         [SerializeField] private OptionToggle _vSyncToggle;
 
         private ResolutionDropdownController resolutionController;
-        private DisplaysDropdownController displaysController;
+        private MonitorsEnumController displaysController;
         private DisplayModeOptionEnumController displayModeController;
         private VSyncToggleController vsyncToggleController;
         private RefreshRateDropdownController refreshRateDropdownController;
@@ -63,7 +63,7 @@ namespace LightHouse.Game.Options
                 optionDisplayDB: _localizedDB
             );
 
-            displaysController = new DisplaysDropdownController
+            displaysController = new MonitorsEnumController
             (
                 _monitorsDropdown,
                 confirmationPopupController,

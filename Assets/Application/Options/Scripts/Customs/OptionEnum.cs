@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -10,6 +11,8 @@ public class OptionEnum : MonoBehaviour
     public bool EnableConstraints;
     [SerializeField] private TextMeshProUGUI _choiceText;
     public string CurrentSelectedOption => Choices[CurrentChoiceIndex];
+
+    public event Action<int> OnValueChanged;
     public Button LeftButton;
     public Button RightButton;
 
@@ -34,7 +37,7 @@ public class OptionEnum : MonoBehaviour
         SetSelectedIndex(CurrentChoiceIndex - 1);
     }
 
-    private void SetSelectedIndex(int index)
+    public void SetSelectedIndex(int index)
     {
         if (EnableConstraints)
             CheckConstraints(index);
@@ -48,6 +51,7 @@ public class OptionEnum : MonoBehaviour
         }
         CurrentChoiceIndex = index;
         _choiceText.text = CurrentSelectedOption;
+        OnValueChanged?.Invoke(index);
     }
 
     public void ForceRebuildUI()
@@ -57,26 +61,32 @@ public class OptionEnum : MonoBehaviour
 
     public void CheckConstraints(int index)
     {
-        if(index == 0)
+        int count = Choices.Count;
+
+        // Aucun ou un seul choix : on bloque tout
+        if (count <= 1)
         {
-            if(!RightButton.interactable)
-                RightButton.interactable = true;
             LeftButton.interactable = false;
+            RightButton.interactable = false;
+            return;
         }
-        else if(index == Choices.Count - 1)
+
+        // Plusieurs choix => comportement normal
+        if (index <= 0)
         {
-            if (!LeftButton.interactable)
-                LeftButton.interactable = true;
+            LeftButton.interactable = false;
+            RightButton.interactable = true;
+        }
+        else if (index >= count - 1)
+        {
+            LeftButton.interactable = true;
             RightButton.interactable = false;
         }
         else
         {
-            if(!LeftButton.interactable)
-                LeftButton.interactable = true;
-            if(RightButton.interactable)
-                RightButton.interactable = true;
+            LeftButton.interactable = true;
+            RightButton.interactable = true;
         }
-        
     }
 
     private void OnDestroy()
