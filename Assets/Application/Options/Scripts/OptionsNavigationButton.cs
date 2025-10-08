@@ -1,62 +1,38 @@
-﻿using UnityEngine;
-using UnityEngine.InputSystem.XR;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 namespace LightHouse.Game.Options
 {
-    public class OptionsNavigationButton
+    public class OptionsNavigationButton : MonoBehaviour
     {
-        private readonly Button _button;
-        private readonly OptionCategory targetCategory;
-        private readonly OptionsMenuController _controller;
-        private LocalizedString LocalizedText;
+        private Button _button;
+        [SerializeField] private OptionCategory targetCategory;
         
         public Button Button => _button;
         public OptionCategory TargetCategory => targetCategory;
+        public event Action<OptionsNavigationButton> OnCliqued;
 
-        public OptionsNavigationButton(Button button, OptionCategory targetCategory, OptionsMenuController controller, LocalizedString languageText)
+        private void Awake()
         {
-            this._button = button;
-            this.targetCategory = targetCategory;
-            this._controller = controller;
-            LocalizedText = languageText;
-
-            this._button.clicked += OnClicked;
-        }
-
-        public void SetSelected(bool selected)
-        {
-            bool isAlreadySelected = _button.ClassListContains("selected-nav-button");
-
-            if (selected && !isAlreadySelected)
-            {
-                _button.AddToClassList("selected-nav-button");
-                //Debug.Log($"Selected → {_button.name}");
-            }
-            else if (!selected && isAlreadySelected)
-            {
-                _button.RemoveFromClassList("selected-nav-button");
-                //Debug.Log($"Deselected → {_button.name}");
-            }
-        }
-
-
-        public void UpdateLocalizedText()
-        {
-            if (LocalizedText == null) return;
-            _button.text = LocalizedText.GetLocalizedString();
+            this._button.onClick.AddListener(OnClicked);
         }
 
         private void OnClicked()
         {
-            _controller.NavigateTo(targetCategory);
-            _controller.HighlightSelectedButton(this, true); // ← ajout ici pour notifier le menu
+            OnCliqued?.Invoke(this);
         }
 
-        public void Dispose()
+        private void OnValidate()
         {
-            _button.clicked -= OnClicked;
+            if(this._button == null)
+                _button = this.GetComponent<Button>();
+        }
+
+        private void OnDestroy()
+        {
+            this._button.onClick.RemoveListener(OnClicked);
         }
     }
 }

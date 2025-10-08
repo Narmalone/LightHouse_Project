@@ -1,7 +1,6 @@
-using System;
 using LightHouse.Localization;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace LightHouse.Game.Options
 {
@@ -9,11 +8,14 @@ namespace LightHouse.Game.Options
     {
         private TextLanguagesDropdownController languageDropdownController;
         private LocalizedStringDatabase_Options_Languages languagesTextsDB;
-        public LanguageOptionWindow(VisualElement rootElement, ConfirmationPopupController confirmationPopUp, LocalizedStringDatabase_Options_Languages languagesDB) : base(rootElement, confirmationPopUp)
+        private TMP_Dropdown _languageDropdown;
+
+       /* public LanguageOptionWindow(CanvasGroup rootElement, TMP_Dropdown languageDropdown, ConfirmationPopupController confirmationPopUp, LocalizedStringDatabase_Options_Languages languagesDB) : base(rootElement, confirmationPopUp)
         {
             languagesTextsDB = languagesDB;
+            _languageDropdown = languageDropdown;
             InitializeControllers();
-        }
+        }*/
 
         public override void ApplySettings()
         {
@@ -34,7 +36,7 @@ namespace LightHouse.Game.Options
 
         public override void InitializeControllers()
         {
-            languageDropdownController = new TextLanguagesDropdownController(root.Q<DropdownField>("LanguageDropdown"), languagesTextsDB.Text_Languages);
+            languageDropdownController = new TextLanguagesDropdownController(_languageDropdown, languagesTextsDB.Text_Languages);
             languageDropdownController.Initialize();
 
             optionSettings = new IOptionSetting[1];

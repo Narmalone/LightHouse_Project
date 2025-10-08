@@ -1,27 +1,45 @@
-using UnityEngine.UIElements;
 using LightHouse.Localization;
 using System;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 namespace LightHouse.Game.Options
 {
     public class DisplayOptionsWindow : OptionWindowBase
     {
         #region FIELDS
-        public OptionsNavigationButton NavButton;
 
-        protected LocalizedStringDatabase_Options_Display _localizedDB;
+        [SerializeField] protected LocalizedStringDatabase_Options_Display _localizedDB;
+
+        [Header("Resolution")]
+        [SerializeField] private TMP_Dropdown _resolutionDropdown;
+
+        [Header("Display Mode")]
+        [SerializeField] private OptionEnum _displayModeDropdown;
+
+        [Header("Monitors")]
+        [SerializeField] private TMP_Dropdown _monitorsDropdown;
+
+        [Header("Monitors")]
+        [SerializeField] private TMP_Dropdown _refreshRateDropdown;
+
+        [Header("Monitors")]
+        [SerializeField] private TMP_Dropdown _frameRateDropdown;
+
+        [Header("Monitors")]
+        [SerializeField] private OptionToggle _vSyncToggle;
+
         private ResolutionDropdownController resolutionController;
         private DisplaysDropdownController displaysController;
-        private DisplayModeDropdownController displayModeController;
+        private DisplayModeOptionEnumController displayModeController;
         private VSyncToggleController vsyncToggleController;
         private RefreshRateDropdownController refreshRateDropdownController;
         private FrameRateDropdownController frameRateDropdownController;
         #endregion
 
-        public DisplayOptionsWindow(VisualElement root, ConfirmationPopupController confirmationPopup, LocalizedStringDatabase_Options_Display optionDB) : base(root, confirmationPopup)
+        private void Start()
         {
-            _localizedDB = optionDB;
             GenerateClasses();
             InitializeControllers();
         }
@@ -40,42 +58,42 @@ namespace LightHouse.Game.Options
         {
             resolutionController = new ResolutionDropdownController
             (
-                root.Q<DropdownField>("ResolutionDropdown"),
+                _resolutionDropdown,
                 new ResolutionSetting(),
                 optionDisplayDB: _localizedDB
             );
 
             displaysController = new DisplaysDropdownController
             (
-                root.Q<DropdownField>("DisplaysDropdown"),
+                _monitorsDropdown,
                 confirmationPopupController,
                 _localizedDB.Display
             );
 
-            displayModeController = new DisplayModeDropdownController
+            displayModeController = new DisplayModeOptionEnumController
             (
-                root.Q<DropdownField>("DisplayModeDropdown"),
+                _displayModeDropdown,
                 new DisplayModeSetting(),
                 _localizedDB
             );
 
             vsyncToggleController = new VSyncToggleController
             (
-                root.Q<Toggle>("VSyncToggle"),
+                _vSyncToggle,
                 new VSyncSetting(),
                 _localizedDB
             );
 
             refreshRateDropdownController = new RefreshRateDropdownController
             (
-                root.Q<DropdownField>("RefreshRateDropdown"),
+                _refreshRateDropdown,
                 new RefreshRateSetting(),
                 _localizedDB
             );
 
             frameRateDropdownController = new FrameRateDropdownController
             (
-                root.Q<DropdownField>("FrameRateDropdown"),
+                _frameRateDropdown,
                 new FrameRateLimitSetting(),
                 _localizedDB
             );

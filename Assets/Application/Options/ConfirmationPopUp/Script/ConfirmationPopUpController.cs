@@ -1,19 +1,18 @@
 using System;
 using UnityEngine;
-using UnityEngine.UIElements;
 using System.Collections;
+using UnityEngine.UI;
+using TMPro;
 
 namespace LightHouse.Game.Options
 {
     public class ConfirmationPopupController : MonoBehaviour
     {
-        [Header("UI Document")]
-        [SerializeField] private UIDocument uiDocument;
+        [SerializeField] private CanvasGroup _canvasGroup;
 
-        private VisualElement popup;
-        private Button confirmButton;
-        private Button cancelButton;
-        private Label _confirmationTimePopup;
+        [SerializeField] private Button confirmButton;
+        [SerializeField] private Button cancelButton;
+        [SerializeField] private TextMeshProUGUI _confirmationTimerText;
 
         private Action onConfirm;
         private Action onCancel;
@@ -21,22 +20,17 @@ namespace LightHouse.Game.Options
 
         private void Start()
         {
-            popup = uiDocument.rootVisualElement.Q<VisualElement>("Root_Confirmation");
-            confirmButton = popup.Q<Button>("ConfirmButton");
-            cancelButton = popup.Q<Button>("CancelButton");
-            _confirmationTimePopup = popup.Q<Label>("ConfirmationTime");
-
-            popup.style.display = DisplayStyle.None;
-
-            confirmButton.clicked += ConfirmClicked;
-            cancelButton.clicked += CancelClicked;
+            Hide();
+            confirmButton.onClick.AddListener(ConfirmClicked);
+            cancelButton.onClick.AddListener(CancelClicked);
         }
 
         public void Show(Action confirmAction, Action cancelAction, float timeOutAction = 15.0f)
         {
             onConfirm = confirmAction;
             onCancel = cancelAction;
-            popup.style.display = DisplayStyle.Flex;
+            _canvasGroup.alpha = 1f;
+            _canvasGroup.interactable = true;
 
             if (countdownCoroutine != null)
             {
@@ -47,7 +41,8 @@ namespace LightHouse.Game.Options
 
         public void Hide()
         {
-            popup.style.display = DisplayStyle.None;
+            _canvasGroup.alpha = 0f;
+            _canvasGroup.interactable = false;
 
             if (countdownCoroutine != null)
             {
@@ -73,7 +68,7 @@ namespace LightHouse.Game.Options
             float timer = timeoutSeconds;
             while (timer > 0)
             {
-                _confirmationTimePopup.text = (uint)timer + "s";
+                _confirmationTimerText.text = (uint)timer + "s";
                 timer -= Time.deltaTime;
                 yield return null;
             }

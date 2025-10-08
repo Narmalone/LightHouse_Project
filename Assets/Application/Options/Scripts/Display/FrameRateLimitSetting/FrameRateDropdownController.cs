@@ -1,124 +1,186 @@
-﻿using UnityEngine;
-using UnityEngine.UIElements;
-using System.Collections.Generic;
-using LightHouse.Localization;
-using LightHouse.UIExtensions;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
+using LightHouse.Localization;
 
 namespace LightHouse.Game.Options
 {
     public struct FrameRateParams
     {
-        public string Name;
-        public int FrameRateOption;
+        public string Name;   // Texte affiché (ex: "60 FPS" ou "Unlimited")
+        public int Rate;      // -1 = illimité, sinon FPS cible
 
-        public FrameRateParams(string name, int rateOption)
+        public FrameRateParams(string name, int rate)
         {
-            this.Name = name;
-            FrameRateOption = rateOption;
+            Name = name;
+            Rate = rate;
         }
     }
 
+    /// <summary>
+    /// Contrôleur d’un TMP_Dropdown (Canvas) pour limiter le framerate: 30/60/120/240/Illimité.
+    /// </summary>
     public class FrameRateDropdownController
     {
-        private readonly DropdownField dropdown;
-        private readonly FrameRateLimitSetting setting;
-        private List<FrameRateParams> frameRateOptions;
+        private readonly TMP_Dropdown _dropdown;
+        private readonly FrameRateLimitSetting _setting;
+        private readonly LocalizedStringDatabase_Options_Display _optionsDB;
+        private readonly TMP_Text _label; // optionnel (libellé localisé "Limite FPS")
 
-        public FrameRateLimitSetting Setting => setting;
+        private readonly List<FrameRateParams> _options = new(); // index -> option
 
-        private LocalizedStringDatabase_Options_Display optionsDB;
+        public FrameRateLimitSetting Setting => _setting;
 
-        public FrameRateDropdownController(DropdownField dropdown, FrameRateLimitSetting setting, LocalizedStringDatabase_Options_Display optionsDisplayDB)
+        public FrameRateDropdownController(
+            TMP_Dropdown dropdown,
+            FrameRateLimitSetting setting,
+            LocalizedStringDatabase_Options_Display optionsDisplayDB,
+            TMP_Text localizedLabel = null)
         {
-            this.dropdown = dropdown;
-            this.setting = setting;
-            this.optionsDB = optionsDisplayDB;
+            _dropdown = dropdown;
+            _setting = setting;
+            _optionsDB = optionsDisplayDB;
+            _label = localizedLabel;
         }
 
-        public void InitLocalization()
-        {
-            frameRateOptions = new List<FrameRateParams>
-            {
-                new FrameRateParams("30", 30),
-                new FrameRateParams("60", 60),
-                new FrameRateParams("120", 120),
-                new FrameRateParams("240", 240),
-                new FrameRateParams(optionsDB.FPS_Unlimited.GetLocalizedString(), -1)
-            };
-        }
-
+        /// <summary>Initialisation complète (liste, sélection, listeners, label).</summary>
         public void Initialize()
         {
-            if (dropdown == null)
+            if (_dropdown == null)
             {
-                Debug.LogError("DropdownField is null for FrameRateDropdownController!");
+                Debug.LogError("[FrameRateDropdownController] TMP_Dropdown is null!");
                 return;
             }
 
-            InitLocalization();
-            RefreshDropdown();
-            dropdown.RegisterValueChangedCallback(evt => UpdateSettingFromValue(evt.newValue));
+            BuildOptions();     // construit _options avec la bonne traduction d'“Illimité”
+            RebuildDropdown();  // pousse _options dans _dropdown
+
+            // Choisit l’index (exact si possible, sinon le plus proche)
+            int idx = IndexFromCurrentTarget();
+            _dropdown.onValueChanged.RemoveListener(OnDropdownChanged);
+            _dropdown.value = Mathf.Clamp(idx, 0, _dropdown.options.Count - 1);
+            _dropdown.RefreshShownValue();
+            _dropdown.onValueChanged.AddListener(OnDropdownChanged);
+
+            // Pousse vers le modèle
+            UpdateSettingFromIndex(_dropdown.value);
+
+            if (_label != null)
+                _label.text = _optionsDB.FPS_Limit.GetLocalizedString();
         }
 
-        private void RefreshDropdown()
-        {
-            List<string> fpsChoices = new();
-            for(int i = 0; i < frameRateOptions.Count; i++)
-            {
-                if(i == frameRateOptions.Count - 1)
-                {
-                    fpsChoices.Add($"{frameRateOptions[i].Name}");
-                }
-                else
-                {
-                    fpsChoices.Add($"{frameRateOptions[i].Name} FPS");
-                }
-            }
-            dropdown.UpdateChoices(fpsChoices);
-
-            string currentFPS = Application.targetFrameRate > 0 ? $"{Application.targetFrameRate}" : optionsDB.FPS_Unlimited.GetLocalizedString();
-            if (fpsChoices.Contains(currentFPS))
-                dropdown.SetValueWithoutNotify(currentFPS);
-
-            dropdown.value = currentFPS;
-            UpdateSettingFromValue(dropdown.value);
-        }
-
-        private void UpdateSettingFromValue(string value)
-        {
-            if (int.TryParse(value.Replace(" FPS", ""), out int fps))
-            {
-                setting.SetSelectedFrameRate(fps);
-            }
-            else
-            {
-                setting.SetSelectedFrameRate(-1);
-            }
-        }
-
+        /// <summary>À appeler quand la langue change.</summary>
         public void UpdateLanguage()
         {
-            dropdown.label = optionsDB.FPS_Limit.GetLocalizedString();
+            if (_label != null)
+                _label.text = _optionsDB.FPS_Limit.GetLocalizedString();
 
-            // Update localized text for Unlimited option
-            frameRateOptions[frameRateOptions.Count - 1] = new FrameRateParams(optionsDB.FPS_Unlimited.GetLocalizedString(), -1);
-
-            RefreshDropdown(); // 👈 Force update full choices with localized names
+            // On reconstruit juste les textes (notamment “Illimité”)
+            int prev = _dropdown.value;
+            BuildOptions();
+            RebuildDropdown();
+            _dropdown.SetValueWithoutNotify(Mathf.Clamp(prev, 0, _dropdown.options.Count - 1));
+            _dropdown.RefreshShownValue();
         }
 
         public void Apply()
         {
-            if (setting.HasChanged()) setting.Apply();
+            if (_setting.HasChanged())
+                _setting.Apply();
         }
 
         public void Revert()
         {
-            if (setting.HasChanged())
+            if (_setting.HasChanged())
             {
-                setting.Revert();
-                Initialize();
+                _setting.Revert();
+                int idx = IndexFromCurrentTarget();
+                _dropdown.SetValueWithoutNotify(Mathf.Clamp(idx, 0, _dropdown.options.Count - 1));
+                _dropdown.RefreshShownValue();
+                UpdateSettingFromIndex(_dropdown.value);
             }
+        }
+
+        // ---------- Internals ----------
+
+        private void BuildOptions()
+        {
+            _options.Clear();
+
+            // Valeurs classiques + “Illimité”
+            _options.Add(new FrameRateParams(FormatFpsLabel(30), 30));
+            _options.Add(new FrameRateParams(FormatFpsLabel(60), 60));
+            _options.Add(new FrameRateParams(FormatFpsLabel(120), 120));
+            _options.Add(new FrameRateParams(FormatFpsLabel(240), 240));
+
+            string unlimited = _optionsDB.FPS_Unlimited.GetLocalizedString(); // ex: "Unlimited"
+            _options.Add(new FrameRateParams(unlimited, -1));
+        }
+
+        private void RebuildDropdown()
+        {
+            var opts = new List<TMP_Dropdown.OptionData>(_options.Count);
+            for (int i = 0; i < _options.Count; i++)
+                opts.Add(new TMP_Dropdown.OptionData(_options[i].Name));
+
+            _dropdown.options = opts;
+        }
+
+        private static string FormatFpsLabel(int fps)
+        {
+            // "60 FPS" (culture invariante pour être safe, même si pas indispensable ici)
+            return $"{fps.ToString(CultureInfo.InvariantCulture)} FPS";
+        }
+
+        private int IndexFromCurrentTarget()
+        {
+            // NOTE: si VSync est actif, Application.targetFrameRate peut être ignoré,
+            // mais on se contente d’afficher la valeur sauvegardée/modèle ou Application.targetFrameRate.
+            int current = Application.targetFrameRate; // -1 si illimité/défaut
+
+            // Essaye de trouver un match exact
+            for (int i = 0; i < _options.Count; i++)
+            {
+                if (_options[i].Rate == current)
+                    return i;
+            }
+
+            // Sinon, prend la plus proche > 0, sinon l’option illimitée
+            if (current > 0)
+            {
+                int bestIdx = 0;
+                int bestDelta = Mathf.Abs(_options[0].Rate - current);
+                for (int i = 1; i < _options.Count; i++)
+                {
+                    if (_options[i].Rate < 0) continue; // ignore illimité pour la recherche de proximité
+                    int d = Mathf.Abs(_options[i].Rate - current);
+                    if (d < bestDelta)
+                    {
+                        bestDelta = d;
+                        bestIdx = i;
+                    }
+                }
+                return bestIdx;
+            }
+
+            // -1 ou autre: index de l’illimité
+            for (int i = 0; i < _options.Count; i++)
+                if (_options[i].Rate < 0) return i;
+
+            return 0;
+        }
+
+        private void OnDropdownChanged(int index)
+        {
+            UpdateSettingFromIndex(index);
+        }
+
+        private void UpdateSettingFromIndex(int index)
+        {
+            if (index < 0 || index >= _options.Count) return;
+            _setting.SetSelectedFrameRate(_options[index].Rate);
         }
     }
 }

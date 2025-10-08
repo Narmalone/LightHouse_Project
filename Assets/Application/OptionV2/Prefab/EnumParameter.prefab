@@ -75,6 +75,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6068141024359315240}
   - component: {fileID: 4041101702678497821}
+  - component: {fileID: 628939332023383426}
   m_Layer: 5
   m_Name: EnumParameter
   m_TagString: Untagged
@@ -129,6 +130,26 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &628939332023383426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849226384878250089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28f72c96673c1b345ab75e018cf398f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Choices:
+  - Je t'aime
+  - Constance
+  CurrentChoiceIndex: 0
+  EnableConstraints: 1
+  _choiceText: {fileID: 3721236042951127457}
+  LeftButton: {fileID: 4423718202656437262}
+  RightButton: {fileID: 3333211214353863583}
 --- !u!1 &2128608738254400459
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,7 +249,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.06132078, g: 1, b: 0.081936434, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
@@ -249,19 +270,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5668720825417917355}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UpdateState, Assembly-CSharp
-        m_MethodName: OnClicNegativeButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &3469354655372406108
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,7 +370,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.0627451, g: 1, b: 0.08235294, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
@@ -382,19 +391,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1432480053609270222}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UpdateState, Assembly-CSharp
-        m_MethodName: OnClicPositiveButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &5644436174695606276
 GameObject:
   m_ObjectHideFlags: 0

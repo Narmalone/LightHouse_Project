@@ -1,55 +1,93 @@
 using LightHouse.Localization;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 namespace LightHouse.Game.Options
 {
+    /// <summary>
+    /// Contrôleur pour le toggle VSync (uGUI/Canvas version).
+    /// </summary>
     public class VSyncToggleController
     {
-        private readonly Toggle toggle;
-        private readonly VSyncSetting setting;
-        private LocalizedStringDatabase_Options_Display _optionsDB;
+        private readonly OptionToggle _toggle;                                         // Toggle uGUI
+        private readonly VSyncSetting _setting;                                  // Données
+        private readonly LocalizedStringDatabase_Options_Display _optionsDB;     // DB de textes localisés
+        private readonly TMP_Text _label;                                        // Label optionnel pour la localisation
 
-        public VSyncSetting Setting => setting;
+        public VSyncSetting Setting => _setting;
 
-        public VSyncToggleController(Toggle toggle, VSyncSetting setting, LocalizedStringDatabase_Options_Display optionsDB)
+        public VSyncToggleController(
+            OptionToggle toggle,
+            VSyncSetting setting,
+            LocalizedStringDatabase_Options_Display optionsDB,
+            TMP_Text localizedLabel = null)
         {
-            this.toggle = toggle;
-            this.setting = setting;
-            this._optionsDB = optionsDB;
+            _toggle = toggle;
+            _setting = setting;
+            _optionsDB = optionsDB;
+            _label = localizedLabel;
         }
 
+        /// <summary>
+        /// Initialise le toggle selon l’état actuel du VSync et lie les callbacks.
+        /// </summary>
         public void Initialize()
         {
-            if (toggle == null)
+            if (_toggle == null)
             {
-                Debug.LogError("Toggle is null for VSyncToggleController!");
+                Debug.LogError("[VSyncToggleController] Toggle is null!");
                 return;
             }
 
-            toggle.value = QualitySettings.vSyncCount > 0;
-            setting.SetSelectedVSync(toggle.value);
+            bool isVSyncOn = QualitySettings.vSyncCount > 0;
 
-            toggle.RegisterValueChangedCallback(evt => setting.SetSelectedVSync(evt.newValue));
+            _toggle.OnValueChanged += OnToggleChanged;
+            _toggle.isOn = isVSyncOn;
+            _toggle.OnValueChanged += OnToggleChanged;
+
+            _setting.SetSelectedVSync(isVSyncOn);
+
+            if (_label != null)
+                _label.text = _optionsDB.VSync.GetLocalizedString();
         }
 
+        /// <summary>
+        /// Met à jour la langue du label (si présent).
+        /// </summary>
         public void UpdateLanguage()
         {
-            toggle.label = _optionsDB.VSync.GetLocalizedString();
+            if (_label != null)
+                _label.text = _optionsDB.VSync.GetLocalizedString();
         }
 
+        /// <summary>
+        /// Applique la valeur au système.
+        /// </summary>
         public void Apply()
         {
-            if (setting.HasChanged()) setting.Apply();
+            if (_setting.HasChanged())
+                _setting.Apply();
         }
 
+        /// <summary>
+        /// Rétablit la valeur précédente.
+        /// </summary>
         public void Revert()
         {
-            if (setting.HasChanged())
+            if (_setting.HasChanged())
             {
-                setting.Revert();
-                toggle.SetValueWithoutNotify(QualitySettings.vSyncCount > 0);
+                _setting.Revert();
+                bool currentVSync = QualitySettings.vSyncCount > 0;
+                _toggle.SetValueWithoutNotify(currentVSync);
             }
+        }
+
+        // --- Internes ---
+
+        private void OnToggleChanged(bool newValue)
+        {
+            _setting.SetSelectedVSync(newValue);
         }
     }
 }

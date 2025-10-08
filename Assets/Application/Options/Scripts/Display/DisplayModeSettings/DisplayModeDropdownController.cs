@@ -1,135 +1,170 @@
-﻿using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.Localization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 using LightHouse.Localization;
-using LightHouse.UIExtensions; 
 
 namespace LightHouse.Game.Options
 {
-    public class DisplayModeDropdownController
+    /// <summary>
+    /// Contrôleur du mode d’affichage basé sur le widget custom OptionEnum (gauche/droite).
+    /// </summary>
+    public class DisplayModeOptionEnumController
     {
-        private readonly DropdownField dropdown;
-        private readonly DisplayModeSetting setting;
-        private Dictionary<DisplayModeOption, LocalizedString> displayModeLabels;
-        private readonly LocalizedStringDatabase_Options_Display optionsDisplayDB;
+        private readonly OptionEnum _optionEnum;                                   // Ton widget custom
+        private readonly DisplayModeSetting _setting;
+        private readonly LocalizedStringDatabase_Options_Display _optionsDB;
+        private readonly TMP_Text _label;                                          // Label localisé (optionnel)
 
-        public DisplayModeSetting Setting => setting;
-        private DisplayModeOption selectedMode;
-
-        public DisplayModeDropdownController(DropdownField dropdown, DisplayModeSetting setting, LocalizedStringDatabase_Options_Display optionsDB)
+        // Ordre d’affichage
+        private readonly List<DisplayModeOption> _order = new()
         {
-            this.dropdown = dropdown;
-            this.setting = setting;
-            this.optionsDisplayDB = optionsDB;
+            DisplayModeOption.Fullscreen,
+            DisplayModeOption.Borderless,
+            DisplayModeOption.MaximizedWindow,
+            DisplayModeOption.Windowed
+        };
+
+        // Libellés localisés par option (texte final)
+        private readonly Dictionary<DisplayModeOption, string> _labels = new();
+
+        public DisplayModeSetting Setting => _setting;
+
+        public DisplayModeOptionEnumController(
+            OptionEnum optionEnum,
+            DisplayModeSetting setting,
+            LocalizedStringDatabase_Options_Display optionsDB,
+            TMP_Text localizedLabel = null)
+        {
+            _optionEnum = optionEnum;
+            _setting = setting;
+            _optionsDB = optionsDB;
+            _label = localizedLabel;
         }
 
-        public void InitLocalization()
-        {
-            displayModeLabels = new Dictionary<DisplayModeOption, LocalizedString>
-            {
-                { DisplayModeOption.Fullscreen, optionsDisplayDB.DisplayMode_Fullscreen },
-                { DisplayModeOption.Borderless, optionsDisplayDB.DisplayMode_Borderless },
-                { DisplayModeOption.MaximizedWindow, optionsDisplayDB.DisplayMode_MaximizedWindow },
-                { DisplayModeOption.Windowed, optionsDisplayDB.DisplayMode_Windowed }
-            };
-        }
-
+        /// <summary>Initialise la liste, sélectionne l’état courant, abonne les callbacks.</summary>
         public void Initialize()
         {
-            if (dropdown == null)
+            if (_optionEnum == null)
             {
-                Debug.LogError("DropdownField is null for DisplayModeDropdownController!");
+                Debug.LogError("[DisplayModeOptionEnumController] OptionEnum est null.");
                 return;
             }
-            InitLocalization();
-            UpdateChoices();
-            UpdateCurrentMode();
-            dropdown.RegisterValueChangedCallback(OnModeChanged);
+
+            BuildLocalizedLabels();
+
+            // Remplit les choix (remplacement direct pour éviter les doublons)
+            var choices = new List<string>(_order.Count);
+            foreach (var opt in _order)
+                choices.Add(_labels[opt]);
+
+            _optionEnum.Choices = choices;
+
+            // Place l’index courant selon le FullScreenMode actuel
+            _optionEnum.CurrentChoiceIndex = IndexFromUnityMode(Screen.fullScreenMode);
+            _optionEnum.CheckConstraints(_optionEnum.CurrentChoiceIndex);
+            _optionEnum.ForceRebuildUI();
+
+            // Pousse vers le modèle
+            UpdateSettingFromIndex(_optionEnum.CurrentChoiceIndex);
+
+            // Écoute les clics utilisateur pour mettre à jour le modèle
+            _optionEnum.LeftButton.onClick.AddListener(OnUserChangedChoice);
+            _optionEnum.RightButton.onClick.AddListener(OnUserChangedChoice);
+
+            // Label de groupe (si fourni)
+            if (_label != null)
+                _label.text = _optionsDB.Display_Mode.GetLocalizedString();
         }
 
-        public void UpdateChoices()
-        {
-            if (dropdown == null)
-                return;
-
-            List<string> newChoices = new();
-            foreach (var label in displayModeLabels.Values)
-                newChoices.Add(label.GetLocalizedString());
-
-            dropdown.UpdateChoices(newChoices); // ✅ Utilise l'extension propre ici
-        }
-
+        /// <summary>À appeler quand la langue change.</summary>
         public void UpdateLanguage()
         {
-            dropdown.label = optionsDisplayDB.Display_Mode.GetLocalizedString();
-            UpdateChoices();
-        }
+            if (_label != null)
+                _label.text = _optionsDB.Display_Mode.GetLocalizedString();
 
-        private void UpdateCurrentMode()
-        {
-            FullScreenMode unityMode = Screen.fullScreenMode;
-            switch (unityMode)
-            {
-                case FullScreenMode.ExclusiveFullScreen:
-                    selectedMode = DisplayModeOption.Fullscreen;
-                    break;
-                case FullScreenMode.FullScreenWindow:
-                    selectedMode = DisplayModeOption.Borderless;
-                    break;
-                case FullScreenMode.MaximizedWindow:
-                    selectedMode = DisplayModeOption.MaximizedWindow;
-                    break;
-                case FullScreenMode.Windowed:
-                    selectedMode = DisplayModeOption.Windowed;
-                    break;
-            }
+            int prevIndex = Mathf.Clamp(_optionEnum.CurrentChoiceIndex, 0, _order.Count - 1);
 
-            dropdown.SetValueWithoutNotify(displayModeLabels[selectedMode].GetLocalizedString());
-            setting.SetSelectedMode(unityMode);
-        }
+            BuildLocalizedLabels();
 
-        private void OnModeChanged(ChangeEvent<string> evt)
-        {
-            foreach (var pair in displayModeLabels)
-            {
-                if (pair.Value.GetLocalizedString() == evt.newValue)
-                {
-                    selectedMode = pair.Key;
-                    FullScreenMode unityMode = selectedMode switch
-                    {
-                        DisplayModeOption.Fullscreen => FullScreenMode.ExclusiveFullScreen,
-                        DisplayModeOption.Windowed => FullScreenMode.Windowed,
-                        DisplayModeOption.Borderless => FullScreenMode.FullScreenWindow,
-                        _ => FullScreenMode.ExclusiveFullScreen
-                    };
+            var choices = new List<string>(_order.Count);
+            foreach (var opt in _order)
+                choices.Add(_labels[opt]);
 
-                    setting.SetSelectedMode(unityMode);
-                    break;
-                }
-            }
+            _optionEnum.Choices = choices;
+            _optionEnum.CurrentChoiceIndex = prevIndex;
+            _optionEnum.ForceRebuildUI();
         }
 
         public void Apply()
         {
-            if (setting.HasChanged())
-            {
-                setting.Apply();
-            }
+            if (_setting.HasChanged())
+                _setting.Apply();
         }
 
         public void Revert()
         {
-            if (setting.HasChanged())
+            if (_setting.HasChanged())
             {
-                setting.Revert();
-                UpdateCurrentMode();
+                _setting.Revert();
+                _optionEnum.CurrentChoiceIndex = IndexFromUnityMode(Screen.fullScreenMode);
+                _optionEnum.ForceRebuildUI();
+                UpdateSettingFromIndex(_optionEnum.CurrentChoiceIndex);
             }
         }
 
-        public bool HasChanges()
+        /// <summary>À appeler si tu veux détacher proprement les listeners (ex: OnDestroy du binder).</summary>
+        public void Detach()
         {
-            return setting.HasChanged();
+            if (_optionEnum == null) return;
+            _optionEnum.LeftButton.onClick.RemoveListener(OnUserChangedChoice);
+            _optionEnum.RightButton.onClick.RemoveListener(OnUserChangedChoice);
+        }
+
+        public bool HasChanges() => _setting.HasChanged();
+
+        // ---------- Internes ----------
+
+        private void OnUserChangedChoice()
+        {
+            UpdateSettingFromIndex(_optionEnum.CurrentChoiceIndex);
+        }
+
+        private void UpdateSettingFromIndex(int index)
+        {
+            index = Mathf.Clamp(index, 0, _order.Count - 1);
+            var mode = _order[index];
+
+            var unityMode = mode switch
+            {
+                DisplayModeOption.Fullscreen => FullScreenMode.ExclusiveFullScreen,
+                DisplayModeOption.Borderless => FullScreenMode.FullScreenWindow,
+                DisplayModeOption.MaximizedWindow => FullScreenMode.MaximizedWindow,
+                DisplayModeOption.Windowed => FullScreenMode.Windowed,
+                _ => FullScreenMode.FullScreenWindow
+            };
+
+            _setting.SetSelectedMode(unityMode);
+        }
+
+        private int IndexFromUnityMode(FullScreenMode unityMode)
+        {
+            var mode = unityMode switch
+            {
+                FullScreenMode.ExclusiveFullScreen => DisplayModeOption.Fullscreen,
+                FullScreenMode.FullScreenWindow => DisplayModeOption.Borderless,
+                FullScreenMode.MaximizedWindow => DisplayModeOption.MaximizedWindow,
+                FullScreenMode.Windowed => DisplayModeOption.Windowed,
+                _ => DisplayModeOption.Fullscreen
+            };
+            return _order.IndexOf(mode);
+        }
+
+        private void BuildLocalizedLabels()
+        {
+            _labels[DisplayModeOption.Fullscreen] = _optionsDB.DisplayMode_Fullscreen.GetLocalizedString();
+            _labels[DisplayModeOption.Borderless] = _optionsDB.DisplayMode_Borderless.GetLocalizedString();
+            _labels[DisplayModeOption.MaximizedWindow] = _optionsDB.DisplayMode_MaximizedWindow.GetLocalizedString();
+            _labels[DisplayModeOption.Windowed] = _optionsDB.DisplayMode_Windowed.GetLocalizedString();
         }
     }
 }
