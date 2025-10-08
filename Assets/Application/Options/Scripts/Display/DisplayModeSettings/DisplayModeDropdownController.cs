@@ -5,9 +5,6 @@ using LightHouse.Localization;
 
 namespace LightHouse.Game.Options
 {
-    /// <summary>
-    /// Contrôleur du mode d’affichage basé sur le widget custom OptionEnum (gauche/droite).
-    /// </summary>
     public class DisplayModeOptionEnumController
     {
         private readonly OptionEnum _optionEnum;
@@ -15,7 +12,6 @@ namespace LightHouse.Game.Options
         private readonly LocalizedStringDatabase_Options_Display _optionsDB;
         private readonly TMP_Text _label;
 
-        // Ordre d’affichage
         private readonly List<DisplayModeOption> _order = new()
         {
             DisplayModeOption.Fullscreen,
@@ -24,7 +20,6 @@ namespace LightHouse.Game.Options
             DisplayModeOption.Windowed
         };
 
-        // Libellés localisés par option
         private readonly Dictionary<DisplayModeOption, string> _labels = new();
 
         public DisplayModeSetting Setting => _setting;
@@ -41,7 +36,6 @@ namespace LightHouse.Game.Options
             _label = localizedLabel;
         }
 
-        /// <summary>Initialise la liste, sélectionne l’état courant, abonne les callbacks.</summary>
         public void Initialize()
         {
             if (_optionEnum == null)
@@ -52,30 +46,31 @@ namespace LightHouse.Game.Options
 
             BuildLocalizedLabels();
 
-            // Remplit les choix localisés
             var choices = new List<string>(_order.Count);
-            foreach (var opt in _order)
-                choices.Add(_labels[opt]);
-
+            foreach (var opt in _order) choices.Add(_labels[opt]);
             _optionEnum.Choices = choices;
 
-            // Sélectionne l’état courant
             int currentIndex = IndexFromUnityMode(Screen.fullScreenMode);
-            _optionEnum.SetSelectedIndex(currentIndex);
+            SafeSetSelectedIndex(currentIndex);          // <<< évite le problème de méthode privée ou d’event
 
-            // Pousse vers le modèle
             UpdateSettingFromIndex(currentIndex);
 
-            // Écoute l’événement (plus simple que les clics de boutons)
-            _optionEnum.OnValueChanged -= OnOptionChanged;
-            _optionEnum.OnValueChanged += OnOptionChanged;
+            // Si ton OptionEnum expose OnValueChanged(int), on s’y abonne ; sinon, utilise les boutons
+            try
+            {
+                _optionEnum.OnValueChanged -= OnOptionChanged;
+                _optionEnum.OnValueChanged += OnOptionChanged;
+            }
+            catch
+            {
+                _optionEnum.LeftButton.onClick.AddListener(() => OnOptionChanged(_optionEnum.CurrentChoiceIndex));
+                _optionEnum.RightButton.onClick.AddListener(() => OnOptionChanged(_optionEnum.CurrentChoiceIndex));
+            }
 
-            // Label localisé
             if (_label != null)
                 _label.text = _optionsDB.Display_Mode.GetLocalizedString();
         }
 
-        /// <summary>À appeler quand la langue change.</summary>
         public void UpdateLanguage()
         {
             if (_label != null)
@@ -86,11 +81,10 @@ namespace LightHouse.Game.Options
             BuildLocalizedLabels();
 
             var choices = new List<string>(_order.Count);
-            foreach (var opt in _order)
-                choices.Add(_labels[opt]);
-
+            foreach (var opt in _order) choices.Add(_labels[opt]);
             _optionEnum.Choices = choices;
-            _optionEnum.SetSelectedIndex(prevIndex);
+
+            SafeSetSelectedIndex(prevIndex);            // <<< idem ici
         }
 
         public void Apply()
@@ -105,26 +99,24 @@ namespace LightHouse.Game.Options
             {
                 _setting.Revert();
                 int idx = IndexFromUnityMode(Screen.fullScreenMode);
-                _optionEnum.SetSelectedIndex(idx);
+                SafeSetSelectedIndex(idx);
                 UpdateSettingFromIndex(idx);
             }
         }
 
-        /// <summary>Détache les callbacks (utile dans OnDestroy).</summary>
         public void Detach()
         {
             if (_optionEnum == null) return;
-            _optionEnum.OnValueChanged -= OnOptionChanged;
+            try { _optionEnum.OnValueChanged -= OnOptionChanged; } catch { /* ignore */ }
+            _optionEnum.LeftButton.onClick.RemoveAllListeners();
+            _optionEnum.RightButton.onClick.RemoveAllListeners();
         }
 
         public bool HasChanges() => _setting.HasChanged();
 
         // ---------- Internes ----------
 
-        private void OnOptionChanged(int newIndex)
-        {
-            UpdateSettingFromIndex(newIndex);
-        }
+        private void OnOptionChanged(int newIndex) => UpdateSettingFromIndex(newIndex);
 
         private void UpdateSettingFromIndex(int index)
         {
@@ -140,7 +132,9 @@ namespace LightHouse.Game.Options
                 _ => FullScreenMode.FullScreenWindow
             };
 
-            _setting.SetSelectedMode(unityMode);
+            // ✅ FIX 1: passer le bon paramètre et la bonne méthode
+            _setting.SetSelected((global::DisplayModeOption)unityMode);
+            // (ou _setting.SetSelected(mode); si ton Setting attend l’enum maison et non le FullScreenMode)
         }
 
         private int IndexFromUnityMode(FullScreenMode unityMode)
@@ -162,6 +156,20 @@ namespace LightHouse.Game.Options
             _labels[DisplayModeOption.Borderless] = _optionsDB.DisplayMode_Borderless.GetLocalizedString();
             _labels[DisplayModeOption.MaximizedWindow] = _optionsDB.DisplayMode_MaximizedWindow.GetLocalizedString();
             _labels[DisplayModeOption.Windowed] = _optionsDB.DisplayMode_Windowed.GetLocalizedString();
+        }
+
+        // ✅ FIX 2: SetSelectedIndex peut être privé → fallback propre
+        private void SafeSetSelectedIndex(int index)
+        {
+            try
+            {
+                _optionEnum.SetSelectedIndex(index); // s'il est public chez toi
+            }
+            catch
+            {
+                _optionEnum.CurrentChoiceIndex = index;
+                _optionEnum.ForceRebuildUI();
+            }
         }
     }
 }

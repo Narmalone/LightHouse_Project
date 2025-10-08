@@ -17,11 +17,13 @@ namespace LightHouse.Game.Options
         {
             _canvasGroup.alpha = 1.0f;
             _canvasGroup.interactable = true;
+            _canvasGroup.blocksRaycasts = true;
         }
         public virtual void Hide()
         {
             _canvasGroup.alpha = 0.0f;
             _canvasGroup.interactable = false;
+            _canvasGroup.blocksRaycasts = false;
         }
 
         public abstract bool HasChanges();

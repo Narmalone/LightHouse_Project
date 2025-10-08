@@ -5,6 +5,10 @@ namespace LightHouse.Game.Options
         bool HasChanged();
         void Apply();
         void Revert();
-        IOptionSetting GetSetting();
+    }
+
+    public interface IOptionController
+    {
+        void Initialize();
     }
 }

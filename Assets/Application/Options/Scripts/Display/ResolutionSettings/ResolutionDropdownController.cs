@@ -8,7 +8,7 @@ namespace LightHouse.Game.Options
     /// <summary>
     /// Contrôleur pour un TMP_Dropdown en Canvas (uGUI) listant les résolutions uniques (WxH).
     /// </summary>
-    public class ResolutionDropdownController
+    public class ResolutionDropdownController : IOptionController
     {
         private readonly TMP_Dropdown _dropdown;                    // uGUI TMP_Dropdown
         private readonly ResolutionSetting _setting;                // Ton modèle de donnée

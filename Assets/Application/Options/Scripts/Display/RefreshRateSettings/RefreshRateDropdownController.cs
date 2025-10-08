@@ -13,7 +13,7 @@ namespace LightHouse.Game.Options
     /// - Formate en entier si ~int, sinon 2 décimales
     /// - Sélectionne l’index le plus proche du courant
     /// </summary>
-    public class RefreshRateDropdownController
+    public class RefreshRateDropdownController : IOptionController
     {
         private readonly TMP_Dropdown _dropdown;
         private readonly RefreshRateSetting _setting;

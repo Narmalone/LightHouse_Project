@@ -32,6 +32,7 @@ namespace LightHouse.Game.Options
         [SerializeField] private DisplayOptionsWindow _displayOptionsWindow;
         [SerializeField] private AudioOptionsWindow _audioOptionsWindow;
         private LanguageOptionWindow _languageOptionWindow;
+        public MonitorsOptions options;
         #endregion
 
         #region PROPERTIES
@@ -100,14 +101,14 @@ namespace LightHouse.Game.Options
         private void SubscribeToEvents()
         {
             LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
-            DisplaysSetting.OnDisplayScreenChanged += OnDisplayScreenChanged;
+            //MonitorSetting.OnDisplayScreenChanged += OnDisplayScreenChanged;
             DisplaySettingManager.OnDisplayChanged += RefreshDisplayOptionsUI;
         }
 
         private void UnsubscribeFromEvents()
         {
             LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
-            DisplaysSetting.OnDisplayScreenChanged -= OnDisplayScreenChanged;
+            //MonitorSetting.OnDisplayScreenChanged -= OnDisplayScreenChanged;
             DisplaySettingManager.OnDisplayChanged -= RefreshDisplayOptionsUI;
 
             _applySettingsButton.onClick.RemoveListener(OnApplySettingsClicked);
@@ -125,7 +126,7 @@ namespace LightHouse.Game.Options
 
         private void RefreshDisplayOptionsUI()
         {
-            _displayOptionsWindow.RefreshOnlyUI();
+            //_displayOptionsWindow.RefreshOnlyUI();
         }
 
         private void HideAllPanels()
@@ -157,14 +158,14 @@ namespace LightHouse.Game.Options
 
         private void OnDisplayScreenChanged()
         {
-            if (DisplaysSetting.IsRevertingDisplay)
+           /* if (DisplaysSetting.IsRevertingDisplay)
             {
                 Debug.Log("[OptionsMenuController] Display reverted, skipping reinitialization.");
                 return;
             }
 
             _displayOptionsWindow.InitializeControllers();
-            _displayOptionsWindow.ApplySettings();
+            _displayOptionsWindow.ApplySettings();*/
         }
 
         #endregion

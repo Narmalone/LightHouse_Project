@@ -8,7 +8,7 @@ namespace LightHouse.Game.Options
     /// <summary>
     /// Contrôleur pour le toggle VSync (uGUI/Canvas version).
     /// </summary>
-    public class VSyncToggleController
+    public class VSyncToggleController : IOptionController
     {
         private readonly OptionToggle _toggle;                                         // Toggle uGUI
         private readonly VSyncSetting _setting;                                  // Données

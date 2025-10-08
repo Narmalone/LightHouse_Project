@@ -22,7 +22,7 @@ namespace LightHouse.Game.Options
     /// <summary>
     /// Contrôleur d’un TMP_Dropdown (Canvas) pour limiter le framerate: 30/60/120/240/Illimité.
     /// </summary>
-    public class FrameRateDropdownController
+    public class FrameRateDropdownController : IOptionController
     {
         private readonly TMP_Dropdown _dropdown;
         private readonly FrameRateLimitSetting _setting;
