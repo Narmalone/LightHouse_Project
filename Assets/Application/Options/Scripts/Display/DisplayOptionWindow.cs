@@ -39,20 +39,20 @@ public class DisplayOptionsWindow : OptionWindowBase
         _settings = new IOptionSetting[] { _resS, _modeS, _vsS, _rrS, _frS, _dispS };
 
         // controllers (adapte avec tes implémentations existantes)
-        _resC = new ResolutionDropdownController(_resolution, _resS, _db);
+       /* _resC = new ResolutionDropdownController(_resolution, _resS, _db);
         _modeC = new DisplayModeController(_displayMode, _modeS);
         _monC = new MonitorsController(_monitors, _dispS, _db.Display);
         _rrC = new RefreshRateDropdownController(_refreshRate, _rrS, _db);
         _frC = new FrameRateDropdownController(_frameRate, _frS, _db);
-        _vsC = new VSyncToggleController(_vSync, _vsS, _db);
+        _vsC = new VSyncToggleController(_vSync, _vsS, _db);*/
 
         InitializeControllers();
     }
 
     public override void InitializeControllers()
     {
-        _resC.Initialize(); _modeC.Initialize(); _monC.Initialize();
-        _rrC.Initialize(); _frC.Initialize(); _vsC.Initialize();
+        /*_resC.Initialize(); _modeC.Initialize(); _monC.Initialize();
+        _rrC.Initialize(); _frC.Initialize(); _vsC.Initialize();*/
     }
 
     public override void ApplySettings()

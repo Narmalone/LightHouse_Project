@@ -54,6 +54,22 @@ public class OptionEnum : MonoBehaviour
         OnValueChanged?.Invoke(index);
     }
 
+    public void SetValueWithoutNotify(int index)
+    {
+        if (EnableConstraints)
+            CheckConstraints(index);
+        if (index < 0)
+        {
+            index = Choices.Count - 1;
+        }
+        else if (index >= Choices.Count)
+        {
+            index = 0;
+        }
+        CurrentChoiceIndex = index;
+        _choiceText.text = CurrentSelectedOption;
+    }
+
     public void ForceRebuildUI()
     {
         _choiceText.text = CurrentSelectedOption;
