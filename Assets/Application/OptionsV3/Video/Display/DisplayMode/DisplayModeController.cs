@@ -36,12 +36,10 @@ namespace LightHouse.Options.V3
             {
                 Debug.LogError("[DisplayModeController] OptionEnum manquant.");
                 enabled = false;
+                return;
             }
-        }
 
-        private void Start()
-        {
-            InitializeUI();
+            InitializeUI(); // ✅ init AVANT OptionEnum.Start()
         }
 
         private void InitializeUI()
@@ -83,7 +81,7 @@ namespace LightHouse.Options.V3
 
         public void Revert()
         {
-            // UI ← current, selon NOTRE mapping (pas l’enum brute)
+            // UI ← current, selon NOTRE mapping
             int idx = IndexOfMode(_currentMode);
             if (idx < 0) idx = 0;
             optionEnum.SetValueWithoutNotify(idx);
@@ -100,11 +98,13 @@ namespace LightHouse.Options.V3
         // Debug overlay (build ok)
         private void OnGUI()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             GUI.Label(new Rect(10, 10, 420, 20), "[DisplayModeController]");
             GUI.Label(new Rect(10, 30, 420, 20), $"Current:  {_currentMode}");
             GUI.Label(new Rect(10, 50, 420, 20), $"Selected: {_selectedMode}");
             GUI.Label(new Rect(10, 70, 420, 20), $"System:   {Screen.fullScreenMode}");
             GUI.Label(new Rect(10, 90, 420, 20), $"UI Index: {optionEnum.CurrentChoiceIndex}");
+#endif
         }
     }
 }
