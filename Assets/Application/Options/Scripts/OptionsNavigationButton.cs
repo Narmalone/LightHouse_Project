@@ -7,7 +7,7 @@ namespace LightHouse.Game.Options
 {
     public class OptionsNavigationButton : MonoBehaviour
     {
-        private Button _button;
+        [SerializeField] private Button _button;
         [SerializeField] private OptionCategory targetCategory;
         
         public Button Button => _button;

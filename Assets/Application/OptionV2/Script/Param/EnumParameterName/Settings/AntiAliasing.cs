@@ -10,7 +10,7 @@ public class AntiAliasing : EnumWrapper, IConfigurable
     private new void Start()
     {
         base.Start();
-        _defaultAntiAliasing = EAntiAliasing.Disable;
+        //_defaultAntiAliasing = EAntiAliasing.Disable;
         _appliedAntiAliasing = _antiAliasing;
     }
 
@@ -52,7 +52,7 @@ public class AntiAliasing : EnumWrapper, IConfigurable
 
     public override void SetParameter()
     {
-        switch (_antiAliasing)
+       /* switch (_antiAliasing)
         {
             case EAntiAliasing.Disable:
                 QualitySettings.antiAliasing = 0;
@@ -66,6 +66,6 @@ public class AntiAliasing : EnumWrapper, IConfigurable
             case EAntiAliasing.MSAAx8:
                 QualitySettings.antiAliasing = 8;
                 break;
-        }
+        }*/
     }
 }

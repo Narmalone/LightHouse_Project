@@ -17,11 +17,6 @@ public class OptionToggle : MonoBehaviour
         DisableButton.OnClick += OnDisableCliqued;
     }
 
-    private void Start()
-    {
-        SwitchSelected(isOn);
-    }
-
     private void OnDisableCliqued(ShortcutButton btn)
     {
         isOn = false;
@@ -37,7 +32,7 @@ public class OptionToggle : MonoBehaviour
         OnValueChanged?.Invoke(true);
     }
 
-    private void SwitchSelected(ShortcutButton target)
+    public void SwitchSelected(ShortcutButton target)
     {
         if (_currentSelected != null)
             _currentSelected.Unselect();
@@ -46,16 +41,34 @@ public class OptionToggle : MonoBehaviour
         _currentSelected.Select();
     }
 
-    private void SwitchSelected(bool value)
+    public void SwitchSelected(bool value)
     {
         if (_currentSelected != null)
             _currentSelected.Unselect();
         
         _currentSelected = value ? EnableButton : DisableButton;
+        isOn = value;
         _currentSelected.Select();
     }
 
+    public void DisableAll()
+    {
+        EnableButton.Disable();
+        DisableButton.Disable();
+    }
+
+    public void EnableAll()
+    {
+        EnableButton.Enable();
+        DisableButton.Enable();
+    }
+
     public void SetValueWithoutNotify(bool value)
+    {
+        isOn = value;
+    }
+
+    public void SetValue(bool value)
     {
         isOn = value;
     }

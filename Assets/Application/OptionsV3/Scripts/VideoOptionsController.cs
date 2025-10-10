@@ -1,24 +1,59 @@
+using LightHouse.Game.Options;
 using LightHouse.Options.V3;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class VideoOptionsController : MonoBehaviour
+public class VideoOptionsController : OptionWindowBase
 {
     public List<IOption> VideosOptions = new List<IOption>();
+    public SimpleDisplayModeTogglerWithUI DisplayModeController;
+    public MonitorController MonitorController;
+    public ResolutionController ResolutionController;
+    public RefreshRateController RefreshRateController;
+    public FrameRateController FrameRateController;
+    public VSyncController VSyncController;
 
     private void Awake()
     {
         VideosOptions = GetComponentsInChildren<IOption>().ToList();
+        FrameRateController.OnApplied += FrameRateController_OnApplied;
     }
 
-    public void ApplyAllSettings()
+    private void OnDestroy()
     {
-        Debug.Log("apply");
-        foreach (var option in VideosOptions)
+        FrameRateController.OnApplied -= FrameRateController_OnApplied;
+    }
+
+    private void FrameRateController_OnApplied(int obj)
+    {
+        if(obj == -1)
         {
-            option.Apply();
+            VSyncController.OnFrameRateIllimited();
         }
+        else
+        {
+            VSyncController.OnFrameRateDifferentThanIllimited();
+        }
+    }
+
+    public override void ApplySettings()
+    {
+        DisplayModeController?.Apply();
+        MonitorController?.Apply();
+        ResolutionController?.Apply();
+        RefreshRateController?.Apply();
+        FrameRateController?.Apply();
+        VSyncController?.Apply();
+    }
+
+    public override bool HasChanges()
+    {
+        foreach(IOption option in VideosOptions)
+        {
+            if (option.HasChanges()) return true;
+        }
+        return false;
     }
 
     public void RevertAllSettings()
@@ -32,5 +67,20 @@ public class VideoOptionsController : MonoBehaviour
     private void OnValidate()
     {
         VideosOptions = GetComponentsInChildren<IOption>().ToList();
+    }
+
+    public override void InitializeControllers()
+    {
+        
+    }
+
+    public override void RevertSettings()
+    {
+        DisplayModeController?.Revert();
+        MonitorController?.Revert();
+        ResolutionController?.Revert();
+        RefreshRateController?.Revert();
+        FrameRateController?.Revert();
+        VSyncController?.Revert();
     }
 }

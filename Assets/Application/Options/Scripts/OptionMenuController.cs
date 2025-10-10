@@ -29,10 +29,8 @@ namespace LightHouse.Game.Options
         private bool _navigationPending;
 
         // Option Windows
-        [SerializeField] private DisplayOptionsWindow _displayOptionsWindow;
+        [SerializeField] private VideoOptionsController _displayOptionsWindow;
         [SerializeField] private AudioOptionsWindow _audioOptionsWindow;
-        private LanguageOptionWindow _languageOptionWindow;
-        public MonitorsOptions options;
         #endregion
 
         #region PROPERTIES
@@ -43,6 +41,7 @@ namespace LightHouse.Game.Options
 
         private void Awake()
         {
+            _optionNavigationButtons = GetComponentsInChildren<OptionsNavigationButton>().ToList();
             InitializeUIReferences();
             InitializePanels();
             HideAllPanels();
@@ -51,7 +50,6 @@ namespace LightHouse.Game.Options
 
         private void Start()
         {
-            
             NavigateTo(OptionCategory.Video, forcePerform: true);
         }
 

@@ -16,14 +16,17 @@ public class ShortcutButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public Color HoverColor;
     public Color SelectedColor;
     public Color NormalColor;
+    public Color DisabledColor;
 
     public bool IsSelected { get; private set; }
     public bool IsHover { get; private set; }
+    public bool IsDisabled { get; private set; }
 
     public event Action<ShortcutButton> OnClick;
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (IsDisabled) return;
         if (eventData.clickCount >= NumberOfClickNeededToSelect)
         {
             OnClick?.Invoke(this);
@@ -32,14 +35,14 @@ public class ShortcutButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!EnableHovering) return;
+        if (!EnableHovering || IsDisabled) return;
         IsHover = true;
         ApplyVisual();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!EnableHovering) return;
+        if (!EnableHovering || IsDisabled) return;
         IsHover = false;
         ApplyVisual();
     }
@@ -56,20 +59,36 @@ public class ShortcutButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         ApplyVisual();
     }
 
+    public void Disable()
+    {
+        IsDisabled = true;
+        ApplyVisual();
+    }
+
+    public void Enable()
+    {
+        IsDisabled = false;
+        ApplyVisual();
+    }
+
     private void OnEnable()
     {
         ApplyVisual(); // remet à l'état normal quand activé
     }
 
-    private void ApplyVisual()
+    public void ApplyVisual()
     {
         if (Graphic == null) return;
 
-        if (IsSelected)
+        if (IsDisabled)
+            Graphic.color = DisabledColor;
+        else if (IsSelected)
             Graphic.color = SelectedColor;
         else if (IsHover)
             Graphic.color = HoverColor;
         else
             Graphic.color = NormalColor;
+
+        
     }
 }

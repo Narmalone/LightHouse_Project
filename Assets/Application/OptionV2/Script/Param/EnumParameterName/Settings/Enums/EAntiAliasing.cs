@@ -1,2 +1,2 @@
-public enum EAntiAliasing { Disable, MSAAx2, MSAAx4, MSAAx8 }
+//public enum EAntiAliasing { Disable, MSAAx2, MSAAx4, MSAAx8 }
 

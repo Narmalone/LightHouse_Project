@@ -29,6 +29,8 @@ namespace LightHouse.Options.V3
             "MaximizedWindow",
             "Windowed"
         };
+        public FullScreenMode CurrentCommittedMode => _currentMode;
+        public event System.Action<FullScreenMode> OnModeCommitted;
 
         private void Awake()
         {
@@ -69,14 +71,13 @@ namespace LightHouse.Options.V3
         {
             int idx = Mathf.Clamp(optionEnum.CurrentChoiceIndex, 0, _order.Count - 1);
             _selectedMode = _order[idx];
-
             if (_selectedMode == _currentMode) return;
 
             var r = Screen.currentResolution;
             Screen.SetResolution(r.width, r.height, _selectedMode);
 
-            // Commit logique immédiat
             _currentMode = _selectedMode;
+            OnModeCommitted?.Invoke(_currentMode); // notifie les autres
         }
 
         public void Revert()
@@ -98,13 +99,11 @@ namespace LightHouse.Options.V3
         // Debug overlay (build ok)
         private void OnGUI()
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
             GUI.Label(new Rect(10, 10, 420, 20), "[DisplayModeController]");
             GUI.Label(new Rect(10, 30, 420, 20), $"Current:  {_currentMode}");
             GUI.Label(new Rect(10, 50, 420, 20), $"Selected: {_selectedMode}");
             GUI.Label(new Rect(10, 70, 420, 20), $"System:   {Screen.fullScreenMode}");
             GUI.Label(new Rect(10, 90, 420, 20), $"UI Index: {optionEnum.CurrentChoiceIndex}");
-#endif
         }
     }
 }

@@ -1,182 +1,374 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightHouse.Options.V3
 {
-    /// <summary>
-    /// Contrôleur simple pour le choix du moniteur (Display 1/2/…).
-    /// - UI: OptionEnum (gauche/droite) pour naviguer entre les écrans.
-    /// - Apply(): déplace la fenêtre sur l'écran sélectionné.
-    /// - Revert(): revient sur l'écran précédent + restaure la résolution/mode.
-    /// </summary>
     public class MonitorController : MonoBehaviour, IOption
     {
-        [Header("UI")]
-        public OptionEnum optionEnum;
+        [Header("UI (passive)")]
+        public OptionEnumPassive optionEnum;
+        public SimpleDisplayModeTogglerWithUI modeProvider; // assigne dans lâ€™inspector
 
-        // État interne
-        private int _currentIndex;                 // où se trouve réellement la fenêtre
-        private int _selectedIndex;                // choix dans l'UI
-        private int _backupIndex;                  // pour revert
+        public bool ShowDebugMode = true;
 
-        private Vector2Int _backupResolution;
-        private FullScreenMode _backupMode;
+        [Header("Keys")]
+        public KeyCode nextKey = KeyCode.LeftArrow;
+        public KeyCode prevKey = KeyCode.RightArrow;
+        public KeyCode applyKey = KeyCode.UpArrow;
+        public KeyCode revertKey = KeyCode.DownArrow;
+
+        // ---- Etat interne ----
+        private bool _opInFlight;
+
+        private List<DisplayInfo> _infos = new(); // snapshot courant (index UI)
+        private List<DisplayKey> _keys = new();  // clÃ©s stables alignÃ©es sur _infos
+
+        private DisplayKey _currentKey;           // oÃ¹ se trouve rÃ©ellement la fenÃªtre (Ã©tat courant live)
+        private DisplayKey _backupKey;            // âœ… Ã©tat "committÃ©" (ce vers quoi Revert revient)
+        private int _selectedIndex;               // curseur UI (index -> key via _keys)
+
+        private Vector2Int _backupResolution;     // âœ… rÃ©solution committÃ©e
+        private FullScreenMode _backupMode;       // âœ… mode committÃ©
 
         private void Awake()
         {
-            if (optionEnum == null)
+            if (!optionEnum)
             {
-                Debug.LogError("[MonitorController] optionEnum est null.");
+                Debug.LogError("[MonitorController] optionEnum (passive) manquant.");
                 enabled = false;
                 return;
             }
+            optionEnum.OnPrevClicked += SelectPrev;
+            optionEnum.OnNextClicked += SelectNext;
         }
 
         private void OnEnable()
         {
-            // brancher les boutons (ton OptionEnum ne publie pas forcément un event)
-            optionEnum.LeftButton.onClick.AddListener(OnButtonClicked);
-            optionEnum.RightButton.onClick.AddListener(OnButtonClicked);
-
             InitializeUI();
+            if (modeProvider) modeProvider.OnModeCommitted += OnModeCommitted;
         }
+
+        private void OnModeCommitted(FullScreenMode m)
+        {
+            // Si tu veux reflÃ©ter quelque chose dans le debug/backup
+            _backupMode = m; // garde la notion de "dernier mode validÃ©"
+        }
+
 
         private void OnDisable()
         {
-            optionEnum.LeftButton.onClick.RemoveListener(OnButtonClicked);
-            optionEnum.RightButton.onClick.RemoveListener(OnButtonClicked);
+            if (modeProvider) modeProvider.OnModeCommitted -= OnModeCommitted;
+
+            if (optionEnum)
+            {
+                optionEnum.OnPrevClicked -= SelectPrev;
+                optionEnum.OnNextClicked -= SelectNext;
+            }
         }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(nextKey)) SelectNext();
+            if (Input.GetKeyDown(prevKey)) SelectPrev();
+            if (Input.GetKeyDown(applyKey)) Apply();
+            if (Input.GetKeyDown(revertKey)) Revert();
+        }
+
+        // ---------- Init & mapping ----------
 
         private void InitializeUI()
         {
-            // Récupère la liste des écrans
-            var infos = new List<DisplayInfo>();
-            Screen.GetDisplayLayout(infos);
+            RefreshInfos(); // remplit _infos + _keys
 
-            // Construit les labels: "Display i (WxH)"
             var labels = new List<string>();
-            for (int i = 0; i < infos.Count; i++)
-                labels.Add($"Display {i + 1} ({infos[i].width}x{infos[i].height})");
-
-            // Fallback si rien (au cas où)
-            if (labels.Count == 0)
+            if (_infos.Count == 0)
+            {
                 labels.Add($"Display 1 ({Screen.currentResolution.width}x{Screen.currentResolution.height})");
+            }
+            else
+            {
+                for (int i = 0; i < _infos.Count; i++)
+                {
+                    var di = _infos[i];
+                    labels.Add($"Display {i + 1}  {di.name}  [{di.width}x{di.height}]  area({di.workArea.x},{di.workArea.y},{di.workArea.width},{di.workArea.height})");
+                }
+            }
+            optionEnum.SetChoices(labels);
 
-            // Alimente l'UI
-            optionEnum.Choices = labels;
-            optionEnum.ForceRebuildUI();
+            // current depuis la fenÃªtre systÃ¨me â†’ clÃ© stable
+            var cur = Screen.mainWindowDisplayInfo;
+            _currentKey = MakeKey(cur);
 
-            // Trouve l'index courant à partir de mainWindowDisplayInfo
-            _currentIndex = GetCurrentDisplayIndexByName(infos);
-            _selectedIndex = _currentIndex;
-            _backupIndex = _currentIndex;
-
-            optionEnum.CurrentChoiceIndex = Mathf.Clamp(_currentIndex, 0, optionEnum.Choices.Count - 1);
-            optionEnum.ForceRebuildUI();
-
-            // Prépare le backup (pour Revert)
+            // âœ… au lancement, le backup = current (Ã©tat committÃ© initial)
+            _backupKey = _currentKey;
             _backupResolution = new Vector2Int(Screen.currentResolution.width, Screen.currentResolution.height);
             _backupMode = Screen.fullScreenMode;
+
+            _selectedIndex = IndexFromKey(_currentKey);
+            if (_selectedIndex < 0) _selectedIndex = 0;
+            optionEnum.ShowIndex(_selectedIndex);
         }
 
-        private void OnButtonClicked()
+        private void RefreshInfos()
         {
-            // L’OptionEnum a déjà mis à jour CurrentChoiceIndex
-            _selectedIndex = Mathf.Clamp(optionEnum.CurrentChoiceIndex, 0, optionEnum.Choices.Count - 1);
+            _infos.Clear();
+            Screen.GetDisplayLayout(_infos);
+
+            _keys.Clear();
+            for (int i = 0; i < _infos.Count; i++)
+                _keys.Add(MakeKey(_infos[i]));
+        }
+
+        private static DisplayKey MakeKey(DisplayInfo di)
+            => new DisplayKey(di.name, di.workArea);
+
+        private int IndexFromKey(DisplayKey key)
+        {
+            for (int i = 0; i < _keys.Count; i++)
+                if (_keys[i].Equals(key)) return i;
+            // fallback souple: nom identique si workArea a lÃ©gÃ¨rement variÃ©
+            for (int i = 0; i < _keys.Count; i++)
+                if (_keys[i].name == key.name) return i;
+            return -1;
+        }
+
+        // ---------- Navigation ----------
+
+        private void SelectNext()
+        {
+            if (_opInFlight) return;
+            int count = Mathf.Max(1, optionEnum.Count);
+            _selectedIndex = (_selectedIndex + 1) % count;
+            optionEnum.ShowIndex(_selectedIndex);
+        }
+
+        private void SelectPrev()
+        {
+            if (_opInFlight) return;
+            int count = Mathf.Max(1, optionEnum.Count);
+            _selectedIndex = (_selectedIndex - 1 + count) % count;
+            optionEnum.ShowIndex(_selectedIndex);
         }
 
         // ---------- IOption ----------
 
-        public bool HasChanges() => _selectedIndex != _currentIndex;
+        public bool HasChanges()
+        {
+            if (_keys.Count == 0) return false;
+            var selKey = _keys[Mathf.Clamp(_selectedIndex, 0, _keys.Count - 1)];
+            // âœ… comparaison sÃ©lection vs Ã©tat COMMITTÃ‰ (backup) ou vs courant ?
+            // Ici on garde la logique "diff vs courant live" :
+            return !selKey.Equals(_currentKey);
+        }
 
         public void Apply()
         {
+            if (_opInFlight) return;
             if (!HasChanges()) return;
 
-            // Sauvegarde pour Revert
-            _backupIndex = _currentIndex;
-            _backupResolution = new Vector2Int(Screen.currentResolution.width, Screen.currentResolution.height);
-            _backupMode = Screen.fullScreenMode;
+            RefreshInfos();
+            if (_infos.Count == 0) return;
 
-            var infos = new List<DisplayInfo>();
-            Screen.GetDisplayLayout(infos);
-            if (infos.Count == 0)
+            _selectedIndex = Mathf.Clamp(_selectedIndex, 0, _infos.Count - 1);
+            var target = _infos[_selectedIndex];
+
+            // On prend le mode "committÃ©" du DisplayModeController si dispo, sinon lâ€™Ã©tat systÃ¨me
+            var desiredMode = modeProvider ? modeProvider.CurrentCommittedMode : Screen.fullScreenMode;
+
+            _opInFlight = true;
+            StartCoroutine(MoveAndApplyMode(target, desiredMode));
+        }
+
+        private System.Collections.IEnumerator MoveAndApplyMode(DisplayInfo target, FullScreenMode desiredMode)
+        {
+            // capture la rÃ©solution live
+            int liveW = Screen.currentResolution.width;
+            int liveH = Screen.currentResolution.height;
+
+            // si on est en exclusive ET quâ€™on va bouger â†’ passer en FSW pour autoriser le move proprement
+            bool isExclusiveNow = (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen);
+            if (isExclusiveNow)
             {
-                Debug.LogWarning("[MonitorController] Aucun display détecté.");
-                return;
+                Screen.SetResolution(liveW, liveH, FullScreenMode.FullScreenWindow);
+                // attendre que Unity bascule vraiment (Ã©vite lâ€™OS qui recolle exclusive en douce)
+                yield return null; // 1 frame
+                float t = 0f;
+                while (Screen.fullScreenMode != FullScreenMode.FullScreenWindow && (t += Time.unscaledDeltaTime) < 1.0f)
+                    yield return null;
             }
 
-            _selectedIndex = Mathf.Clamp(_selectedIndex, 0, infos.Count - 1);
-            var target = infos[_selectedIndex];
+            // clamp rÃ©sol cible au display
+            int targetW = Mathf.Min(liveW, target.width);
+            int targetH = Mathf.Min(liveH, target.height);
 
-            // Déplace la fenêtre sur l’écran choisi
+            // move
             var op = Screen.MoveMainWindowTo(in target, Vector2Int.zero);
-            op.completed += _ =>
-            {
-                // Sécurise la résolution (évite d’envoyer une res supérieure à la dalle cible)
-                int targetW = Mathf.Min(_backupResolution.x, target.width);
-                int targetH = Mathf.Min(_backupResolution.y, target.height);
-                Screen.SetResolution(targetW, targetH, _backupMode);
+            // attendre la fin du move
+            while (!op.isDone) yield return null;
+            yield return null; // 1 frame pour stabiliser la nouvelle surface
 
-                _currentIndex = _selectedIndex; // on est désormais sur ce display
-                Debug.Log($"[MonitorController] Moved to display #{_currentIndex + 1} ({target.width}x{target.height})");
-            };
+            // appliquer le MODE FINAL demandÃ© (une seule fois)
+            Screen.SetResolution(targetW, targetH, desiredMode);
+            yield return null;
+            // Sur certaines configs, attendre que le mode soit effectif
+            float t2 = 0f;
+            while (Screen.fullScreenMode != desiredMode && (t2 += Time.unscaledDeltaTime) < 1.0f)
+                yield return null;
+
+            // MAJ Ã©tats internes + backup
+            _currentKey = MakeKey(Screen.mainWindowDisplayInfo);
+            _backupKey = _currentKey;
+            _backupResolution = new Vector2Int(targetW, targetH);
+            _backupMode = desiredMode;
+
+            RefreshInfos();
+            _selectedIndex = IndexFromKey(_currentKey);
+            if (_selectedIndex < 0) _selectedIndex = 0;
+            optionEnum.ShowIndex(_selectedIndex);
+
+            _opInFlight = false;
+            Debug.Log($"[MonitorController] Apply â†’ '{_currentKey.name}' {targetW}x{targetH} mode:{desiredMode}");
         }
 
         public void Revert()
         {
-            var infos = new List<DisplayInfo>();
-            Screen.GetDisplayLayout(infos);
-            if (infos.Count == 0)
+            if (_opInFlight) return;
+            if (_infos.Count == 0) RefreshInfos();
+            if (_infos.Count == 0) return;
+
+            // 1) "UI-only revert" : si la sÃ©lection UI ne reflÃ¨te pas l'Ã©tat rÃ©el, on snap l'UI sur le courant.
+            if (_keys.Count > 0)
             {
-                Debug.LogWarning("[MonitorController] Revert: aucun display détecté.");
+                _selectedIndex = Mathf.Clamp(_selectedIndex, 0, _keys.Count - 1);
+                var selKey = _keys[_selectedIndex];
+                if (!selKey.Equals(_currentKey))
+                {
+                    // Snap UI sur l'Ã©tat rÃ©el sans rien appliquer au systÃ¨me
+                    int curIdx = IndexFromKey(_currentKey);
+                    if (curIdx < 0) curIdx = 0;
+                    _selectedIndex = curIdx;
+                    optionEnum.ShowIndex(_selectedIndex);
+                    Debug.Log("[MonitorController] Revert(UI) â†’ rÃ©alignement de l'UI sur l'Ã©cran courant, aucun changement systÃ¨me.");
+                    return;
+                }
+            }
+
+            // 2) Si l'Ã©tat courant est dÃ©jÃ  l'Ã©tat committÃ© â†’ rien Ã  faire
+            if (_currentKey.Equals(_backupKey)) return;
+
+            // 3) "System revert" : on revient au committed (Ã©cran + res + mode)
+            _opInFlight = true;
+
+            int backIdx = IndexFromKey(_backupKey);
+            if (backIdx < 0)
+            {
+                _opInFlight = false;
+                Debug.LogWarning("[MonitorController] Revert: display backup introuvable.");
                 return;
             }
 
-            _backupIndex = Mathf.Clamp(_backupIndex, 0, infos.Count - 1);
-            var back = infos[_backupIndex];
+            var back = _infos[backIdx];
+
+            var committedW = _backupResolution.x;
+            var committedH = _backupResolution.y;
+            var committedM = _backupMode;
 
             var op = Screen.MoveMainWindowTo(in back, Vector2Int.zero);
             op.completed += _ =>
             {
-                Screen.SetResolution(_backupResolution.x, _backupResolution.y, _backupMode);
+                Screen.SetResolution(committedW, committedH, committedM);
 
-                _selectedIndex = _backupIndex;
-                _currentIndex = _backupIndex;
+                _currentKey = MakeKey(Screen.mainWindowDisplayInfo);
 
-                // Refléter visuellement
-                optionEnum.CurrentChoiceIndex = Mathf.Clamp(_currentIndex, 0, optionEnum.Choices.Count - 1);
-                optionEnum.ForceRebuildUI();
+                // AprÃ¨s revert, on reste committÃ© sur ces valeurs
+                _backupKey = _currentKey;
+                _backupResolution = new Vector2Int(committedW, committedH);
+                _backupMode = committedM;
 
-                Debug.Log($"[MonitorController] Revert -> display #{_currentIndex + 1}");
+                RefreshInfos();
+                _selectedIndex = IndexFromKey(_currentKey);
+                if (_selectedIndex < 0) _selectedIndex = 0;
+                optionEnum.ShowIndex(_selectedIndex);
+
+                _opInFlight = false;
+                Debug.Log($"[MonitorController] Revert(System) â†’ '{_currentKey.name}' area{_currentKey.workArea}  res:{committedW}x{committedH} mode:{committedM}");
             };
         }
 
-        // ---------- Utilitaires ----------
 
-        private static int GetCurrentDisplayIndexByName(List<DisplayInfo> infos)
+        // ---------- Debug GUI ----------
+        private void OnGUI()
         {
-            if (infos == null || infos.Count == 0) return 0;
+            if(!ShowDebugMode) return;
+            int x = 10, y = 10, w = 1100, h = 20, dy = 18;
+            var curDi = Screen.mainWindowDisplayInfo;
+            var curKeyNow = MakeKey(curDi);
 
-            var cur = Screen.mainWindowDisplayInfo;
-            for (int i = 0; i < infos.Count; i++)
+            GUI.Label(new Rect(x, y, w, h), "[MonitorController]");
+            y += dy;
+            GUI.Label(new Rect(x, y, w, h), $"opInFlight:    {_opInFlight}");
+            y += dy;
+            GUI.Label(new Rect(x, y, w, h), $"currentKey:    '{_currentKey.name}' area{_currentKey.workArea}   (system now: '{curKeyNow.name}' area{curKeyNow.workArea})");
+            y += dy;
+            GUI.Label(new Rect(x, y, w, h), $"backupKey:     '{_backupKey.name}' area{_backupKey.workArea}");
+            y += dy;
+            GUI.Label(new Rect(x, y, w, h), $"selectedIndex: {_selectedIndex}/{_keys.Count - 1}");
+            y += dy;
+            GUI.Label(new Rect(x, y, w, h), $"committed res/mode: {_backupResolution.x}x{_backupResolution.y} | {_backupMode}");
+            y += dy;
+            GUI.Label(new Rect(x, y, w, h), $"Displays count: {_infos.Count}");
+            y += dy;
+
+            for (int i = 0; i < _infos.Count; i++)
             {
-                if (infos[i].name == cur.name)
-                    return i;
+                var di = _infos[i];
+                var k = _keys[i];
+                string tags = "";
+                if (k.Equals(_currentKey)) tags += " <current>";
+                if (k.Equals(_backupKey)) tags += " <committed>";
+                if (i == _selectedIndex) tags += " <UI selected>";
+                GUI.Label(new Rect(x, y, w, h),
+                    $"[{i}] '{di.name}' size:{di.width}x{di.height} workArea({di.workArea.x},{di.workArea.y},{di.workArea.width},{di.workArea.height}){tags}");
+                y += dy;
             }
-            return 0;
         }
 
-        /// <summary>
-        /// Si besoin, à appeler si les écrans changent à chaud (rebranche l’UI sans perdre l’état).
-        /// </summary>
-        public void RefreshUI()
+        // ---------- ClÃ© stable ----------
+        private struct DisplayKey
         {
-            int prevSelected = _selectedIndex;
-            InitializeUI();
-            _selectedIndex = Mathf.Clamp(prevSelected, 0, optionEnum.Choices.Count - 1);
-            optionEnum.CurrentChoiceIndex = _selectedIndex;
-            optionEnum.ForceRebuildUI();
+            public readonly string name;
+            public readonly RectInt workArea;
+
+            public DisplayKey(string name, RectInt workArea)
+            {
+                this.name = name ?? "";
+                this.workArea = workArea;
+            }
+
+            public bool Equals(DisplayKey other)
+            {
+                return name == other.name &&
+                       workArea.x == other.workArea.x &&
+                       workArea.y == other.workArea.y &&
+                       workArea.width == other.workArea.width &&
+                       workArea.height == other.workArea.height;
+            }
+
+            public override bool Equals(object obj) => obj is DisplayKey dk && Equals(dk);
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = name.GetHashCode();
+                    hash = (hash * 397) ^ workArea.x;
+                    hash = (hash * 397) ^ workArea.y;
+                    hash = (hash * 397) ^ workArea.width;
+                    hash = (hash * 397) ^ workArea.height;
+                    return hash;
+                }
+            }
+
+            public override string ToString() => $"'{name}' area({workArea.x},{workArea.y},{workArea.width},{workArea.height})";
         }
     }
 }
