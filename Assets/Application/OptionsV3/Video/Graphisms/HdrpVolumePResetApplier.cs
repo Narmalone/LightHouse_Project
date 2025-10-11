@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
@@ -7,47 +7,93 @@ public enum GfxTier { Low, Medium, High, Ultra }
 
 public class HdrpVolumePresetApplier : MonoBehaviour
 {
-    [Header("Ton Global Volume")]
-    public Volume globalVolume;
+    [Header("Scene Global Volume")]
+    [SerializeField] private Volume globalVolume;
 
-    public int currentTier;
+    [Header("Quality Levels (Project Settings â†’ Quality)")]
+    [Tooltip("Index du Quality Level Ã  utiliser pour chaque GfxTier (ordre et indices doivent correspondre Ã  tes Quality Levels).")]
+    [SerializeField] private int[] qualityIndexByTier = { 0, 1, 2, 3 }; // Low, Med, High, Ultra
 
-    private void Start()
+    [Header("Volume Profiles (optionnel)")]
+    [Tooltip("Si tu veux aussi changer complÃ¨tement de Volume Profile (ex: couper SSR/SSGI en Low). Laisse vide pour ne pas toucher.")]
+    [SerializeField] private VolumeProfile[] profilesByTier = new VolumeProfile[4];
+
+    [Header("Input (debug)")]
+    [SerializeField] private KeyCode cycleKey = KeyCode.CapsLock;
+
+    public int currentTier = -1;
+
+    void Start()
     {
-        currentTier = -1;
+        if (!globalVolume)
+            Debug.LogWarning("[HDRP Preset] Global Volume non assignÃ©.");
+        if (GraphismHandlerData.CurrentPreset != null) Apply(GraphismHandlerData.CurrentTier);
+
+        GraphismHandlerData.OnPresetApplied += GraphismHandlerData_OnPresetChanged;
     }
 
+    private void OnDestroy()
+    {
+        GraphismHandlerData.OnPresetApplied -= GraphismHandlerData_OnPresetChanged;
+    }
+
+    private void GraphismHandlerData_OnPresetChanged(GfxTier tier, VideoPresetSettings obj)
+    {
+        Apply(obj.Tier);
+        Debug.Log("preset applied: " + tier);
+    }
+
+    // ---------- Helpers ----------
     bool Get<T>(out T c) where T : VolumeComponent
     {
         c = null;
         return globalVolume && globalVolume.profile && globalVolume.profile.TryGet(out c);
     }
 
-    private void Update()
+    void SwitchQualityLevel(GfxTier tier)
     {
-        if (Input.GetKeyDown(KeyCode.CapsLock))
+        int idx = (int)tier;
+        if (qualityIndexByTier != null && idx < qualityIndexByTier.Length)
         {
-            currentTier++;
-            if (currentTier >= Enum.GetValues(typeof(GfxTier)).Length) currentTier = 0;
-            Apply((GfxTier)currentTier);
+            int q = Mathf.Clamp(qualityIndexByTier[idx], 0, QualitySettings.names.Length - 1);
+            QualitySettings.SetQualityLevel(q, true); // active le HDRP Asset mappÃ© Ã  ce Quality Level
         }
     }
 
+    void SwitchVolumeProfile(GfxTier tier)
+    {
+        if (!globalVolume || profilesByTier == null) return;
+        int idx = (int)tier;
+        if (idx < profilesByTier.Length && profilesByTier[idx])
+            globalVolume.profile = profilesByTier[idx];
+    }
+
+    // ---------- API principale ----------
     public void Apply(GfxTier tier)
     {
+        currentTier = (int)tier;
+
+        // 1) Change Quality Level (â†’ change d'HDRP Asset)
+        SwitchQualityLevel(tier);
+
+        // 2) (Optionnel) Change de Volume Profile complet
+        //SwitchVolumeProfile(tier);
+
+        // 3) Ajuste les overrides du profile courant
         ApplyFog(tier);
         ApplyVolumetricClouds(tier);
         ApplySky(tier);
-        ApplySSGI_GlobalIllumination(tier);
+        ApplySSGI(tier);
         ApplySSR(tier);
         ApplyHDShadowSettings(tier);
         ApplyMicroShadowing(tier);
         ApplyContactShadows(tier);
         ApplyExposure(tier);
 
-        Debug.Log($"[HDRP Preset] {tier} appliqué sur {globalVolume?.profile?.name}");
+        Debug.Log($"[HDRP Preset] {tier} appliquÃ© | Quality={QualitySettings.names[QualitySettings.GetQualityLevel()]} | Profile={globalVolume?.profile?.name}");
     }
 
+    // ---------- Overrides par effet ----------
     void ApplyFog(GfxTier tier)
     {
         if (Get<Fog>(out var fog))
@@ -58,7 +104,7 @@ public class HdrpVolumePresetApplier : MonoBehaviour
             switch (tier)
             {
                 case GfxTier.Low:
-                    fog.enableVolumetricFog.Override(false);   // pas de volumétrique
+                    fog.enableVolumetricFog.Override(false);   // pas de volumÃ©trique
                     fog.meanFreePath.Override(60f);             // plus dense
                     break;
                 case GfxTier.Medium:
@@ -111,45 +157,39 @@ public class HdrpVolumePresetApplier : MonoBehaviour
     void ApplySky(GfxTier tier)
     {
         if (Get<PhysicallyBasedSky>(out var sky))
-        {
             sky.active = true;
-            // Coût faible : on garde actif sur tous les tiers
-            // (si tu animes le ciel, réduis la fréquence d’update ailleurs pour Low)
-        }
+
         if (Get<VisualEnvironment>(out var ve))
-        {
             ve.active = true;
-            // Facultatif : s’assurer qu’on utilise bien le PBSky
-            // ve.skyType.Override((int)SkyType.PhysicallyBased);
-        }
     }
 
-    void ApplySSGI_GlobalIllumination(GfxTier tier)
+    void ApplySSGI(GfxTier tier)
     {
-        if (Get<GlobalIllumination>(out var gi)) // <- le nom affiché dans ton screen
+        // Nom de composant HDRP: ScreenSpaceGlobalIllumination
+        if (Get<GlobalIllumination>(out var ssgi))
         {
             switch (tier)
             {
                 case GfxTier.Low:
-                    gi.active = false; // SSGI Off
+                    ssgi.active = false;
                     break;
                 case GfxTier.Medium:
-                    gi.active = true;
-                    gi.quality.Override(0);       // Low
-                    gi.fullResolution = false;
-                    gi.denoise = true;
+                    ssgi.active = true;
+                    ssgi.quality.Override(0); // Low
+                    ssgi.fullResolution = false;
+                    ssgi.denoise = true;
                     break;
                 case GfxTier.High:
-                    gi.active = true;
-                    gi.quality.Override(1);       // Medium
-                    gi.fullResolution = false;
-                    gi.denoise = true;
+                    ssgi.active = true;
+                    ssgi.quality.Override(1); // Medium
+                    ssgi.fullResolution = false;
+                    ssgi.denoise = true;
                     break;
                 case GfxTier.Ultra:
-                    gi.active = true;
-                    gi.quality.Override(2);       // High
-                    gi.fullResolution = true;
-                    gi.denoise = true;
+                    ssgi.active = true;
+                    ssgi.quality.Override(2); // High
+                    ssgi.fullResolution = true;
+                    ssgi.denoise = true;
                     break;
             }
         }
@@ -166,19 +206,19 @@ public class HdrpVolumePresetApplier : MonoBehaviour
                     break;
                 case GfxTier.Medium:
                     ssr.active = true;
-                    ssr.quality.Override(0);            // Low
-                    ssr.fullResolution  = false;
+                    ssr.quality.Override(0);         // Low
+                    ssr.fullResolution = false;
                     ssr.depthBufferThickness.Override(0.2f);
                     break;
                 case GfxTier.High:
                     ssr.active = true;
-                    ssr.quality.Override(1);            // Medium
+                    ssr.quality.Override(1);         // Medium
                     ssr.fullResolution = false;
                     ssr.depthBufferThickness.Override(0.25f);
                     break;
                 case GfxTier.Ultra:
                     ssr.active = true;
-                    ssr.quality.Override(2);            // High
+                    ssr.quality.Override(2);         // High
                     ssr.fullResolution = true;
                     ssr.depthBufferThickness.Override(0.3f);
                     break;
@@ -191,13 +231,11 @@ public class HdrpVolumePresetApplier : MonoBehaviour
         if (Get<HDShadowSettings>(out var sh))
         {
             sh.active = true;
-
-            // Ce composant pilote des limites côté volume (le gros du coût reste dans le RP Asset).
             switch (tier)
             {
                 case GfxTier.Low:
                     sh.maxShadowDistance.Override(40f);
-                    sh.cascadeShadowSplitCount.Override(1); // 1 cascade (ou 0 selon version)
+                    sh.cascadeShadowSplitCount.Override(1);
                     break;
                 case GfxTier.Medium:
                     sh.maxShadowDistance.Override(80f);
@@ -274,7 +312,6 @@ public class HdrpVolumePresetApplier : MonoBehaviour
         {
             exp.active = true;
             exp.adaptationMode.Override(AdaptationMode.Progressive);
-
             switch (tier)
             {
                 case GfxTier.Low:

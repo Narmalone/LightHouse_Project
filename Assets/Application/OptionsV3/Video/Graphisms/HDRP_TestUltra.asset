@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cf1dab834d4ec34195b920ea7bbf9ec, type: 3}
-  m_Name: HDRP_TestLow
+  m_Name: HDRP_TestUltra
   m_EditorClassIdentifier: 
   m_RenderPipelineSettings:
     supportShadowMask: 1
-    supportSSR: 0
-    supportSSRTransparent: 0
-    supportSSAO: 0
-    supportSSGI: 0
+    supportSSR: 1
+    supportSSRTransparent: 1
+    supportSSAO: 1
+    supportSSGI: 1
     supportSubsurfaceScattering: 1
     sssSampleBudget:
       m_Values: 140000002800000050000000
@@ -27,15 +27,15 @@ MonoBehaviour:
       m_Values: 000000000000000000000000
       m_SchemaId:
         m_Id: With3Levels
-    supportVolumetrics: 0
+    supportVolumetrics: 1
     supportVolumetricClouds: 1
     supportLightLayers: 0
     renderingLayerMaskBuffer: 0
     supportWater: 1
-    waterSimulationResolution: 64
+    waterSimulationResolution: 256
     supportWaterExclusion: 1
     supportWaterDecals: 1
-    waterDecalAtlasSize: 1024
+    waterDecalAtlasSize: 2048
     maximumWaterDecalCount: 48
     waterScriptInteractionsMode: 0
     waterFullCPUSimulation: 0
@@ -60,7 +60,7 @@ MonoBehaviour:
       m_Values: 800000000001000000020000
       m_SchemaId:
         m_Id: With3Levels
-    supportDecals: 0
+    supportDecals: 1
     supportDecalLayers: 0
     supportSurfaceGradient: 1
     decalNormalBufferHP: 0
@@ -100,14 +100,14 @@ MonoBehaviour:
       reflectionProbeTexLastValidCubeMip: 3
       reflectionProbeTexLastValidPlanarMip: 0
       reflectionProbeDecreaseResToFit: 1
-      skyReflectionSize: 128
+      skyReflectionSize: 1024
       skyLightingOverrideLayerMask:
         serializedVersion: 2
         m_Bits: 0
       supportFabricConvolution: 0
       maxDirectionalLightsOnScreen: 16
-      maxPunctualLightsOnScreen: 256
-      maxAreaLightsOnScreen: 16
+      maxPunctualLightsOnScreen: 512
+      maxAreaLightsOnScreen: 64
       maxCubeReflectionOnScreen: 32
       maxPlanarReflectionOnScreen: 8
       maxDecalsOnScreen: 512
@@ -115,11 +115,11 @@ MonoBehaviour:
       maxLocalVolumetricFogSize: 0
       maxLocalVolumetricFogOnScreen: 256
     hdShadowInitParams:
-      maxShadowRequests: 128
+      maxShadowRequests: 256
       directionalShadowsDepthBits: 32
-      punctualShadowFilteringQuality: 1
-      directionalShadowFilteringQuality: 1
-      areaShadowFilteringQuality: 0
+      punctualShadowFilteringQuality: 2
+      directionalShadowFilteringQuality: 2
+      areaShadowFilteringQuality: 1
       punctualLightShadowAtlas:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 32
@@ -146,7 +146,7 @@ MonoBehaviour:
       maxDirectionalShadowMapResolution: 2048
       maxPunctualShadowMapResolution: 2048
       maxAreaShadowMapResolution: 2048
-      supportScreenSpaceShadows: 0
+      supportScreenSpaceShadows: 1
       maxScreenSpaceShadowSlots: 4
       screenSpaceShadowBufferFormat: 48
     decalSettings:
@@ -226,18 +226,18 @@ MonoBehaviour:
       ChromaticAberrationMaxSamples: 03000000060000000c000000
     lightSettings:
       useContactShadow:
-        m_Values: 010001
+        m_Values: 000001
         m_SchemaId:
           m_Id: With3Levels
     maximumLODLevel:
-      m_Values: 010000000100000001000000
+      m_Values: 000000000000000000000000
       m_SchemaId:
         m_Id: With3Levels
     lodBias:
       m_Values:
-      - 0.6
-      - 0.6
-      - 0.6
+      - 1.6
+      - 1.6
+      - 1.6
       m_SchemaId:
         m_Id: With3Levels
     lightingQualitySettings:
@@ -336,7 +336,7 @@ MonoBehaviour:
   allowShaderVariantStripping: 1
   enableSRPBatcher: 1
   availableMaterialQualityLevels: -1
-  m_DefaultMaterialQualityLevel: 1
+  m_DefaultMaterialQualityLevel: 4
   diffusionProfileSettings: {fileID: 0}
   m_VolumeProfile: {fileID: 0}
   virtualTexturingSettings:

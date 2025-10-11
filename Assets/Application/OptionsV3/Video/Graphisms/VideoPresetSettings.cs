@@ -5,6 +5,9 @@ public enum EAntiAliasing { Disabled = 0, X2 = 2, X4 = 4, X8 = 8 }
 [CreateAssetMenu(fileName = "Video_Setting_", menuName = "LightHouse/Options/New Preset")]
 public class VideoPresetSettings : ScriptableObject
 {
+    public GfxTier Tier;
+    public int QualityIndex;
+
     [Header("Textures")]
     [Tooltip("0 = pleine résolution, 1 = 1/2, 2 = 1/4, 3 = 1/8")]
     [Range(0, 3)] public int MasterTextureLimit = 0;

@@ -13,6 +13,7 @@ public class VideoOptionsController : OptionWindowBase
     public RefreshRateController RefreshRateController;
     public FrameRateController FrameRateController;
     public VSyncController VSyncController;
+    public QualityConfigController QualityController;
 
     private void Awake()
     {
@@ -45,6 +46,7 @@ public class VideoOptionsController : OptionWindowBase
         RefreshRateController?.Apply();
         FrameRateController?.Apply();
         VSyncController?.Apply();
+        QualityController?.Apply();
     }
 
     public override bool HasChanges()
@@ -82,5 +84,6 @@ public class VideoOptionsController : OptionWindowBase
         RefreshRateController?.Revert();
         FrameRateController?.Revert();
         VSyncController?.Revert();
+        QualityController?.Revert();
     }
 }

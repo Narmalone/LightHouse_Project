@@ -1,7 +1,7 @@
-﻿using System;
+﻿using LightHouse.KinematicCharacterController;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using LightHouse.Localization;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
@@ -16,6 +16,7 @@ namespace LightHouse.Game.Options
         [Header("UI References")]
         //[SerializeField] private UIDocument _pauseMenuDocument;
         [SerializeField] private ConfirmationPopupController _confirmationPopUpController;
+        [SerializeField] private CanvasGroup _optionCanvasGroup;
 
         // UI Elements
         [SerializeField] private Button _applySettingsButton;
@@ -35,6 +36,7 @@ namespace LightHouse.Game.Options
 
         #region PROPERTIES
         public ConfirmationPopupController ConfirmationPopupController => _confirmationPopUpController;
+        public bool IsEnabled { get; private set; } = false;
         #endregion
 
         #region Unity Callbacks
@@ -51,6 +53,17 @@ namespace LightHouse.Game.Options
         private void Start()
         {
             NavigateTo(OptionCategory.Video, forcePerform: true);
+            Disable();
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                if (IsEnabled)
+                    Disable();
+                else Enable();
+            }
         }
 
         private void OnValidate()
@@ -64,6 +77,28 @@ namespace LightHouse.Game.Options
         }
 
         #endregion
+
+        public void Enable()
+        {
+            Player.ForceChangePlayerState.Invoke(PlayerState.CameraMode);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            IsEnabled = true;
+            _optionCanvasGroup.interactable = true;
+            _optionCanvasGroup.alpha = 1.0f;
+            _optionCanvasGroup.blocksRaycasts = true;
+        }
+
+        public void Disable()
+        {
+            Player.ForceChangePlayerState.Invoke(PlayerState.Normal);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            IsEnabled = false;
+            _optionCanvasGroup.interactable = false;
+            _optionCanvasGroup.alpha = 0.0f;
+            _optionCanvasGroup.blocksRaycasts = false;
+        }
 
         #region Initialization
 
