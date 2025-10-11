@@ -93,8 +93,6 @@ public class QualityConfigController : MonoBehaviour, IOption
 
     public void Apply()
     {
-        Debug.Log("he passed");
-
         if (_opInFlight) return;
 
         if (!HasChanges()) return;
