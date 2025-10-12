@@ -7,13 +7,19 @@ using UnityEngine.Rendering.HighDefinition;
 [ExecuteInEditMode]
 public class RainController : MonoBehaviour
 {
-    // -------- References --------
+    //==============================================================
+    #region ► Exposed references (materials, VFX, render passes)
+    //==============================================================
     [Header("Materials & VFX")]
     public Material WaterMaterial;
     public Material WaterLensMaterial;
     public VisualEffect RainVFX;
     [SerializeField] private CustomPassVolume _rainVolume;
+    #endregion
 
+    //==============================================================
+    #region ► Follow / Placement (verrouillage en Y)
+    //==============================================================
     [Header("Follow (VFX position)")]
     [Tooltip("La cible dont on veut caler l'altitude (souvent la caméra ou le joueur).")]
     public Transform YFollowTarget;
@@ -21,11 +27,14 @@ public class RainController : MonoBehaviour
     public bool LockYToTarget = true;
     [Tooltip("Décalage vertical appliqué au VFX par rapport à la cible.")]
     public float YOffset = 0f;
+    #endregion
 
-    // -------- Orientation par le vent --------
+    //==============================================================
+    #region ► Orientation générale (si on VEUT utiliser la rotation du GO)
+    //==============================================================
     [Header("Orientation (Wind)")]
-    [Tooltip("Oriente ce GameObject selon WindDirection.")]
-    public bool AlignToWind = true;
+    [Tooltip("Si TRUE, on oriente ce GameObject pour diriger la pluie. Si FALSE, on suit l'angle de vent du jeu (recommandé).")]
+    public bool AlignToWind = false; // ← pour un comportement réaliste basé sur l'orientation météo, laisse FALSE
     [Tooltip("Ne tourner qu'autour de Y (horizontal) ; sinon yaw+pitch (pas de roll).")]
     public bool YawOnly = true;
     [Tooltip("L’objet regarde dans le sens du vent (true) ou face au vent (false).")]
@@ -33,15 +42,24 @@ public class RainController : MonoBehaviour
     [Tooltip("Facteur de lissage de rotation (0 = instantané).")]
     [Range(0f, 20f)] public float RotationSmoothing = 8f;
 
-    // -------- Water materials --------
-    [Header("Ripple Settings")]
-    [Range(0, 1)] public float RippleStrength = 0.3f;
-    [Range(0, 1)] public float WaterMask = 1f;
-    [Range(0, 1)] public float Smoothness = 0f;
+    // Limites d'angle (optionnelles) si tu utilises AlignToWind = TRUE
+    [Header("Yaw angle clamps (only if AlignToWind = TRUE)")]
+    [Range(0f, 180f)] public float MaxYawRightDeg = 0f;
+    [Range(0f, 180f)] public float MaxYawLeftDeg = 0f;
 
-    // -------- Rain logic --------
+    // internes pour le lissage d'angle (si AlignToWind = TRUE)
+    float _yawVel, _pitchVel;
+    [Range(0f, 720f)] public float MaxYawDegPerSec = 360f;
+    [Range(0f, 60f)] public float MaxPitchDeg = 25f;
+    public float YawSmoothTime = 0.15f;
+    public float PitchSmoothTime = 0.20f;
+    #endregion
+
+    //==============================================================
+    #region ► Pluie (intensité, vitesses, turbulence)
+    //==============================================================
     [Header("Rain Settings")]
-    public float RainMaxIntensity = 100000f;    // Cap du spawn VFX
+    public float RainMaxIntensity = 100000f;     // Cap du spawn VFX
     [Range(0, 1)] public float RainIntensity = 0f; // 0..1 (piloté par météo)
 
     [Tooltip("Vitesse verticale min/max des gouttes (sans vent)")]
@@ -59,32 +77,91 @@ public class RainController : MonoBehaviour
     public float VelocityBoostAtMax = 1.5f;
     public float TurbulenceBase = 0.5f;
     public float TurbulenceAtMax = 4f;
+    #endregion
 
-    [Header("Wind (inclinaison des gouttes)")]
+    //==============================================================
+    #region ► Vent (orientation, réponse latérale et clamps)
+    //==============================================================
+    [Header("Wind (orientation & lateral response)")]
+    [Tooltip("Direction du vent simple (utilisée uniquement si AlignToWind=false ET pas de WeatherData).")]
     public Vector3 WindDirection = new Vector3(1, 0, 0);
-    public float WindSpeed = 0f;                  // m/s “ressenti” jeu
-    public float LateralFactorAtMax = 1.0f;       // penchement à pleine intensité
 
+    [Tooltip("Vitesse de vent (m/s). Si ton jeu stocke en km/h, convertis → m/s = km/h * 0.27778.")]
+    public float WindSpeed = 0f;
+
+    [Tooltip("Multiplicateur de 'penchement' à pleine intensité.")]
+    public float LateralFactorAtMax = 1.0f;
+
+    [Header("Lateral control")]
+    [Tooltip("Réponse globale de la pluie au vent (1 = nominal).")]
+    public float LateralResponse = 1f;
+
+    [Tooltip("Vitesse latérale max (m/s), 0 = pas de cap absolu.")]
+    public float MaxLateralSpeed = 0f;
+
+    [Tooltip("Inclinaison max autorisée (deg). Limite physique : vLat ≤ tan(angle)*vDown.")]
+    [Range(0f, 80f)] public float MaxLeanAngleDeg = 20f;
+
+    [Tooltip("Courbe de réponse : WindSpeed (m/s) → facteur [0..1]. Vide = linéaire (10 m/s ~ 1).")]
+    public AnimationCurve WindToLateral;
+
+    [Tooltip("Temps de lissage de la vitesse envoyée au VFX.")]
+    [Range(0f, 0.5f)] public float VelocitySmoothTime = 0.08f;
+
+    [Header("Lateral clamps (right/left)")]
+    [Tooltip("Cap m/s de la poussée horizontale côté DROIT (+X local). 0 = pas de cap.")]
+    public float MaxPushRight = 0f;
+    [Tooltip("Cap m/s de la poussée horizontale côté GAUCHE (-X local). 0 = pas de cap.")]
+    public float MaxPushLeft = 0f;
+
+    // internes pour le lissage de la vitesse envoyée au VFX
+    Vector3 _velCurrent;
+    Vector3 _velDamp;
+    #endregion
+
+    //==============================================================
+    #region ► Audio pluie
+    //==============================================================
     [Header("Audio")]
     public AudioMixer mixer; // exposer un paramètre "RainVolume" dans le mixer
+    #endregion
 
-    // -------- Shader/VFX property IDs --------
+    //==============================================================
+    #region ► Matériaux eau (ripple / lens)
+    //==============================================================
+    [Header("Ripple Settings")]
+    [Range(0, 1)] public float RippleStrength = 0.3f;
+    [Range(0, 1)] public float WaterMask = 1f;
+    [Range(0, 1)] public float Smoothness = 0f;
+
+    // IDs shader
     static readonly int _rippleStrengthID = Shader.PropertyToID("_RippleStrength");
     static readonly int _waterMaskID = Shader.PropertyToID("_Mask");
     static readonly int _smoothnessID = Shader.PropertyToID("_Smoothness");
+    #endregion
 
+    //==============================================================
+    #region ► VFX property IDs & internes
+    //==============================================================
     static readonly int _rateId = Shader.PropertyToID("Rate");
     static readonly int _rainMaxVelocityID = Shader.PropertyToID("Velocity2");
     static readonly int _rainMinVelocityID = Shader.PropertyToID("Velocity1");
-
     const string VFX_NoiseIntensity = "NoiseIntensity";
 
-    // -------- Internals --------
-    const float INTENSITY_ON = 0.03f;  // 3%
-    const float INTENSITY_OFF = 0.015f; // 1.5% (hystérésis)
+    const float INTENSITY_ON = 0.03f;   // seuil d’allumage (3%)
+    const float INTENSITY_OFF = 0.015f;  // seuil d’extinction (1.5%)
     bool _vfxRunning;
 
-    // --- Helpers ---
+    [Header("Emitter anchoring")]
+    [Tooltip("Décale automatiquement l’émetteur au vent pour que la pluie traverse le joueur.")]
+    public bool AutoUpwindAnchor = true;
+    [Tooltip("Marge de sécurité ajoutée au déplacement upwind (mètres).")]
+    public float UpwindPadding = 0.0f;
+    #endregion
+
+    //==============================================================
+    #region ► Helpers/Utils
+    //==============================================================
     static float Linear01ToDb(float v01) => (v01 <= 0.0001f) ? -80f : 20f * Mathf.Log10(Mathf.Clamp01(v01));
     static float Smooth01(float t) { t = Mathf.Clamp01(t); return t * t * (3f - 2f * t); }
 
@@ -97,16 +174,67 @@ public class RainController : MonoBehaviour
         return Mathf.Clamp01(t * boost);
     }
 
-    void Awake()
+    static float NormalizeAngle180(float a)
     {
-        _vfxRunning = false;
+        a %= 360f;
+        if (a > 180f) a -= 360f;
+        if (a < -180f) a += 360f;
+        return a;
     }
 
-    void Start()
+    // Convertit un cap (0°=Nord/Z+, 90°=Est/X+) en direction monde sur XZ.
+    static Vector3 HeadingDegToDirXZ(float deg)
     {
-        RainIntensity = 0f;
-        SafeEnablePass(false);
+        float rad = deg * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Sin(rad), 0f, Mathf.Cos(rad));
     }
+
+    // Renvoie la direction monde du vent (XZ), en lisant WeatherData si dispo
+    Vector3 EvaluateWindDirWorldXZ()
+    {
+        // 1) Angle météo si disponible
+        if (Application.isPlaying && WeatherHandlerData.CurrentWeather != null)
+        {
+            float headingDeg = WeatherHandlerData.CurrentWeather.WindOrientation;
+            Vector3 dir = HeadingDegToDirXZ(headingDeg);
+            return FaceWithWind ? dir : -dir;
+        }
+
+        // 2) Sinon, fallback sur le champ WindDirection
+        Vector3 d = WindDirection;
+        d.y = 0f;
+        if (d.sqrMagnitude < 1e-6f) d = Vector3.forward; // Nord par défaut
+        d.Normalize();
+        return FaceWithWind ? d : -d;
+    }
+
+    /// <summary>
+    /// Calcule les 2 axes de mouvement:
+    /// downDir = direction de chute (verticale),
+    /// lateralDir = direction horizontale du vent.
+    /// - Si AlignToWind = TRUE → basés sur la rotation du GO (local space).
+    /// - Sinon → basés sur l’orientation météo (world space).
+    /// </summary>
+    void GetMotionDirs(out Vector3 downDir, out Vector3 lateralDir)
+    {
+        if (AlignToWind)
+        {
+            downDir = -transform.up;
+            lateralDir = transform.forward;
+        }
+        else
+        {
+            downDir = Vector3.down;
+            lateralDir = EvaluateWindDirWorldXZ(); // toujours sur XZ
+        }
+    }
+    #endregion
+
+    //==============================================================
+    #region ► Unity lifecycle
+    //==============================================================
+    void Awake() { _vfxRunning = false; }
+    void Start() { RainIntensity = 0f; SafeEnablePass(false); }
 
     void Update()
     {
@@ -115,35 +243,43 @@ public class RainController : MonoBehaviour
         DriveVFX();
         DriveAudio();
 
-        // --- Orientation par le vent (rotation du GameObject) ---
+        // Si tu tiens à voir l’objet tourner (mode décoratif), garde AlignToWind = TRUE.
         if (AlignToWind)
         {
             ApplyWindRotation();
+            if (AutoUpwindAnchor) AnchorEmitterUpwind();
+        }
+        else if (AutoUpwindAnchor)
+        {
+            // Même avec AlignToWind=FALSE, on peut ancrer l’émetteur selon l’orientation météo.
+            AnchorEmitterUpwind();
         }
     }
 
     void LateUpdate()
     {
-        // Verrouillage Y au joueur
+        // On garde le Y du VFX à la même hauteur que la cible (caméra/joueur)
         if (LockYToTarget && YFollowTarget)
         {
             var p = transform.position;
             transform.position = new Vector3(p.x, YFollowTarget.position.y + YOffset, p.z);
         }
 
+        // Mettre à jour RainIntensity depuis la météo, si elle existe
         if (!Application.isPlaying) return;
-
-        // Météo → intensité
         if (WeatherHandlerData.CurrentWeather != null)
         {
             float h = WeatherHandlerData.CurrentWeather.Humidity;
             float humidityPercent = (h <= 1.0001f) ? h * 100f : h;
             RainIntensity = MapHumidityToRain01(humidityPercent);
+            WindSpeed = WeatherHandlerData.CurrentWeather.WindSpeed;
         }
     }
+    #endregion
 
-    // --------- Sections privées ---------
-
+    //==============================================================
+    #region ► Materials / Audio / VFX run-state
+    //==============================================================
     void UpdateMaterials()
     {
         if (WaterMaterial)
@@ -178,72 +314,6 @@ public class RainController : MonoBehaviour
         }
     }
 
-    void DriveVFX()
-    {
-        if (!RainVFX) return;
-
-        // ------- Densité / lifetime -------
-        float targetAliveMax = 1.2e5f;
-        float targetAlive = Mathf.Lerp(0f, targetAliveMax, RainIntensity);
-
-        float lifetime = Mathf.Lerp(4f, 1.2f, RainIntensity);
-        if (RainVFX.HasFloat("Lifetime"))
-            RainVFX.SetFloat("Lifetime", lifetime);
-
-        float spawnRate = _vfxRunning ? targetAlive / Mathf.Max(0.1f, lifetime) : 0f;
-        spawnRate = Mathf.Min(spawnRate, RainMaxIntensity);
-        RainVFX.SetFloat(_rateId, spawnRate);
-
-        // ------- Turbulence -------
-        float turb = Mathf.Lerp(TurbulenceBase, TurbulenceAtMax, RainIntensity);
-        RainVFX.SetFloat(VFX_NoiseIntensity, _vfxRunning ? turb : 0f);
-
-        // ------- Direction / vitesse -------
-        if (!_vfxRunning)
-        {
-            RainVFX.SetVector3(_rainMinVelocityID, Vector3.zero);
-            RainVFX.SetVector3(_rainMaxVelocityID, Vector3.zero);
-            return;
-        }
-
-        // vitesse verticale de base (module)
-        float vDownMag = Mathf.Abs(Vector3.Lerp(RainMinVelocity, RainMaxVelocity, Mathf.Clamp01(RainIntensity)).y);
-        vDownMag *= Mathf.Lerp(1f, VelocityBoostAtMax, Mathf.Clamp01(RainIntensity));
-
-        // force horizontale du vent (module)
-        float pushH = WindSpeed * (LateralFactorAtMax * Mathf.Clamp01(RainIntensity));
-
-        // ---- MODE A : Rotation du GameObject = direction de la pluie (Local space conseillé)
-        // Down = -transform.up ; Lateral = transform.forward (cap du vent)
-        bool useRotation = AlignToWind; // si tu orientes l'objet via ApplyWindRotation()
-        Vector3 downDir, lateralDir;
-
-        if (useRotation)
-        {
-            downDir = -transform.up;           // chute selon l'orientation du GO
-            lateralDir = transform.forward;       // vent dans l'axe avant du GO
-        }
-        else
-        {
-            // ---- MODE B : Vecteur de vent explicite (monde)
-            Vector3 dirWorld = HeadingDegToDirXZ(
-                (UseWeatherWind && Application.isPlaying && WeatherHandlerData.CurrentWeather != null)
-                ? WeatherHandlerData.CurrentWeather.WindOrientation
-                : WindOrientationDegrees
-            );
-            if (!FaceWithWind) dirWorld = -dirWorld;
-            downDir = Vector3.down;
-            lateralDir = dirWorld.normalized;
-        }
-
-        Vector3 v = downDir * vDownMag + lateralDir * pushH;
-
-        // Envoie au VFX (si ton graph lit Velocity1/2)
-        RainVFX.SetVector3(_rainMinVelocityID, v);
-        RainVFX.SetVector3(_rainMaxVelocityID, v);
-    }
-
-
     void DriveAudio()
     {
         if (!mixer) return;
@@ -255,101 +325,182 @@ public class RainController : MonoBehaviour
     {
         if (_rainVolume) _rainVolume.enabled = enable;
     }
+    #endregion
 
-    // --- Wind heading in degrees ---
-    public bool UseWeatherWind = true;     // lit WeatherHandlerData si dispo
-    [Range(0f, 360f)] public float WindOrientationDegrees = 0f;  // 0=N, 90=E (plan XZ)
-
-    // Référence optionnelle pour un repère "caméra" (si tu veux raisonner gauche/droite par rapport au joueur)
-    public Transform OrientationReference; // ex: Camera/Pawn
-
-    public enum OrientationFrame { World, RelativeToReference }
-    public OrientationFrame OrientationSpace = OrientationFrame.World;
-
-    // Lissage d’angles (SmoothDampAngle)
-    float _yawVel, _pitchVel;
-    [Range(0f, 720f)] public float MaxYawDegPerSec = 360f; // limite angulaire
-    [Range(0f, 60f)] public float MaxPitchDeg = 25f;  // inclinaison max (réalisme)
-    public float YawSmoothTime = 0.15f;
-    public float PitchSmoothTime = 0.20f;
-
-
-    // ---------- Orientation: logique centrale ----------
-    void ApplyWindRotation()
+    //==============================================================
+    #region ► Physique/Direction des gouttes (le cœur)
+    //==============================================================
+    void DriveVFX()
     {
-        // 1) Récup de l’angle (météo → otherwise l’exposé)
-        float headingDeg = WindOrientationDegrees;
-        if (UseWeatherWind && WeatherHandlerData.CurrentWeather != null || Application.isPlaying)
-            headingDeg = WeatherHandlerData.CurrentWeather.WindOrientation;
-        else headingDeg = 0f;
+        if (!RainVFX) return;
 
-            // 2) Direction monde (XZ)
-            Vector3 dirWorld = HeadingDegToDirXZ(headingDeg);
-        if (!FaceWithWind) dirWorld = -dirWorld; // face au vent = inverse
+        // --- Densité / lifetime
+        float targetAliveMax = 1.2e5f;
+        float targetAlive = Mathf.Lerp(0f, targetAliveMax, RainIntensity);
 
-        // 3) Si tu veux raisonner "gauche/droite/face" par rapport à la caméra
-        if (OrientationSpace == OrientationFrame.RelativeToReference && OrientationReference)
+        float lifetime = Mathf.Lerp(4f, 1.2f, RainIntensity);
+        if (RainVFX.HasFloat("Lifetime"))
+            RainVFX.SetFloat("Lifetime", lifetime);
+
+        float spawnRate = _vfxRunning ? targetAlive / Mathf.Max(0.1f, lifetime) : 0f;
+        spawnRate = Mathf.Min(spawnRate, RainMaxIntensity);
+        RainVFX.SetFloat(_rateId, spawnRate);
+
+        // --- Turbulence
+        float turb = Mathf.Lerp(TurbulenceBase, TurbulenceAtMax, RainIntensity);
+        RainVFX.SetFloat(VFX_NoiseIntensity, _vfxRunning ? turb : 0f);
+
+        // --- Vitesse/Direction
+        if (!_vfxRunning)
         {
-            // Recompose une direction relative (mélange progressif : avant + latéral)
-            DecomposeDirRelative(OrientationReference, dirWorld, out float head, out float lat);
-
-            // head ∈ [-1,1] (face/arrière), lat ∈ [-1,1] (gauche/droite)
-            Vector3 f = OrientationReference.forward; f.y = 0; f.Normalize();
-            Vector3 r = OrientationReference.right; r.y = 0; r.Normalize();
-
-            // Poids progressifs (tu peux jouer sur ces courbes si tu veux biaiser)
-            Vector3 blended = f * head + r * lat;
-            if (blended.sqrMagnitude > 1e-6f) dirWorld = blended.normalized;
+            _velCurrent = Vector3.zero;
+            RainVFX.SetVector3(_rainMinVelocityID, Vector3.zero);
+            RainVFX.SetVector3(_rainMaxVelocityID, VectorBoxZero());
+            return;
         }
 
+        float tRain = Mathf.Clamp01(RainIntensity);
+        float vDown = Mathf.Abs(Vector3.Lerp(RainMinVelocity, RainMaxVelocity, tRain).y);
+        vDown *= Mathf.Lerp(1f, VelocityBoostAtMax, tRain);
+
+        // Réponse au vent (0..1)
+        float wind_ms = WindSpeed; // si tu reçois du km/h: wind_ms = WindSpeed * 0.27778f;
+        float resp = (WindToLateral != null && WindToLateral.keys.Length > 0)
+            ? Mathf.Clamp01(WindToLateral.Evaluate(wind_ms))
+            : Mathf.Clamp01(wind_ms / 10f); // ≈ linéaire, 10 m/s ~ fort vent
+
+        float pushH = wind_ms * LateralFactorAtMax * tRain * LateralResponse * resp;
+
+        // Limite physique par l'angle max
+        if (MaxLeanAngleDeg > 0.01f)
+        {
+            float maxByAngle = Mathf.Tan(MaxLeanAngleDeg * Mathf.Deg2Rad) * vDown;
+            pushH = Mathf.Min(pushH, maxByAngle);
+        }
+
+        // Axes de mouvement (down/lateral) — cohérents partout
+        GetMotionDirs(out Vector3 downDir, out Vector3 lateralDir);
+
+        // Horizontal brut
+        Vector3 horiz = lateralDir * pushH;
+
+        // Clamp gauche/droite indépendants (par rapport à l'axe right du GO)
+        Vector3 rightAxis = transform.right; rightAxis.y = 0f;
+        if (rightAxis.sqrMagnitude > 1e-6f) rightAxis.Normalize();
+
+        float sideMag = Vector3.Dot(horiz, rightAxis);   // +droite / -gauche
+        Vector3 forwardRest = horiz - rightAxis * sideMag;     // conserve avant/arrière
+
+        if (sideMag >= 0f && MaxPushRight > 0f) sideMag = Mathf.Min(sideMag, MaxPushRight);
+        if (sideMag < 0f && MaxPushLeft > 0f) sideMag = Mathf.Max(sideMag, -MaxPushLeft);
+
+        Vector3 clampedHoriz = rightAxis * sideMag + forwardRest;
+
+        // Cap absolu global (optionnel)
+        if (MaxLateralSpeed > 0f && clampedHoriz.magnitude > MaxLateralSpeed)
+            clampedHoriz = clampedHoriz.normalized * MaxLateralSpeed;
+
+        Vector3 vDesired = downDir * vDown + clampedHoriz;
+
+        // Lissage pour éviter les à-coups
+        _velCurrent = (VelocitySmoothTime > 0f)
+            ? Vector3.SmoothDamp(_velCurrent, vDesired, ref _velDamp, VelocitySmoothTime)
+            : vDesired;
+
+        RainVFX.SetVector3(_rainMinVelocityID, _velCurrent);
+        RainVFX.SetVector3(_rainMaxVelocityID, _velCurrent);
+    }
+
+    // Utilitaire minuscule pour éviter une allocation dans le return ci-dessus
+    static Vector3 VectorBoxZero() => Vector3.zero;
+    #endregion
+
+    //==============================================================
+    #region ► Ancrage de l’émetteur (éviter que la pluie “passe devant/derrière”)
+    //==============================================================
+    void AnchorEmitterUpwind()
+    {
+        if (!YFollowTarget) return;
+
+        // Directions cohérentes avec DriveVFX
+        GetMotionDirs(out Vector3 downDir, out Vector3 lateralDir);
+
+        float t = Mathf.Clamp01(RainIntensity);
+        float vDown = Mathf.Abs(Vector3.Lerp(RainMinVelocity, RainMaxVelocity, t).y);
+        vDown *= Mathf.Lerp(1f, VelocityBoostAtMax, t);
+
+        float wind_ms = WindSpeed;
+        float resp = (WindToLateral != null && WindToLateral.keys.Length > 0)
+            ? Mathf.Clamp01(WindToLateral.Evaluate(wind_ms))
+            : Mathf.Clamp01(wind_ms / 10f);
+
+        float pushH = wind_ms * LateralFactorAtMax * t * LateralResponse * resp;
+
+        // Limite par angle
+        if (MaxLeanAngleDeg > 0.01f)
+        {
+            float maxByAngle = Mathf.Tan(MaxLeanAngleDeg * Mathf.Deg2Rad) * vDown;
+            pushH = Mathf.Min(pushH, maxByAngle);
+        }
+
+        // Temps de chute réel (projection verticale monde)
+        float spawnHeightWorld = Mathf.Max(0.01f, transform.position.y - (YFollowTarget.position.y + YOffset));
+        float vDownWorld = Mathf.Max(0.01f, Mathf.Abs(downDir.y) * vDown);
+        float fallTime = spawnHeightWorld / vDownWorld;
+
+        // Drift attendu pendant la chute
+        Vector3 drift = lateralDir; drift.y = 0f;
+        if (drift.sqrMagnitude > 1e-6f) drift.Normalize();
+        drift *= (pushH * fallTime + UpwindPadding);
+
+        // Place l'émetteur upwind en XZ
+        Vector3 p = transform.position;
+        transform.position = new Vector3(
+            YFollowTarget.position.x - drift.x,
+            p.y,
+            YFollowTarget.position.z - drift.z
+        );
+    }
+    #endregion
+
+    //==============================================================
+    #region ► Option : rotation décorative si AlignToWind = TRUE
+    //==============================================================
+    void ApplyWindRotation()
+    {
+        // NB: Cette rotation n'est utilisée QUE si AlignToWind = TRUE.
+        Vector3 dirWorld = EvaluateWindDirWorldXZ();
         if (YawOnly) dirWorld.y = 0f;
         if (dirWorld.sqrMagnitude < 1e-6f) return;
 
-        // 4) Cible yaw (plan XZ)
-        float targetYaw = Mathf.Atan2(dirWorld.x, dirWorld.z) * Mathf.Rad2Deg; // 0°=Nord
-                                                                               // Lissage yaw (SmoothDampAngle + clamp vitesse)
+        float targetYaw = Mathf.Atan2(dirWorld.x, dirWorld.z) * Mathf.Rad2Deg;
+
+        // Clamp d'angle gauche/droite (optionnel)
+        if (MaxYawRightDeg > 0f || MaxYawLeftDeg > 0f)
+        {
+            float refYaw = transform.eulerAngles.y;
+            float delta = Mathf.DeltaAngle(refYaw, targetYaw);
+            float clamped = Mathf.Clamp(delta, -MaxYawLeftDeg, MaxYawRightDeg);
+            targetYaw = refYaw + clamped;
+        }
+
+        // Lissage yaw
         float currentYaw = transform.eulerAngles.y;
         float rawYaw = Mathf.SmoothDampAngle(currentYaw, targetYaw, ref _yawVel, YawSmoothTime);
         float maxStep = MaxYawDegPerSec * Time.deltaTime;
         float finalYaw = Mathf.MoveTowardsAngle(currentYaw, rawYaw, maxStep);
 
-        // 5) Pitch (inclinaison avant/arrière en fonction de la force horizontale vs chute)
-        float horiz = (WindSpeed * LateralFactorAtMax * Mathf.Clamp01(RainIntensity)); // “push” horizontal
+        // Pitch basé sur ratio vent/chute (limité)
+        float horiz = WindSpeed * LateralFactorAtMax * Mathf.Clamp01(RainIntensity);
         float vert = Mathf.Abs(Vector3.Lerp(RainMinVelocity, RainMaxVelocity, Mathf.Clamp01(RainIntensity)).y);
-        float targetPitch = Mathf.Atan2(horiz, Mathf.Max(0.001f, vert)) * Mathf.Rad2Deg;   // 0..~60°
-        targetPitch = Mathf.Clamp(targetPitch, 0f, MaxPitchDeg);                            // limite réaliste
-                                                                                            // Si FaceWithWind=false on penche vers l’autre sens
+        float targetPitch = Mathf.Atan2(horiz, Mathf.Max(0.001f, vert)) * Mathf.Rad2Deg;
+        targetPitch = Mathf.Clamp(targetPitch, 0f, MaxPitchDeg);
         if (!FaceWithWind) targetPitch = -targetPitch;
 
         float currentPitch = NormalizeAngle180(transform.eulerAngles.x);
         float smPitch = Mathf.SmoothDampAngle(currentPitch, targetPitch, ref _pitchVel, PitchSmoothTime);
 
-        // 6) Applique rotation (sans roll)
         transform.rotation = Quaternion.Euler(smPitch, finalYaw, 0f);
     }
-
-    static float NormalizeAngle180(float a)
-    {
-        a %= 360f;
-        if (a > 180f) a -= 360f;
-        if (a < -180f) a += 360f;
-        return a;
-    }
-    // Convertit un cap (0°=Nord/Z+, 90°=Est/X+) en direction monde sur XZ.
-    static Vector3 HeadingDegToDirXZ(float deg)
-    {
-        float rad = deg * Mathf.Deg2Rad;
-        // Z = cos, X = sin  → 0°=Z+, 90°=X+
-        return new Vector3(Mathf.Sin(rad), 0f, Mathf.Cos(rad));
-    }
-
-    // Décompose la direction par rapport à un repère: renvoie composantes "devant" et "latéral" (-1..1)
-    static void DecomposeDirRelative(Transform reference, Vector3 worldDir, out float head, out float lateral)
-    {
-        Vector3 f = reference.forward; f.y = 0; f.Normalize();
-        Vector3 r = reference.right; r.y = 0; r.Normalize();
-        head = Mathf.Clamp(Vector3.Dot(worldDir, f), -1f, 1f); // +1 = vent de face (vers l'avant ref)
-        lateral = Mathf.Clamp(Vector3.Dot(worldDir, r), -1f, 1f); // +1 = vent depuis la droite
-    }
-
+    #endregion
 }
