@@ -7,7 +7,7 @@ using UnityEngine;
 public class VideoOptionsController : OptionWindowBase
 {
     public List<IOption> VideosOptions = new List<IOption>();
-    public SimpleDisplayModeTogglerWithUI DisplayModeController;
+    public DisplayModeController DisplayModeController;
     public MonitorController MonitorController;
     public ResolutionController ResolutionController;
     public RefreshRateController RefreshRateController;

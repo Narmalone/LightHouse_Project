@@ -13,6 +13,9 @@ public class OptionMenuController : MonoBehaviour
 
     private void Awake()
     {
+        if(navigationButtons == null || navigationButtons.Length == 0)
+            navigationButtons = GetComponentsInChildren<OptionsNavigationButton>();
+
         applyCliqued.onClick.AddListener(OnApplyCliqued);
         RevertButton.onClick.AddListener(OnRevertCliqued);
         SubscribeButtons();
@@ -37,11 +40,6 @@ public class OptionMenuController : MonoBehaviour
     private void Button_OnCliqued(OptionsNavigationButton obj)
     {
         
-    }
-
-    private void OnValidate()
-    {
-        navigationButtons = GetComponentsInChildren<OptionsNavigationButton>();
     }
 
     private void OnRevertCliqued()

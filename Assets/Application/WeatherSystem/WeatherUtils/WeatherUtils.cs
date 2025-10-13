@@ -106,7 +106,7 @@ namespace LightHouse.Weather.Utils
             WeatherTimeline timeline, TimeConfiguration config,
             bool wrap = false)
         {
-            float secondsPerDay = config.GetTotalSecondsPerDay();
+            float secondsPerDay = config.RealSecondsPerGameDay;
 
             // Clamp l’heure pour éviter des surprises
             float clampedHour = Mathf.Clamp(hour, 0f, 24f);

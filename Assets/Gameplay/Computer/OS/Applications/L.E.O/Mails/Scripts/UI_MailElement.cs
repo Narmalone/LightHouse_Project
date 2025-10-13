@@ -27,6 +27,7 @@ namespace LightHouse.Game.Computer.LEO.Mails
         [SerializeField] private Color _unreadColor;
         [SerializeField] private Color _readColor;
 
+        public E_MailState MailState => _state;
         public event Action<MailDatas> OpenMailCliqued;
 
         private void Awake()
@@ -74,12 +75,14 @@ namespace LightHouse.Game.Computer.LEO.Mails
         private void SetUnreadState()
         {
             SetIcon(_unreadSprite);
+            _state = E_MailState.Unread;
             _background.color = _unreadColor;
         }
 
         private void SetReadState()
         {
             SetIcon(_readSprite);
+            _state = E_MailState.Read;
             _background.color = _readColor;
             _customButton.hoverColor = new Color(_readColor.r * 0.5f, _readColor.g * 0.5f, _readColor.b * 0.5f, 1.0f);
             _customButton.normalColor = _readColor;

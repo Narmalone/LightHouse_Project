@@ -1,29 +1,34 @@
-using LightHouse.Inputs;
-using UnityEngine;
+﻿using LightHouse.Game.BootStrap;
 using LightHouse.Handlers;
-using LightHouse.Game.BootStrap;
+using LightHouse.Inputs;
 using System;
+using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace LightHouse.KinematicCharacterController
 {
-    /// <summary>
-    /// Pre-states of the players
-    /// <see cref="Normal"/> is when the player can freely move
-    /// <see cref="CameraMode"/> is when the player is seeing the cameras from the computer
-    /// <see cref="CutScenesModes"/> is when the player is seeing 
-    /// </summary>
     public enum PlayerState
     {
         Normal,
-        CameraMode,
-        CutScenesModes
+        ComputerMode,
+        Options,
+        CutScenesModes,
+        LastState 
     }
+
     [DefaultExecutionOrder(-20)]
     public class Player : MonoBehaviour
     {
         #region FIELDS
         public bool EnableDebugMode = false;
-        public PlayerState PlayerState = PlayerState.Normal;
+
+        // Etat courant
+        public PlayerState PlayerState { get; private set; } = PlayerState.Normal;
+        public PlayerState PreviousState { get; private set; } = PlayerState.Normal;
+
+        // Dernier état (précédent réel)
+        public PlayerState LastState = PlayerState.Normal;
+
         public static Action<PlayerState> ForceChangePlayerState;
 
         [Header("Character")]
@@ -50,24 +55,20 @@ namespace LightHouse.KinematicCharacterController
 
         private bool _isInitialized = false;
         private PlayerInputActions _inputActions;
-        #endregion
 
-        #region PROPERTIES
         public PlayerCharacter Character => _playerCharacter;
-        public PlayerInventoryManager Inventory => _inventoryController;
-        public InteractionItemsUIManager Interactions => _interactions;
         public PlayerCamera PlayerCamera => _playerCamera;
-        public CameraSpring CameraSpring => _cameraSpring;
-        public CameraLean CameraLean => _cameraLean;
+        public PlayerInventoryManager Inventory => _inventoryController;
         #endregion
 
         #region UNITY LIFECYCLE
         private void Awake()
         {
-            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-            UnityEngine.Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
 
             ForceChangePlayerState += PlayerChangeState;
+
             _inputActions = new PlayerInputActions();
             _inputActions.Enable();
             _playerCharacter.Initialize();
@@ -87,6 +88,12 @@ namespace LightHouse.KinematicCharacterController
                 InputManager.InputManagerInitialized();
                 _cameraSpring.enabled = true;
                 _isInitialized = true;
+
+                if(GameWorldHandlerData.PlayerSpawnPoint != null)
+                {
+                    _playerCharacter.SetPosition(GameWorldHandlerData.PlayerSpawnPoint.position);
+                    _playerCharacter.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
+                }
             }
         }
 
@@ -95,13 +102,13 @@ namespace LightHouse.KinematicCharacterController
             if (!_isInitialized) return;
             HandleCharacterInput();
             _playerCharacter.UpdateCapsuleMeshRoot(Time.deltaTime);
-
         }
 
         private void LateUpdate()
         {
             if (!_isInitialized) return;
             if (!_enableAllCharacterInputs) return;
+
             HandleCameraInput();
 
             Transform camTarget = _playerCharacter.GetCameraTarget();
@@ -128,8 +135,8 @@ namespace LightHouse.KinematicCharacterController
             InputManager.SetPlayerInputActions(_inputActions);
             InputManager.InputManagerInitialized();
 
-            Character.SetPosition(GameWorldHandlerData.PlayerSpawnPoint.position);
-            Character.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
+            _playerCharacter.SetPosition(GameWorldHandlerData.PlayerSpawnPoint.position);
+            _playerCharacter.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
             _cameraSpring.enabled = true;
 
             _isInitialized = true;
@@ -143,7 +150,6 @@ namespace LightHouse.KinematicCharacterController
 
             PlayerCharacterInputs characterInputs = new PlayerCharacterInputs();
 
-            // Build the CharacterInputs struct
             if (_enableMoveInput)
                 characterInputs.MoveInput = _inputActions.Player.Move.ReadValue<Vector2>();
 
@@ -156,15 +162,15 @@ namespace LightHouse.KinematicCharacterController
             if (_enableCrouchInput)
             {
                 characterInputs.Crouch = _inputActions.Player.Crouch.WasPressedThisFrame()
-               ? CrouchInput.Toggle
-               : CrouchInput.None;
+                    ? CrouchInput.Toggle
+                    : CrouchInput.None;
             }
 
             if (_enableSprintInput)
             {
                 characterInputs.Sprint = _inputActions.Player.Sprint.IsPressed()
-               ? SprintInput.Sprinting
-               : SprintInput.None;
+                    ? SprintInput.Sprinting
+                    : SprintInput.None;
             }
 
             _playerCharacter.SetInputs(ref characterInputs);
@@ -182,33 +188,91 @@ namespace LightHouse.KinematicCharacterController
         }
         #endregion
 
-        #region CAMERA LEAN
+        #region CAMERA LEAN/SPRING
         private void HandleLean(float deltaTime, Vector3 acceleration, Vector3 up) => _cameraLean.UpdateLean(deltaTime, acceleration, up);
-        #endregion
-
-        #region CAMERA SPRING
         private void HandleSpring(float deltaTime, Vector3 up) => _cameraSpring.UpdateSpring(deltaTime, up);
         #endregion
 
-        private void PlayerChangeState(PlayerState state)
+        // ---- STATE MACHINE ----
+        private void PlayerChangeState(PlayerState requested)
         {
-            switch (state)
+            // Interpréter "LastState" comme "aller au dernier état entré"
+            if (requested == PlayerState.LastState)
             {
-                case PlayerState.Normal:
-                    _enableAllCharacterInputs = true;
-                    _inventoryController.Enable();
-                    _interactions.Enable();
-                    break;
-                case PlayerState.CameraMode:
-                    _enableAllCharacterInputs = false;
-                    _playerCharacter.ForceCutVelocity();
-                    _inventoryController.Disable();
-                    _interactions.Disable();
-                    break;
-                case PlayerState.CutScenesModes:
-                    break;
+                requested = LastState; // typiquement == PlayerState → no-op
             }
+
+            // Si on demande le même état, ne rien faire
+            if (requested == PlayerState) return;
+
+            // Mémoriser l'ancien AVANT de basculer
+            var previous = PlayerState;
+
+            // Appliquer les effets d'entrée du nouvel état (ne pas toucher PlayerState ici)
+            switch (requested)
+            {
+                case PlayerState.Normal: EnterNormal(); break;
+                case PlayerState.ComputerMode: EnterCameraMode(); break;
+                case PlayerState.Options: EnterOptionsMode(); break;
+                case PlayerState.CutScenesModes: EnterCutScenes(); break;
+                default: EnterNormal(); break;
+            }
+
+            // Valider le changement
+            PreviousState = previous;   // <- vrai "précédent"
+            PlayerState = requested;  // <- courant
+            LastState = PlayerState; // <- dernier entré (souvent == courant)
+        }
+
+        // Helper : revenir au vrai état précédent (si tu en as besoin)
+        public void RevertToPreviousState()
+        {
+            if (PreviousState != PlayerState)
+                PlayerChangeState(PreviousState);
+        }
+
+        // Helper actuel : aller au “dernier entré” (souvent no-op si déjà dessus)
+        public void RevertToLastState()
+        {
+            PlayerChangeState(PlayerState.LastState);
+        }
+
+
+        private void EnterNormal()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            _enableAllCharacterInputs = true;
+            _inventoryController.Enable();
+            _interactions.Enable();
+        }
+
+        private void EnterCameraMode()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            _enableAllCharacterInputs = false;
+            _playerCharacter.ForceCutVelocity();
+            _inventoryController.Disable();
+            _interactions.Disable();
+        }
+
+        private void EnterOptionsMode()
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            _enableAllCharacterInputs = false;
+            _playerCharacter.ForceCutVelocity();
+            _inventoryController.Disable();
+            _interactions.Disable();
+        }
+
+        private void EnterCutScenes()
+        {
+            _enableAllCharacterInputs = false;
+            _playerCharacter.ForceCutVelocity();
+            _inventoryController.Disable();
+            _interactions.Disable();
         }
     }
-
 }

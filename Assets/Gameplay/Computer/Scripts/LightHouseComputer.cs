@@ -49,9 +49,7 @@ namespace LightHouse.Game.Computer
            _computerInteractionSystem.Collider.enabled = false;
             //_computerInteractionSystem.gameObject.SetActive(false);
             _os.PlayerOnComputer = true;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-            Player.ForceChangePlayerState?.Invoke(PlayerState.CameraMode);
+            Player.ForceChangePlayerState?.Invoke(PlayerState.ComputerMode);
         }
 
         public void ComputerExit()
@@ -60,8 +58,6 @@ namespace LightHouse.Game.Computer
             _computerInteractionSystem.Collider.enabled = true;
             //_computerInteractionSystem.gameObject.SetActive(true);
             _os.PlayerOnComputer = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
             Player.ForceChangePlayerState?.Invoke(PlayerState.Normal);
         }
     }

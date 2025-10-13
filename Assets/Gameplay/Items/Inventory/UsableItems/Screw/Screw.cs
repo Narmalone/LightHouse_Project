@@ -8,6 +8,8 @@ namespace LightHouse.Items.Inventory
     {
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+
+#pragma warning disable
         public event Action<string> UseTextSlotChanged;
         public bool CanBeUsedFromInventory { get; set; }
         [field: SerializeField] public float UseHoldTime { get; set; } = 0.5f;

@@ -12,15 +12,11 @@ public class ShortcutButtonsManager : MonoBehaviour
 
     private void Awake()
     {
-        foreach(var button in Buttons)
+        Buttons = GetComponentsInChildren<ShortcutButton>().ToList();
+        foreach (var button in Buttons)
         {
             button.OnClick += Btn_OnClick;
         }
-    }
-
-    private void OnValidate()
-    {
-        Buttons = GetComponentsInChildren<ShortcutButton>().ToList();
     }
 
     public void Register(ShortcutButton btn)

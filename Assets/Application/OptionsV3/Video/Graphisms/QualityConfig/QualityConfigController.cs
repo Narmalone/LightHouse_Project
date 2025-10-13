@@ -55,14 +55,14 @@ public class QualityConfigController : MonoBehaviour, IOption
         // Seed : si le handler n'est pas initialisé, on force Medium au lancement
         GfxTier seed = GraphismHandlerData.IsInitialized
             ? GraphismHandlerData.CurrentTier
-            : GfxTier.Medium;
+            : GfxTier.High;
 
         // Si pas initialisé → applique Medium une fois pour stabiliser l'état global
         if (!GraphismHandlerData.IsInitialized)
         {
-            if (PresetSettings != null && PresetSettings.TryGetValue(GfxTier.Medium, out var medium))
+            if (PresetSettings != null && PresetSettings.TryGetValue(GfxTier.High, out var hightPreset))
             {
-                GraphismHandlerData.SetPreset(medium, GfxTier.Medium);
+                GraphismHandlerData.SetPreset(hightPreset, GfxTier.High);
             }
             else
             {

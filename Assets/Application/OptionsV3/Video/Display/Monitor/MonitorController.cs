@@ -7,7 +7,7 @@ namespace LightHouse.Options.V3
     {
         [Header("UI (passive)")]
         public OptionEnumPassive optionEnum;
-        public SimpleDisplayModeTogglerWithUI modeProvider; // assigne dans l’inspector
+        public global::DisplayModeController modeProvider; // assigne dans l’inspector
 
         public bool ShowDebugMode = true;
 

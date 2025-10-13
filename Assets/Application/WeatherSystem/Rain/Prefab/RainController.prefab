@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 59587073423175903}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.0365837, y: 4.672704, z: 5.663123}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Target: {fileID: 0}
   TargetPoint: {x: 0, y: 0, z: 0}
-  HoverHeight: 0
+  HoverHeight: -3
   DeadZoneRadius: 1
   SnapInsideDeadZone: 1
   SmoothTime: 0.1
@@ -317,6 +317,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5688972329036578167, guid: 70ee4054b4801ed4f90224f769eab00b,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -335,7 +340,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 448357595601962725}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
   m_Name: 
@@ -402,6 +407,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RainVFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 5946918723893271253, guid: e9ecc18b5507d7640a68e443672cd63d,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[5].m_Value.y
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

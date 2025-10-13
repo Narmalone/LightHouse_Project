@@ -18,6 +18,7 @@ public class ShortcutButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public Color NormalColor;
     public Color DisabledColor;
 
+    public bool DisableColorChanges = false;
     public bool IsSelected { get; private set; }
     public bool IsHover { get; private set; }
     public bool IsDisabled { get; private set; }
@@ -78,7 +79,7 @@ public class ShortcutButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void ApplyVisual()
     {
-        if (Graphic == null) return;
+        if (Graphic == null || DisableColorChanges) return;
 
         if (IsDisabled)
             Graphic.color = DisabledColor;

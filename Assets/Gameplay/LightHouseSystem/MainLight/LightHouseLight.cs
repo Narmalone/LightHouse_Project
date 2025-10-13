@@ -1,0 +1,62 @@
+﻿using UnityEngine;
+
+[ExecuteAlways]
+public class LightHouseLight : MonoBehaviour
+{
+    [Header("Rotation")]
+    [Tooltip("Durée d'un tour complet en secondes")]
+    public float rotationPeriod = 20f;
+
+    [Header("Light Flash")]
+    public bool flashing = true;
+
+    [Tooltip("Intensité normale (EV100)")]
+    [Range(0, 50)] public float NormalLightIntensity = 37f;
+
+    [Tooltip("Intensité maximale (EV100)")]
+    [Range(0, 50)] public float MaxLightIntensity = 45f;
+
+    [Tooltip("Forme du cycle d'intensité (0-1)")]
+    public AnimationCurve _flashCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
+    [Tooltip("Durée d'un cycle de flash en secondes")]
+    public float flashDuration = 2f;
+
+    private Light _spot;
+    private float _time;
+
+    void Start()
+    {
+        _spot = GetComponentInChildren<Light>();
+        if (_spot == null)
+        {
+            Debug.LogError("[LighthouseLight] Aucun Light enfant trouvé.");
+        }
+    }
+
+    void Update()
+    {
+        if (_spot == null) return;
+
+        // Rotation constante du phare
+        transform.Rotate(Vector3.up, 360f / rotationPeriod * Time.deltaTime, Space.Self);
+
+        if (flashing)
+        {
+            _time += Time.deltaTime;
+            float t = (_time % flashDuration) / flashDuration; // Normalisation
+            float curveValue = _flashCurve.Evaluate(t);
+
+            // Interpolation réaliste entre Normal et Max
+            float evValue = Mathf.Lerp(NormalLightIntensity, MaxLightIntensity, curveValue);
+
+            // Conversion EV100 → luminance physique (lux)
+            // 2^EV100 * 2.5 est une approximation HDRP correcte
+            _spot.intensity = Mathf.Pow(2f, evValue) * 2.5f;
+        }
+        else
+        {
+            _spot.intensity = Mathf.Pow(2f, NormalLightIntensity) * 2.5f;
+        }
+    }
+}

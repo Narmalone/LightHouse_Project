@@ -45,16 +45,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
         [SerializeField] private AudioSource _sonarPingAudioSource;
         [SerializeField] private EffectAudio _sonarPingClip;
 
-        [Header("Link Layout")]
-        [Tooltip("Décalage vertical (px) pour placer le départ juste sous le dot.")]
-        [SerializeField] private float _dotStartYOffset = 8f;
-
-        [Tooltip("Petit espace (px) laissé au départ du trait.")]
-        [SerializeField] private float _startGap = 6f;
-
-        [Tooltip("Petit espace (px) laissé avant le label.")]
-        [SerializeField] private float _endGap = 12f;
-
         #endregion
 
         #region Runtime state
@@ -68,19 +58,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         #region Unity lifecycle
 
-        private void OnValidate()
-        {
-            if (_sonarPingClip != null && _sonarPingClip.clips != null && _sonarPingClip.clips.Length > 0)
-            {
-                _sonarPingAudioSource.clip = _sonarPingClip.clips[0];
-                _sonarPingAudioSource.spatialBlend = _sonarPingClip._spatialBlend;
-                _sonarPingAudioSource.volume = _sonarPingClip.volume;
-            }
-        }
-
         private void Awake()
         {
-
             if (_sonarPingClip != null && _sonarPingClip.clips != null && _sonarPingClip.clips.Length > 0)
             {
                 _sonarPingAudioSource.clip = _sonarPingClip.clips[0];

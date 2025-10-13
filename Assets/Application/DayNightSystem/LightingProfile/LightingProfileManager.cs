@@ -81,12 +81,6 @@ namespace LightHouse.Game.Rendering
         [SerializeField] private Vector2 _middayToEvening = new Vector2(15f, 18f);
         [SerializeField] private Vector2 _eveningToNight = new Vector2(21f, 23f);
 
-        [Header("Day Segments (24h)")]
-        [SerializeField] private float _morningStart = 6f;
-        [SerializeField] private float _middayBlendStart = 9f;
-        [SerializeField] private float _eveningStart = 17f;
-        [SerializeField] private float _nightStart = 20f;
-
         [Header("Transition Shapes")]
         [SerializeField] private AnimationCurve _tNightToMorning = AnimationCurve.EaseInOut(0, 0, 1, 1);
         [SerializeField] private AnimationCurve _tMorningToMidday = AnimationCurve.EaseInOut(0, 0, 1, 1);

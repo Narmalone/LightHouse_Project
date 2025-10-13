@@ -50,11 +50,6 @@ namespace LightHouse.Game.Buyoncies
         {
             _anomalyDatabase.SetAnomaly(controller.BuyoncyID);
         }
-
-        private void OnValidate()
-        {
-            _buyoncies = GetComponentsInChildren<BuyoncyController>();
-        }
     }
 }
 

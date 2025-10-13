@@ -95,15 +95,5 @@ namespace LightHouse.Options.V3
                 if (_order[i] == mode) return i;
             return -1;
         }
-
-        // Debug overlay (build ok)
-        private void OnGUI()
-        {
-            GUI.Label(new Rect(10, 10, 420, 20), "[DisplayModeController]");
-            GUI.Label(new Rect(10, 30, 420, 20), $"Current:  {_currentMode}");
-            GUI.Label(new Rect(10, 50, 420, 20), $"Selected: {_selectedMode}");
-            GUI.Label(new Rect(10, 70, 420, 20), $"System:   {Screen.fullScreenMode}");
-            GUI.Label(new Rect(10, 90, 420, 20), $"UI Index: {optionEnum.CurrentChoiceIndex}");
-        }
     }
 }

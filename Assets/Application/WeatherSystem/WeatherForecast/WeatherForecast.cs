@@ -22,14 +22,6 @@ namespace LightHouse.Weather
     /// </summary>
     public class WeatherForecast
     {
-        #region ===== Constantes & Debug =====
-
-        /// <summary>
-        /// Active/Désactive les logs de blend pour le debug.
-        /// </summary>
-        private const bool VERBOSE_LOGS = false;
-
-        #endregion
 
         #region ===== Données : listes par segment =====
 
@@ -77,9 +69,6 @@ namespace LightHouse.Weather
                 EveningDatas.Add(WeatherUtils.GetWeatherAt(day, 18f, weatherTimeline, timeConfig));
                 MiddnightDatas.Add(WeatherUtils.GetWeatherAt(day, 0f, weatherTimeline, timeConfig));
             }
-
-            if (VERBOSE_LOGS)
-                Debug.Log("✅ Prévisions “monde” enregistrées pour chaque tranche horaire.");
         }
 
         #endregion
@@ -131,17 +120,14 @@ namespace LightHouse.Weather
             outAngle = WeatherUtils.NormalizeAngle360(outAngle);
             var outDirType = WeatherUtils.AngleToOrientationType(outAngle);
 
-            if (VERBOSE_LOGS)
-            {
-                Debug.Log(
-                    $"[ForecastBlend] seg={targetSegment} day={targetDay} | " +
-                    $"WORLD: Air={world.AirTemperature}, Water={world.WaterTemperature}, Hum={world.Humidity}, " +
-                    $"WindSpd={world.WindSpeed}, WindDir={world.WindOrientationType} | " +
-                    $"PLAYER: Air={pAir} ({aAir}%), Water={pWater} ({aWater}%), Hum={datas.HumidityRateResult.InputValue} ({aHum}%), " +
-                    $"WindSpd={pWind} ({aWind}%), WindDir={pDir} ({aDir}%), Press={pPress} ({aPress}%) | " +
-                    $"OUT: Air={outAir}, Water={outWater}, Hum={outHum}, WindSpd={outWind}, WindDir={outDirType}, Press={outPress}"
-                );
-            }
+          /*  Debug.Log(
+                   $"[ForecastBlend] seg={targetSegment} day={targetDay} | " +
+                   $"WORLD: Air={world.AirTemperature}, Water={world.WaterTemperature}, Hum={world.Humidity}, " +
+                   $"WindSpd={world.WindSpeed}, WindDir={world.WindOrientationType} | " +
+                   $"PLAYER: Air={pAir} ({aAir}%), Water={pWater} ({aWater}%), Hum={datas.HumidityRateResult.InputValue} ({aHum}%), " +
+                   $"WindSpd={pWind} ({aWind}%), WindDir={pDir} ({aDir}%), Press={pPress} ({aPress}%) | " +
+                   $"OUT: Air={outAir}, Water={outWater}, Hum={outHum}, WindSpd={outWind}, WindDir={outDirType}, Press={outPress}"
+               );*/
 
             // 6) Retourne une WeatherData “player-informed”, en conservant la fenêtre temporelle du segment
             return new WeatherData

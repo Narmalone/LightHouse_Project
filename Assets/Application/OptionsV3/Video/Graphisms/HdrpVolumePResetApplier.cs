@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 
@@ -17,10 +16,6 @@ public class HdrpVolumePresetApplier : MonoBehaviour
     [Header("Volume Profiles (optionnel)")]
     [Tooltip("Si tu veux aussi changer complètement de Volume Profile (ex: couper SSR/SSGI en Low). Laisse vide pour ne pas toucher.")]
     [SerializeField] private VolumeProfile[] profilesByTier = new VolumeProfile[4];
-
-    [Header("Input (debug)")]
-    [SerializeField] private KeyCode cycleKey = KeyCode.CapsLock;
-
     public int currentTier = -1;
 
     void Start()
@@ -58,14 +53,6 @@ public class HdrpVolumePresetApplier : MonoBehaviour
             int q = Mathf.Clamp(qualityIndexByTier[idx], 0, QualitySettings.names.Length - 1);
             QualitySettings.SetQualityLevel(q, true); // active le HDRP Asset mappé à ce Quality Level
         }
-    }
-
-    void SwitchVolumeProfile(GfxTier tier)
-    {
-        if (!globalVolume || profilesByTier == null) return;
-        int idx = (int)tier;
-        if (idx < profilesByTier.Length && profilesByTier[idx])
-            globalVolume.profile = profilesByTier[idx];
     }
 
     // ---------- API principale ----------

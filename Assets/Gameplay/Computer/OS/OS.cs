@@ -50,14 +50,9 @@ namespace LightHouse.Game.Computer.OS
 
         #region Unity Lifecycle
 
-        private void OnValidate()
-        {
-            // Récupère automatiquement tous les raccourcis enfants
-            ShortCuts = GetComponentsInChildren<ShortCutController>().ToList();
-        }
-
         private void Awake()
         {
+            ShortCuts = GetComponentsInChildren<ShortCutController>().ToList();
             // Initialise chaque raccourci avec cette instance d'OS
             foreach (var shortcut in ShortCuts)
             {

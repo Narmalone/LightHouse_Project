@@ -9,7 +9,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
     {
         [SerializeField] private RectTransform _rectTransform;
         [SerializeField] private Image _dotImage;
-        [SerializeField] private UI_CustomButton _myButton;
+        [SerializeField] private ShortcutButton _myButton;
 
         private ISonarable _sonarElement;
         public ISonarable SonarElement
@@ -22,9 +22,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         public Image DotImage => _dotImage;
         public RectTransform RectTransform => _rectTransform;
-
-        public int _glowColorKey = Shader.PropertyToID("_GlowColor");
-
         private Material _instanceMaterial;
 
         /// <summary>
@@ -39,12 +36,13 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
             {
                 _instanceMaterial = new Material(_dotImage.material); // Clone
                 _dotImage.material = _instanceMaterial;
+                _instanceMaterial.SetColor("_GlowColor", Color.cyan);
             }
 
             _myButton.OnClick += OnButtonCliqued;
         }
 
-        private void OnButtonCliqued(UI_CustomButton button)
+        private void OnButtonCliqued(ShortcutButton button)
         {
             SonarDotClicked?.Invoke(_sonarElement.SonarInfo, _dotImage);
         }
@@ -105,7 +103,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
         public void SetDotColor(Color color)
         {
             if (_instanceMaterial != null)
-                _instanceMaterial.SetColor(_glowColorKey, color);
+                _instanceMaterial.SetColor("_GlowColor", color);
 
             _dotImage.color = color; // (optionnel selon visuel)
         }

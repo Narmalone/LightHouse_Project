@@ -82,6 +82,9 @@ namespace LightHouse.Game.Computer.Cameras
 
             LightHouseCamera.m_Lens.FieldOfView = currentFOV;
             _renderTextureCamera.renderCam.fieldOfView = currentFOV;
+
+            _renderTextureCamera.RenderOnce();
+
         }
 
 
@@ -89,8 +92,9 @@ namespace LightHouse.Game.Computer.Cameras
         {
             if (Time.frameCount % resetEachFrames == 0 && IsEnabled)
             {
-                _renderTextureCamera.RenderOnce();
+                //_renderTextureCamera.RenderOnce();
             }
+            //_renderTextureCamera.RenderOnce();
         }
 
         private void UpdateCameraRotationFromKeys(Vector2 moveInputs)

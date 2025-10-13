@@ -50,7 +50,7 @@ namespace LightHouse.Weather
 
         private void Awake()
         {
-            _secondsPerDay = _timeConfig.GetTotalSecondsPerDay();
+            _secondsPerDay = _timeConfig.RealSecondsPerGameDay;
         }
 
         private void Start()

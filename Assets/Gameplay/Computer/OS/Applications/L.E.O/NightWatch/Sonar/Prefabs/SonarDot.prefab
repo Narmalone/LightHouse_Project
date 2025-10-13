@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5621451405552810811}
   - component: {fileID: 4619216509869166040}
   - component: {fileID: -8368954528666264376}
-  - component: {fileID: 2404970925968543350}
+  - component: {fileID: 939172832524451632}
   m_Layer: 5
   m_Name: SonarDot
   m_TagString: Untagged
@@ -91,9 +91,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rectTransform: {fileID: 2034307578631087041}
   _dotImage: {fileID: 4619216509869166040}
-  _myButton: {fileID: 2404970925968543350}
+  _myButton: {fileID: 939172832524451632}
   _glowColorKey: 1355
---- !u!114 &2404970925968543350
+--- !u!114 &939172832524451632
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,11 +102,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 7775797933103706615}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a07c97e38ccd3a9458708c8d45dfa244, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e699f6792d6e434e9075149e872c4c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectWhenMultipleClicks: 2
-  normalColor: {r: 1, g: 0.7137255, b: 0.28627452, a: 1}
-  hoverColor: {r: 1, g: 0.4116228, b: 0, a: 1}
-  selectedColor: {r: 1, g: 0.4117647, b: 0, a: 1}
-  _isSelected: 0
+  Graphic: {fileID: 4619216509869166040}
+  EnableHovering: 1
+  NumberOfClickNeededToSelect: 1
+  HoverColor: {r: 1, g: 0.8770216, b: 0.6933962, a: 1}
+  SelectedColor: {r: 0.735849, g: 0.49221253, b: 0.12842648, a: 1}
+  NormalColor: {r: 1, g: 0.7137255, b: 0.28627452, a: 1}
+  DisabledColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
+  DisableColorChanges: 1

@@ -40,6 +40,9 @@ namespace LightHouse.Game.Computer.LEO
         protected override void Awake()
         {
             base.Awake();
+            _windows = GetComponentsInChildren<LEOWindow>();
+            _windowsButton = GetComponentsInChildren<LEOWindowButton>();
+
             _windowMap = new Dictionary<ELEOWindow, LEOWindow>();
             _nightWatchController.SendMailRequested += NightWatchController_SendMailRequested;
             _weatherController.SendMailRequested += WeatherController_SendMailRequested;
@@ -48,6 +51,11 @@ namespace LightHouse.Game.Computer.LEO
             foreach(var btn in _windows)
             {
                 btn.CloseButton.onClick.AddListener(OnCloseCliqued);
+            }
+
+            foreach (var windowButton in _windowsButton)
+            {
+                windowButton.App = this;
             }
         }
 
@@ -99,14 +107,7 @@ namespace LightHouse.Game.Computer.LEO
 
         private void OnValidate()
         {
-            _windows = GetComponentsInChildren<LEOWindow>();
-            _windowsButton = GetComponentsInChildren<LEOWindowButton>();
-
-
-            foreach (var windowButton in _windowsButton)
-            {
-                windowButton.App = this;
-            }
+            
         }
 
         public void ShowWindow(ELEOWindow type)

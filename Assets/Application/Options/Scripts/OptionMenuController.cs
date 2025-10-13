@@ -1,4 +1,5 @@
-﻿using LightHouse.KinematicCharacterController;
+﻿using LightHouse.Handlers;
+using LightHouse.KinematicCharacterController;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,11 +67,6 @@ namespace LightHouse.Game.Options
             }
         }
 
-        private void OnValidate()
-        {
-            _optionNavigationButtons = GetComponentsInChildren<OptionsNavigationButton>().ToList();
-        }
-
         private void OnDestroy()
         {
             UnsubscribeFromEvents();
@@ -80,9 +76,7 @@ namespace LightHouse.Game.Options
 
         public void Enable()
         {
-            Player.ForceChangePlayerState.Invoke(PlayerState.CameraMode);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            Player.ForceChangePlayerState.Invoke(PlayerState.Options);
             IsEnabled = true;
             _optionCanvasGroup.interactable = true;
             _optionCanvasGroup.alpha = 1.0f;
@@ -91,9 +85,13 @@ namespace LightHouse.Game.Options
 
         public void Disable()
         {
-            Player.ForceChangePlayerState.Invoke(PlayerState.Normal);
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            if(PlayerHandlerData.MainPlayer != null)
+            {
+                if (PlayerHandlerData.MainPlayer.PlayerState == PlayerState.ComputerMode)
+                    Player.ForceChangePlayerState?.Invoke(PlayerState.ComputerMode);
+                else
+                    PlayerHandlerData.MainPlayer.RevertToPreviousState();
+            }
             IsEnabled = false;
             _optionCanvasGroup.interactable = false;
             _optionCanvasGroup.alpha = 0.0f;
@@ -133,17 +131,11 @@ namespace LightHouse.Game.Options
 
         private void SubscribeToEvents()
         {
-            LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
-            //MonitorSetting.OnDisplayScreenChanged += OnDisplayScreenChanged;
-            DisplaySettingManager.OnDisplayChanged += RefreshDisplayOptionsUI;
+
         }
 
         private void UnsubscribeFromEvents()
         {
-            LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
-            //MonitorSetting.OnDisplayScreenChanged -= OnDisplayScreenChanged;
-            DisplaySettingManager.OnDisplayChanged -= RefreshDisplayOptionsUI;
-
             _applySettingsButton.onClick.RemoveListener(OnApplySettingsClicked);
             _backButton.onClick.RemoveListener(OnBackButtonClicked);
 
@@ -156,12 +148,6 @@ namespace LightHouse.Game.Options
         #endregion
 
         #region UI Updates
-
-        private void RefreshDisplayOptionsUI()
-        {
-            //_displayOptionsWindow.RefreshOnlyUI();
-        }
-
         private void HideAllPanels()
         {
             foreach (var panelData in _panelsByCategory.Values)
