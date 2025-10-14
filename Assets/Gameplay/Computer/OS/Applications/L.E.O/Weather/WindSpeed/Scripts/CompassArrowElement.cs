@@ -85,7 +85,7 @@ namespace LightHouse.Game.Computer.LEO.Weather.Wind
                 _button.Select();
 
             if (_cardinalText != null)
-                _cardinalText.color = (_button != null) ? _button.selectedColor : Color.white;
+                _cardinalText.color = (_button != null) ? _button.SelectedColor : Color.white;
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace LightHouse.Game.Computer.LEO.Weather.Wind
         public void OnDeselect()
         {
             if (_button != null)
-                _button.Deselect();
+                _button.Unselect();
 
             if (_cardinalText != null)
                 _cardinalText.color = Color.white;

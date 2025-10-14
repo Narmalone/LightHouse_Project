@@ -32,15 +32,15 @@ namespace LightHouse.Game.Computer.LEO.Mails
 
         private void Awake()
         {
-            _customButton.OnDoubleClick += OnDoubleCliqued;
+            _customButton.OnClick += OnDoubleCliqued;
         }
 
         private void OnDestroy()
         {
-            _customButton.OnDoubleClick -= OnDoubleCliqued;
+            _customButton.OnClick -= OnDoubleCliqued;
         }
 
-        private void OnDoubleCliqued()
+        private void OnDoubleCliqued(UI_CustomButton _)
         {
             SetState(E_MailState.Read);
             OpenMailCliqued?.Invoke(_datas);
@@ -84,9 +84,9 @@ namespace LightHouse.Game.Computer.LEO.Mails
             SetIcon(_readSprite);
             _state = E_MailState.Read;
             _background.color = _readColor;
-            _customButton.hoverColor = new Color(_readColor.r * 0.5f, _readColor.g * 0.5f, _readColor.b * 0.5f, 1.0f);
-            _customButton.normalColor = _readColor;
-            _customButton.selectedColor = new Color(_readColor.r * 0.8f, _readColor.g * 0.8f, _readColor.b * 0.8f, 1.0f);
+            _customButton.HoverColor = new Color(_readColor.r * 0.5f, _readColor.g * 0.5f, _readColor.b * 0.5f, 1.0f);
+            _customButton.NormalColor = _readColor;
+            _customButton.SelectedColor = new Color(_readColor.r * 0.8f, _readColor.g * 0.8f, _readColor.b * 0.8f, 1.0f);
         }
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.VFX;
 using UnityEngine.Rendering.HighDefinition;
+using LightHouse.Handlers;
 
 [ExecuteInEditMode]
 public class RainController : MonoBehaviour
@@ -18,6 +19,30 @@ public class RainController : MonoBehaviour
     #endregion
 
     //==============================================================
+    #region ► Pluie (intensité, vitesses, turbulence)
+    //==============================================================
+    [Header("Rain Settings")]
+    public float RainMaxIntensity = 100000f;     // Cap du spawn VFX
+    [Range(0, 1)] public float RainIntensity = 0f; // 0..1 (piloté par météo)
+
+    [Tooltip("Vitesse verticale min/max des gouttes (sans vent)")]
+    public Vector3 RainMinVelocity = new Vector3(0, -24, 0);
+    public Vector3 RainMaxVelocity = new Vector3(0, -30, 0);
+
+    [Header("Humidity → Rain mapping (%RH)")]
+    [Range(0, 100)] public float HumidityRainStart = 70f;
+    [Range(0, 100)] public float HumidityRainFull = 95f;
+    [Range(1f, 4f)] public float DelugeGamma = 2.5f;
+    public float DelugeBoost = 3f;
+    [Range(0, 100)] public float DelugeHumidity = 98f;
+
+    [Header("Storm tuning")]
+    public float VelocityBoostAtMax = 1.5f;
+    public float TurbulenceBase = 0.5f;
+    public float TurbulenceAtMax = 4f;
+    #endregion
+
+
     #region ► Follow / Placement (verrouillage en Y)
     //==============================================================
     [Header("Follow (VFX position)")]
@@ -53,30 +78,6 @@ public class RainController : MonoBehaviour
     [Range(0f, 60f)] public float MaxPitchDeg = 25f;
     public float YawSmoothTime = 0.15f;
     public float PitchSmoothTime = 0.20f;
-    #endregion
-
-    //==============================================================
-    #region ► Pluie (intensité, vitesses, turbulence)
-    //==============================================================
-    [Header("Rain Settings")]
-    public float RainMaxIntensity = 100000f;     // Cap du spawn VFX
-    [Range(0, 1)] public float RainIntensity = 0f; // 0..1 (piloté par météo)
-
-    [Tooltip("Vitesse verticale min/max des gouttes (sans vent)")]
-    public Vector3 RainMinVelocity = new Vector3(0, -24, 0);
-    public Vector3 RainMaxVelocity = new Vector3(0, -30, 0);
-
-    [Header("Humidity → Rain mapping (%RH)")]
-    [Range(0, 100)] public float HumidityRainStart = 70f;
-    [Range(0, 100)] public float HumidityRainFull = 95f;
-    [Range(1f, 4f)] public float DelugeGamma = 2.5f;
-    public float DelugeBoost = 3f;
-    [Range(0, 100)] public float DelugeHumidity = 98f;
-
-    [Header("Storm tuning")]
-    public float VelocityBoostAtMax = 1.5f;
-    public float TurbulenceBase = 0.5f;
-    public float TurbulenceAtMax = 4f;
     #endregion
 
     //==============================================================
@@ -124,6 +125,47 @@ public class RainController : MonoBehaviour
     //==============================================================
     [Header("Audio")]
     public AudioMixer mixer; // exposer un paramètre "RainVolume" dans le mixer
+
+    [Header("Audio Sources (loops)")]
+    public AudioSource loopLight;
+    public AudioSource loopMedium;
+    public AudioSource loopHeavy;
+    public AudioSource loopWind;
+
+    // Courbes designer → 0..1 (RainIntensity) -> 0..1 (linéaire avant conversion dB)
+    [Header("Curves (intensity → layer)")]
+    public AnimationCurve volLight = AnimationCurve.Linear(0, 0, 0.4f, 1);
+    public AnimationCurve volMedium = AnimationCurve.Linear(0.2f, 0, 0.8f, 1);
+    public AnimationCurve volHeavy = AnimationCurve.Linear(0.6f, 0, 1f, 1);
+
+    // LPF & Reverb (0..1 → Hz / dB)
+    [Header("FX Curves")]
+    public AnimationCurve lpfCurve = new AnimationCurve(
+        new Keyframe(0f, 12000f), new Keyframe(1f, 1800f)
+    );
+    public AnimationCurve reverbCurve = new AnimationCurve(
+        new Keyframe(0f, -30f), new Keyframe(1f, 0f)
+    );
+
+    // Vent → bruit
+    [Header("Wind Noise")]
+    public AnimationCurve windVolFromSpeed = new AnimationCurve(
+        new Keyframe(0f, 0f), new Keyframe(10f, 1f), new Keyframe(25f, 1.2f)
+    );
+    [Range(0f, 1f)] public float windWetFactor = 0.7f; // pondère par la pluie
+
+    // Occlusion/Indoor
+    [Header("Occlusion (roof check)")]
+    public LayerMask skyBlockerMask;
+    public float occlusionLPFMultiplier = 0.6f;  // 60% cutoff si occlus
+    public float occlusionReverbDb = -10f;       // moins de reverb sous abri
+
+    // Smoothing
+    [Header("Smoothing")]
+    [Range(0f, 0.5f)] public float volSmooth = 0.08f;
+    float _vL, _vM, _vH, _vWind;
+    float _dL, _dM, _dH, _dWind;
+
     #endregion
 
     //==============================================================
@@ -164,6 +206,7 @@ public class RainController : MonoBehaviour
     //==============================================================
     static float Linear01ToDb(float v01) => (v01 <= 0.0001f) ? -80f : 20f * Mathf.Log10(Mathf.Clamp01(v01));
     static float Smooth01(float t) { t = Mathf.Clamp01(t); return t * t * (3f - 2f * t); }
+    static float ClampHz(float hz) => Mathf.Clamp(hz, 20f, 22000f);
 
     float MapHumidityToRain01(float humidityPercent)
     {
@@ -234,7 +277,12 @@ public class RainController : MonoBehaviour
     #region ► Unity lifecycle
     //==============================================================
     void Awake() { _vfxRunning = false; }
-    void Start() { RainIntensity = 0f; SafeEnablePass(false); }
+    void Start() 
+    {
+        RainIntensity = 0f; SafeEnablePass(false);
+        if (PlayerHandlerData.MainPlayer != null)
+            YFollowTarget = PlayerHandlerData.MainPlayer.Character.transform;
+    }
 
     void Update()
     {
@@ -316,10 +364,92 @@ public class RainController : MonoBehaviour
 
     void DriveAudio()
     {
-        if (!mixer) return;
-        float vol01 = _vfxRunning ? RainIntensity : 0f;
-        mixer.SetFloat("RainVolume", Linear01ToDb(vol01));
+        if (!Application.isPlaying) return;
+        float t = Mathf.Clamp01(RainIntensity);
+
+        // Fallback si curves nulles / vides
+        float Eval(AnimationCurve c, float x, float def = 0f)
+            => (c != null && c.keys != null && c.keys.Length > 0) ? c.Evaluate(x) : def;
+
+        float light01 = Mathf.Clamp01(Eval(volLight, t));
+        float med01 = Mathf.Clamp01(Eval(volMedium, t));
+        float heavy01 = Mathf.Clamp01(Eval(volHeavy, t));
+
+        // Soft cap optionnel (ex: 1.2) pour garder un peu d'énergie
+        float sum = light01 + med01 + heavy01;
+        float cap = 1.0f; // passe à 1.2f si tu préfères
+        if (sum > cap) { float k = cap / sum; light01 *= k; med01 *= k; heavy01 *= k; }
+
+        _vL = (volSmooth > 0f) ? Mathf.SmoothDamp(_vL, light01, ref _dL, volSmooth) : light01;
+        _vM = (volSmooth > 0f) ? Mathf.SmoothDamp(_vM, med01, ref _dM, volSmooth) : med01;
+        _vH = (volSmooth > 0f) ? Mathf.SmoothDamp(_vH, heavy01, ref _dH, volSmooth) : heavy01;
+
+        float windBase01 = Mathf.Max(0f, Eval(windVolFromSpeed, WindSpeed));
+        float wind01 = Mathf.Clamp01(windBase01 * Mathf.Lerp(0.2f, 1f, t * windWetFactor));
+        _vWind = (volSmooth > 0f) ? Mathf.SmoothDamp(_vWind, wind01, ref _dWind, volSmooth) : wind01;
+
+        // Occlusion (tu peux ne le faire que toutes les N frames)
+        bool occluded = IsOccluded();
+        Debug.Log(occluded);
+        float lpf = ClampHz(Eval(lpfCurve, t, 12000f) * (occluded ? occlusionLPFMultiplier : 1f));
+        float reverbDb = Eval(reverbCurve, t, -24f) + (occluded ? occlusionReverbDb : 0f);
+
+        if (mixer)
+        {
+            if (_vL <= 0f) _vL = 0f;
+            if (_vM <= 0f) _vM = 0f;
+            if (_vH <= 0f) _vH = 0f;
+            if (_vWind <= 0f) _vWind = 0f;
+            mixer.SetFloat("Rain_Light", Linear01ToDb(_vL));
+            mixer.SetFloat("Rain_Med", Linear01ToDb(_vM));
+            mixer.SetFloat("Rain_Heavy", Linear01ToDb(_vH));
+            mixer.SetFloat("Rain_Wind", Linear01ToDb(_vWind));
+            mixer.SetFloat("Rain_LPF_Cutoff", lpf);
+        }
+
+        ManageLoop(loopLight, _vL);
+        ManageLoop(loopMedium, _vM);
+        ManageLoop(loopHeavy, _vH);
+        ManageLoop(loopWind, _vWind);
     }
+
+    // Exemple : ScaleRainCutoff(0.1f); // divise par 10
+    public void ScaleRainCutoff(float factor)
+    {
+        if (!mixer) return;
+        if (mixer.GetFloat("Rain_LPF_Cutoff", out float hz))
+        {
+            float newHz = Mathf.Clamp(hz * factor, 20f, 22000f);
+            mixer.SetFloat("Rain_LPF_Cutoff", newHz);
+        }
+    }
+
+    bool IsOccluded()
+    {
+        if (!YFollowTarget) return false;
+        Vector3 origin = YFollowTarget.position + Vector3.up * 0.1f;
+        // Ray haut jusqu’à “loin”
+        return Physics.Raycast(origin, Vector3.up, 100f, skyBlockerMask, QueryTriggerInteraction.Ignore);
+    }
+
+    void ManageLoop(AudioSource src, float v01)
+    {
+        if (!src) return;
+        if (v01 > 0.01f)
+        {
+            if (!src.isPlaying) src.Play();
+            src.volume = Mathf.Clamp01(v01); // garde volume local modeste, le gros mix se fait dans le mixer
+        }
+        else if (src.isPlaying)
+        {
+            src.Stop();
+        }
+        else
+        {
+            src.Stop();
+        }
+    }
+
 
     void SafeEnablePass(bool enable)
     {

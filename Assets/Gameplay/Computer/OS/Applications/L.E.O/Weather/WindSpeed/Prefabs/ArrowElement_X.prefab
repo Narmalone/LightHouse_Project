@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _windOrientation: 0
-  _button: {fileID: 6752299227775405667}
+  _button: {fileID: 7317822311390221258}
   _cardinalText: {fileID: 8031310561310699226}
 --- !u!1 &8477591142073016844
 GameObject:
@@ -64,7 +64,7 @@ GameObject:
   - component: {fileID: 6102614837190355906}
   - component: {fileID: 3788306805120190207}
   - component: {fileID: 5729513538740080080}
-  - component: {fileID: 6752299227775405667}
+  - component: {fileID: 7317822311390221258}
   m_Layer: 0
   m_Name: CompassArrow
   m_TagString: Untagged
@@ -129,7 +129,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6752299227775405667
+--- !u!114 &7317822311390221258
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -138,14 +138,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8477591142073016844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a07c97e38ccd3a9458708c8d45dfa244, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e699f6792d6e434e9075149e872c4c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectWhenMultipleClicks: 2
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  selectedColor: {r: 1, g: 0.73324853, b: 0, a: 1}
-  _isSelected: 0
+  Graphic: {fileID: 5729513538740080080}
+  EnableHovering: 1
+  NumberOfClickNeededToSelect: 2
+  HoverColor: {r: 1, g: 1, b: 1, a: 1}
+  SelectedColor: {r: 1, g: 0.73333335, b: 0, a: 1}
+  NormalColor: {r: 1, g: 1, b: 1, a: 1}
+  DisabledColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
+  DisableColorChanges: 0
 --- !u!1001 &5931296021273328752
 PrefabInstance:
   m_ObjectHideFlags: 0

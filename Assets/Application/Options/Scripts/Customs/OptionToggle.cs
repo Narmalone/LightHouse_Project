@@ -4,10 +4,10 @@ using UnityEngine;
 public class OptionToggle : MonoBehaviour
 {
     public bool isOn = false;
-    [SerializeField] private ShortcutButton EnableButton;
-    [SerializeField] private ShortcutButton DisableButton;
+    [SerializeField] private UI_CustomButton EnableButton;
+    [SerializeField] private UI_CustomButton DisableButton;
 
-    private ShortcutButton _currentSelected;
+    private UI_CustomButton _currentSelected;
 
     public event Action<bool> OnValueChanged;
 
@@ -17,7 +17,7 @@ public class OptionToggle : MonoBehaviour
         DisableButton.OnClick += OnDisableCliqued;
     }
 
-    private void OnDisableCliqued(ShortcutButton btn)
+    private void OnDisableCliqued(UI_CustomButton btn)
     {
         isOn = false;
         OnValueChanged?.Invoke(false);
@@ -25,14 +25,14 @@ public class OptionToggle : MonoBehaviour
         
     }
 
-    private void OnEnableCliqued(ShortcutButton btn)
+    private void OnEnableCliqued(UI_CustomButton btn)
     {
         isOn = true;
         SwitchSelected(btn);
         OnValueChanged?.Invoke(true);
     }
 
-    public void SwitchSelected(ShortcutButton target)
+    public void SwitchSelected(UI_CustomButton target)
     {
         if (_currentSelected != null)
             _currentSelected.Unselect();

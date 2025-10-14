@@ -69,8 +69,12 @@ namespace LightHouse.KinematicCharacterController
 
             ForceChangePlayerState += PlayerChangeState;
 
-            _inputActions = new PlayerInputActions();
-            _inputActions.Enable();
+            if (!InputManager.IsInitialized)
+            {
+                _inputActions = new PlayerInputActions();
+                _inputActions.Enable();
+                InputManager.SetPlayerInputActions(_inputActions);
+            }
             _playerCharacter.Initialize();
             _playerCamera.SetFollowTransform(_playerCharacter.GetCameraTarget());
             _cameraSpring.Initialize();
@@ -84,8 +88,8 @@ namespace LightHouse.KinematicCharacterController
             if (EnableDebugMode)
             {
                 PlayerHandlerData.InitializeHandlerData(this);
-                InputManager.SetPlayerInputActions(_inputActions);
-                InputManager.InputManagerInitialized();
+                if(!InputManager.IsInitialized)
+                    InputManager.InputManagerInitialized();
                 _cameraSpring.enabled = true;
                 _isInitialized = true;
 

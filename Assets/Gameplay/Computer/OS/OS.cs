@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LightHouse.Handlers;
+using LightHouse.Inputs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -41,10 +43,12 @@ namespace LightHouse.Game.Computer.OS
         /// </summary>
         private Dictionary<string, ComputerApp> _openedApps = new();
 
-        public bool PlayerOnComputer = false;
+        public bool PlayerOnComputer { get; set; } = false;
         public ComputerServices Services => _services;
 
         public event Action OnLeftComputerCalled;
+
+        [SerializeField] private AudioCue _clickSoundEffect;
 
         #endregion
 
@@ -58,6 +62,21 @@ namespace LightHouse.Game.Computer.OS
             {
                 shortcut.Initialize(this);
             }
+            InputManager.UI.Click.performed += Click_performed;
+            InputManager.OnInputManagerWillClear += OnInputManagerCleared;
+        }
+
+        private void OnInputManagerCleared()
+        {
+            InputManager.UI.Click.performed -= Click_performed;
+        }
+
+        private void Click_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+        {
+            if (ServiceLocator.Audio != null && _clickSoundEffect != null && 
+                PlayerHandlerData.MainPlayer != null && 
+                PlayerHandlerData.MainPlayer.PlayerState == KinematicCharacterController.PlayerState.ComputerMode)
+                ServiceLocator.Audio.PlayAt(_clickSoundEffect, transform.position);
         }
 
         public void SetService(ComputerServices services)

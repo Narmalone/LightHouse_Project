@@ -9,7 +9,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
     {
         [SerializeField] private RectTransform _rectTransform;
         [SerializeField] private Image _dotImage;
-        [SerializeField] private ShortcutButton _myButton;
+        [SerializeField] private UI_CustomButton _myButton;
 
         private ISonarable _sonarElement;
         public ISonarable SonarElement
@@ -42,7 +42,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
             _myButton.OnClick += OnButtonCliqued;
         }
 
-        private void OnButtonCliqued(ShortcutButton button)
+        private void OnButtonCliqued(UI_CustomButton button)
         {
             SonarDotClicked?.Invoke(_sonarElement.SonarInfo, _dotImage);
         }

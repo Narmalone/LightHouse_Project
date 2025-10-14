@@ -237,6 +237,8 @@ namespace LightHouse.Game.Computer.Calendar
 
         public override void OnClose()
         {
+            if (ServiceLocator.Audio != null && _onCloseSound != null)
+                ServiceLocator.Audio.PlayAt(_onCloseSound, this.transform.position);
             if (OpenMode == AppOpenMode.ReactivateIfExists)
                 gameObject.SetActive(false);
             else
@@ -246,6 +248,9 @@ namespace LightHouse.Game.Computer.Calendar
         public override void OnMinimize() { }
         public override void OnOpen() 
         {
+            if(ServiceLocator.Audio != null && _onOpenSound != null)
+                ServiceLocator.Audio.PlayAt(_onOpenSound, this.transform.position);
+
             ShowDaySummary(_currentShowedDay);
         }
 

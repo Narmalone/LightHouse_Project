@@ -6,20 +6,20 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class ShortcutButtonsManager : MonoBehaviour
 {
-    [field: SerializeField] public List<ShortcutButton> Buttons { get; private set; }
+    [field: SerializeField] public List<UI_CustomButton> Buttons { get; private set; }
 
-    private ShortcutButton _lastCliquedButton;
+    private UI_CustomButton _lastCliquedButton;
 
     private void Awake()
     {
-        Buttons = GetComponentsInChildren<ShortcutButton>().ToList();
+        Buttons = GetComponentsInChildren<UI_CustomButton>().ToList();
         foreach (var button in Buttons)
         {
             button.OnClick += Btn_OnClick;
         }
     }
 
-    public void Register(ShortcutButton btn)
+    public void Register(UI_CustomButton btn)
     {
         if(Buttons.Contains(btn))
         {
@@ -30,14 +30,14 @@ public class ShortcutButtonsManager : MonoBehaviour
         btn.OnClick += Btn_OnClick;
     }
 
-    public void Unregister(ShortcutButton btn)
+    public void Unregister(UI_CustomButton btn)
     {
         
         btn.OnClick -= Btn_OnClick;
         Buttons.Remove(btn);
     }
 
-    private void Btn_OnClick(ShortcutButton cliquedBtn)
+    private void Btn_OnClick(UI_CustomButton cliquedBtn)
     {
         SwitchSelectedButton(cliquedBtn);
     }
@@ -46,7 +46,7 @@ public class ShortcutButtonsManager : MonoBehaviour
     /// The button you want to be selected
     /// </summary>
     /// <param name="selectButton"> if "null" it just unselect the last, or put the ref of the shortcut button you want to select </param>
-    public void SwitchSelectedButton(ShortcutButton selectButton)
+    public void SwitchSelectedButton(UI_CustomButton selectButton)
     {
         if (_lastCliquedButton != null)
             _lastCliquedButton.Unselect();

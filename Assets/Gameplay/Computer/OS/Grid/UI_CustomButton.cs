@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ShortcutButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public class UI_CustomButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("UI")]
     public Image Graphic;
@@ -23,7 +23,7 @@ public class ShortcutButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public bool IsHover { get; private set; }
     public bool IsDisabled { get; private set; }
 
-    public event Action<ShortcutButton> OnClick;
+    public event Action<UI_CustomButton> OnClick;
 
     public void OnPointerClick(PointerEventData eventData)
     {

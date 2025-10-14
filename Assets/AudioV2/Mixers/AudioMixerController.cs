@@ -34,13 +34,14 @@ public class AudioVolumeSlider : MonoBehaviour
         if (string.IsNullOrEmpty(prefsKey)) prefsKey = exposedParameter;
 
         if (loadOnStart) Load();
-        else
-        {
-            slider.SetValueWithoutNotify(0.1f);
-            Apply(0.1f);
-            _sliderValueText.text = Mathf.RoundToInt((0.1f * 100)).ToString() + "%";
-        }
         if (slider) slider.onValueChanged.AddListener(OnSliderChanged);
+    }
+
+    private void Start()
+    {
+        slider.SetValueWithoutNotify(0.1f);
+        Apply(0.1f);
+        _sliderValueText.text = Mathf.RoundToInt((0.1f * 100)).ToString() + "%";
     }
 
     void OnDestroy()

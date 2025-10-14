@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 5206970853713291955}
   - component: {fileID: 3832415143365369062}
   - component: {fileID: 9094574451596385461}
-  - component: {fileID: 2766167043095959018}
+  - component: {fileID: 3407315134608412707}
   m_Layer: 0
   m_Name: MailElement
   m_TagString: Untagged
@@ -213,13 +213,13 @@ MonoBehaviour:
   _unreadSprite: {fileID: 21300000, guid: fb12ecc8fc18f694ab34a2879a45ede7, type: 3}
   _readSprite: {fileID: 21300000, guid: e5aae705c3ece044eb338e2f3ccb544c, type: 3}
   _background: {fileID: 3832415143365369062}
-  _customButton: {fileID: 2766167043095959018}
+  _customButton: {fileID: 3407315134608412707}
   _expeditorText: {fileID: 8023790496549650077}
   _objectText: {fileID: 8683578644136703399}
   _arrivalDateText: {fileID: 2280591498872409424}
   _unreadColor: {r: 0.52156866, g: 0.36862746, b: 0.14901961, a: 1}
   _readColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
---- !u!114 &2766167043095959018
+--- !u!114 &3407315134608412707
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -228,15 +228,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 3575727745083044342}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a07c97e38ccd3a9458708c8d45dfa244, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e699f6792d6e434e9075149e872c4c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectWhenMultipleClicks: 2
-  normalColor: {r: 0.52156866, g: 0.36862746, b: 0.14901961, a: 1}
-  hoverColor: {r: 0.7735849, g: 0.54439014, b: 0.21529014, a: 1}
-  selectedColor: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
-  _image: {fileID: 3832415143365369062}
-  _isSelected: 0
+  Graphic: {fileID: 3832415143365369062}
+  EnableHovering: 1
+  NumberOfClickNeededToSelect: 2
+  HoverColor: {r: 0.77254903, g: 0.54509807, b: 0.21568628, a: 1}
+  SelectedColor: {r: 0.77254903, g: 0.54509807, b: 0.21568628, a: 1}
+  NormalColor: {r: 0.52156866, g: 0.36862746, b: 0.14901961, a: 1}
+  DisabledColor: {r: 0.4627451, g: 0.4627451, b: 0.4627451, a: 1}
+  DisableColorChanges: 0
 --- !u!1 &8942822476427253371
 GameObject:
   m_ObjectHideFlags: 0

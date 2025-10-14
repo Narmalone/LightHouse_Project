@@ -14,8 +14,8 @@ namespace LightHouse.Game.Computer.OS
         [SerializeField] private ComputerApp _prefab;
         [SerializeField] private bool _allowMultipleInstance = true;
 
-        [Header("UI Elements")]
-        [SerializeField] private ShortcutButton _shortCutButton;
+        [Header("UI")]
+        [SerializeField] private UI_CustomButton _shortCutButton;
 
         #endregion
 
@@ -46,14 +46,14 @@ namespace LightHouse.Game.Computer.OS
         protected virtual void OnValidate()
         {
             if (_shortCutButton == null)
-                _shortCutButton = GetComponent<ShortcutButton>();
+                _shortCutButton = GetComponent<UI_CustomButton>();
         }
 
         #endregion
 
         #region Core Logic
 
-        private void OnDoubleClicked(ShortcutButton btn)
+        private void OnDoubleClicked(UI_CustomButton btn)
         {
             OnExecute();
         }

@@ -37,6 +37,10 @@ namespace LightHouse.Game.Computer.OS
         [SerializeField] private Button _closeButton;
         [SerializeField] private RectTransform _rectTransform;
 
+        [Header("Audio")]
+        [SerializeField] protected AudioCue _onOpenSound;
+        [SerializeField] protected AudioCue _onCloseSound;
+
         [field: SerializeField] public string AppName { get; protected set; }
         [field: SerializeField] public AppOpenMode OpenMode { get; private set; } = AppOpenMode.InstantiateNew;
 

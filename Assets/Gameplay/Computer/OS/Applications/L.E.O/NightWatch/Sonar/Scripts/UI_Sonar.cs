@@ -42,8 +42,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
         [SerializeField] private float _pingMaxSize = 500f;
 
         [Header("Son")]
-        [SerializeField] private AudioSource _sonarPingAudioSource;
-        [SerializeField] private EffectAudio _sonarPingClip;
+        [SerializeField] private AudioCue _sonarScanAudio;
+        [SerializeField] private AudioCue _sonarClickAudio;
 
         #endregion
 
@@ -60,12 +60,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private void Awake()
         {
-            if (_sonarPingClip != null && _sonarPingClip.clips != null && _sonarPingClip.clips.Length > 0)
-            {
-                _sonarPingAudioSource.clip = _sonarPingClip.clips[0];
-                _sonarPingAudioSource.spatialBlend = _sonarPingClip._spatialBlend;
-                _sonarPingAudioSource.volume = _sonarPingClip.volume;
-            }
             _selectedDotLinkImage.gameObject.SetActive(false);
         }
 
@@ -180,6 +174,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
             if(!_selectedDotLinkImage.gameObject.activeInHierarchy)
                 _selectedDotLinkImage.gameObject.SetActive(true);
 
+            if (ServiceLocator.Audio != null && _sonarScanAudio != null)
+                ServiceLocator.Audio.PlayAt(_sonarClickAudio, this.transform.position);
+
             _selectedDotLinkPivot.anchoredPosition = dotImg.rectTransform.anchoredPosition + Vector2.down * 20f;
 
             CalculateRotation();
@@ -229,7 +226,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
             if (_sonarPingImage == null) yield break;
 
             _sonarPingImage.gameObject.SetActive(true);
-            _sonarPingAudioSource?.Play();
+
+            if (ServiceLocator.Audio != null && _sonarScanAudio != null)
+                ServiceLocator.Audio.PlayAt(_sonarScanAudio, this.transform.position);
 
             Color c0 = _sonarPingImage.color; c0.a = 0.4f;
             _sonarPingImage.color = c0;
