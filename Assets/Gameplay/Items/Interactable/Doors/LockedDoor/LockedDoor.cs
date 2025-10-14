@@ -28,10 +28,10 @@ namespace LightHouse.Items.Interactable
         [SerializeField] protected AnimationCurve _closeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         [Header(" --- SOUND EFFECTS --- ")]
-        [SerializeField] private EffectsAudioName _openEffect = EffectsAudioName.Effect_OpenFrontDoor;
-        [SerializeField] private EffectsAudioName _closeEffect = EffectsAudioName.Effect_CloseFrontDoor;
-        [SerializeField] private EffectsAudioName _lockedEffect = EffectsAudioName.Effect_LockedDoor;
-        [SerializeField] private EffectsAudioName _unlockEffect = EffectsAudioName.Effect_UnlockDoor;
+        [SerializeField] private AudioCue _openDoor;
+        [SerializeField] private AudioCue _closeDoor;
+        [SerializeField] private AudioCue _lockedDoor;
+        [SerializeField] private AudioCue _unlockDoor;
 
         [Header("Debug")]
         [SerializeField] protected bool _isUnLocked = false;
@@ -92,8 +92,8 @@ namespace LightHouse.Items.Interactable
         protected override void Usable_OnItemUsed()
         {
             base.Usable_OnItemUsed();
-            if (!_isUnLocked)
-                AudioHandlerData.AudioManager.PlayRandomEffect(this.transform, _unlockEffect);
+            if (!_isUnLocked && ServiceLocator.Audio != null && _unlockDoor != null)
+                ServiceLocator.Audio.PlayAt(_unlockDoor, this.transform.position);
             _isUnLocked = true;
             CanBeInteracted = true;
             if (IsItemRaycasted)
@@ -165,8 +165,8 @@ namespace LightHouse.Items.Interactable
         {
             if (!_isUnLocked)
             {
-                if (AudioHandlerData.AudioManager != null)
-                    AudioHandlerData.AudioManager.PlayRandomEffect(this.transform, _lockedEffect);
+                if (ServiceLocator.Audio != null && _lockedDoor != null)
+                    ServiceLocator.Audio.PlayAt(_lockedDoor, this.transform.position);
                 return;
             }
             if (_isOpen)
@@ -214,17 +214,25 @@ namespace LightHouse.Items.Interactable
                 _openRotation = _closedRotation * Quaternion.Euler(-_openRotationAngles);
             _isOpen = true;
             _currentCurve = _openCurve;
-            _rotationDuration = AudioHandlerData.AudioManager.GetEffectLength(_openEffect);
-            AudioHandlerData.AudioManager.PlayRandomEffect(this.transform, _openEffect);
 
+            _rotationDuration = 3.5f;
+            if (ServiceLocator.Audio != null && _openDoor != null)
+            {
+                IAudioHandle selectedAudio = ServiceLocator.Audio.PlayAt(_openDoor, this.transform.position);
+                _rotationDuration = selectedAudio.SelectedClip.length;
+            }
             OnDoorInteracted();
         }
 
         public void Close()
         {
             _currentCurve = _closeCurve;
-            _rotationDuration = AudioHandlerData.AudioManager.GetEffectLength(_closeEffect);
-            AudioHandlerData.AudioManager.PlayRandomEffect(this.transform, _closeEffect);
+            _rotationDuration = 3.5f;
+            if (ServiceLocator.Audio != null && _closeDoor != null)
+            {
+                IAudioHandle selectedAudio = ServiceLocator.Audio.PlayAt(_closeDoor, this.transform.position);
+                _rotationDuration = selectedAudio.SelectedClip.length;
+            }
             _isOpen = false;
             OnDoorInteracted();
         }

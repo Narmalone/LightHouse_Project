@@ -42,6 +42,10 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private InventoryUIController _inventoryUiController;
         [SerializeField] private CanvasInteraction _interactionUiController;
 
+        [Header("AUDIO")]
+        [SerializeField] private AudioCue _basePickupSound;
+        [SerializeField] private AudioCue _baseDropSound;
+
         public RaycastDetector<IInventoryItem> RaycastDetector => _inventoryRaycastDetector;
         #endregion
 
@@ -73,7 +77,7 @@ namespace LightHouse.KinematicCharacterController
         {
             if (!_isInitialized) return;
             if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
-                AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen);
+                AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen, soundToPlay: _basePickupSound);
 
             if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
                 return;
@@ -205,9 +209,10 @@ namespace LightHouse.KinematicCharacterController
 
         #region ADD / REMOVE ITEM 
 
-        public void AddItemToInventory(short slotIndex, IInventoryItem item)
+        public void AddItemToInventory(short slotIndex, IInventoryItem item, bool playSound = true, AudioCue soundToPlay = null)
         {
-            if(_pickupHandler.PickupItem(slotIndex, item))
+            if (playSound && soundToPlay == null) soundToPlay = _basePickupSound;
+            if (_pickupHandler.PickupItem(slotIndex, item, playSound, soundToPlay))
             {
                 item.ForceDropItemFromInventory += IInventoryItem_ForceDropItemFromInventory;
                 InventoryHandlerData.NotifyAddedToInventory(item);
@@ -286,7 +291,7 @@ namespace LightHouse.KinematicCharacterController
                     _dropHandler.CancelDrop();
                 return;
             }
-            _dropHandler.HandleDropInput();
+            _dropHandler.HandleDropInput(soundToPlay: _baseDropSound);
         }
         #endregion
 

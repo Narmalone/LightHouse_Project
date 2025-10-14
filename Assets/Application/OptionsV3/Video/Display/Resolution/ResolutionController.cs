@@ -138,7 +138,7 @@ namespace LightHouse.Options.V3
             FillDropdownLabels();
             SelectInDropdown(toSelect);
 
-            Debug.Log($"[ResolutionController] RebuildForCurrentMonitor → {toSelect.x}x{toSelect.y}  (highest={selectHighest})");
+            //Debug.Log($"[ResolutionController] RebuildForCurrentMonitor → {toSelect.x}x{toSelect.y}  (highest={selectHighest})");
         }
 
         // --- Internes: build / UI ---

@@ -14,7 +14,7 @@ namespace LightHouse.Audio
             {
                 audio.Register();
             }
-            AudioHandlerData.Initialize(this);
+            //AudioHandlerData.Initialize(this);
         }
 
         private void Start()
@@ -28,7 +28,7 @@ namespace LightHouse.Audio
             {
                 audio.Unregister();
             }
-            AudioHandlerData.Clear();
+            //AudioHandlerData.Clear();
         }
 
         private AudioSource PlayClip(AudioClip clip, Transform parent, float volume, bool loop, float spatialBlend, float pitch = 1.0f)

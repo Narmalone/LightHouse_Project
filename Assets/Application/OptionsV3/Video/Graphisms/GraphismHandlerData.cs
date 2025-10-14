@@ -32,6 +32,6 @@ public static class GraphismHandlerData
         CurrentPreset = preset;
 
         OnPresetApplied?.Invoke(tier, preset);
-        Debug.Log($"[GraphismHandlerData] Preset '{preset.name}' appliqué → Tier={tier} | Quality={QualitySettings.names[QualitySettings.GetQualityLevel()]}");
+        //Debug.Log($"[GraphismHandlerData] Preset '{preset.name}' appliqué → Tier={tier} | Quality={QualitySettings.names[QualitySettings.GetQualityLevel()]}");
     }
 }

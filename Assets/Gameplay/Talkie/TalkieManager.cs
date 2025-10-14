@@ -44,7 +44,7 @@ namespace LightHouse.Game.Talkie
             while (_dialogueQueue.Count > 0)
             {
                 LocalizedDialogueAudio dialogue = _dialogueQueue.Dequeue();
-                AudioHandlerData.AudioManager.PlayDialogueAt(_audioSource, dialogue);
+                //AudioHandlerData.AudioManager.PlayDialogueAt(_audioSource, dialogue);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_radioTMP.rectTransform.parent as RectTransform);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_radioTMP.rectTransform);
                 yield return DisplayRadioText(dialogue.CurrentSubtitleText, dialogue.GetDisplayDuration(), dialogue.CharDelay);
@@ -103,14 +103,14 @@ namespace LightHouse.Game.Talkie
 
         public void Enqueue(DialogueAudioName dialogueId)
         {
-            LocalizedDialogueAudio dialogue = AudioHandlerData.AudioManager.AudioDatabase.GetDialogue(dialogueId);
-            if (dialogue == null)
+            //LocalizedDialogueAudio dialogue = AudioHandlerData.AudioManager.AudioDatabase.GetDialogue(dialogueId);
+            /*if (dialogue == null)
             {
                 Debug.LogWarning($"[Talkie] Dialogue '{dialogueId}' introuvable.");
                 return;
             }
 
-            _dialogueQueue.Enqueue(dialogue);
+            _dialogueQueue.Enqueue(dialogue);*/
 
             if (!_isPlaying)
             {

@@ -124,7 +124,7 @@ namespace LightHouse.Options.V3
             FillDropdownLabels();
             SelectInDropdown(toSelectHz);
 
-            Debug.Log($"[RefreshRateController] RebuildForCurrentMonitor → {toSelectHz} Hz (highest={selectHighest})");
+            //Debug.Log($"[RefreshRateController] RebuildForCurrentMonitor → {toSelectHz} Hz (highest={selectHighest})");
         }
 
         // --- Internes: build / UI ---

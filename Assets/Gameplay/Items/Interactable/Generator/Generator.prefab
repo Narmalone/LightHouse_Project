@@ -119,6 +119,8 @@ MonoBehaviour:
   _currentInteractionText: 
   _hasKeyInInventory: 0
   _hasKeyOnHands: 0
+  AutoSubscribeOnSeen: 1
+  AutoUnsubscribeOnItemUsed: 1
   references:
     version: 2
     RefIds: []
@@ -192,7 +194,6 @@ MonoBehaviour:
   _col: {fileID: 1463197520774422393}
   <IsItemRaycasted>k__BackingField: 0
   <CanBeRaycasted>k__BackingField: 1
-  _interactionTexts: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153, type: 2}
   _keys:
   - m_TableReference:
       m_TableCollectionName: GUID:22d168d6a9757aa4e99a019f11c4b9c5
@@ -262,6 +263,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fuelLevel: 0
   _fuelDecrementationSpeed: 1
+  _startGeneratorSound: {fileID: 11400000, guid: 3d76c998d0ca73e42b7b1cfcd76cb737,
+    type: 2}
+  _runningGeneratorSound: {fileID: 11400000, guid: 37109aedd29cc844485356f8d2c99ad8,
+    type: 2}
+  _stopGeneratorSound: {fileID: 11400000, guid: eb0b1a06a8151b74ba7ba2d1178885aa,
+    type: 2}
   _isGeneratorOn: 0
   _generatorSwitch: {fileID: 2628744397068498309}
   _fuelIsRequired: {fileID: 4617469484780032095}

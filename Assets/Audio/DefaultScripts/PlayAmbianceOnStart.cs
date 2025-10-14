@@ -5,11 +5,11 @@ namespace LightHouse.Audio
 {
     public class PlayAmbianceOnStart : MonoBehaviour
     {
-        public AmbianceAudioName Category;
+        /*public AmbianceAudioName Category;
         private void Start()
         {
             AudioHandlerData.AudioManager.PlayAmbiance(this.transform, Category);
 
-        }
+        }*/
     }
 }
