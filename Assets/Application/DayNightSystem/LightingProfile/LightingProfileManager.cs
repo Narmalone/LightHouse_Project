@@ -81,6 +81,22 @@ namespace LightHouse.Game.Rendering
         [SerializeField] private Vector2 _middayToEvening = new Vector2(15f, 18f);
         [SerializeField] private Vector2 _eveningToNight = new Vector2(21f, 23f);
 
+        [Header("External Overrides")]
+        [Range(-5f, 8f)][SerializeField] private float _additionalExposure = 0f;
+        public float AdditionalExposure => _additionalExposure;
+
+        public void SetAdditionalExposure(float ev)
+        {
+            _additionalExposure = Mathf.Clamp(ev, -5f, 8f);
+        }
+
+        public void AddToAdditionalExposure(float delta)
+        {
+            SetAdditionalExposure(_additionalExposure + delta);
+        }
+
+        public void ClearAdditionalExposure() => _additionalExposure = 0f;
+
         [Header("Transition Shapes")]
         [SerializeField] private AnimationCurve _tNightToMorning = AnimationCurve.EaseInOut(0, 0, 1, 1);
         [SerializeField] private AnimationCurve _tMorningToMidday = AnimationCurve.EaseInOut(0, 0, 1, 1);
@@ -444,7 +460,7 @@ namespace LightHouse.Game.Rendering
             // --- Exposure ---
             if (_exposure != null)
             {
-                _exposure.fixedExposure.value = r.Exposure;
+                _exposure.fixedExposure.value = r.Exposure + _additionalExposure;
                 _exposure.compensation.value = r.Compensation;
             }
 

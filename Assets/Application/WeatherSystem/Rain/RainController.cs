@@ -390,7 +390,6 @@ public class RainController : MonoBehaviour
 
         // Occlusion (tu peux ne le faire que toutes les N frames)
         bool occluded = IsOccluded();
-        Debug.Log(occluded);
         float lpf = ClampHz(Eval(lpfCurve, t, 12000f) * (occluded ? occlusionLPFMultiplier : 1f));
         float reverbDb = Eval(reverbCurve, t, -24f) + (occluded ? occlusionReverbDb : 0f);
 
@@ -403,7 +402,7 @@ public class RainController : MonoBehaviour
             mixer.SetFloat("Rain_Light", Linear01ToDb(_vL));
             mixer.SetFloat("Rain_Med", Linear01ToDb(_vM));
             mixer.SetFloat("Rain_Heavy", Linear01ToDb(_vH));
-            mixer.SetFloat("Rain_Wind", Linear01ToDb(_vWind));
+            mixer.SetFloat("Rain_Wind", Linear01ToDb(_vWind * 0.3f));
             mixer.SetFloat("Rain_LPF_Cutoff", lpf);
         }
 
