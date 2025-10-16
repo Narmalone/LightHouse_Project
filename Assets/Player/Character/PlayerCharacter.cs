@@ -1,4 +1,4 @@
-using KinematicCharacterController;
+﻿using KinematicCharacterController;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -93,7 +93,7 @@ namespace LightHouse.KinematicCharacterController
         public Transform MeshRoot;
 
         [Header("Debug")]
-        private float _currentSpeed;
+        [SerializeField] private float _currentSpeed;
         private Vector3 _moveInputVector;
         private Vector3 _lookInputVector;
 
@@ -108,6 +108,7 @@ namespace LightHouse.KinematicCharacterController
         private float _timeSinceLastAbleToJump = 0f;
 
         public float SprintSpeed => _sprintSpeed;
+        public float WalkSpeed => _walkSpeed;
         public float CurrentHeight
         {
             get
@@ -282,57 +283,60 @@ namespace LightHouse.KinematicCharacterController
         {
             _state.AccelerationVelocity = Vector3.zero;
             Vector3 targetMovementVelocity = Vector3.zero;
+
             if (_motor.GroundingStatus.IsStableOnGround)
             {
-                // Reorient source velocity on current ground slope (this is because we don't want our smoothing to cause any velocity losses in slope changes)
+                // Conserver la magnitude tout en réorientant sur la pente actuelle
                 currentVelocity = _motor.GetDirectionTangentToSurface(currentVelocity, _motor.GroundingStatus.GroundNormal) * currentVelocity.magnitude;
 
-                // Calculate target velocity
+                // Direction d’input réorientée sur la pente
                 Vector3 inputRight = Vector3.Cross(_moveInputVector, _motor.CharacterUp);
-                Vector3 reorientedInput = Vector3.Cross(_motor.GroundingStatus.GroundNormal, inputRight).normalized * _moveInputVector.magnitude;
+                float inputMag = _moveInputVector.magnitude; // 0..1 (déjà clampé)
+                Vector3 reorientedInput = Vector3.Cross(_motor.GroundingStatus.GroundNormal, inputRight).normalized * inputMag;
 
-                float targetSpeed = 0f;
+                // Choix de la vitesse "de base" selon l’état
+                float baseSpeed = 0f;
                 float targetSharpness = 25f;
-
-                //Handle the target speed and Sharpness based on Stance and other
                 switch (_state.Stance)
                 {
                     case Stance.Stand:
-                        if (_requestedSprint)
-                        {
-                            targetSpeed = _sprintSpeed;
-                            targetSharpness = _sprintSharpness;
-                        }
-                        else
-                        {
-                            targetSpeed = _walkSpeed;
-                            targetSharpness = _walkSharpness;
-                        }
+                        if (_requestedSprint) { baseSpeed = _sprintSpeed; targetSharpness = _sprintSharpness; }
+                        else { baseSpeed = _walkSpeed; targetSharpness = _walkSharpness; }
                         break;
                     case Stance.Crouch:
-                        targetSpeed = _crouchSpeed;
+                        baseSpeed = _crouchSpeed;
                         targetSharpness = _crouchSharpness;
                         break;
                 }
-                _currentSpeed = targetSpeed;
+
+                // Vitesse cible dépendante de l’intensité d’input
+                float targetSpeed = baseSpeed * inputMag;
+                if (inputMag < 0.01f) targetSpeed = 0f; // petite deadzone
+
                 targetMovementVelocity = reorientedInput * targetSpeed;
 
+                // Accélération instantanée (debug/telemetry)
                 _state.AccelerationVelocity = targetMovementVelocity - currentVelocity;
-                // Smooth movement Velocity
+
+                // Lissage vers la vitesse cible
                 currentVelocity = Vector3.Lerp(currentVelocity, targetMovementVelocity, 1 - Mathf.Exp(-targetSharpness * deltaTime));
+
+                // ⚠️ _currentSpeed n’est plus fixé ici : on lira la vitesse réelle dans AfterCharacterUpdate
             }
-            //In the air...
-            else
+            else // In the air...
             {
-                //if player is moving
-                if (_moveInputVector.sqrMagnitude > 0)
+                // Mouvement aérien si input
+                if (_moveInputVector.sqrMagnitude > 0f)
                 {
                     targetMovementVelocity = _moveInputVector * _maxAirMoveSpeed;
 
-                    // Prevent climbing on un - stable slopes with air movement
+                    // Empêcher la montée sur pentes instables en l’air
                     if (_motor.GroundingStatus.FoundAnyGround)
                     {
-                        Vector3 perpenticularObstructionNormal = Vector3.Cross(Vector3.Cross(-Gravity.normalized, _motor.GroundingStatus.GroundNormal), -Gravity.normalized).normalized;
+                        Vector3 perpenticularObstructionNormal = Vector3.Cross(
+                            Vector3.Cross(-Gravity.normalized, _motor.GroundingStatus.GroundNormal),
+                            -Gravity.normalized).normalized;
+
                         targetMovementVelocity = Vector3.ProjectOnPlane(targetMovementVelocity, perpenticularObstructionNormal);
                     }
 
@@ -340,42 +344,44 @@ namespace LightHouse.KinematicCharacterController
                     currentVelocity += velocityDiff * _airAccelerationSpeed * deltaTime;
                 }
 
+                // Gravité + drag
                 currentVelocity += Gravity * deltaTime;
-
-                // Drag
                 currentVelocity *= (1f / (1f + (_drag * deltaTime)));
             }
 
-            // Handle jumping
-
+            // ----- Jump handling -----
             if (_state.Stance != Stance.Stand) return;
+
             _jumpedThisFrame = false;
             _timeSinceJumpRequested += deltaTime;
 
             if (_jumpRequested)
             {
-                // See if we actually are allowed to jump
-                if (!_jumpConsumed && _motor.GroundingStatus.FoundAnyGround || _timeSinceLastAbleToJump <= _jumpPostGroundingGraceTime && !_jumpConsumed)
+                bool canJumpNow =
+                    ((!_jumpConsumed) && _motor.GroundingStatus.FoundAnyGround)
+                    || ((_timeSinceLastAbleToJump <= _jumpPostGroundingGraceTime) && (!_jumpConsumed));
+
+                if (canJumpNow)
                 {
-                    // Calculate jump direction before ungrounding
+                    // Direction de saut avant d’être dégroundé
                     Vector3 jumpDirection = -Gravity.normalized;
                     if (_motor.GroundingStatus.FoundAnyGround && !_motor.GroundingStatus.IsStableOnGround)
-                    {
                         jumpDirection = _motor.GroundingStatus.GroundNormal;
-                    }
 
-                    // Makes the character skip ground probing/snapping on its next update. 
-                    // If this line weren't here, the character would remain snapped to the ground when trying to jump. Try commenting this line out and see.
+                    // Forcer l’unground pour éviter le resnap au sol
                     _motor.ForceUnground(0.1f);
 
-                    // Add to the return velocity and reset jump state
+                    // Appliquer l’impulsion verticale (en nettoyant la composante le long de la gravité)
                     currentVelocity += (jumpDirection * _jumpSpeed) - Vector3.Project(currentVelocity, -Gravity.normalized);
+
+                    // Reset états de saut
                     _jumpRequested = false;
                     _jumpConsumed = true;
                     _jumpedThisFrame = true;
                 }
             }
         }
+
 
         public void BeforeCharacterUpdate(float deltaTime)
         {
@@ -395,72 +401,68 @@ namespace LightHouse.KinematicCharacterController
         /// </summary>
         public void AfterCharacterUpdate(float deltaTime)
         {
-            //var totalAcceleration = (_state.Velocity - _lastState.Velocity) / deltaTime;
-            //_state.Acceleration = Vector3.ClampMagnitude(_state.Acceleration, totalAcceleration.magnitude);
-
             // Handle jump-related values
-            if(_state.Stance == Stance.Stand)
+            if (_state.Stance == Stance.Stand)
             {
-                // Handle jumping pre-ground grace period
+                // Pre-grounding grace period
                 if (_jumpRequested && _timeSinceJumpRequested > _jumpPreGroundingGraceTime)
-                {
                     _jumpRequested = false;
-                }
 
                 if (_motor.GroundingStatus.FoundAnyGround)
                 {
-                    // If we're on a ground surface, reset jumping values
+                    // Reset jump flags si on est au sol
                     if (!_jumpedThisFrame)
-                    {
                         _jumpConsumed = false;
-                    }
+
                     _timeSinceLastAbleToJump = 0f;
                 }
                 else
                 {
-                    // Keep track of time since we were last able to jump (for grace period)
+                    // Temps depuis qu’on pouvait sauter (post-ground grace)
                     _timeSinceLastAbleToJump += deltaTime;
                 }
             }
 
-            //Handle Uncrouch
+            // Handle Uncrouch
+            if (!_requestedCrouch && _state.Stance == Stance.Crouch)
             {
-                //Uncrouch
-                if (!_requestedCrouch && _state.Stance == Stance.Crouch)
-                {
-                    //Tentatively "standup" the character capsule
-                    _motor.SetCapsuleDimensions
-                    (
-                        radius: _motor.Capsule.radius,
-                        height: _standHeight,
-                        yOffset: _standHeight * 0.5f
-                    );
+                // Essai de se relever
+                _motor.SetCapsuleDimensions(
+                    radius: _motor.Capsule.radius,
+                    height: _standHeight,
+                    yOffset: _standHeight * 0.5f
+                );
 
-                    //Then see if the capsule overlaps any colliders before actually allowing
-                    //the character to stand up
-                    var pos = _motor.TransientPosition;
-                    var rot = _motor.TransientRotation;
-                    var mask = _motor.CollidableLayers;
-                    if (_motor.CharacterOverlap(pos, rot, _uncrouchOverlapResults, mask, QueryTriggerInteraction.Ignore) > 0)
-                    {
-                        _requestedCrouch = true;
-                        _motor.SetCapsuleDimensions
-                        (
-                            radius: _motor.Capsule.radius,
-                            height: _crouchHeight,
-                            yOffset: _crouchHeight * _crouchDiminutionMultiplier
-                        );
-                    }
-                    else
-                    {
-                        _state.Stance = Stance.Stand;
-                    }
+                var pos = _motor.TransientPosition;
+                var rot = _motor.TransientRotation;
+                var mask = _motor.CollidableLayers;
+
+                if (_motor.CharacterOverlap(pos, rot, _uncrouchOverlapResults, mask, QueryTriggerInteraction.Ignore) > 0)
+                {
+                    // Impossible de se relever → rester accroupi
+                    _requestedCrouch = true;
+                    _motor.SetCapsuleDimensions(
+                        radius: _motor.Capsule.radius,
+                        height: _crouchHeight,
+                        yOffset: _crouchHeight * _crouchDiminutionMultiplier
+                    );
+                }
+                else
+                {
+                    _state.Stance = Stance.Stand;
                 }
             }
 
-            _state.Velocity = _motor.Velocity; //we put her here because the motor called it in Phase2 / AfterCharacterUpdate
+            // État final après le move de KCC
+            _state.Velocity = _motor.Velocity;
             _state.IsGrounded = _motor.GroundingStatus.IsStableOnGround;
+
+            // >>> Mettre à jour la vitesse réelle planare (sert à l’audio, footsteps, UI…)
+            Vector3 up = _motor.CharacterUp;
+            Vector3 planarVel = Vector3.ProjectOnPlane(_state.Velocity, up);
+            _currentSpeed = planarVel.magnitude;
         }
+
 
         public bool IsColliderValidForCollisions(Collider coll)
         {

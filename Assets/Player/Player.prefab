@@ -32,6 +32,7 @@ Transform:
   - {fileID: 5858299661234520692}
   - {fileID: 7527910149137334154}
   - {fileID: 1259359992558668386}
+  - {fileID: 7014847283615042074}
   m_Father: {fileID: 7442496301228367719}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &954376354796325370
@@ -159,13 +160,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _motor: {fileID: 2499938023322140573}
   _cameraTarget: {fileID: 7527910149137334154}
-  _walkSpeed: 6
+  _walkSpeed: 4
   _walkSharpness: 15
   _orientationSharpness: 25
   _standCameraTargetHeight: 0.9
   _crouchCameraTargetHeight: 0.9
   _crouchHeightResponse: 7
-  _sprintSpeed: 12
+  _sprintSpeed: 8
   _sprintSharpness: 15
   _crouchSpeed: 3.75
   _crouchSharpness: 25
@@ -181,6 +182,7 @@ MonoBehaviour:
   Gravity: {x: 0, y: -40, z: 0}
   EnableScaleRoot: 1
   MeshRoot: {fileID: 8330855046840785471}
+  _currentSpeed: 0
   _requestedSprint: 0
   _requestedCrouch: 0
   _jumpRequested: 0
@@ -740,6 +742,99 @@ MonoBehaviour:
   _inventoryLayoutGroup: {fileID: 5552824359987286737}
   _holdItemImage: {fileID: 3100577155312138063}
   _dropHoldPowerImage: {fileID: 2712403590033907537}
+--- !u!1 &2646883345045918974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7014847283615042074}
+  - component: {fileID: 6182836783121816808}
+  - component: {fileID: 1872315123592999628}
+  - component: {fileID: 8780132649773160744}
+  m_Layer: 0
+  m_Name: FootStepEmitter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7014847283615042074
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646883345045918974}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.75, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8330855046840785471}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6182836783121816808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646883345045918974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc0a4e7669f94ab478e12f781655c63e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footLeft: {fileID: 0}
+  footRight: {fileID: 0}
+  fallbackOrigin: {fileID: 7014847283615042074}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  rayLength: 1.5
+  surfaceProvider: {fileID: 0}
+  footstepSet: {fileID: 11400000, guid: 9e29035bc482f7744a260ba1842ca500, type: 2}
+  moveSpeed: 0
+  isCrouched: 0
+  minSpeedForSteps: 0.2
+  runSpeedThreshold: 6
+  walkInterval: 0.5
+  runInterval: 0.33
+  crouchInterval: 0.6
+  intervalJitter: 0
+  minIntervalSec: 0.12
+  crouchVolMul: 0.85
+  runVolMul: 1.05
+--- !u!114 &1872315123592999628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646883345045918974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63a320abb60bf8b45adbb58a866c89a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  terrainProvider: {fileID: 8780132649773160744}
+  fallbackMap: {fileID: 11400000, guid: b1d8f1bb619b83f4c8f83966058f8b42, type: 2}
+--- !u!114 &8780132649773160744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2646883345045918974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb3d1fdfe9e21740b25c325353dcf91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  map: {fileID: 11400000, guid: ca4d8d7d925d2894f8e187d003e1ae32, type: 2}
 --- !u!1 &2665349414062773770
 GameObject:
   m_ObjectHideFlags: 0
@@ -1068,6 +1163,7 @@ MonoBehaviour:
   _enableSprintInput: 1
   _enableJumpInput: 1
   _enableCrouchInput: 1
+  IsOccluded: 0
 --- !u!114 &4604400920179464832
 MonoBehaviour:
   m_ObjectHideFlags: 0
