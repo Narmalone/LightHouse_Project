@@ -31,8 +31,9 @@ namespace LightHouse.Game.Computer.LEO.CameraSystem
 
         #region Unity Events
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _zoomSlider.onValueChanged.AddListener(OnZoomValueChanged);
             _fullScreenToggle.onClick.AddListener(OnFullscreenClicked);
         }
@@ -56,8 +57,9 @@ namespace LightHouse.Game.Computer.LEO.CameraSystem
                 UpdateCompassByCameraDirection();
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             _zoomSlider.onValueChanged.RemoveListener(OnZoomValueChanged);
             _fullScreenToggle.onClick.RemoveListener(OnFullscreenClicked);
 

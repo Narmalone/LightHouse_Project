@@ -5,7 +5,7 @@ public class LEOShortcut : ShortCutController
 {
     private void Start()
     {
-        OnExecute();
-        _currentInstance.OnClose();
+        OnExecute(false);
+        _currentInstance.OnClose(false);
     }
 }

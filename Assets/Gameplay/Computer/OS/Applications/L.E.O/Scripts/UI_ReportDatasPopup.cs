@@ -30,11 +30,13 @@ namespace LightHouse.Game.Computer.LEO
         [SerializeField] private RectTransform _loadingContent;
         [SerializeField] private AnimationCurve _loadingCurve;
         [SerializeField] private float _loadingDuration = 3f;
+        [SerializeField] private AudioCue _loadingSound;
 
         [Header("Success")]
         [SerializeField] private RectTransform _bodyParentContent;
         [SerializeField] private Color _successImageColor = Color.green;
-        [SerializeField] private string _sucessText;
+        [SerializeField] private string _successText;
+        [SerializeField] private AudioCue _successSound;
 
         [Header("Failure")]
         [SerializeField] private Color _failedImageColor = Color.red;
@@ -44,6 +46,7 @@ namespace LightHouse.Game.Computer.LEO
         [SerializeField] private RectTransform _missmatchContent;
         [SerializeField] private Color _missMatchColor = Color.red;
         [SerializeField] private string _missmatchText;
+        [SerializeField] private AudioCue _missmatchSound;
 
         public DataStatus CurrentStatus { get; private set; } = DataStatus.None;
         private Coroutine _loadingRoutine;
@@ -51,12 +54,13 @@ namespace LightHouse.Game.Computer.LEO
 
         // Delegate injecté par le caller pour décider du résultat
         private Func<DataStatus> _resolveStatus;
-
+        private IAudioHandle _loadingHandle;
         public event Action<DataStatus> OnLoadingCompleted;
         public RectTransform BodyParentContent => _bodyParentContent;
 
         private void Awake()
         {
+            _okCancelButton.interactable = false;
             _okCancelButton.onClick.AddListener(OnOkCliqued);
         }
 
@@ -73,6 +77,10 @@ namespace LightHouse.Game.Computer.LEO
         public void StartLoading(Func<DataStatus> resolveStatus)
         {
             _resolveStatus = resolveStatus; // source de vérité unique
+            if(ServiceLocator.Audio != null && _loadingSound)
+            {
+                _loadingHandle = ServiceLocator.Audio.PlayAt(_loadingSound, this.transform.position);
+            }
             EnterPendingState();
             SwitchTo(DataStatus.Loading);
         }
@@ -118,7 +126,7 @@ namespace LightHouse.Game.Computer.LEO
                 case DataStatus.Success:
                     _progressBar.value = 1f;
                     _reportResultHeaderImage.color = _successImageColor;
-                    _reportResultHeaderText.text = _sucessText;
+                    _reportResultHeaderText.text = _successText;
                     break;
                 case DataStatus.Failed:
                     _progressBar.value = 0f;
@@ -164,12 +172,43 @@ namespace LightHouse.Game.Computer.LEO
             }
 
             // Récupère le résultat depuis la seule source
-            var status = _resolveStatus != null ? _resolveStatus() : DataStatus.Success;
+            DataStatus status = _resolveStatus != null ? _resolveStatus() : DataStatus.Success;
 
             _reportResultHeaderImage.gameObject.SetActive(true);
 
+            if(_loadingHandle != null)
+            {
+                _loadingHandle.Stop();
+                _loadingHandle = null;
+            }
+            
+            _okCancelButton.interactable = true;
+
+            PlayPopupEndedSound(status);
+
             OnLoadingCompleted?.Invoke(status);
             SwitchTo(status);
+        }
+
+        private void PlayPopupEndedSound(DataStatus status)
+        {
+            if(ServiceLocator.Audio == null) return;
+            switch (status)
+            {
+                case DataStatus.Success:
+                    if (_successSound != null) ServiceLocator.Audio.PlayAt(_successSound, this.transform.position);
+                    break;
+                case DataStatus.Failed:
+                    if (_missmatchSound != null) ServiceLocator.Audio.PlayAt(_missmatchSound, this.transform.position);
+                    break;
+                case DataStatus.DataMissmatch:
+                    if (_missmatchSound != null) ServiceLocator.Audio.PlayAt(_missmatchSound, this.transform.position);
+                    break;
+                default:
+                    if (_missmatchSound != null) ServiceLocator.Audio.PlayAt(_missmatchSound, this.transform.position);
+                    break;
+            }
+
         }
 
         internal void RefreshLayouts()

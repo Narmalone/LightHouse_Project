@@ -10,9 +10,26 @@ namespace LightHouse.Game.Computer.LEO
         [SerializeField] private ELEOWindow _type;
         [SerializeField] private CanvasGroup _canvasGroup;
         public Button CloseButton;
+        public event Action OnWindowClosed;
         public CanvasGroup CanvasGroup => _canvasGroup;
         public ELEOWindow Type => _type;
         public OS.OS OSSystem { get; set; }
+
+        protected virtual void Awake()
+        {
+            CloseButton.onClick.AddListener(OnLeoWindowQuitCliqued);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            CloseButton.onClick.RemoveListener(OnLeoWindowQuitCliqued);
+        }
+
+        private void OnLeoWindowQuitCliqued()
+        {
+            this.Close();
+            OnWindowClosed?.Invoke();
+        }
 
         public virtual void Open()
         {

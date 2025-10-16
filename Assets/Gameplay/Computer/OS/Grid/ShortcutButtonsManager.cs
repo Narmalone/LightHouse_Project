@@ -3,7 +3,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Image))]
 public class ShortcutButtonsManager : MonoBehaviour
 {
     [field: SerializeField] public List<UI_CustomButton> Buttons { get; private set; }
@@ -51,8 +50,8 @@ public class ShortcutButtonsManager : MonoBehaviour
         if (_lastCliquedButton != null)
             _lastCliquedButton.Unselect();
 
+        Debug.Log(selectButton);
         if (selectButton == null) return;
-
         _lastCliquedButton = selectButton;
         _lastCliquedButton.Select();
     }

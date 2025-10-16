@@ -71,8 +71,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
 
         #region Unity lifecycle
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _windowMap = new Dictionary<E_NightWatchMode, NightWatchReportWindow>();
             _backButton.App = _manager;
 
@@ -110,8 +111,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch
             SwitchTo(E_NightWatchMode.Signals);
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             _buoysReportController.OnBuoyReportFailed -= BuoysOnReportFailed;
             TimeHandlerData.OnTimeChanged -= OnTimeUpdated;
         }

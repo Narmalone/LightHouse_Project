@@ -23,6 +23,8 @@ namespace LightHouse.Game.Computer.NoteSystem
         [Tooltip("Champ de contenu de la note. Attention : le champ TMP ne supporte pas bien le multiline si une limite de ligne est fixée.")]
         [SerializeField] private TMP_InputField _contentInputField;
 
+        [SerializeField] private AudioCue _keyboardCue;
+
         [Tooltip("Bouton pour sauvegarder la note.")]
         [SerializeField] private Button _saveNoteButton;
 
@@ -82,6 +84,11 @@ namespace LightHouse.Game.Computer.NoteSystem
             _saveNoteButton.interactable = !titleExists;
             _saveNoteSecondaryBackground.color = titleExists ? Color.grey : _saveNoteSecondaryBaseColor;
 
+            if(ServiceLocator.Audio != null && _keyboardCue)
+            {
+                ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
+            }
+
             // Met à jour le titre seulement si valide
             if (!titleExists)
                 _noteContent.Title = newTitle;
@@ -93,6 +100,10 @@ namespace LightHouse.Game.Computer.NoteSystem
         private void OnContentTextChanged(string newContent)
         {
             _noteContent.Content = newContent;
+            if (ServiceLocator.Audio != null && _keyboardCue)
+            {
+                ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
+            }
         }
 
         /// <summary>
@@ -107,14 +118,21 @@ namespace LightHouse.Game.Computer.NoteSystem
 
         #region App Overrides
 
-        public override void OnClose()
+        public override void OnClose(bool playSound = true)
         {
+            if (ServiceLocator.Audio != null && _onCloseSound && playSound)
+                ServiceLocator.Audio.PlayAt(_onCloseSound, this.transform.position);
+            
             Destroy(this.gameObject);
         }
 
         public override void OnMinimize() { }
 
-        public override void OnOpen() { }
+        public override void OnOpen(bool playSound = true) 
+        {
+            if (ServiceLocator.Audio != null && _onOpenSound && playSound)
+                ServiceLocator.Audio.PlayAt(_onOpenSound, this.transform.position);
+        }
 
         #endregion
     }

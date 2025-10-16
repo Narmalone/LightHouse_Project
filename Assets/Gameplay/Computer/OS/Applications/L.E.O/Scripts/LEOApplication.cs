@@ -50,7 +50,7 @@ namespace LightHouse.Game.Computer.LEO
 
             foreach(var btn in _windows)
             {
-                btn.CloseButton.onClick.AddListener(OnCloseCliqued);
+                btn.OnWindowClosed += OnCloseCliqued;
             }
 
             foreach (var windowButton in _windowsButton)
@@ -73,7 +73,7 @@ namespace LightHouse.Game.Computer.LEO
 
             foreach (var btn in _windows)
             {
-                btn.CloseButton.onClick.RemoveListener(OnCloseCliqued);
+                btn.OnWindowClosed -= OnCloseCliqued;
             }
         }
 
@@ -105,11 +105,6 @@ namespace LightHouse.Game.Computer.LEO
             }
         }
 
-        private void OnValidate()
-        {
-            
-        }
-
         public void ShowWindow(ELEOWindow type)
         {
             if (!_windowMap.TryGetValue(type, out var newWindow))
@@ -127,9 +122,12 @@ namespace LightHouse.Game.Computer.LEO
             CurrentActiveWindow.Open();
         }
 
-        public override void OnOpen()
+        public override void OnOpen(bool playSound = true)
         {
             _tabCanvas.EnableCanvasGroup();
+
+            if(ServiceLocator.Audio != null && _onOpenSound && playSound)
+                ServiceLocator.Audio.PlayAt(_onOpenSound, this.transform.position);
 
             if (!_firstTimeOpening)
             {
@@ -137,8 +135,10 @@ namespace LightHouse.Game.Computer.LEO
                 _firstTimeOpening = true;
             }
         }
-        public override void OnClose()
+        public override void OnClose(bool playSound = true)
         {
+            if (ServiceLocator.Audio != null && _onCloseSound && playSound)
+                ServiceLocator.Audio.PlayAt(_onCloseSound, this.transform.position);
             _tabCanvas.DisableCanvasGroup();
         }
         public override void OnMinimize() { }

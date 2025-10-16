@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -63,7 +64,12 @@ namespace LightHouse.Game.Computer.OS
         protected virtual void Awake()
         {
             if (_closeButton != null)
-                _closeButton.onClick.AddListener(OnClose);
+                _closeButton.onClick.AddListener(CloseButtonCliqued);
+        }
+
+        private void CloseButtonCliqued()
+        {
+            OnClose();
         }
 
         private void OnEnable()
@@ -79,7 +85,7 @@ namespace LightHouse.Game.Computer.OS
         protected virtual void OnDestroy()
         {
             if (_closeButton != null)
-                _closeButton.onClick.RemoveListener(OnClose);
+                _closeButton.onClick.RemoveListener(CloseButtonCliqued);
         }
 
         #endregion
@@ -107,8 +113,8 @@ namespace LightHouse.Game.Computer.OS
 
         #region Abstract Methods
 
-        public abstract void OnOpen();
-        public abstract void OnClose();
+        public abstract void OnOpen(bool playSound = true);
+        public abstract void OnClose(bool playSound = true);
         public abstract void OnMinimize();
 
         #endregion

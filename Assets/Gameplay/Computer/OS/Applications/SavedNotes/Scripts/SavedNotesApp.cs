@@ -138,14 +138,20 @@ namespace LightHouse.Game.Computer.NoteSystem
 
         #region App Overrides
 
-        public override void OnClose()
+        public override void OnClose(bool playSound = true)
         {
+            if (ServiceLocator.Audio != null && _onCloseSound && playSound)
+                ServiceLocator.Audio.PlayAt(_onCloseSound, this.transform.position);
             Destroy(this.gameObject);
         }
 
         public override void OnMinimize() { }
 
-        public override void OnOpen() { }
+        public override void OnOpen(bool playSound = true) 
+        {
+            if (ServiceLocator.Audio != null && _onOpenSound && playSound)
+                ServiceLocator.Audio.PlayAt(_onOpenSound, this.transform.position);
+        }
 
         #endregion
     }

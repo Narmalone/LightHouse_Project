@@ -55,8 +55,9 @@ namespace LightHouse.Game.Computer.LEO.Supplies
 
         #region ===== Cycle Unity =====
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             BuildRuntimeConfig(_configurator);
 
             // Brancher les events des controllers
@@ -83,8 +84,9 @@ namespace LightHouse.Game.Computer.LEO.Supplies
             _shipmentConfig.Shipments.Clear();
         }
 
-        protected void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             // Débrancher proprement
             _shopController.OnShopPlus -= OnShopPlus;
             _shopController.OnShopMinus -= OnShopMinus;

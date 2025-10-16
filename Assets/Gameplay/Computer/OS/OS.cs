@@ -1,4 +1,5 @@
-﻿using LightHouse.Handlers;
+﻿using LightHouse.Game.Computer.Calendar;
+using LightHouse.Handlers;
 using LightHouse.Inputs;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,10 @@ namespace LightHouse.Game.Computer.OS
         [SerializeField]
         private ShortcutButtonsManager _shortcutButtonsManager;
 
+        [SerializeField] private CalendarEventDatabase _eventDatabase;
+        [SerializeField] private CanvasGroup _desktopGroup;
+        [SerializeField] private OsBoot _bootSystem;
+        [SerializeField] private AudioCue _osLoopSound;
         /// <summary>
         /// Le parent dans la hiérarchie pour les applications ouvertes.
         /// </summary>
@@ -57,6 +62,7 @@ namespace LightHouse.Game.Computer.OS
         private void Awake()
         {
             ShortCuts = GetComponentsInChildren<ShortCutController>().ToList();
+            _eventDatabase.ClearRuntimeEvents();
             // Initialise chaque raccourci avec cette instance d'OS
             foreach (var shortcut in ShortCuts)
             {
@@ -64,6 +70,18 @@ namespace LightHouse.Game.Computer.OS
             }
             InputManager.UI.Click.performed += Click_performed;
             InputManager.OnInputManagerWillClear += OnInputManagerCleared;
+        }
+
+        private void Start()
+        {
+            _desktopGroup.alpha = 0.0f;
+            _desktopGroup.interactable = false;
+            _desktopGroup.blocksRaycasts = false;
+        }
+
+        private void OnDestroy()
+        {
+            _eventDatabase.ClearRuntimeEvents();
         }
 
         private void OnInputManagerCleared()
@@ -84,10 +102,34 @@ namespace LightHouse.Game.Computer.OS
             this._services = services;
         }
 
+        private IAudioHandle _loopOs;
+        public void BootOS()
+        {
+            _bootSystem.StartBoot(() =>
+            {
+                _desktopGroup.alpha = 1.0f;
+                _desktopGroup.interactable = true;
+                _desktopGroup.blocksRaycasts = true;
+
+                if(ServiceLocator.Audio != null && _osLoopSound)
+                {
+                    _loopOs = ServiceLocator.Audio.PlayAt(_osLoopSound, this.transform.position);
+                }
+            });
+        }
+
         public void LeaveOS()
         {
+            if(_loopOs != null)
+            {
+                _loopOs.Stop(1f);
+                _loopOs = null;
+            }
             OnLeftComputerCalled?.Invoke();
             ShortcutButtonsManager.SwitchSelectedButton(null);
+            _desktopGroup.alpha = 0.0f;
+            _desktopGroup.interactable = false;
+            _desktopGroup.blocksRaycasts = false;
         }
 
         #endregion

@@ -235,9 +235,9 @@ namespace LightHouse.Game.Computer.Calendar
 
         #region App Lifecycle Overrides
 
-        public override void OnClose()
+        public override void OnClose(bool playSound = true)
         {
-            if (ServiceLocator.Audio != null && _onCloseSound != null)
+            if (ServiceLocator.Audio != null && _onCloseSound != null && playSound)
                 ServiceLocator.Audio.PlayAt(_onCloseSound, this.transform.position);
             if (OpenMode == AppOpenMode.ReactivateIfExists)
                 gameObject.SetActive(false);
@@ -246,9 +246,9 @@ namespace LightHouse.Game.Computer.Calendar
         }
 
         public override void OnMinimize() { }
-        public override void OnOpen() 
+        public override void OnOpen(bool playSound = true) 
         {
-            if(ServiceLocator.Audio != null && _onOpenSound != null)
+            if(ServiceLocator.Audio != null && _onOpenSound != null && playSound)
                 ServiceLocator.Audio.PlayAt(_onOpenSound, this.transform.position);
 
             ShowDaySummary(_currentShowedDay);

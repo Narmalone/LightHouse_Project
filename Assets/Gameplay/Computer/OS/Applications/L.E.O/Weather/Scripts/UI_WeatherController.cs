@@ -112,8 +112,9 @@ namespace LightHouse.Game.Computer.LEO.Weather
 
         #region Unity lifecycle
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _sendReportButton.onClick.AddListener(OnSendReportClicked);
             _resetAllButton.onClick.AddListener(OnResetAllClicked);
             TimeHandlerData.OnTimeChanged += OnTimeUpdated;
@@ -140,8 +141,9 @@ namespace LightHouse.Game.Computer.LEO.Weather
             // OnTimeUpdated(0f);
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             _sendReportButton.onClick.RemoveListener(OnSendReportClicked);
             _resetAllButton.onClick.RemoveListener(OnResetAllClicked);
             TimeHandlerData.OnTimeChanged -= OnTimeUpdated;

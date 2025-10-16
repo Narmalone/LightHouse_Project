@@ -22,8 +22,9 @@ namespace LightHouse.Game.Computer.LEO.Mails
             AllMails.Add(newInstance);
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             foreach(var mail in AllMails)
             {
                 mail.OpenMailCliqued -= MailController_OnOpen;

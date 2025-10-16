@@ -136,6 +136,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         [Header("UI Prefabs")]
         [SerializeField] private UI_ReportDatasPopup _sendDatasPrefab;
         [SerializeField] private UI_ReportElement _reportElementPrefab;
+
+        [SerializeField] private AudioCue _keyboardCue;
         #endregion
 
         #region Private Fields
@@ -268,6 +270,10 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         private void OnBoatNameChanged(string name)
         {
+            if (ServiceLocator.Audio != null && _keyboardCue)
+            {
+                ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
+            }
             _boatNameInput = name;
             UpdateSummaryReport();
             OnBoatsUIEventsChanged();
@@ -275,7 +281,11 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         private void OnBoatFrequencyChanged(string arg0)
         {
-            if(FloatExtension.TryParse(arg0, out float result))
+            if (ServiceLocator.Audio != null && _keyboardCue)
+            {
+                ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
+            }
+            if (FloatExtension.TryParse(arg0, out float result))
             {
                 _selectedBoatFrequency = result;
                 //know if it's valid

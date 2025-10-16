@@ -48,6 +48,7 @@ namespace LightHouse.Game.Computer
             _cameraController.EnableComputerCamera();
            _computerInteractionSystem.Collider.enabled = false;
             //_computerInteractionSystem.gameObject.SetActive(false);
+            _os.BootOS();
             _os.PlayerOnComputer = true;
             Player.ForceChangePlayerState?.Invoke(PlayerState.ComputerMode);
         }

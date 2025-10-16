@@ -42,7 +42,7 @@ namespace LightHouse.Game.Computer.NoteSystem
         /// <summary>
         /// Exécute l'ouverture de l'application de note associée à ce raccourci.
         /// </summary>
-        public override void OnExecute()
+        public override void OnExecute(bool playSound = true)
         {
             base.OnExecute();
             _currentInstance.RectTransform.anchoredPosition = GetRandomOffsetWindow();

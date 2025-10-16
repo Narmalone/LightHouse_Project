@@ -68,7 +68,7 @@ namespace LightHouse.Game.Computer.OS
         /// Called when we want to launch the app associated with this shortcut
         /// <see cref="ComputerApp"/>
         /// </summary>
-        public virtual void OnExecute()
+        public virtual void OnExecute(bool playOpenSound = true)
         {
             if (_os == null)
             {
@@ -81,7 +81,7 @@ namespace LightHouse.Game.Computer.OS
                 if (_prefab.OpenMode == AppOpenMode.ReactivateIfExists)
                 {
                     _currentInstance.gameObject.SetActive(true);
-                    _currentInstance.OnOpen();
+                    _currentInstance.OnOpen(playOpenSound);
                     return;
                 }
                 else if (!_allowMultipleInstance)
@@ -92,7 +92,7 @@ namespace LightHouse.Game.Computer.OS
 
             _currentInstance = Instantiate(_prefab, _runningAppsParent);
             _currentInstance.Initialize(_os);
-            _currentInstance.OnOpen();
+            _currentInstance.OnOpen(playOpenSound);
         }
 
         public virtual Vector3 GetRandomOffsetWindow()
