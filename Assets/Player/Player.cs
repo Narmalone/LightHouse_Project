@@ -3,6 +3,7 @@ using LightHouse.Handlers;
 using LightHouse.Inputs;
 using System;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using UnityEngine.TextCore.Text;
 
 namespace LightHouse.KinematicCharacterController
@@ -33,6 +34,7 @@ namespace LightHouse.KinematicCharacterController
 
         [Header("Character")]
         [SerializeField] private PlayerCharacter _playerCharacter;
+        [SerializeField] private LayerMask _skyBlockerMask = 1 << 1;
 
         [Header("Camera")]
         [SerializeField] private PlayerCamera _playerCamera;
@@ -99,6 +101,11 @@ namespace LightHouse.KinematicCharacterController
                     _playerCharacter.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
                 }
             }
+        }
+
+        private void FixedUpdate()
+        {
+            IsOccluded = IsPlayerOccluded();
         }
 
         private void Update()
@@ -196,6 +203,13 @@ namespace LightHouse.KinematicCharacterController
         private void HandleLean(float deltaTime, Vector3 acceleration, Vector3 up) => _cameraLean.UpdateLean(deltaTime, acceleration, up);
         private void HandleSpring(float deltaTime, Vector3 up) => _cameraSpring.UpdateSpring(deltaTime, up);
         #endregion
+
+        public bool IsOccluded;
+        public bool IsPlayerOccluded()
+        {
+            Vector3 origin = Character.transform.position + Vector3.up * 0.1f;
+            return Physics.Raycast(origin, Vector3.up, 15.0f, _skyBlockerMask, QueryTriggerInteraction.Ignore);
+        }
 
         // ---- STATE MACHINE ----
         private void PlayerChangeState(PlayerState requested)

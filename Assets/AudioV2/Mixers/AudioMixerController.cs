@@ -39,9 +39,9 @@ public class AudioVolumeSlider : MonoBehaviour
 
     private void Start()
     {
-        slider.SetValueWithoutNotify(0.1f);
-        Apply(0.1f);
-        _sliderValueText.text = Mathf.RoundToInt((0.1f * 100)).ToString() + "%";
+        slider.SetValueWithoutNotify(0.4f);
+        Apply(0.4f);
+        _sliderValueText.text = Mathf.RoundToInt((0.4f * 100)).ToString() + "%";
     }
 
     void OnDestroy()

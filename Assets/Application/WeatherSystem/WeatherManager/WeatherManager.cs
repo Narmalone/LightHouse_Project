@@ -51,10 +51,6 @@ namespace LightHouse.Weather
         private void Awake()
         {
             _secondsPerDay = _timeConfig.RealSecondsPerGameDay;
-        }
-
-        private void Start()
-        {
             Timeline.GenerateTimeline(_configDatabase, _timeConfig);
 
             // Init segment 0

@@ -156,9 +156,13 @@ public class RainController : MonoBehaviour
 
     // Occlusion/Indoor
     [Header("Occlusion (roof check)")]
-    public LayerMask skyBlockerMask;
-    public float occlusionLPFMultiplier = 0.6f;  // 60% cutoff si occlus
-    public float occlusionReverbDb = -10f;       // moins de reverb sous abri
+    [Tooltip("Cutoff LPF quand on est à l'intérieur (fixe).")]
+    public float indoorLPFHz = 1800f;
+    [Tooltip("Cutoff LPF quand on est dehors (pas de coupe = 22 kHz).")]
+    public float outdoorLPFHz = 22000f;
+
+    public float occlusionReverbDb = -10f; // on garde ta réverb indoor fixe
+
 
     // Smoothing
     [Header("Smoothing")]
@@ -375,60 +379,43 @@ public class RainController : MonoBehaviour
         float med01 = Mathf.Clamp01(Eval(volMedium, t));
         float heavy01 = Mathf.Clamp01(Eval(volHeavy, t));
 
-        // Soft cap optionnel (ex: 1.2) pour garder un peu d'énergie
+        // Soft cap optionnel pour éviter la somme > 1.0
         float sum = light01 + med01 + heavy01;
-        float cap = 1.0f; // passe à 1.2f si tu préfères
+        float cap = 1.0f;
         if (sum > cap) { float k = cap / sum; light01 *= k; med01 *= k; heavy01 *= k; }
 
         _vL = (volSmooth > 0f) ? Mathf.SmoothDamp(_vL, light01, ref _dL, volSmooth) : light01;
         _vM = (volSmooth > 0f) ? Mathf.SmoothDamp(_vM, med01, ref _dM, volSmooth) : med01;
         _vH = (volSmooth > 0f) ? Mathf.SmoothDamp(_vH, heavy01, ref _dH, volSmooth) : heavy01;
 
+        // Vent
         float windBase01 = Mathf.Max(0f, Eval(windVolFromSpeed, WindSpeed));
         float wind01 = Mathf.Clamp01(windBase01 * Mathf.Lerp(0.2f, 1f, t * windWetFactor));
         _vWind = (volSmooth > 0f) ? Mathf.SmoothDamp(_vWind, wind01, ref _dWind, volSmooth) : wind01;
 
-        // Occlusion (tu peux ne le faire que toutes les N frames)
-        bool occluded = IsOccluded();
-        float lpf = ClampHz(Eval(lpfCurve, t, 12000f) * (occluded ? occlusionLPFMultiplier : 1f));
-        float reverbDb = Eval(reverbCurve, t, -24f) + (occluded ? occlusionReverbDb : 0f);
+        // Occlusion/indoor → LPF FIXE et UNIQUEMENT en intérieur
+        bool occluded = PlayerHandlerData.IsPlayerOccluded();
+        float lpf = occluded ? Mathf.Clamp(indoorLPFHz, 20f, 22000f)
+                             : Mathf.Clamp(outdoorLPFHz, 20f, 22000f);
+
+        // Réverb : fixe indoor, sinon la courbe standard
+        float reverbDbOutdoor = Eval(reverbCurve, t, -24f);
+        float reverbDb = reverbDbOutdoor + (occluded ? occlusionReverbDb : 0f);
 
         if (mixer)
         {
-            if (_vL <= 0f) _vL = 0f;
-            if (_vM <= 0f) _vM = 0f;
-            if (_vH <= 0f) _vH = 0f;
-            if (_vWind <= 0f) _vWind = 0f;
-            mixer.SetFloat("Rain_Light", Linear01ToDb(_vL));
-            mixer.SetFloat("Rain_Med", Linear01ToDb(_vM));
-            mixer.SetFloat("Rain_Heavy", Linear01ToDb(_vH));
-            mixer.SetFloat("Rain_Wind", Linear01ToDb(_vWind * 0.3f));
+            mixer.SetFloat("Rain_Light", Linear01ToDb(Mathf.Max(0f, _vL)));
+            mixer.SetFloat("Rain_Med", Linear01ToDb(Mathf.Max(0f, _vM)));
+            mixer.SetFloat("Rain_Heavy", Linear01ToDb(Mathf.Max(0f, _vH)));
+            mixer.SetFloat("Rain_Wind", Linear01ToDb(Mathf.Max(0f, _vWind * 0.3f)));
             mixer.SetFloat("Rain_LPF_Cutoff", lpf);
+            // Si tu as un param de réverb dédié, set-le ici (ex: mixer.SetFloat("Rain_Reverb", reverbDb);)
         }
 
         ManageLoop(loopLight, _vL);
         ManageLoop(loopMedium, _vM);
         ManageLoop(loopHeavy, _vH);
         ManageLoop(loopWind, _vWind);
-    }
-
-    // Exemple : ScaleRainCutoff(0.1f); // divise par 10
-    public void ScaleRainCutoff(float factor)
-    {
-        if (!mixer) return;
-        if (mixer.GetFloat("Rain_LPF_Cutoff", out float hz))
-        {
-            float newHz = Mathf.Clamp(hz * factor, 20f, 22000f);
-            mixer.SetFloat("Rain_LPF_Cutoff", newHz);
-        }
-    }
-
-    bool IsOccluded()
-    {
-        if (!YFollowTarget) return false;
-        Vector3 origin = YFollowTarget.position + Vector3.up * 0.1f;
-        // Ray haut jusqu’à “loin”
-        return Physics.Raycast(origin, Vector3.up, 100f, skyBlockerMask, QueryTriggerInteraction.Ignore);
     }
 
     void ManageLoop(AudioSource src, float v01)

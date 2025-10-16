@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 using System.Reflection;
 using LightHouse.Weather;
+using LightHouse.Handlers;
 
 /// <summary>
 /// Orage "in-cloud" : ambiance + éclairs (EV additif négatif via LightingProfileManager) + tonnerre 3D.
@@ -74,6 +75,14 @@ public class LightningController : MonoBehaviour
     [Range(0f, 0.5f)] public float ambientSmooth = 0.2f;
     float _ambV, _ambVel;
 
+    [Header("Occlusion (roof check)")]
+    [Tooltip("Cutoff LPF quand on est à l'intérieur (fixe).")]
+    public float indoorLPFHz = 1800f;
+    [Tooltip("Cutoff LPF quand on est dehors (pas de coupe = 22 kHz).")]
+    public float outdoorLPFHz = 22000f;
+
+    public float occlusionReverbDb = -10f; // on garde ta réverb indoor fixe
+
     [Header("Thunder SFX (one-shots 3D)")]
     public AudioCue thunderClips;
     [Range(0.6f, 1.1f)] public float thunderPitchMin = 0.9f;
@@ -102,8 +111,6 @@ public class LightningController : MonoBehaviour
     public bool autoRun = true;
     Coroutine _runner;
 
-    private bool IsStorming = false;
-
     // ---------- UNITY ----------
 
     private void Awake()
@@ -124,6 +131,7 @@ public class LightningController : MonoBehaviour
         if (autoRun && _runner == null) _runner = StartCoroutine(RunStorm());
         if (ambientLoop && !ambientLoop.isPlaying) ambientLoop.Play();
 
+        Debug.Log(WeatherHandlerData.CurrentWeather);
         if (WeatherHandlerData.CurrentWeather != null)
             CheckStorm(WeatherHandlerData.CurrentWeather.WeatherType);
     }
@@ -133,6 +141,10 @@ public class LightningController : MonoBehaviour
         float targetAmb01 = Mathf.Clamp01(ambientVolFromStorm.Evaluate(StormLevel));
         _ambV = Mathf.SmoothDamp(_ambV, targetAmb01, ref _ambVel, ambientSmooth);
         if (mixer) mixer.SetFloat("Orage_Ambient", Linear01ToDb(_ambV));
+        float lpf = PlayerHandlerData.IsPlayerOccluded() ? Mathf.Clamp(indoorLPFHz, 20f, 22000f)
+                             : Mathf.Clamp(outdoorLPFHz, 20f, 22000f);
+        mixer.SetFloat("Storm_LPF_Cutoff", lpf);
+
     }
 
     private void LateUpdate()
@@ -147,16 +159,15 @@ public class LightningController : MonoBehaviour
 
     private void CheckStorm(WeatherType type)
     {
+        Debug.Log(type);
         if (type == WeatherType.Stormy)
         {
             StartStorm();
-            IsStorming = true;
             StormLevel = 1f;
         }
         else if (_runner != null)
         {
             StopStorm();
-            IsStorming = false;
             StormLevel = 0f;
         }
     }
