@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.GPUSort;
 
 namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 {
@@ -235,30 +236,80 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         #region Event Registration
 
+        // REGISTER
         private void RegisterUIEvents()
         {
             _boatNameInputField.onValueChanged.AddListener(OnBoatNameChanged);
             _nationalitiesDropdown.onValueChanged.AddListener(OnFlagDropdownChanged);
-            _boatFrequencyInputField.onValueChanged.AddListener(OnBoatFrequencyChanged);
 
-            _boatFrequencyInputField.onEndEdit.AddListener(OnBoatFrequencyChanged);
-            _boatNameInputField.onEndEdit.AddListener(OnBoatNameChanged);
+            _boatFrequencyInputField.onValueChanged.AddListener(s => OnBoatFrequencyChanged_Live(s));
+            _boatFrequencyInputField.onEndEdit.AddListener(s => OnBoatFrequencyChanged_Commit(s));
 
             _sendReportButton.onClick.AddListener(OnSendReportClicked);
             _resetAllButton.onClick.AddListener(OnResetAllClicked);
         }
 
+        // UNREGISTER
         private void UnregisterUIEvents()
         {
             _boatNameInputField.onValueChanged.RemoveListener(OnBoatNameChanged);
-            _boatNameInputField.onEndEdit.RemoveListener(OnBoatNameChanged);
+            _boatNameInputField.onEndEdit.RemoveAllListeners();
+
             _nationalitiesDropdown.onValueChanged.RemoveListener(OnFlagDropdownChanged);
-            _boatFrequencyInputField.onValueChanged.RemoveListener(OnBoatFrequencyChanged);
-            _boatFrequencyInputField.onEndEdit.RemoveListener(OnBoatFrequencyChanged);
+
+            _boatFrequencyInputField.onValueChanged.RemoveAllListeners();
+            _boatFrequencyInputField.onEndEdit.RemoveAllListeners();
 
             _sendReportButton.onClick.RemoveListener(OnSendReportClicked);
             _resetAllButton.onClick.RemoveListener(OnResetAllClicked);
         }
+
+        private void OnBoatFrequencyChanged_Live(string raw)
+        {
+            if (ServiceLocator.Audio != null && _keyboardCue)
+                ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
+
+            // Ne touche pas à _selectedBoatFrequency si la saisie est partielle
+            string s = (raw ?? "").Trim();
+            if (s == "" || s == "-" || s.EndsWith(".") || s.EndsWith(",")) { OnBoatsUIEventsChanged(); return; }
+
+            if (FloatExtension.TryParse(s, out float result))
+            {
+                _selectedBoatFrequency = result;
+                TryLogBoatByFrequency(result);
+            }
+
+            OnBoatsUIEventsChanged();
+        }
+
+        private void OnBoatFrequencyChanged_Commit(string raw)
+        {
+            string s = (raw ?? "").Trim();
+
+            if (FloatExtension.TryParse(s, out float result))
+            {
+                _selectedBoatFrequency = result;
+                // Normalise l’affichage une bonne fois
+                _boatFrequencyInputField.SetTextWithoutNotify(
+                    result.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                TryLogBoatByFrequency(result);
+            }
+            else
+            {
+                // Seulement au commit on vide si invalide
+                _selectedBoatFrequency = 0f;
+                _boatFrequencyInputField.SetTextWithoutNotify("");
+            }
+
+            OnBoatsUIEventsChanged();
+        }
+
+        private void TryLogBoatByFrequency(float freq)
+        {
+            if (_anomalyDatabase.TryGetAnomaly(freq, out BoatAnomalyDatas datas))
+                Debug.Log($"Bateau trouvé à {freq}: {datas.BoatName}");
+        }
+
 
         #endregion
 
@@ -282,29 +333,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             }
             _boatNameInput = name;
             UpdateSummaryReport();
-            OnBoatsUIEventsChanged();
-        }
-
-        private void OnBoatFrequencyChanged(string arg0)
-        {
-            Debug.Log(arg0);
-            if (ServiceLocator.Audio != null && _keyboardCue)
-            {
-                ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
-            }
-            if (FloatExtension.TryParse(arg0, out float result))
-            {
-                _selectedBoatFrequency = result;
-                //know if it's valid
-                if (_anomalyDatabase.TryGetAnomaly(result, out BoatAnomalyDatas datas))
-                {
-                    Debug.Log($"bateau avec nomalie trouvé à la fréquence: {result}, son nom est {datas.BoatName}");
-                }
-            }
-            else
-            {
-                _selectedBoatFrequency = 0.0f;
-            }
             OnBoatsUIEventsChanged();
         }
 
@@ -361,13 +389,19 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         {
             var popup = Instantiate(_sendDatasPrefab, _nightWatch.transform as RectTransform);
             (popup.transform as RectTransform).anchoredPosition = Vector3.zero;
+
             _boatNameInput = _boatNameInputField.text;
-            FloatExtension.TryParse(_boatFrequencyInputField.text, out _selectedBoatFrequency);
+
+            // 🔧 ne reparses pas avec float.TryParse (locale) :
+            var raw = (_boatFrequencyInputField.text ?? "").Trim();
+            if (FloatExtension.TryParse(raw, out float freqParsed))
+                _selectedBoatFrequency = freqParsed;
+            // sinon, garde la dernière valeur valide (_selectedBoatFrequency)
+
             popup.OnLoadingCompleted += status =>
             {
                 if (status != DataStatus.Success) return;
 
-                // Choix du bateau (nom prioritaire, sinon fréquence)
                 BoatAnomalyDatas picked = null;
                 if (_anomalyDatabase.TryGetAnomaly(_boatNameInput, out var byName))
                     picked = byName;
@@ -376,25 +410,15 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
                 if (picked == null) return;
 
-                // 1) Calcul par bateau
                 var perBoat = BuildBoatBreakdownFor(picked, _moneyResultDatabase, _anomalyDatabase.TimeToReportAnomalies);
-
-                // 2) Accumuler + économie
                 AccumulateBoatBreakdown(perBoat, applyToEconomyNow: true);
-
-                // 3) UI : (A) bateau courant, (B) global
                 GenerateBoatReportElements_ForSingleBoat(popup.BodyParentContent, perBoat);
-                //GenerateBoatReportElements_GlobalRecap(popup.BodyParentContent, TodayAllBoatsBreakdown);
-
                 popup.RefreshLayouts();
 
-                // Résolution monde (inchangé)
                 var boatInstance = BoatsHandlerData.Boats
                     .Find(x => x.Data.Name == picked.BoatName && x.Data.NationalityFlag == _selectedFlag);
-                if (boatInstance != null)
-                    boatInstance.AnomalyController.RemoveAnomaly();
-                else
-                    Debug.LogWarning("Bateau introuvable pour la résolution in-game.");
+                if (boatInstance != null) boatInstance.AnomalyController.RemoveAnomaly();
+                else Debug.LogWarning("Bateau introuvable pour la résolution in-game.");
             };
 
             popup.StartLoading(() =>
@@ -408,6 +432,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
                 );
             });
         }
+
 
         /// <summary>
         /// Vérifie la soumission et gère les TryAmount.
