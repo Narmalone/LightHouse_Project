@@ -197,6 +197,17 @@ namespace LightHouse.Weather.Utils
             return (a < 0f) ? a + 360f : a;
         }
 
+        // 0°=Nord(+Z), 90°=Est(+X)  -> direction monde (TOWARDS)
+        public static Vector3 HeadingToDirXZ(float deg)
+        {
+            float r = deg * Mathf.Deg2Rad;
+            return new Vector3(Mathf.Sin(r), 0f, Mathf.Cos(r));
+        }
+
+        // Convertit un angle météo “FROM” (d’où vient) en “TOWARDS” (vers où va)
+        public static float FromToTowards(float fromDeg) => NormalizeAngle360(fromDeg + 180f);
+
+
         /// <summary>
         /// Test d’appartenance à un intervalle [x..y] (Vector2.x = min, Vector2.y = max).
         /// </summary>

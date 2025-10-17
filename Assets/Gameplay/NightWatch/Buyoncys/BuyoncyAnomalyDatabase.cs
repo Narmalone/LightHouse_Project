@@ -117,6 +117,7 @@ namespace LightHouse.Game.Buyoncies
         /// </summary>
         public bool HasAnomaly(int id) => _anomalies.Exists(a => a.ID == id);
 
+        [SerializeField] private bool _autoRemoveOnExpired = true;
         /// <summary>
         /// Met à jour le temps restant des anomalies et déclenche leur expiration si nécessaire.
         /// </summary>
@@ -129,6 +130,12 @@ namespace LightHouse.Game.Buyoncies
             foreach (var anomaly in expired)
             {
                 OnAnomalyExpired?.Invoke(anomaly);
+
+                if (_autoRemoveOnExpired)
+                {
+                    _anomalies.Remove(anomaly);
+                    OnAnomalyRemoved?.Invoke(anomaly);
+                }
             }
         }
 

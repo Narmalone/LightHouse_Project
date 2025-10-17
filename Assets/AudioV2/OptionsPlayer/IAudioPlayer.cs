@@ -15,6 +15,7 @@ public interface IAudioPlayer
 
 public interface IAudioHandle
 {
+    AudioSource CurrentSource { get; }
     AudioClip SelectedClip { get; }
     bool IsValid { get; }
     void Stop(float fadeOut = 0f);

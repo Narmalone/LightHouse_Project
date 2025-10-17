@@ -11,8 +11,19 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         private void Start()
         {
+            _database.OnAnomalyExpired += Database_OnAnomalyExpired;
             // On cache par défaut si aucune anomalie
             _timerText.text = 0f.ToString("00:00");
+        }
+
+        private void OnDestroy()
+        {
+            _database.OnAnomalyExpired -= Database_OnAnomalyExpired;
+        }
+
+        private void Database_OnAnomalyExpired(BoatAnomalyDatas obj)
+        {
+            
         }
 
         private void Update()

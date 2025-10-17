@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-[ExecuteAlways]
 public class LightHouseLight : MonoBehaviour
 {
     [Header("Rotation")]
@@ -19,6 +18,8 @@ public class LightHouseLight : MonoBehaviour
     [Tooltip("Forme du cycle d'intensité (0-1)")]
     public AnimationCurve _flashCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
+    public AudioCue LoopGearCue;
+
     [Tooltip("Durée d'un cycle de flash en secondes")]
     public float flashDuration = 2f;
 
@@ -32,6 +33,9 @@ public class LightHouseLight : MonoBehaviour
         {
             Debug.LogError("[LighthouseLight] Aucun Light enfant trouvé.");
         }
+
+        if (Application.isPlaying || ServiceLocator.Audio != null)
+            ServiceLocator.Audio.PlayAt(LoopGearCue, this.transform.position);
     }
 
     void Update()

@@ -1,5 +1,6 @@
 ﻿using LightHouse.Game.DayNightSystem;
 using LightHouse.Weather.Utils;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightHouse.Weather

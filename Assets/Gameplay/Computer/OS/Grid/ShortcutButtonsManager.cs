@@ -50,7 +50,6 @@ public class ShortcutButtonsManager : MonoBehaviour
         if (_lastCliquedButton != null)
             _lastCliquedButton.Unselect();
 
-        Debug.Log(selectButton);
         if (selectButton == null) return;
         _lastCliquedButton = selectButton;
         _lastCliquedButton.Select();

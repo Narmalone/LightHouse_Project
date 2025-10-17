@@ -325,8 +325,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         private void OnResetAllClicked()
         {
             _nationalitiesDropdown.value = 0;
-            _boatNameInputField.text = string.Empty;
-            _boatFrequencyInputField.text = string.Empty;
+            _boatNameInputField.SetTextWithoutNotify(string.Empty);
+            _boatFrequencyInputField.SetTextWithoutNotify(string.Empty);
             
             _selectedFlag = null;
             _selectedAnomalyText = string.Empty;

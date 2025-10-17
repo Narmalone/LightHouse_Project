@@ -131,7 +131,6 @@ public class LightningController : MonoBehaviour
         if (autoRun && _runner == null) _runner = StartCoroutine(RunStorm());
         if (ambientLoop && !ambientLoop.isPlaying) ambientLoop.Play();
 
-        Debug.Log(WeatherHandlerData.CurrentWeather);
         if (WeatherHandlerData.CurrentWeather != null)
             CheckStorm(WeatherHandlerData.CurrentWeather.WeatherType);
     }
@@ -159,7 +158,6 @@ public class LightningController : MonoBehaviour
 
     private void CheckStorm(WeatherType type)
     {
-        Debug.Log(type);
         if (type == WeatherType.Stormy)
         {
             StartStorm();

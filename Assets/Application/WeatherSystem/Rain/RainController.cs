@@ -1,4 +1,5 @@
 ﻿using LightHouse.Weather;
+using LightHouse.Weather.Utils; // <-- on s'appuie sur WeatherUtils.HeadingToDirXZ & FromToTowards
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.VFX;
@@ -55,15 +56,13 @@ public class RainController : MonoBehaviour
     #endregion
 
     //==============================================================
-    #region ► Orientation générale (si on VEUT utiliser la rotation du GO)
+    #region ► Orientation générale (rotation décorative optionnelle)
     //==============================================================
     [Header("Orientation (Wind)")]
-    [Tooltip("Si TRUE, on oriente ce GameObject pour diriger la pluie. Si FALSE, on suit l'angle de vent du jeu (recommandé).")]
-    public bool AlignToWind = false; // ← pour un comportement réaliste basé sur l'orientation météo, laisse FALSE
+    [Tooltip("Si TRUE, on oriente ce GameObject (yaw/pitch) de façon décorative. Sinon, tout se fait en world-space.")]
+    public bool AlignToWind = false; // ← recommandé FALSE pour réalisme (utilise directement la météo vers TOWARDS)
     [Tooltip("Ne tourner qu'autour de Y (horizontal) ; sinon yaw+pitch (pas de roll).")]
     public bool YawOnly = true;
-    [Tooltip("L’objet regarde dans le sens du vent (true) ou face au vent (false).")]
-    public bool FaceWithWind = true;
     [Tooltip("Facteur de lissage de rotation (0 = instantané).")]
     [Range(0f, 20f)] public float RotationSmoothing = 8f;
 
@@ -84,8 +83,11 @@ public class RainController : MonoBehaviour
     #region ► Vent (orientation, réponse latérale et clamps)
     //==============================================================
     [Header("Wind (orientation & lateral response)")]
-    [Tooltip("Direction du vent simple (utilisée uniquement si AlignToWind=false ET pas de WeatherData).")]
-    public Vector3 WindDirection = new Vector3(1, 0, 0);
+    [Tooltip("Si TRUE, WeatherData.WindOrientation est un angle 'FROM' (météo). On convertit automatiquement en 'TOWARDS'.")]
+    public bool WindOrientationIsFrom = true;
+
+    [Tooltip("Direction du vent fallback (TOWARDS) si pas de WeatherData. 0°=Nord(+Z), 90°=Est(+X).")]
+    public float FallbackWindHeadingTowardsDeg = 0f;
 
     [Tooltip("Vitesse de vent (m/s). Si ton jeu stocke en km/h, convertis → m/s = km/h * 0.27778.")]
     public float WindSpeed = 0f;
@@ -136,7 +138,7 @@ public class RainController : MonoBehaviour
     [Header("Curves (intensity → layer)")]
     public AnimationCurve volLight = AnimationCurve.Linear(0, 0, 0.4f, 1);
     public AnimationCurve volMedium = AnimationCurve.Linear(0.2f, 0, 0.8f, 1);
-    public AnimationCurve volHeavy = AnimationCurve.Linear(0.6f, 0, 1f, 1);
+    public AnimationCurve volHeavy = AnimationCurve.Linear(0.6f, 0, 1f, 1f);
 
     // LPF & Reverb (0..1 → Hz / dB)
     [Header("FX Curves")]
@@ -163,13 +165,11 @@ public class RainController : MonoBehaviour
 
     public float occlusionReverbDb = -10f; // on garde ta réverb indoor fixe
 
-
     // Smoothing
     [Header("Smoothing")]
     [Range(0f, 0.5f)] public float volSmooth = 0.08f;
     float _vL, _vM, _vH, _vWind;
     float _dL, _dM, _dH, _dWind;
-
     #endregion
 
     //==============================================================
@@ -195,7 +195,7 @@ public class RainController : MonoBehaviour
     const string VFX_NoiseIntensity = "NoiseIntensity";
 
     const float INTENSITY_ON = 0.03f;   // seuil d’allumage (3%)
-    const float INTENSITY_OFF = 0.015f;  // seuil d’extinction (1.5%)
+    const float INTENSITY_OFF = 0.015f; // seuil d’extinction (1.5%)
     bool _vfxRunning;
 
     [Header("Emitter anchoring")]
@@ -228,38 +228,39 @@ public class RainController : MonoBehaviour
         if (a < -180f) a += 360f;
         return a;
     }
+    #endregion
 
-    // Convertit un cap (0°=Nord/Z+, 90°=Est/X+) en direction monde sur XZ.
-    static Vector3 HeadingDegToDirXZ(float deg)
-    {
-        float rad = deg * Mathf.Deg2Rad;
-        return new Vector3(Mathf.Sin(rad), 0f, Mathf.Cos(rad));
-    }
-
-    // Renvoie la direction monde du vent (XZ), en lisant WeatherData si dispo
+    //==============================================================
+    #region ► Vent : directions cohérentes (0°=N/+Z, 90°=E/+X) & TOWARDS
+    //==============================================================
+    /// <summary>
+    /// Lit la direction monde (XZ) du vent en convention TOWARDS, 0°=Nord(+Z), 90°=Est(+X).
+    /// - Si WeatherData dispo : convertit FROM→TOWARDS si nécessaire.
+    /// - Sinon : utilise FallbackWindHeadingTowardsDeg.
+    /// </summary>
     Vector3 EvaluateWindDirWorldXZ()
     {
         // 1) Angle météo si disponible
         if (Application.isPlaying && WeatherHandlerData.CurrentWeather != null)
         {
-            float headingDeg = WeatherHandlerData.CurrentWeather.WindOrientation;
-            Vector3 dir = HeadingDegToDirXZ(headingDeg);
-            return FaceWithWind ? dir : -dir;
+            float raw = WeatherHandlerData.CurrentWeather.WindOrientation; // supposé FROM ou TOWARDS
+            float headingTowards = WindOrientationIsFrom
+                ? WeatherUtils.FromToTowards(raw)
+                : WeatherUtils.NormalizeAngle360(raw);
+
+            return WeatherUtils.HeadingToDirXZ(headingTowards); // TOWARDS world-space
         }
 
-        // 2) Sinon, fallback sur le champ WindDirection
-        Vector3 d = WindDirection;
-        d.y = 0f;
-        if (d.sqrMagnitude < 1e-6f) d = Vector3.forward; // Nord par défaut
-        d.Normalize();
-        return FaceWithWind ? d : -d;
+        // 2) Fallback : heading TOWARDS
+        float fb = WeatherUtils.NormalizeAngle360(FallbackWindHeadingTowardsDeg);
+        return WeatherUtils.HeadingToDirXZ(fb);
     }
 
     /// <summary>
     /// Calcule les 2 axes de mouvement:
     /// downDir = direction de chute (verticale),
-    /// lateralDir = direction horizontale du vent.
-    /// - Si AlignToWind = TRUE → basés sur la rotation du GO (local space).
+    /// lateralDir = direction horizontale du vent (TOWARDS, world space).
+    /// - Si AlignToWind = TRUE → basés sur la rotation du GO (local space) (option déco).
     /// - Sinon → basés sur l’orientation météo (world space).
     /// </summary>
     void GetMotionDirs(out Vector3 downDir, out Vector3 lateralDir)
@@ -267,12 +268,12 @@ public class RainController : MonoBehaviour
         if (AlignToWind)
         {
             downDir = -transform.up;
-            lateralDir = transform.forward;
+            lateralDir = transform.forward; // purement décoratif si tu veux voir le GO tourner
         }
         else
         {
             downDir = Vector3.down;
-            lateralDir = EvaluateWindDirWorldXZ(); // toujours sur XZ
+            lateralDir = EvaluateWindDirWorldXZ(); // toujours TOWARDS sur XZ
         }
     }
     #endregion
@@ -281,7 +282,7 @@ public class RainController : MonoBehaviour
     #region ► Unity lifecycle
     //==============================================================
     void Awake() { _vfxRunning = false; }
-    void Start() 
+    void Start()
     {
         RainIntensity = 0f; SafeEnablePass(false);
         if (PlayerHandlerData.MainPlayer != null)
@@ -295,7 +296,6 @@ public class RainController : MonoBehaviour
         DriveVFX();
         DriveAudio();
 
-        // Si tu tiens à voir l’objet tourner (mode décoratif), garde AlignToWind = TRUE.
         if (AlignToWind)
         {
             ApplyWindRotation();
@@ -303,7 +303,6 @@ public class RainController : MonoBehaviour
         }
         else if (AutoUpwindAnchor)
         {
-            // Même avec AlignToWind=FALSE, on peut ancrer l’émetteur selon l’orientation météo.
             AnchorEmitterUpwind();
         }
     }
@@ -436,7 +435,6 @@ public class RainController : MonoBehaviour
         }
     }
 
-
     void SafeEnablePass(bool enable)
     {
         if (_rainVolume) _rainVolume.enabled = enable;
@@ -483,7 +481,7 @@ public class RainController : MonoBehaviour
         float wind_ms = WindSpeed; // si tu reçois du km/h: wind_ms = WindSpeed * 0.27778f;
         float resp = (WindToLateral != null && WindToLateral.keys.Length > 0)
             ? Mathf.Clamp01(WindToLateral.Evaluate(wind_ms))
-            : Mathf.Clamp01(wind_ms / 10f); // ≈ linéaire, 10 m/s ~ fort vent
+            : Mathf.Clamp01(wind_ms / 10f); // ≈ linéaire, 10 m/s ~ vent fort
 
         float pushH = wind_ms * LateralFactorAtMax * tRain * LateralResponse * resp;
 
@@ -504,8 +502,8 @@ public class RainController : MonoBehaviour
         Vector3 rightAxis = transform.right; rightAxis.y = 0f;
         if (rightAxis.sqrMagnitude > 1e-6f) rightAxis.Normalize();
 
-        float sideMag = Vector3.Dot(horiz, rightAxis);   // +droite / -gauche
-        Vector3 forwardRest = horiz - rightAxis * sideMag;     // conserve avant/arrière
+        float sideMag = Vector3.Dot(horiz, rightAxis);        // +droite / -gauche
+        Vector3 forwardRest = horiz - rightAxis * sideMag;    // conserve avant/arrière
 
         if (sideMag >= 0f && MaxPushRight > 0f) sideMag = Mathf.Min(sideMag, MaxPushRight);
         if (sideMag < 0f && MaxPushLeft > 0f) sideMag = Mathf.Max(sideMag, -MaxPushLeft);
@@ -584,7 +582,7 @@ public class RainController : MonoBehaviour
     //==============================================================
     void ApplyWindRotation()
     {
-        // NB: Cette rotation n'est utilisée QUE si AlignToWind = TRUE.
+        // NB: Cette rotation n'est utilisée QUE si AlignToWind = TRUE (décoratif).
         Vector3 dirWorld = EvaluateWindDirWorldXZ();
         if (YawOnly) dirWorld.y = 0f;
         if (dirWorld.sqrMagnitude < 1e-6f) return;
@@ -611,7 +609,6 @@ public class RainController : MonoBehaviour
         float vert = Mathf.Abs(Vector3.Lerp(RainMinVelocity, RainMaxVelocity, Mathf.Clamp01(RainIntensity)).y);
         float targetPitch = Mathf.Atan2(horiz, Mathf.Max(0.001f, vert)) * Mathf.Rad2Deg;
         targetPitch = Mathf.Clamp(targetPitch, 0f, MaxPitchDeg);
-        if (!FaceWithWind) targetPitch = -targetPitch;
 
         float currentPitch = NormalizeAngle180(transform.eulerAngles.x);
         float smPitch = Mathf.SmoothDampAngle(currentPitch, targetPitch, ref _pitchVel, PitchSmoothTime);
