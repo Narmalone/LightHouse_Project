@@ -362,7 +362,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             var popup = Instantiate(_sendDatasPrefab, _nightWatch.transform as RectTransform);
             (popup.transform as RectTransform).anchoredPosition = Vector3.zero;
             _boatNameInput = _boatNameInputField.text;
-            FloatExtension.TryParse(_boatNameInputField.text, out _selectedBoatFrequency);
+            FloatExtension.TryParse(_boatFrequencyInputField.text, out _selectedBoatFrequency);
             popup.OnLoadingCompleted += status =>
             {
                 if (status != DataStatus.Success) return;

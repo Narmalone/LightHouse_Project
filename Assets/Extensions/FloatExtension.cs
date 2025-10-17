@@ -24,10 +24,14 @@ public static class FloatExtension
     {
         // On tente d’abord la culture invariante (point)
         if (float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+        {
+            Debug.Log("return true");
             return true;
+        }
 
         // On remplace la virgule par point si besoin
         var replaced = s?.Replace(',', '.');
+        Debug.Log(replaced);
         return float.TryParse(replaced, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
     }
 }
