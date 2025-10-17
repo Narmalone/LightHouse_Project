@@ -13,9 +13,6 @@ public class HdrpVolumePresetApplier : MonoBehaviour
     [Tooltip("Index du Quality Level à utiliser pour chaque GfxTier (ordre et indices doivent correspondre à tes Quality Levels).")]
     [SerializeField] private int[] qualityIndexByTier = { 0, 1, 2, 3 }; // Low, Med, High, Ultra
 
-    [Header("Volume Profiles (optionnel)")]
-    [Tooltip("Si tu veux aussi changer complètement de Volume Profile (ex: couper SSR/SSGI en Low). Laisse vide pour ne pas toucher.")]
-    [SerializeField] private VolumeProfile[] profilesByTier = new VolumeProfile[4];
     public int currentTier = -1;
 
     void Start()
@@ -77,7 +74,7 @@ public class HdrpVolumePresetApplier : MonoBehaviour
         ApplyContactShadows(tier);
         ApplyExposure(tier);
 
-        Debug.Log($"[HDRP Preset] {tier} appliqué | Quality={QualitySettings.names[QualitySettings.GetQualityLevel()]} | Profile={globalVolume?.profile?.name}");
+        //Debug.Log($"[HDRP Preset] {tier} appliqué | Quality={QualitySettings.names[QualitySettings.GetQualityLevel()]} | Profile={globalVolume?.profile?.name}");
     }
 
     // ---------- Overrides par effet ----------

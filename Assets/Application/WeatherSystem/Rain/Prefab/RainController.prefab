@@ -546,8 +546,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8654615416006127468}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.9487503, y: -3.764646, z: 2.6857054}
+  m_LocalRotation: {x: 0.00000013084095, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -592,7 +592,6 @@ MonoBehaviour:
   YOffset: 0
   AlignToWind: 0
   YawOnly: 1
-  FaceWithWind: 1
   RotationSmoothing: 8
   MaxYawRightDeg: 0
   MaxYawLeftDeg: 0
@@ -600,7 +599,8 @@ MonoBehaviour:
   MaxPitchDeg: 25
   YawSmoothTime: 0.15
   PitchSmoothTime: 0.2
-  WindDirection: {x: 0, y: 0, z: 0}
+  WindOrientationIsFrom: 1
+  FallbackWindHeadingTowardsDeg: 0
   WindSpeed: 100
   LateralFactorAtMax: 1
   LateralResponse: 1
@@ -774,10 +774,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   windWetFactor: 0.7
-  skyBlockerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  occlusionLPFMultiplier: 0.6
+  indoorLPFHz: 1800
+  outdoorLPFHz: 22000
   occlusionReverbDb: -10
   volSmooth: 0.08
   RippleStrength: 0.2

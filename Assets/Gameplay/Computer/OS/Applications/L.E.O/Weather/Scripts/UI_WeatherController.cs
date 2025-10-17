@@ -333,7 +333,7 @@ namespace LightHouse.Game.Computer.LEO.Weather
                 accuracyThreshold: 40f
             );
 
-            Debug.Log("[Weather] Recap generated");
+            //Debug.Log("[Weather] Recap generated");
             SendMailRequested?.Invoke(weatherMail);
         }
 

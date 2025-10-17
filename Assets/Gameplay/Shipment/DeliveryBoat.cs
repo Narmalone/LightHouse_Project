@@ -210,5 +210,13 @@ public class DeliveryBoat : MonoBehaviour, ISonarable
         foreach (var item in _shipment.SupplyOrderLines)
             for (int i = 0; i < item.Quantity; i++)
                 Instantiate(item.Prefab, _deliverySpawnPoint, Quaternion.identity);
+        StartCoroutine(DespawnTempRoutine(15f));
+
+    }
+
+    private IEnumerator DespawnTempRoutine(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(this.gameObject);
     }
 }

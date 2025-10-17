@@ -5,6 +5,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
 using UnityEngine.TextCore.Text;
+using UnityEngine.UI;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -46,6 +47,8 @@ namespace LightHouse.KinematicCharacterController
 
         [Header("Inventory")]
         [SerializeField] private PlayerInventoryManager _inventoryController;
+
+        [SerializeField] private Image _playerCenterDotImage;
 
         [Header("Character Input Control")]
         [SerializeField] private bool _enableAllCharacterInputs = true;
@@ -260,6 +263,7 @@ namespace LightHouse.KinematicCharacterController
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            _playerCenterDotImage.gameObject.SetActive(true);
             _enableAllCharacterInputs = true;
             _inventoryController.Enable();
             _interactions.Enable();
@@ -269,6 +273,7 @@ namespace LightHouse.KinematicCharacterController
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            _playerCenterDotImage.gameObject.SetActive(false);
             _enableAllCharacterInputs = false;
             _playerCharacter.ForceCutVelocity();
             _inventoryController.Disable();
@@ -279,6 +284,7 @@ namespace LightHouse.KinematicCharacterController
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            _playerCenterDotImage.gameObject.SetActive(false);
             _enableAllCharacterInputs = false;
             _playerCharacter.ForceCutVelocity();
             _inventoryController.Disable();
@@ -287,6 +293,9 @@ namespace LightHouse.KinematicCharacterController
 
         private void EnterCutScenes()
         {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            _playerCenterDotImage.gameObject.SetActive(false);
             _enableAllCharacterInputs = false;
             _playerCharacter.ForceCutVelocity();
             _inventoryController.Disable();

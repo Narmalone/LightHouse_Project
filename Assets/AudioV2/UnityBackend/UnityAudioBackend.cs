@@ -4,7 +4,7 @@ using UnityEngine;
 public class UnityAudioBackend : MonoBehaviour, IAudioBackend
 {
     [SerializeField] private AudioSourcePool _pool;
-    [SerializeField] private string busPrefix = "Bus:"; // ex: "Bus:SFX"
+    //[SerializeField] private string busPrefix = "Bus:"; // ex: "Bus:SFX"
     private IVoiceLimiter _limiter;
 
     public void Initialize(IVoiceLimiter limiter) => _limiter = limiter;

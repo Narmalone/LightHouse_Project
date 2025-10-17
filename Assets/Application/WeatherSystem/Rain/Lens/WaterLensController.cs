@@ -20,11 +20,9 @@ public class WaterLensController : MonoBehaviour
     [SerializeField] private float fadeSpeed = 0.5f;
 
     // ---- Shader property IDs ----
-    static readonly int _isRainingID = Shader.PropertyToID("_isRaining");          // 0..1
-    static readonly int _dropAmountID = Shader.PropertyToID("_DropAmount");         // 0..1
-    static readonly int _rainDropVelID = Shader.PropertyToID("_RainDropVelocity");   // float
-    static readonly int _dripsStrengthID = Shader.PropertyToID("_DripsStrength");    // float
-    // (Si ton shader a d'autres noms de propriétés pour tailles/vel drips, ajoute leurs IDs ici)
+    static readonly int _isRainingID = Shader.PropertyToID("_isRaining");
+    static readonly int _dropAmountID = Shader.PropertyToID("_DropAmount");
+    static readonly int _rainDropVelID = Shader.PropertyToID("_RainDropVelocity");
 
     // ---------- Mapping ----------
     [Header("Global mapping")]
@@ -34,18 +32,13 @@ public class WaterLensController : MonoBehaviour
     [Range(0f, 2f)] public float globalGain = 1f;
 
     [Header("Drops (grosses gouttes)")]
-    public Vector2 dropAmount01 = new Vector2(0.0f, 1.0f);  // 0..1 → quantité à l’écran
-    public Vector2 dropSize01 = new Vector2(0.6f, 1.2f);  // taille des gouttes (si utilisé dans le graph)
-    public Vector2 rainDropVel = new Vector2(0.6f, 2.2f);  // vitesse des grosses gouttes
-    public Vector2 noiseAmount = new Vector2(30f, 70f);    // bruit/variation (si utilisé)
+    public Vector2 dropAmount01 = new Vector2(0.0f, 1.0f);  // quantité visuelle
+    public Vector2 rainDropVel = new Vector2(0.6f, 2.2f);  // X=min, Y=max vitesse
+    public Vector2 noiseAmount = new Vector2(30f, 70f);    // optionnel
 
     [Header("Drips (filets)")]
-    public Vector2 dripAmount01 = new Vector2(0.0f, 1.0f);   // 0..1 (si utilisé)
-    public Vector2 dripsVelocity = new Vector2(0.3f, 1.2f);   // vitesse des filets (si utilisé)
-    public Vector2 dripsStrength = new Vector2(20f, 80f);     // “poids”/épaisseur
-    [Tooltip("Taille X/Y des filets (en unités shader)")]
-    public Vector2 dripSizeMin = new Vector2(0.5f, 0.5f);
-    public Vector2 dripSizeMax = new Vector2(0.9f, 0.9f);
+    public Vector2 dripAmount01 = new Vector2(0.0f, 1.0f);
+    public Vector2 dripsVelocity = new Vector2(0.3f, 1.2f);
 
     // Internes
     float _smoothedIntensity;
@@ -60,42 +53,40 @@ public class WaterLensController : MonoBehaviour
     {
         if (!WaterLensMaterial || rainController == null) return;
 
+        // Vérifie si le joueur est à l'intérieur
         IsIndoors = PlayerHandlerData.IsPlayerOccluded();
 
-        // 1) Intensité cible (zéro en intérieur) + lissage
+        // 1️⃣ Intensité cible (0 si intérieur)
         float target = IsIndoors ? 0f : Mathf.Clamp01(rainController.RainIntensity);
         _smoothedIntensity = Mathf.MoveTowards(_smoothedIntensity, target, fadeSpeed * Time.deltaTime);
 
-        // 2) Ecrit l’état binaire/continu de pluie pour le graph
-        SafeSetFloat(_isRainingID, _smoothedIntensity);
-
-        // 3) Deux "t" :
-        // - tRaw : directement l'intensité lissée (0..1) — utile pour les vitesses (mapping linéaire min..max)
-        // - tCurve : intensité passée dans la courbe (perception/amount) puis globalGain (clampée 0..1)
-        float tRaw = _smoothedIntensity;
+        // 2️⃣ Valeurs dérivées
         float tCurve = Mathf.Clamp01(response.Evaluate(_smoothedIntensity) * globalGain);
 
-        // --- Exemples concrets :
-        // a) Amount perçu (courbe) : 0.6 pluie -> amount = Lerp(min, max, tCurve)
+        // 3️⃣ Envoi au shader
+        SafeSetFloat(_isRainingID, _smoothedIntensity);
+
+        // a) Quantité visuelle : courbe (perception)
         SafeSetFloat(_dropAmountID, Mathf.Lerp(dropAmount01.x, dropAmount01.y, tCurve));
 
-        // b) VITESSES (linéaire à l’intensité) : 0.6 pluie -> vel = Lerp(min, max, 0.6)
-        SafeSetFloat(_rainDropVelID, Mathf.Lerp(rainDropVel.x, rainDropVel.y, tRaw));
+        // b) Vélocité brute : pas de lerp → on choisit directement min ou max
+        float velocityTarget = 0f;
+        if (!IsIndoors)
+        {
+            velocityTarget = _smoothedIntensity >= 1f
+                ? rainDropVel.y          // pluie max
+                : (_smoothedIntensity <= 0f
+                    ? rainDropVel.x      // pluie quasi nulle
+                    : rainDropVel.y);    // valeur brute: toujours max si dehors et pluie active
+        }
 
-        // c) Drips strength : tu peux choisir courbe ou linéaire; ici je mets linéaire (sens physique)
-        //SafeSetFloat(_dripsStrengthID, Mathf.Lerp(dripsStrength.x, dripsStrength.y, tRaw));
-
-        // NOTE: si tu ajoutes d'autres propriétés shader (taille gouttes/filets, bruit, etc.),
-        // applique le même principe :
-        //  - perceptif/visuel (densité, quantité) -> tCurve
-        //  - "physique" (vitesses) -> tRaw
+        SafeSetFloat(_rainDropVelID, velocityTarget);
     }
 
     // --------- Helpers ---------
     void SafeSetFloat(int id, float value)
     {
-        // On fait confiance au shader pour ces IDs (optimisé).
-        // Ajoute des bools si tu veux activer/désactiver certains envois.
-        WaterLensMaterial.SetFloat(id, value);
+        if (WaterLensMaterial != null)
+            WaterLensMaterial.SetFloat(id, value);
     }
 }

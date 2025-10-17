@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class LightHouseController : MonoBehaviour
 {
+    [SerializeField] private LightHouseLight _mainLight;
+
     [Header("Horn Settings")]
     [SerializeField] private AudioCue _hornCue;
 
@@ -34,6 +36,7 @@ public class LightHouseController : MonoBehaviour
         if(TimeHandlerData.CurrentTime >= _nightwatchConfig.StartHour && _hornRoutine == null)
         {
             _hornRoutine = StartCoroutine(HornSequence());
+            _mainLight.StartLight();
         }
     }
 

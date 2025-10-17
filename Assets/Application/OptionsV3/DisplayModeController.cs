@@ -61,7 +61,7 @@ public class DisplayModeController : MonoBehaviour, IOption
         // affiche l’index courant dans l’UI
         optionEnum.ShowIndex(_selectedIndex);
 
-        Log($"Start → current={_currentMode}, selected={_labels[_selectedIndex]}");
+        //Log($"Start → current={_currentMode}, selected={_labels[_selectedIndex]}");
     }
 
     // --- logique coeur ---

@@ -2,6 +2,7 @@
 
 public class LightHouseLight : MonoBehaviour
 {
+    public bool Enable = false;
     [Header("Rotation")]
     [Tooltip("Durée d'un tour complet en secondes")]
     public float rotationPeriod = 20f;
@@ -29,18 +30,18 @@ public class LightHouseLight : MonoBehaviour
     void Start()
     {
         _spot = GetComponentInChildren<Light>();
-        if (_spot == null)
-        {
-            Debug.LogError("[LighthouseLight] Aucun Light enfant trouvé.");
-        }
+    }
 
+    public void StartLight()
+    {
         if (Application.isPlaying || ServiceLocator.Audio != null)
             ServiceLocator.Audio.PlayAt(LoopGearCue, this.transform.position);
+        Enable = true;
     }
 
     void Update()
     {
-        if (_spot == null) return;
+        if (_spot == null || !Enable) return;
 
         // Rotation constante du phare
         transform.Rotate(Vector3.up, 360f / rotationPeriod * Time.deltaTime, Space.Self);
