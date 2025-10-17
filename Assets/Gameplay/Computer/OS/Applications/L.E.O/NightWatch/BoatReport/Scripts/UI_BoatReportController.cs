@@ -1,5 +1,6 @@
 ﻿using LightHouse.Game.Boats;
 using LightHouse.Money;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -240,15 +241,26 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             _nationalitiesDropdown.onValueChanged.AddListener(OnFlagDropdownChanged);
             _boatFrequencyInputField.onValueChanged.AddListener(OnBoatFrequencyChanged);
 
+            _boatFrequencyInputField.onEndEdit.AddListener(OnBoatFrequencyChanged);
+            _boatNameInputField.onEndEdit.AddListener(OnBoatNameChanged);
+
             _sendReportButton.onClick.AddListener(OnSendReportClicked);
             _resetAllButton.onClick.AddListener(OnResetAllClicked);
+        }
+
+        private void TryLogBoatByFrequency(float freq)
+        {
+            if (_anomalyDatabase.TryGetAnomaly(freq, out BoatAnomalyDatas datas))
+                Debug.Log($"Bateau trouvé à {freq}: {datas.BoatName}");
         }
 
         private void UnregisterUIEvents()
         {
             _boatNameInputField.onValueChanged.RemoveListener(OnBoatNameChanged);
+            _boatNameInputField.onEndEdit.RemoveListener(OnBoatNameChanged);
             _nationalitiesDropdown.onValueChanged.RemoveListener(OnFlagDropdownChanged);
             _boatFrequencyInputField.onValueChanged.RemoveListener(OnBoatFrequencyChanged);
+            _boatFrequencyInputField.onEndEdit.RemoveListener(OnBoatFrequencyChanged);
 
             _sendReportButton.onClick.RemoveListener(OnSendReportClicked);
             _resetAllButton.onClick.RemoveListener(OnResetAllClicked);
@@ -281,6 +293,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         private void OnBoatFrequencyChanged(string arg0)
         {
+            Debug.Log(arg0);
             if (ServiceLocator.Audio != null && _keyboardCue)
             {
                 ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
@@ -327,7 +340,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             _nationalitiesDropdown.value = 0;
             _boatNameInputField.SetTextWithoutNotify(string.Empty);
             _boatFrequencyInputField.SetTextWithoutNotify(string.Empty);
-            
+
+            _boatNameInput = string.Empty;
             _selectedFlag = null;
             _selectedAnomalyText = string.Empty;
 
