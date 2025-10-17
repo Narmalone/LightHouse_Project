@@ -129,16 +129,15 @@ namespace LightHouse.Game.Computer.LEO
             if(ServiceLocator.Audio != null && _onOpenSound && playSound)
                 ServiceLocator.Audio.PlayAt(_onOpenSound, this.transform.position);
 
-            if (!_firstTimeOpening)
-            {
-                ShowWindow(ELEOWindow.Menu);
-                _firstTimeOpening = true;
-            }
+            ShowWindow(ELEOWindow.Menu);
         }
+
         public override void OnClose(bool playSound = true)
         {
             if (ServiceLocator.Audio != null && _onCloseSound && playSound)
                 ServiceLocator.Audio.PlayAt(_onCloseSound, this.transform.position);
+            if (isActiveAndEnabled) State = E_ComputerAppState.Closed;
+            CurrentActiveWindow = null;
             _tabCanvas.DisableCanvasGroup();
         }
         public override void OnMinimize() { }
