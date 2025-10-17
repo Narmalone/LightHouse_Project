@@ -162,7 +162,7 @@ namespace LightHouse.Game.Computer.Calendar
                     // Option UX: trier par heure
                     list.Sort((a, b) => a.StartTime.CompareTo(b.StartTime));
                     foreach (var evt in list)
-                        _calendarDays[i].AddEvent(evt);
+                        _calendarDays[i].AddEvent(evt, false);
                 }
             }
         }

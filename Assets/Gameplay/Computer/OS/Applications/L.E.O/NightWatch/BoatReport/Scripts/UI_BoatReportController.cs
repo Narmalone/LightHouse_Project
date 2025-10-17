@@ -248,12 +248,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             _resetAllButton.onClick.AddListener(OnResetAllClicked);
         }
 
-        private void TryLogBoatByFrequency(float freq)
-        {
-            if (_anomalyDatabase.TryGetAnomaly(freq, out BoatAnomalyDatas datas))
-                Debug.Log($"Bateau trouvé à {freq}: {datas.BoatName}");
-        }
-
         private void UnregisterUIEvents()
         {
             _boatNameInputField.onValueChanged.RemoveListener(OnBoatNameChanged);
@@ -360,49 +354,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         #region Private Helpers
 
-        // ----------------------------
-        // CALCUL (par bateau)
-        // ----------------------------
-        private MoneyBoatBreakdown BuildBoatBreakdownFor(
-            BoatAnomalyDatas anomaly,
-            SO_BoatMoneyResults moneyDb,
-            float timeToReportForBonus)
-        {
-            // Base: +valid
-            int baseAmount = BoatMoneyCalculator.ValidFlat(moneyDb);
-
-            // Pénalité essais (négative si >0)
-            int penalty = 0;
-            if (anomaly.TryAmount > 0)
-                penalty = -BoatMoneyCalculator.MissmatchFlat(anomaly.TryAmount, moneyDb);
-
-            // Bonus temps
-            int timeBonus = BoatMoneyCalculator.BonusFromTime(anomaly.RemainingTime, timeToReportForBonus, moneyDb);
-
-            var flatLine = new MoneyBoatLine("Boat reported", Color.green, baseAmount);
-            var bonusLine = new MoneyBoatLine("Speed report bonus", Color.green, timeBonus);
-            var triesLine = new MoneyBoatLine($"Attempt Count: {anomaly.TryAmount}", penalty < 0 ? Color.red : Color.green, penalty);
-
-            return new MoneyBoatBreakdown(anomaly.BoatName, flatLine, bonusLine, triesLine);
-        }
-
-        // --------------------------------------------
-        // ACCUMULATION (global) + économie immédiate
-        // --------------------------------------------
-        private void AccumulateBoatBreakdown(MoneyBoatBreakdown boatBk, bool applyToEconomyNow = true)
-        {
-            TodayAllBoatsBreakdown.Add(boatBk);
-
-            if (applyToEconomyNow)
-                PlayerCurrency.Add(boatBk.TotalForThisBoat());
-        }
-
-        // Reset manuel (appelle-le à l’heure voulue)
-        public void ResetBoatBreakdown()
-        {
-            TodayAllBoatsBreakdown.Reset();
-        }
-
         // --------------------------------------------
         // Evaluation principale
         // --------------------------------------------
@@ -410,7 +361,8 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         {
             var popup = Instantiate(_sendDatasPrefab, _nightWatch.transform as RectTransform);
             (popup.transform as RectTransform).anchoredPosition = Vector3.zero;
-
+            _boatNameInput = _boatNameInputField.text;
+            FloatExtension.TryParse(_boatNameInputField.text, out _selectedBoatFrequency);
             popup.OnLoadingCompleted += status =>
             {
                 if (status != DataStatus.Success) return;
@@ -534,6 +486,43 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             if (_nationalityManager.FindName(boatName, out BoatNationalityDatas data))
                 return data.NationalityFlag == selectedFlag;
             return false;
+        }
+
+        // ----------------------------
+        // CALCUL (par bateau)
+        // ----------------------------
+        private MoneyBoatBreakdown BuildBoatBreakdownFor(
+            BoatAnomalyDatas anomaly,
+            SO_BoatMoneyResults moneyDb,
+            float timeToReportForBonus)
+        {
+            // Base: +valid
+            int baseAmount = BoatMoneyCalculator.ValidFlat(moneyDb);
+
+            // Pénalité essais (négative si >0)
+            int penalty = 0;
+            if (anomaly.TryAmount > 0)
+                penalty = -BoatMoneyCalculator.MissmatchFlat(anomaly.TryAmount, moneyDb);
+
+            // Bonus temps
+            int timeBonus = BoatMoneyCalculator.BonusFromTime(anomaly.RemainingTime, timeToReportForBonus, moneyDb);
+
+            var flatLine = new MoneyBoatLine("Boat reported", Color.green, baseAmount);
+            var bonusLine = new MoneyBoatLine("Speed report bonus", Color.green, timeBonus);
+            var triesLine = new MoneyBoatLine($"Attempt Count: {anomaly.TryAmount}", penalty < 0 ? Color.red : Color.green, penalty);
+
+            return new MoneyBoatBreakdown(anomaly.BoatName, flatLine, bonusLine, triesLine);
+        }
+
+        // --------------------------------------------
+        // ACCUMULATION (global) + économie immédiate
+        // --------------------------------------------
+        private void AccumulateBoatBreakdown(MoneyBoatBreakdown boatBk, bool applyToEconomyNow = true)
+        {
+            TodayAllBoatsBreakdown.Add(boatBk);
+
+            if (applyToEconomyNow)
+                PlayerCurrency.Add(boatBk.TotalForThisBoat());
         }
 
         // ----------------------------

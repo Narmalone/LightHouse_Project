@@ -35,9 +35,11 @@ namespace LightHouse.Game.Computer.Calendar
         /// <summary>
         /// Ajoute un événement à ce jour et affiche une notification visuelle si elle n'est pas déjà active.
         /// </summary>
-        public void AddEvent(CalendarEvent evt)
+        public void AddEvent(CalendarEvent evt, bool enableNotification = true)
         {
             _events.Add(evt);
+            if (enableNotification && _notificationImg)
+                _notificationImg.gameObject.SetActive(true);
         }
 
         #endregion
