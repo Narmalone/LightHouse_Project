@@ -60,6 +60,7 @@ namespace LightHouse.KinematicCharacterController
         private GameObject _lastObjectSeen;
         private IInventoryItem _lastInventoryItemSeen;
 
+        public bool FreezeScrollingInventory { get; set; } = false;
         private bool _isInitialized = false;
         #endregion
 
@@ -164,6 +165,17 @@ namespace LightHouse.KinematicCharacterController
             _inventoryUiController.gameObject.SetActive(false);
             IsEnabled = false;
         }
+
+        public void Show()
+        {
+            _inventoryUiController.Show();
+        }
+
+        public void Hide()
+        {
+            _inventoryUiController.Hide();
+        }
+
         #endregion
 
         #region REGISTER / UNREGISTER INPUTS CALLBACKS
@@ -326,7 +338,7 @@ namespace LightHouse.KinematicCharacterController
         #region SCROLL HANDLING
         private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            if (!IsEnabled) return;
+            if (!IsEnabled || FreezeScrollingInventory) return;
             int direction = -Mathf.RoundToInt(obj.ReadValue<Vector2>().y);
             if (direction != 0)
                 _scrollHandler.Scroll(direction);

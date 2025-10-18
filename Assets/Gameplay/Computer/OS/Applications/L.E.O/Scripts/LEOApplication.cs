@@ -35,8 +35,6 @@ namespace LightHouse.Game.Computer.LEO
         public NightWatchController NightWatch => _nightWatchController;
         public UI_WeatherController UI_Weather => _weatherController;
 
-        private bool _firstTimeOpening = false;
-
         protected override void Awake()
         {
             base.Awake();

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ShortcutButtonsManager : MonoBehaviour
 {
@@ -22,7 +21,7 @@ public class ShortcutButtonsManager : MonoBehaviour
     {
         if(Buttons.Contains(btn))
         {
-            Debug.LogWarning("Le bouton existait déjà");
+            //Debug.LogWarning("Le bouton existait déjà");
             return;
         }
         Buttons.Add(btn);
