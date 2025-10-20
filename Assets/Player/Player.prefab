@@ -632,6 +632,7 @@ GameObject:
   - component: {fileID: 1458305153205595629}
   - component: {fileID: 1032192280278283075}
   - component: {fileID: 1056690842485654789}
+  - component: {fileID: 8775587714518466258}
   - component: {fileID: 6065928285298996503}
   m_Layer: 0
   m_Name: InventoryCanvas
@@ -725,6 +726,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!225 &8775587714518466258
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2610727951362560276}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &6065928285298996503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -737,6 +750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d699edc098ba2a046ad3db6930255705, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _inventoryCanvasGroup: {fileID: 8775587714518466258}
   _slotPrefab: {fileID: 7783733337447882046, guid: 0fabed1d87f5e1844bad759b7a73964e,
     type: 3}
   _inventoryLayoutGroup: {fileID: 5552824359987286737}
@@ -1090,6 +1104,7 @@ MonoBehaviour:
   SensiX: 0.1
   SensiY: 0.1
   FOV: 80
+  DefaultFOV: 90
   _cm: {fileID: 4865977716395826764}
   _playerCamera: {fileID: 0}
 --- !u!1 &3576453257779527103

@@ -155,6 +155,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
 
         private void OnDotForceUpdated(Image dotUpdated)
         {
+            if (dotUpdated != _selectedDot) return;
             _selectedDotLinkPivot.anchoredPosition = dotUpdated.rectTransform.anchoredPosition + Vector2.down * 20f;
             CalculateRotation();
         }

@@ -134,6 +134,27 @@ namespace LightHouse.Game.Boats
             return anomaly != null;
         }
 
+        public bool TryGetAnomalyByFrequency(string frequency, out BoatAnomalyDatas anomaly)
+        {
+            anomaly = _anomalies.Find(a => a.Key == frequency);
+            return anomaly != null;
+        }
+
+        public bool TryGetAnomaly(float freq, out BoatAnomalyDatas data, float epsilon = 0.05f)
+        {
+            foreach (var d in _anomalies)
+            {
+                if (Mathf.Abs(d.BoatFrequency - freq) <= epsilon)
+                {
+                    data = d;
+                    return true;
+                }
+            }
+            data = null;
+            return false;
+        }
+
+
         /// <summary>
         /// Essaie de récupérer l'anomaly d'un bateau par fréquences
         /// </summary>
@@ -141,6 +162,12 @@ namespace LightHouse.Game.Boats
         public bool TryGetAnomaly(float frequency, out BoatAnomalyDatas anomaly)
         {
             anomaly = _anomalies.Find(a => a.BoatFrequency == frequency);
+            return anomaly != null;
+        }
+
+        public bool TryGetAnomaly(string key, out BoatAnomalyDatas anomaly, bool ok = false)
+        {
+            anomaly = _anomalies.Find(a => a.Key == key);
             return anomaly != null;
         }
 

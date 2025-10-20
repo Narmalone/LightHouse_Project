@@ -29,6 +29,7 @@ namespace LightHouse.KinematicCharacterController
         public float SensiX = 1f;
         public float SensiY = 1f;
         public float FOV = 80f;
+        public float DefaultFOV = 90f;
 
         public Transform Transform { get; private set; }
         public Transform FollowTransform { get; private set; }
@@ -63,6 +64,11 @@ namespace LightHouse.KinematicCharacterController
             FollowTransform = t;
             PlanarDirection = FollowTransform.forward;
             _currentFollowPosition = FollowTransform.position;
+        }
+
+        public void SetFov(float fov)
+        {
+            _cm.SetFieldOfView(fov);
         }
 
         public void UpdateWithInput(float deltaTime, Vector3 rotationInput)

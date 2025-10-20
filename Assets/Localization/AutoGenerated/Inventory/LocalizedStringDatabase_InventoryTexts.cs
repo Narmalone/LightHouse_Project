@@ -1,6 +1,7 @@
 // Auto-generated ScriptableObject for localization keys
 using UnityEngine;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Components;
 
 namespace LightHouse.Localization
 {
@@ -21,5 +22,7 @@ namespace LightHouse.Localization
 		public LocalizedString Key_Shed;
 		public LocalizedString Bucket;
 		public LocalizedString Mop;
+		public LocalizedString Binoculars;
+		public LocalizedString Binoculars_On;
 	}
 }

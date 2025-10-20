@@ -144,8 +144,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         #region Private Fields
 
-        private string _boatNameInput;
-        private float _selectedBoatFrequency;
         private AnomalyType _selectedAnomalyType;
         private string _selectedAnomalyText;
         private Sprite _selectedFlag;
@@ -156,7 +154,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         #region Public Properties
 
-        public string BoatNameInput => _boatNameInput;
         public AnomalyType SelectedAnomaly => _selectedAnomalyType;
 
         public bool IsReportedToday = false;
@@ -239,11 +236,11 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
         // REGISTER
         private void RegisterUIEvents()
         {
-            _boatNameInputField.onValueChanged.AddListener(OnBoatNameChanged);
+            //_boatNameInputField.onValueChanged.AddListener(OnBoatNameChanged);
             _nationalitiesDropdown.onValueChanged.AddListener(OnFlagDropdownChanged);
 
-            _boatFrequencyInputField.onValueChanged.AddListener(s => OnBoatFrequencyChanged_Live(s));
-            _boatFrequencyInputField.onEndEdit.AddListener(s => OnBoatFrequencyChanged_Commit(s));
+            //_boatFrequencyInputField.onValueChanged.AddListener(s => OnBoatFrequencyChanged_Live(s));
+            //_boatFrequencyInputField.onEndEdit.AddListener(s => OnBoatFrequencyChanged_Commit(s));
 
             _sendReportButton.onClick.AddListener(OnSendReportClicked);
             _resetAllButton.onClick.AddListener(OnResetAllClicked);
@@ -264,49 +261,9 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             _resetAllButton.onClick.RemoveListener(OnResetAllClicked);
         }
 
-        private void OnBoatFrequencyChanged_Live(string raw)
-        {
-            if (ServiceLocator.Audio != null && _keyboardCue)
-                ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
-
-            // Ne touche pas à _selectedBoatFrequency si la saisie est partielle
-            string s = (raw ?? "").Trim();
-            if (s == "" || s == "-" || s.EndsWith(".") || s.EndsWith(",")) { OnBoatsUIEventsChanged(); return; }
-
-            if (FloatExtension.TryParse(s, out float result))
-            {
-                _selectedBoatFrequency = result;
-                TryLogBoatByFrequency(result);
-            }
-
-            OnBoatsUIEventsChanged();
-        }
-
-        private void OnBoatFrequencyChanged_Commit(string raw)
-        {
-            string s = (raw ?? "").Trim();
-
-            if (FloatExtension.TryParse(s, out float result))
-            {
-                _selectedBoatFrequency = result;
-                // Normalise l’affichage une bonne fois
-                _boatFrequencyInputField.SetTextWithoutNotify(
-                    result.ToString(System.Globalization.CultureInfo.InvariantCulture));
-                TryLogBoatByFrequency(result);
-            }
-            else
-            {
-                // Seulement au commit on vide si invalide
-                _selectedBoatFrequency = 0f;
-                _boatFrequencyInputField.SetTextWithoutNotify("");
-            }
-
-            OnBoatsUIEventsChanged();
-        }
-
         private void TryLogBoatByFrequency(float freq)
         {
-            if (_anomalyDatabase.TryGetAnomaly(freq, out BoatAnomalyDatas datas))
+            if (_anomalyDatabase.TryGetAnomaly(freq.ToString(), out BoatAnomalyDatas datas, false))
                 Debug.Log($"Bateau trouvé à {freq}: {datas.BoatName}");
         }
 
@@ -331,7 +288,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             {
                 ServiceLocator.Audio.PlayAt(_keyboardCue, this.transform.position);
             }
-            _boatNameInput = name;
             UpdateSummaryReport();
             OnBoatsUIEventsChanged();
         }
@@ -363,7 +319,6 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             _boatNameInputField.SetTextWithoutNotify(string.Empty);
             _boatFrequencyInputField.SetTextWithoutNotify(string.Empty);
 
-            _boatNameInput = string.Empty;
             _selectedFlag = null;
             _selectedAnomalyText = string.Empty;
 
@@ -390,23 +345,22 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             var popup = Instantiate(_sendDatasPrefab, _nightWatch.transform as RectTransform);
             (popup.transform as RectTransform).anchoredPosition = Vector3.zero;
 
-            _boatNameInput = _boatNameInputField.text;
-
-            // 🔧 ne reparses pas avec float.TryParse (locale) :
-            var raw = (_boatFrequencyInputField.text ?? "").Trim();
-            if (FloatExtension.TryParse(raw, out float freqParsed))
-                _selectedBoatFrequency = freqParsed;
-            // sinon, garde la dernière valeur valide (_selectedBoatFrequency)
-
             popup.OnLoadingCompleted += status =>
             {
                 if (status != DataStatus.Success) return;
 
                 BoatAnomalyDatas picked = null;
-                if (_anomalyDatabase.TryGetAnomaly(_boatNameInput, out var byName))
+
+                // Nom en 1er
+                if (_anomalyDatabase.TryGetAnomaly(_boatNameInputField.text, out var byName))
                     picked = byName;
-                else if (_anomalyDatabase.TryGetAnomaly(_selectedBoatFrequency, out var byFreq))
-                    picked = byFreq;
+                else
+                {
+                    // Fréquence : parse universel -> overload float ONLY
+                    if (TryParseUniversal(_boatFrequencyInputField.text, out var freq)
+                        && _anomalyDatabase.TryGetAnomaly(freq, out var byFreq))
+                        picked = byFreq;
+                }
 
                 if (picked == null) return;
 
@@ -419,7 +373,10 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
                     .Find(x => x.Data.Name == picked.BoatName && x.Data.NationalityFlag == _selectedFlag);
                 if (boatInstance != null) boatInstance.AnomalyController.RemoveAnomaly();
                 else Debug.LogWarning("Bateau introuvable pour la résolution in-game.");
+
+                OnResetAllClicked();
             };
+
 
             popup.StartLoading(() =>
             {
@@ -431,6 +388,21 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
                     out bool typeOK
                 );
             });
+        }
+
+        public static bool TryParseUniversal(string s, out float value)
+        {
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                value = 0;
+                return false;
+            }
+
+            // Remplace la virgule par un point (on unifie)
+            s = s.Replace(',', '.');
+
+            // Puis on parse en culture invariante
+            return float.TryParse(s, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out value);
         }
 
 
@@ -446,9 +418,20 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
             out bool typeOK)
         {
             matched = null;
-            nameOK = _anomalyDatabase.TryGetAnomaly(_boatNameInput, out var byName);
-            freqOK = _anomalyDatabase.TryGetAnomaly(_selectedBoatFrequency, out var byFreq);
+            nameOK = _anomalyDatabase.TryGetAnomaly(_boatNameInputField.text, out var byName);
 
+            string raw = _boatFrequencyInputField.text;
+            string s = raw?.Replace('.', ',');
+            float.TryParse(s, out float f);
+            freqOK = false;
+
+            BoatAnomalyDatas byFreq = null;
+            if (TryParseUniversal(_boatFrequencyInputField.text, out var freq))
+                freqOK = _anomalyDatabase.TryGetAnomaly(freq, out byFreq, 0.05f);
+            else
+                freqOK = false;
+            //freqOK = _anomalyDatabase.TryGetAnomalyByFrequency(s, out var byFreq);
+            
             // Déterminer le "candidat" final
             if (nameOK && freqOK)
             {
@@ -613,7 +596,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
 
         private void UpdateSummaryReport()
         {
-            _summaryReportText.text = $"{_selectedAnomalyText} on {_boatNameInput}";
+            _summaryReportText.text = $"{_selectedAnomalyText} on {_boatNameInputField.text}";
         }
 
         #endregion

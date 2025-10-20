@@ -7,11 +7,32 @@ namespace LightHouse.Inventory
     {
         #region FIELDS
         [Header("References")]
+        [SerializeField] private CanvasGroup _inventoryCanvasGroup;
         [SerializeField] private ItemSlot _slotPrefab;
         [SerializeField] private RectTransform _inventoryLayoutGroup;
         [SerializeField] private Image _holdItemImage;
         [SerializeField] private Image _dropHoldPowerImage;
         private ItemSlot[] _generatedSlots;
+        #endregion
+
+        #region Public API
+
+        /// <summary>
+        /// Montre visuellement les slots de l'inventaire mais n'active pas l'interaction avec le scroll
+        /// </summary>
+        public void Show()
+        {
+            _inventoryCanvasGroup.alpha = 1.0f;
+        }
+
+        /// <summary>
+        /// Montre visuellement les slots de l'inventaire mais ne désactive pas l'interaction avec le scroll
+        /// </summary>
+        public void Hide()
+        {
+            _inventoryCanvasGroup.alpha = 0.0f;
+        }
+
         #endregion
 
         #region GENERATE
