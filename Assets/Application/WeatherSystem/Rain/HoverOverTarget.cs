@@ -39,6 +39,11 @@ public class HoverOverTarget : MonoBehaviour
     // vitesse interne pour SmoothDamp
     private Vector3 _velocity;
 
+    private void Start()
+    {
+        Target = Camera.main.transform;
+    }
+
     void Update()
     {
         Vector3 targetPos = (Target != null) ? Target.position : TargetPoint;

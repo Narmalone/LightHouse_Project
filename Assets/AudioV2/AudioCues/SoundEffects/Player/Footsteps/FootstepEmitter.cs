@@ -42,7 +42,8 @@ public class FootstepEmitter : MonoBehaviour
 
     private void OnLand(AnimationEvent animationEvent)
     {
-        Debug.Log("on land trigger");
+        //Desfois il se lance en "double"
+        //Debug.Log("on land trigger");
         //Play land sound
     }
 }

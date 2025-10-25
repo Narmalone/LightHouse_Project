@@ -81,7 +81,7 @@ namespace LightHouse.KinematicCharacterController
                 InputManager.SetPlayerInputActions(_inputActions);
             }
             _playerCharacter.Initialize();
-            _playerCamera.SetFollowTransform(_playerCharacter.GetCameraTarget());
+
             _cameraSpring.Initialize();
             _cameraLean.Initialize();
 
@@ -95,7 +95,6 @@ namespace LightHouse.KinematicCharacterController
                 PlayerHandlerData.InitializeHandlerData(this);
                 if(!InputManager.IsInitialized)
                     InputManager.InputManagerInitialized();
-                _cameraSpring.enabled = true;
                 _isInitialized = true;
 
                 if(GameWorldHandlerData.PlayerSpawnPoint != null)
@@ -125,11 +124,11 @@ namespace LightHouse.KinematicCharacterController
 
             HandleCameraInput();
 
-            Transform camTarget = _playerCharacter.GetCameraTarget();
-            CharacterState state = _playerCharacter.GetState();
+           /* Transform camTarget = _playerCharacter.GetCameraTarget();
+            CharacterState state = _playerCharacter.GetState();*/
 
-            HandleSpring(Time.deltaTime, camTarget.up);
-            HandleLean(Time.deltaTime, state.AccelerationVelocity, camTarget.up);
+            //HandleSpring(Time.deltaTime, camTarget.up);
+            //HandleLean(Time.deltaTime, state.AccelerationVelocity, camTarget.up);
         }
 
         private void OnDestroy()

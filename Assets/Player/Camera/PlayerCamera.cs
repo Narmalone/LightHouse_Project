@@ -20,10 +20,6 @@ namespace LightHouse.KinematicCharacterController
         [Range(-90f, 90f)] public float MaxVerticalAngle = 90f;
 
         public float RotationSpeed = 1f;
-        public float RotationSharpness = 10000f;
-
-        public float PositionSharpness = 10000f;
-        public float DampSmoothTime = 0.05f;
 
         [Header("Sensitivity")]
         public float SensiX = 1f;
@@ -32,7 +28,7 @@ namespace LightHouse.KinematicCharacterController
         public float DefaultFOV = 90f;
 
         public Transform Transform { get; private set; }
-        public Transform FollowTransform { get; private set; }
+        [field: SerializeField] public Transform FollowTransform { get; private set; }
 
         public Vector3 PlanarDirection { get; set; }
 
@@ -43,13 +39,12 @@ namespace LightHouse.KinematicCharacterController
         public Camera Camera => _playerCamera;
 
         private float _targetVerticalAngle;
-        private Vector3 _currentFollowPosition;
-        private Vector3 _velocitySmoothing;
 
         void OnValidate()
         {
             DefaultVerticalAngle = Mathf.Clamp(DefaultVerticalAngle, MinVerticalAngle, MaxVerticalAngle);
-            _cm.m_Lens.FieldOfView = FOV;
+            if (_cm != null)
+                _cm.m_Lens.FieldOfView = FOV;
         }
 
         void Awake()
@@ -59,62 +54,58 @@ namespace LightHouse.KinematicCharacterController
             PlanarDirection = Vector3.forward;
         }
 
-        public void SetFollowTransform(Transform t)
+        private void Start()
         {
-            FollowTransform = t;
             PlanarDirection = FollowTransform.forward;
-            _currentFollowPosition = FollowTransform.position;
+            Transform.position = FollowTransform.position;
         }
 
         public void SetFov(float fov)
         {
-            _cm.SetFieldOfView(fov);
+            if (_cm != null)
+                _cm.SetFieldOfView(fov);
+            if (_playerCamera != null)
+                _playerCamera.fieldOfView = fov;
         }
 
         public void UpdateWithInput(float deltaTime, Vector3 rotationInput)
         {
-            if (FollowTransform)
-            {
-                rotationInput.x *= SensiX;
-                rotationInput.y *= SensiY;
+            if (!FollowTransform)
+                return;
 
-                if (InvertX)
-                {
-                    rotationInput.x *= -1f;
-                }
-                if (InvertY)
-                {
-                    rotationInput.y *= -1f;
-                }
+            // appliquer sensi
+            rotationInput.x *= SensiX;
+            rotationInput.y *= SensiY;
 
-                // Rotation input → planar direction
-                Quaternion rotationFromInput = Quaternion.Euler(FollowTransform.up * (rotationInput.x * RotationSpeed));
-                PlanarDirection = rotationFromInput * PlanarDirection;
-                PlanarDirection = Vector3.Cross(FollowTransform.up, Vector3.Cross(PlanarDirection, FollowTransform.up));
-                Quaternion planarRot = Quaternion.LookRotation(PlanarDirection, FollowTransform.up);
+            if (InvertX) rotationInput.x *= -1f;
+            if (InvertY) rotationInput.y *= -1f;
 
-                _targetVerticalAngle -= (rotationInput.y * RotationSpeed);
-                _targetVerticalAngle = Mathf.Clamp(_targetVerticalAngle, MinVerticalAngle, MaxVerticalAngle);
-                Quaternion verticalRot = Quaternion.Euler(_targetVerticalAngle, 0, 0);
-                Quaternion targetRotation = Quaternion.Slerp(Transform.rotation, planarRot * verticalRot, 1f - Mathf.Exp(-RotationSharpness * deltaTime));
+            // --- ROTATION INSTANTANÉE ---
 
-                // Apply rotation
-                Transform.rotation = targetRotation;
+            // yaw (horizontal) => fait tourner la direction plane
+            Quaternion rotationFromInput = Quaternion.Euler(FollowTransform.up * (rotationInput.x * RotationSpeed));
+            PlanarDirection = rotationFromInput * PlanarDirection;
 
-                // Position follow
-                //_currentFollowPosition = Vector3.Lerp(_currentFollowPosition, FollowTransform.position, 1f - Mathf.Exp(-PositionSharpness * deltaTime));
-                _currentFollowPosition = Vector3.SmoothDamp(
-                    _currentFollowPosition,
-                    FollowTransform.position,
-                    ref _velocitySmoothing,
-                    DampSmoothTime // délai d'amortissement
-                );
+            // recoller PlanarDirection au plan horizontal du FollowTransform
+            PlanarDirection = Vector3.Cross(
+                FollowTransform.up,
+                Vector3.Cross(PlanarDirection, FollowTransform.up)
+            );
 
-                Vector3 targetPosition = _currentFollowPosition;
+            Quaternion planarRot = Quaternion.LookRotation(PlanarDirection, FollowTransform.up);
 
-                // Apply position
-                Transform.position = targetPosition;
-            }
+            // pitch (vertical)
+            _targetVerticalAngle -= (rotationInput.y * RotationSpeed);
+            _targetVerticalAngle = Mathf.Clamp(_targetVerticalAngle, MinVerticalAngle, MaxVerticalAngle);
+
+            Quaternion verticalRot = Quaternion.Euler(_targetVerticalAngle, 0f, 0f);
+
+            // rotation finale sans Slerp / sans lissage
+            Quaternion finalRot = planarRot * verticalRot;
+            Transform.rotation = finalRot;
+
+            // --- POSITION INSTANTANÉE ---
+            //Transform.position = FollowTransform.position;
         }
     }
 }

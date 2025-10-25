@@ -55,7 +55,6 @@ namespace LightHouse.KinematicCharacterController
         public KinematicCharacterMotor Motor => _motor;
 
         [SerializeField] private Animator _playerAnimator;
-        [SerializeField] private Transform _cameraTarget;
 
         [Header("Stable Movement")]
         [SerializeField] private float _walkSpeed = 8f;
@@ -268,10 +267,10 @@ namespace LightHouse.KinematicCharacterController
                 _targetAnimSpeed = baseSpeedForAnim * _lastInputMagnitude;
         }
 
-        public Transform GetCameraTarget() => _cameraTarget;
-
         public CharacterState GetState() => _state;
 
+        public Transform _cameraTarget;
+        public Vector3 _cameraTargetLocalOffset;
         public void UpdateCapsuleMeshRoot(float deltaTime)
         {
             float currentHeight = _motor.Capsule.height;
@@ -287,13 +286,13 @@ namespace LightHouse.KinematicCharacterController
                     break;
             }
 
-            _cameraTarget.localPosition = Vector3.Lerp
-            (
-                a: _cameraTarget.localPosition,
-                b: new Vector3(0f, cameraTargetHeight, 0f),
-                //to make framerate independant we can use equation below
-                t: 1f - Mathf.Exp(-_crouchHeightResponse * deltaTime) //same as _crouchHeightResponse * deltaTime
-            );
+            //_cameraTarget.localPosition = new Vector3(0f, cameraTargetHeight, 0f) + _cameraTargetLocalOffset;
+/*            _cameraTarget.localPosition = Vector3.Lerp
+           (
+               a: _cameraTarget.localPosition,
+               b: new Vector3(0f, cameraTargetHeight, 0f) + _cameraTargetLocalOffset,
+               t: 1f - Mathf.Exp(-_crouchHeightResponse * deltaTime) //same as _crouchHeightResponse * deltaTime
+           );*/
 
             if (EnableScaleRoot)
             {
