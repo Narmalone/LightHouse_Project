@@ -81,10 +81,6 @@ namespace LightHouse.KinematicCharacterController
                 InputManager.SetPlayerInputActions(_inputActions);
             }
             _playerCharacter.Initialize();
-
-            _cameraSpring.Initialize();
-            _cameraLean.Initialize();
-
             BootStrap.OnGameAssetsLoaded += BootStrap_OnGameSceneInitialized;
         }
 
@@ -123,12 +119,6 @@ namespace LightHouse.KinematicCharacterController
             if (!_enableAllCharacterInputs) return;
 
             HandleCameraInput();
-
-           /* Transform camTarget = _playerCharacter.GetCameraTarget();
-            CharacterState state = _playerCharacter.GetState();*/
-
-            //HandleSpring(Time.deltaTime, camTarget.up);
-            //HandleLean(Time.deltaTime, state.AccelerationVelocity, camTarget.up);
         }
 
         private void OnDestroy()
@@ -196,14 +186,9 @@ namespace LightHouse.KinematicCharacterController
             if (_enableCameraRotationInput)
             {
                 CameraInput cameraInput = new CameraInput() { Look = _inputActions.Player.Look.ReadValue<Vector2>() };
-                _playerCamera.UpdateWithInput(Time.deltaTime, cameraInput.Look);
+                _playerCamera.UpdateWithInput(Time.deltaTime, cameraInput.Look, _inputActions.Player.Move.ReadValue<Vector2>());
             }
         }
-        #endregion
-
-        #region CAMERA LEAN/SPRING
-        private void HandleLean(float deltaTime, Vector3 acceleration, Vector3 up) => _cameraLean.UpdateLean(deltaTime, acceleration, up);
-        private void HandleSpring(float deltaTime, Vector3 up) => _cameraSpring.UpdateSpring(deltaTime, up);
         #endregion
 
         public bool IsOccluded;
