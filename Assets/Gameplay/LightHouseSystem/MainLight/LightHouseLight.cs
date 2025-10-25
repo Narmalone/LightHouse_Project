@@ -27,17 +27,33 @@ public class LightHouseLight : MonoBehaviour
     private Light _spot;
     private float _time;
 
-    void Start()
+    void Awake()
     {
         _spot = GetComponentInChildren<Light>();
+        StopLight();
     }
 
+    private IAudioHandle _currentGearHandler;
     public void StartLight()
     {
         if (Application.isPlaying || ServiceLocator.Audio != null)
-            ServiceLocator.Audio.PlayAt(LoopGearCue, this.transform.position);
+            _currentGearHandler = ServiceLocator.Audio.PlayAt(LoopGearCue, this.transform.position);
         Enable = true;
+        if (!_spot.isActiveAndEnabled)
+            _spot.gameObject.SetActive(true);
     }
+
+    public void StopLight()
+    {
+        if(_currentGearHandler != null)
+        {
+            _currentGearHandler.Stop(1.5f);
+        }
+        Enable = false;
+        if(_spot.isActiveAndEnabled)
+            _spot.gameObject.SetActive(false);
+    }
+
 
     void Update()
     {

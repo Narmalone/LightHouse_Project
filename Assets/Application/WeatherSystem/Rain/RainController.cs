@@ -414,7 +414,7 @@ public class RainController : MonoBehaviour
         ManageLoop(loopLight, _vL);
         ManageLoop(loopMedium, _vM);
         ManageLoop(loopHeavy, _vH);
-        ManageLoop(loopWind, _vWind);
+        //ManageLoop(loopWind, _vWind);
     }
 
     void ManageLoop(AudioSource src, float v01)

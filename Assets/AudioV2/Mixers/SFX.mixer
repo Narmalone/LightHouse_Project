@@ -420,6 +420,20 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!244 &-1866201912819876541
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: eb7f320d07a630944bf958fd1d2f295d
+  m_EffectName: Attenuation
+  m_MixLevel: 221ad4cd76b2d9345b4a58a7f47098ca
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &-1844784462138928373
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -436,6 +450,26 @@ AudioMixerEffectController:
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
+--- !u!243 &-1308908511722959734
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Wind
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 7561cd7c2a85d8f4eb8386a0f8cea2bc
+  m_Children: []
+  m_Volume: 42555a34d34bdb84cbcd6c83c97dbe66
+  m_Pitch: 5c9e56f12a6ecaf46ba0c62881c41c7a
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: -1866201912819876541}
+  - {fileID: 8787489826906499288}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
 --- !u!243 &-1141367787264397495
 AudioMixerGroupController:
   m_ObjectHideFlags: 0
@@ -525,16 +559,6 @@ AudioMixerController:
     name: Orage_Ambient
   - guid: ac4b0549175594e49b59e3c5d7cce68d
     name: Storm_LPF_Cutoff
-  - guid: 16d1ef78211947143b2d15e5643e06e1
-    name: Window_Volume_dB
-  - guid: 206c15d56526ead46b5f957febfc7c30
-    name: Window_Pitch
-  - guid: 958c772b7ffcdd94f9a8521617a24da0
-    name: Window_Lowpass_Hz
-  - guid: 5df35fad4295258419a26abfc296a37c
-    name: Window_EQ_Body_dB
-  - guid: 454efea9b821bd84aab8fe1c16b3cb57
-    name: Window_EQ_Creak_dB
   - guid: d641046386dee9848835049867df5079
     name: Waves_Distant
   - guid: 7fe3ad52d30d3d448a280d0b743a6a16
@@ -545,6 +569,20 @@ AudioMixerController:
     name: Waves_Wash_Med
   - guid: 53a465509a726a1449ccaddc29448e26
     name: Waves_LPF_Cutoff
+  - guid: 42555a34d34bdb84cbcd6c83c97dbe66
+    name: Wind_Volume
+  - guid: 206c15d56526ead46b5f957febfc7c30
+    name: Window_Pitch
+  - guid: 16d1ef78211947143b2d15e5643e06e1
+    name: Window_Volume_dB
+  - guid: 958c772b7ffcdd94f9a8521617a24da0
+    name: Window_Lowpass_Hz
+  - guid: 5df35fad4295258419a26abfc296a37c
+    name: Window_EQ_Body_dB
+  - guid: 454efea9b821bd84aab8fe1c16b3cb57
+    name: Window_EQ_Creak_dB
+  - guid: 6250bf9612e5c18489e00fd58bc36213
+    name: Wind_LPF_Cutoff
   m_AudioMixerGroupViews:
   - guids:
     - 902581cfdcecfca4e892acc44a08768e
@@ -564,6 +602,7 @@ AudioMixerController:
     - d3b8f419cdd1c8c468bb789f98f2d081
     - 8a5a35993d3a0b046b0c94d77631558c
     - 8447d34c52b81f1439eda611d6605395
+    - 7561cd7c2a85d8f4eb8386a0f8cea2bc
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -819,6 +858,7 @@ AudioMixerGroupController:
   - {fileID: -7688068596517777060}
   - {fileID: -6718098485041589764}
   - {fileID: -7035109834029339212}
+  - {fileID: -1308908511722959734}
   m_Volume: 33fb304854b1e9340837d452839fefa3
   m_Pitch: e9f64ef6ede74c443a96e4cf7b8ff799
   m_Send: 00000000000000000000000000000000
@@ -889,6 +929,22 @@ AudioMixerEffectController:
   m_EffectName: Attenuation
   m_MixLevel: 5f374e29087c90c45bd79ba3ff070a2f
   m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &8787489826906499288
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 3c10b24d282b5b34b824d4f826cfa1ce
+  m_EffectName: Lowpass Simple
+  m_MixLevel: 9cc00792b9ccb2b479b75292d8509a34
+  m_Parameters:
+  - m_ParameterName: Cutoff freq
+    m_GUID: 6250bf9612e5c18489e00fd58bc36213
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
