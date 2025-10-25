@@ -54,6 +54,7 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private KinematicCharacterMotor _motor;
         public KinematicCharacterMotor Motor => _motor;
 
+        [SerializeField] private Animator _playerAnimator;
         [SerializeField] private Transform _cameraTarget;
 
         [Header("Stable Movement")]
@@ -134,6 +135,21 @@ namespace LightHouse.KinematicCharacterController
             get => _currentSpeed;
         }
 
+        // --- Animator params hashes (reprend la logique ThirdPersonController) ---
+        private int _animIDSpeed;
+        private int _animIDGrounded;
+        private int _animIDJump;
+        private int _animIDFreeFall;
+        private int _animIDMotionSpeed;
+
+        // blend & timers pour l'anim
+        [SerializeField] private float _animSpeedChangeRate = 10f;   // même idée que SpeedChangeRate
+        [SerializeField] private float _fallTimeout = 0.15f;         // comme ThirdPersonController.FallTimeout
+        private float _fallTimeoutDelta;
+        private float _animSpeedBlend; // équivalent _animationBlend
+        private float _lastInputMagnitude;   // 0..1
+        private float _targetAnimSpeed;      // vitesse "voulu" pour blending anim
+
         public void SetPosition(Vector3 pos)
         {
             Motor.SetPosition(pos);
@@ -149,6 +165,15 @@ namespace LightHouse.KinematicCharacterController
             _motor.CharacterController = this;
             _state.Stance = Stance.Stand;
             _uncrouchOverlapResults = new Collider[8];
+
+            // Animator param hashes
+            _animIDSpeed = Animator.StringToHash("Speed");
+            _animIDGrounded = Animator.StringToHash("Grounded");
+            _animIDJump = Animator.StringToHash("Jump");
+            _animIDFreeFall = Animator.StringToHash("FreeFall");
+            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+
+            _fallTimeoutDelta = _fallTimeout;
         }
 
         public void ForceCutVelocity()
@@ -220,6 +245,27 @@ namespace LightHouse.KinematicCharacterController
                 CrouchInput.Toggle => !_requestedCrouch,
                 _ => _requestedCrouch
             };
+
+            _lastInputMagnitude = moveInputVector.magnitude; // déjà clamp 0..1
+
+            // vitesse cible anim (équivalent targetSpeed dans ThirdPersonController)
+            float baseSpeedForAnim;
+            switch (_state.Stance)
+            {
+                case Stance.Crouch:
+                    baseSpeedForAnim = _crouchSpeed;
+                    break;
+                case Stance.Stand:
+                default:
+                    baseSpeedForAnim = _requestedSprint ? _sprintSpeed : _walkSpeed;
+                    break;
+            }
+
+            // si pas d'input => 0
+            if (_lastInputMagnitude < 0.01f)
+                _targetAnimSpeed = 0f;
+            else
+                _targetAnimSpeed = baseSpeedForAnim * _lastInputMagnitude;
         }
 
         public Transform GetCameraTarget() => _cameraTarget;
@@ -457,11 +503,74 @@ namespace LightHouse.KinematicCharacterController
             _state.Velocity = _motor.Velocity;
             _state.IsGrounded = _motor.GroundingStatus.IsStableOnGround;
 
-            // >>> Mettre à jour la vitesse réelle planare (sert à l’audio, footsteps, UI…)
+            // Vitesse planare réelle (sert notamment au debug HUD etc.)
             Vector3 up = _motor.CharacterUp;
             Vector3 planarVel = Vector3.ProjectOnPlane(_state.Velocity, up);
             _currentSpeed = planarVel.magnitude;
+
+            // ------------------
+            // ANIMATION SYNC PART
+            // ------------------
+
+            if (_playerAnimator != null)
+            {
+                // 1) Grounded bool
+                _playerAnimator.SetBool(_animIDGrounded, _state.IsGrounded);
+
+                // 2) Jump trigger-bool style (equivalent SetBool("Jump", true) quand on saute)
+                //    On le met true UNIQUEMENT sur le frame du saut,
+                //    puis false immédiatement les frames suivantes s'il est grounded.
+                if (_jumpedThisFrame)
+                {
+                    _playerAnimator.SetBool(_animIDJump, true);
+                }
+                else if (_state.IsGrounded)
+                {
+                    _playerAnimator.SetBool(_animIDJump, false);
+                }
+
+                // 3) FreeFall bool avec timeout
+                //    - si on est au sol -> reset timer + FreeFall = false
+                //    - si en l'air -> décrémente timer, et si timer <= 0 => FreeFall = true
+                if (_state.IsGrounded)
+                {
+                    _fallTimeoutDelta = _fallTimeout;
+                    _playerAnimator.SetBool(_animIDFreeFall, false);
+                }
+                else
+                {
+                    if (_fallTimeoutDelta > 0f)
+                    {
+                        _fallTimeoutDelta -= deltaTime;
+                        if (_fallTimeoutDelta <= 0f)
+                        {
+                            _playerAnimator.SetBool(_animIDFreeFall, true);
+                        }
+                    }
+                }
+
+                // 4) Blend de vitesse pour "Speed"
+                //    On interpole vers _targetAnimSpeed comme dans ThirdPersonController
+                _animSpeedBlend = Mathf.Lerp(
+                    _animSpeedBlend,
+                    _targetAnimSpeed,
+                    deltaTime * _animSpeedChangeRate
+                );
+
+                // optionnel: éviter les tout petits résidus
+                if (_animSpeedBlend < 0.01f)
+                    _animSpeedBlend = 0f;
+
+                _playerAnimator.SetFloat(_animIDSpeed, _animSpeedBlend);
+
+                // 5) MotionSpeed = intensité d'input (stick/clavier)
+                _playerAnimator.SetFloat(_animIDMotionSpeed, _lastInputMagnitude);
+            }
+
+            // IMPORTANT : reset ce flag après usage anim
+            _jumpedThisFrame = false;
         }
+
 
 
         public bool IsColliderValidForCollisions(Collider coll)
