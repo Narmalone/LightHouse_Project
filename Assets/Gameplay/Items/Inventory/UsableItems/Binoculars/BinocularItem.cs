@@ -27,6 +27,9 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
     //==============================================================
     #region ► FOV / Zoom settings
     //==============================================================
+    [Header("References")]
+    [SerializeField] private MeshRenderer _mesh;
+
     [Header("Binocular FOV Settings")]
     [Tooltip("FOV le plus large (zoom FAIBLE). Ex: 45")]
     [SerializeField] private float _binocularMinFov = 45f;
@@ -185,6 +188,7 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
 
         _isBinocularModeUsed = true;
         if (_binocularCanvas) _binocularCanvas.SetActive(true);
+        _mesh.enabled = false;
     }
 
     public void DisableBinoculars()
@@ -199,6 +203,7 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
 
         _isBinocularModeUsed = false;
         if (_binocularCanvas) _binocularCanvas.SetActive(false);
+        _mesh.enabled = true;
     }
     #endregion
 

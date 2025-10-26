@@ -1,5 +1,4 @@
-﻿using LightHouse.Game.WaterExtension;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class BoidController : MonoBehaviour
@@ -33,11 +32,17 @@ public class BoidController : MonoBehaviour
     private float[] _cumLengths;
     private float _totalLength;
 
-    // === Initialization ===
-    public void Initialize(VectorPath path) { _path = path; }
-
-    private void Start()
+    public float MoveForce
     {
+        get { return _moveForce; }
+        set { _moveForce = value; }
+    }
+
+    // === Initialization ===
+    public void Initialize(VectorPath path) 
+    {
+        _path = path;
+
         foreach (var buoy in _buoyancys) buoy.gameObject.SetActive(false);
         _rb.isKinematic = true;
 
@@ -63,7 +68,7 @@ public class BoidController : MonoBehaviour
         _progress = 0f;
     }
 
-    private IEnumerator EnablePhysics()
+    protected IEnumerator EnablePhysics()
     {
         yield return new WaitForFixedUpdate();
 
@@ -80,7 +85,7 @@ public class BoidController : MonoBehaviour
     }
 
     // === FixedUpdate ===
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         if (_path.Paths == null || _path.Paths.Length == 0) return;
         if (_currentPathIndex >= _path.Paths.Length) return;
@@ -152,7 +157,7 @@ public class BoidController : MonoBehaviour
 
     private static Vector3 Flatten(Vector3 v) { v.y = 0f; return v; }
 
-    private void UpdateProgressAlongPath()
+    protected virtual void UpdateProgressAlongPath()
     {
         if (_cumLengths == null || _cumLengths.Length < 2) { _progress = 0f; return; }
 
@@ -173,7 +178,7 @@ public class BoidController : MonoBehaviour
     }
 
     // === Yaw uniquement via MoveRotation ===
-    private void YawRotateTowards(Vector3 desiredDir)
+    protected virtual void YawRotateTowards(Vector3 desiredDir)
     {
         // Yaw cible depuis la direction désirée (plan XZ)
         desiredDir.y = 0f;
