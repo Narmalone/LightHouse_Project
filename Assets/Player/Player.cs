@@ -39,8 +39,6 @@ namespace LightHouse.KinematicCharacterController
 
         [Header("Camera")]
         [SerializeField] private PlayerCamera _playerCamera;
-        [SerializeField] private CameraSpring _cameraSpring;
-        [SerializeField] private CameraLean _cameraLean;
 
         [Header("Interactions")]
         [SerializeField] private InteractionItemsUIManager _interactions;
@@ -140,7 +138,6 @@ namespace LightHouse.KinematicCharacterController
 
             _playerCharacter.SetPosition(GameWorldHandlerData.PlayerSpawnPoint.position);
             _playerCharacter.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
-            _cameraSpring.enabled = true;
 
             _isInitialized = true;
         }
