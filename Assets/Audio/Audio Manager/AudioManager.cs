@@ -8,7 +8,7 @@ namespace LightHouse.Audio
         [SerializeField] private AudioDatabase _audioDB;
         public AudioDatabase AudioDatabase => _audioDB;
 
-        private void Awake()
+        /*private void Awake()
         {
             foreach(var audio in _audioDB.Dialogues)
             {
@@ -190,7 +190,7 @@ namespace LightHouse.Audio
             source.volume = dialogue.Volume;
             source.spatialBlend = dialogue.SpatialBlend; // 0 = 2D, 1 = 3D
             source.Play();
-        }
+        }*/
 
 
     }

@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace LightHouse.Items
 {
-    public class SingleTalkieRaycast : SingleRaycastedItemName, IItemCallback
+    public class SingleTalkieRaycast : SingleRaycastedItemName
     {
         [SerializeField] private TalkieServiceReference _service;
         [SerializeField] private DialogueAudioName[] DialogueToPlay;
 
-        public void OnRaycastStart()
+        /*public void OnRaycastStart()
         {
             foreach(var dialogue in DialogueToPlay)
             {
@@ -23,6 +23,6 @@ namespace LightHouse.Items
         public void OnRaycastEnd()
         {
             
-        }
+        }*/
     }
 }

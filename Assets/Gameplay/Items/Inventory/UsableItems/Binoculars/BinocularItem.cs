@@ -14,14 +14,16 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
     //==============================================================
     #region ► Inventory contract
     //==============================================================
-    public bool CanBeUsedFromInventory { get; set; } = true;
-    public float UseHoldTime { get; set; } = 0.0f;
+    [field: SerializeField] public bool CanBeUsedFromInventory { get; set; } = true;
+    [field: SerializeField] public float UseHoldTime { get; set; } = 0.1f;
 
     public event Action OnItemUsed;
     public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
 
 #pragma warning disable
     public event Action<string> UseTextSlotChanged;
+
+    public event Action ItemAddedToInventory;
     #endregion
 
     //==============================================================
@@ -62,6 +64,8 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
     /// 0 = angle large (peu zoomé) ; 1 = angle étroit (très zoomé)
     /// </summary>
     public float Zoom01 => _zoom01;
+
+    private float _baseHoldTime;
     #endregion
 
     //==============================================================
@@ -81,6 +85,7 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
         base.Awake();
         SlotManager.OnSlotSelectedChanged += SlotManager_OnSlotSelectedChanged;
         InputManager.OnInputManagerWillClear += InputManager_OnInputManagerWillClear;
+        _baseHoldTime = UseHoldTime;
     }
 
     protected override void InputManager_OnInitialized()
@@ -189,6 +194,7 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
         _isBinocularModeUsed = true;
         if (_binocularCanvas) _binocularCanvas.SetActive(true);
         _mesh.enabled = false;
+        UseHoldTime = 0f;
     }
 
     public void DisableBinoculars()
@@ -204,12 +210,13 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
         _isBinocularModeUsed = false;
         if (_binocularCanvas) _binocularCanvas.SetActive(false);
         _mesh.enabled = true;
+        UseHoldTime = _baseHoldTime;
     }
     #endregion
 
     #region Inventory Callbacks
 
-    public void OnItemAddedToInventory() { }
+    public void OnItemAddedToInventory() { ItemAddedToInventory?.Invoke(); }
 
     public void OnItemRemovedFromInventory()
     {

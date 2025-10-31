@@ -12,9 +12,6 @@ namespace LightHouse.Weather
     {
         #region Serialized Fields
 
-        [Header("Config")]
-        [SerializeField] private WeatherConfigDatabase _configDatabase;
-
         [Header("Timeline")]
         [SerializeField] public WeatherTimeline Timeline;
 
@@ -45,6 +42,8 @@ namespace LightHouse.Weather
         public float CurrentBlend =>
             Mathf.Clamp01((_currentGameSeconds - _segmentStart) / Mathf.Max(1e-5f, _from.DurationInSeconds));
 
+        public int CurrentIndex => _currentIndex;
+
         #endregion
 
         #region Unity Lifecycle
@@ -52,7 +51,7 @@ namespace LightHouse.Weather
         private void Awake()
         {
             _secondsPerDay = _timeConfig.RealSecondsPerGameDay;
-            Timeline.GenerateTimeline(_configDatabase, _timeConfig);
+            Timeline.GenerateTimeline(_timeConfig);
 
             // Init segment 0
             _currentIndex = 0;

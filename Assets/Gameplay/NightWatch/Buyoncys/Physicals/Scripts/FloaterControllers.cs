@@ -21,6 +21,10 @@ namespace LightHouse.Utilities
         [Header("Search Settings")]
         [SerializeField] private float _searchError = 0.01f;
 
+        [Header("Rotation Clamp")]
+        [SerializeField] private float _maxTiltAngle = 30f; // degrés max autorisés pour ne pas qu'elle se retourne
+        [SerializeField] private bool _lockUpright = true;
+
         [Range(1, 200)] public int _maxIterations = 10;
         [SerializeField] private bool _includeDeformation = true;
         [SerializeField] private bool _excludeSimulation = false;
@@ -73,6 +77,35 @@ namespace LightHouse.Utilities
                     }
                 }
             }
+
+            if (_lockUpright)
+            {
+                // 1. Récupère la rotation actuelle
+                Quaternion currentRot = _rb.rotation;
+
+                // 2. On veut garder la yaw (tourner autour de l'axe vertical = autorisé),
+                //    mais on limite le pitch/roll.
+                //    Méthode : on travaille dans l'espace "tilt".
+                Vector3 up = _rb.transform.up;
+
+                // Calcule l'angle entre l'up actuel et l'up monde
+                float angleFromUp = Vector3.Angle(up, Vector3.up);
+
+                if (angleFromUp > _maxTiltAngle)
+                {
+                    // On veut ramener la bouée pour qu'elle soit inclinée max _maxTiltAngle par rapport au monde
+
+                    // Direction "cible" de l'up : pas forcément parfaitement droit, juste limitée
+                    Quaternion targetUprightRot = Quaternion.FromToRotation(up, Vector3.up) * currentRot;
+
+                    // Maintenant, on ne veut pas snap violent => on interpole
+                    _rb.MoveRotation(Quaternion.Slerp(currentRot, targetUprightRot, 0.5f));
+
+                    // Optionnel : on peut aussi calmer l'angularVelocity pour éviter l'oscillation infinie
+                    _rb.angularVelocity *= 0.5f;
+                }
+            }
+
         }
     }
 }

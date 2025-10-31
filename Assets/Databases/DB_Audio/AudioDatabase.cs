@@ -12,7 +12,7 @@ namespace LightHouse.Audio
         public List<MusicAudio> Musics;
         public List<LocalizedDialogueAudio> Dialogues;
 
-        public AmbianceAudio GetAmbiance(AmbianceAudioName category)
+       /* public AmbianceAudio GetAmbiance(AmbianceAudioName category)
         {
             return Ambiances.Find(a => a.Category == category);
         }
@@ -30,6 +30,6 @@ namespace LightHouse.Audio
         public LocalizedDialogueAudio GetDialogue(DialogueAudioName category)
         {
             return Dialogues.Find(e => e.Category == category);
-        }
+        }*/
     }
 }

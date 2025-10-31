@@ -14,23 +14,27 @@ namespace LightHouse.Weather
         #region Data
 
         public List<WeatherData> Weathers = new();
+        public WeatherConfigDatabase _database;
 
         public WeatherForecast Forecast = null;
 
         [Header("Custom start (optionnel)")]
         public bool EnableCustomWeathers = false;
         [Tooltip("Types imposés pour les premiers segments de la timeline, dans l’ordre.")]
-        public WeatherType[] CustomWeathers;
+        public WeatherType[] CustomWeathersType;
+        public WeatherData[] CustomWeathers;
 
         /// <summary>Appelé après régénération complète de la timeline.</summary>
         public static Action OnWeatherGenerated { get; set; }
+
+        public int CurrentIndex = -1;
 
         #endregion
 
         #region Generation
 
         /// <param name="totalTime">Durée totale du jeu (secondes).</param>
-        public void GenerateTimeline(WeatherConfigDatabase database, TimeConfiguration timeConfig)
+        public void GenerateTimeline(TimeConfiguration timeConfig)
         {
             Weathers.Clear();
 
@@ -39,8 +43,8 @@ namespace LightHouse.Weather
             float t = 0f;
             while (t < totalTime)
             {
-                var type = (WeatherType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(WeatherType)).Length);
-                var def = database.GetDefinition(type);
+                WeatherType type = (WeatherType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(WeatherType)).Length);
+                WeatherConfiguration def = _database.GetDefinition(type);
 
                 float duration = UnityEngine.Random.Range(def.MinWeatherDuration, def.MaxWeatherDuration);
                 if (duration <= 0f) duration = 1f; // garde-fou
@@ -69,10 +73,30 @@ namespace LightHouse.Weather
 
             // ★ Forçage des premiers segments si demandé
             if (EnableCustomWeathers)
-                ApplyCustomOverrides(database);
+                ApplyCustomOverrides(_database);
 
             Forecast = new WeatherForecast(timeConfig, this);
             OnWeatherGenerated?.Invoke();
+        }
+
+        public WeatherData GenerateSingleWeatherData(WeatherType type, float startTimeInSeconds, float duration = -1f)
+        {
+            WeatherConfiguration def = _database.GetDefinition(type);
+            float orientation = UnityEngine.Random.Range(0f, 360f);
+            if(duration < 0f) duration = UnityEngine.Random.Range(def.MinWeatherDuration, def.MaxWeatherDuration);
+            return new WeatherData
+            {
+                WeatherType = type,
+                StartTimeInSeconds = startTimeInSeconds,
+                DurationInSeconds = duration,
+                Humidity = UnityEngine.Random.Range(def.HumidityRange.x, def.HumidityRange.y),
+                AtmosphericPressure = UnityEngine.Random.Range(def.PressureRange.x, def.PressureRange.y),
+                WindSpeed = UnityEngine.Random.Range(def.WindSpeedRange.x, def.WindSpeedRange.y),
+                AirTemperature = UnityEngine.Random.Range(def.AirTemperatureRange.x, def.AirTemperatureRange.y),
+                WaterTemperature = UnityEngine.Random.Range(def.WaterTemperatureRange.x, def.WaterTemperatureRange.y),
+                WindOrientation = WeatherUtils.NormalizeAngle360(orientation),
+                WindOrientationType = WeatherUtils.AngleToOrientationType(orientation)
+            };
         }
 
         /// <summary>
@@ -87,7 +111,7 @@ namespace LightHouse.Weather
             int count = Mathf.Min(CustomWeathers.Length, Weathers.Count);
             for (int i = 0; i < count; i++)
             {
-                var forcedType = CustomWeathers[i];
+                var forcedType = CustomWeathersType[i];
                 var seg = Weathers[i];
                 if (seg == null) continue;
 
@@ -126,5 +150,10 @@ namespace LightHouse.Weather
         }
 
         #endregion
+
+        public void OverrideCurrentWeather(int weatherIndex, WeatherData data)
+        {
+            Weathers[weatherIndex] = data;
+        }
     }
 }

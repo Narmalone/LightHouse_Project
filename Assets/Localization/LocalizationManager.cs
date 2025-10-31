@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 namespace LightHouse.Localization
 {
@@ -13,7 +14,20 @@ namespace LightHouse.Localization
 
     public class LocalizationManager : MonoBehaviour
     {
+        private void Awake()
+        {
+            LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
+        }
 
+        private void OnDestroy()
+        {
+            LocalizationSettings.SelectedLocaleChanged -= LocalizationSettings_SelectedLocaleChanged;
+        }
+
+        private void LocalizationSettings_SelectedLocaleChanged(UnityEngine.Localization.Locale obj)
+        {
+            Debug.Log(obj.LocaleName);
+        }
     }
 }
 

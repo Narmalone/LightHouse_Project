@@ -11,7 +11,7 @@ namespace LightHouse.Inventory
     {
         #region Fields & Properties
         /// <summary>
-        /// The slot ID or more likely the slot index <see cref="PlayerInventorManager._slots"/>
+        /// The slot ID or more likely the slot index <see cref="InventoryUIController._generatedSlots"/>
         /// </summary>
         public byte SlotID;
 
@@ -107,6 +107,9 @@ namespace LightHouse.Inventory
         [SerializeField] private TextMeshProUGUI _itemName_TMP;
         [SerializeField] private TextMeshProUGUI _itemUseKey_TMP;
         [SerializeField] private TextMeshProUGUI _itemStack_TMP;
+        [SerializeField] private TextMeshProUGUI _itemSlotID_TMP;
+        [SerializeField] private Outline _outline;
+
         [SerializeField] private Image _spriteItem;
 
         public TextMeshProUGUI ItemName_TMP => _itemName_TMP;
@@ -118,11 +121,14 @@ namespace LightHouse.Inventory
         #endregion
 
         #region INIT
-        public void Init(ItemDatabase itemDB) => _itemDatabase = itemDB;
-        #endregion
-
-        #region MONO CALLBACKS
-        private void Start() => SlotDatas.Init();
+        public void Init(ItemDatabase itemDB, byte slotID)
+        {
+            SlotDatas.Init();
+            SlotDatas.SlotID = slotID;
+            _itemSlotID_TMP.text = (slotID + 1).ToString();
+            _itemDatabase = itemDB;
+            _outline.enabled = false;
+        }
         #endregion
 
         #region ADD / REMOVE METHODS
@@ -223,6 +229,7 @@ namespace LightHouse.Inventory
         public void Show()
         {
             SetEnableItemNameText(true);
+            _outline.enabled = true;
             SlotDatas.GetFirstItemInSlot(out IInventoryItem itm);
             if (itm != null)
             {
@@ -240,6 +247,7 @@ namespace LightHouse.Inventory
         {
             SetEnableItemNameText(false);
             SetEnableUseKeyText(false);
+            _outline.enabled = false;
         }
         #endregion
 
