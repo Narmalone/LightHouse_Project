@@ -27,6 +27,9 @@ namespace LightHouse.Weather
         /// <summary>Appelé après régénération complète de la timeline.</summary>
         public static Action OnWeatherGenerated { get; set; }
 
+        public event Action OnTimelineChanged;
+        public void NotifyChanged() => OnTimelineChanged?.Invoke();
+
         public int CurrentIndex = -1;
 
         #endregion

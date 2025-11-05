@@ -90,9 +90,11 @@ namespace LightHouse.Game.Tutorial
         private void CaptainBoat_OnPathCompleted()
         {
             //Le joueur est arrivé, il doit aller sur la plage vers la maison du gardien
-            var datas = timeline.GenerateSingleWeatherData(WeatherType.Stormy, 0f);
+            var datas = timeline.GenerateSingleWeatherData(WeatherType.Stormy, timeline.Weathers[timeline.CurrentIndex].StartTimeInSeconds, timeline.Weathers[timeline.CurrentIndex].DurationInSeconds);
+            var data2 = timeline.GenerateSingleWeatherData(WeatherType.Stormy, timeline.Weathers[timeline.CurrentIndex + 1].StartTimeInSeconds, timeline.Weathers[timeline.CurrentIndex + 1].DurationInSeconds);
             timeline.Weathers[timeline.CurrentIndex] = datas;
-            WeatherHandlerData.SetCurrentWeatherDatas(datas);
+            timeline.Weathers[timeline.CurrentIndex + 1] = data2;
+            timeline.NotifyChanged();
         }
 
         private void Start()

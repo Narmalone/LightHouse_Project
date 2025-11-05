@@ -55,6 +55,7 @@ namespace LightHouse.Weather
 
             // Init segment 0
             _currentIndex = 0;
+            Timeline.CurrentIndex = _currentIndex;
             if (Timeline.Weathers.Count < 2)
             {
                 Debug.LogError("[WeatherManager] Timeline insuffisante (<2 segments).");
@@ -71,6 +72,19 @@ namespace LightHouse.Weather
             CurrentWeather = WeatherUtils.LerpWeatherData(_from, _to, CurrentBlend);
             _lastEmittedType = CurrentWeather.WeatherType;
             WeatherHandlerData.SetCurrentWeatherDatas(CurrentWeather);
+
+            Timeline.OnTimelineChanged += Timeline_OnTimelineChanged;
+        }
+
+        private void Timeline_OnTimelineChanged()
+        {
+            if(Timeline.CurrentIndex == _currentIndex)
+            {
+                _from = Timeline.Weathers[_currentIndex];
+                _to = Timeline.Weathers[_currentIndex + 1];
+                _segmentStart = _from.StartTimeInSeconds;
+                _segmentEnd = _segmentStart + _from.DurationInSeconds;
+            } 
         }
 
         private void Update()
@@ -100,6 +114,7 @@ namespace LightHouse.Weather
         private void OnDestroy()
         {
             Timeline.Weathers.Clear();
+            Timeline.OnTimelineChanged -= Timeline_OnTimelineChanged;
         }
 
         #endregion
@@ -122,6 +137,7 @@ namespace LightHouse.Weather
             while (_currentGameSeconds >= _segmentEnd && _currentIndex < Timeline.Weathers.Count - 2)
             {
                 _currentIndex++;
+                Timeline.CurrentIndex = _currentIndex;
                 _from = Timeline.Weathers[_currentIndex];
                 _to = Timeline.Weathers[_currentIndex + 1];
 

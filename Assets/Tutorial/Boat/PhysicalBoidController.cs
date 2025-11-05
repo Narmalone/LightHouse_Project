@@ -1,18 +1,15 @@
-using KinematicCharacterController;
+ï»¿using KinematicCharacterController;
 using LightHouse.Utilities;
 using System;
 using UnityEngine;
 
 /// <summary>
-/// Bateau cinématique qui suit un VectorPath point par point,
+/// Bateau cinÃ©matique qui suit un VectorPath point par point,
 /// compatible KCC via PhysicsMover. Pas de AddForce, pas de rigidbody dynamique.
 /// </summary>
 public class BoatPathMover : MonoBehaviour, IMoverController
 {
     #region Events
-    /// <summary>
-    /// Déclenché UNE FOIS quand le dernier waypoint est atteint et que le path est terminé.
-    /// </summary>
     public event Action OnPathCompleted;
     #endregion
 
@@ -25,25 +22,22 @@ public class BoatPathMover : MonoBehaviour, IMoverController
     [SerializeField] private VectorPath _path;
     [SerializeField] private int _currentPathIndex = 0;
 
-    [Tooltip("Distance pour considérer un waypoint atteint et passer au suivant")]
+    [Tooltip("Distance pour considÃ©rer un waypoint atteint et passer au suivant")]
     [SerializeField] private float _waypointReachDistance = 5f;
 
-    [Tooltip("Vitesse linéaire (m/s) le long du path")]
+    [Tooltip("Vitesse linÃ©aire (m/s) le long du path")]
     [SerializeField] private float _baseMoveSpeed = 5f;
     [SerializeField] private float _moveSpeed = 5f;
 
     [Header("Rotation (Yaw uniquement)")]
-    [Tooltip("Vitesse max de rotation yaw en °/s")]
     [SerializeField] private float _maxYawDegPerSec = 45f;
-
-    [Tooltip("Deadzone d'angle yaw (°) pour éviter le jitter quand aligné")]
     [SerializeField] private float _yawDeadZoneDeg = 0.25f;
 
     [Header("Mer / Tangage")]
-    [SerializeField] private FloaterGetterController _floater; // -> script senseur mer
-    [SerializeField] private float _waterTiltLerp = 5f;    // réactivité inclinaison (pitch/roll)
-    [SerializeField] private float _waterHeightLerp = 5f;  // réactivité hauteur (heave)
-    [SerializeField] private float _waterHeightOffset = 0f; // offset du hull au-dessus de l'eau
+    [SerializeField] private FloaterGetterController _floater;
+    [SerializeField] private float _waterTiltLerp = 5f;
+    [SerializeField] private float _waterHeightLerp = 5f;
+    [SerializeField] private float _waterHeightOffset = 0f;
 
     [Header("Debug")]
     [SerializeField, Range(0f, 1f)] private float _progress01 = 0f;
@@ -52,20 +46,9 @@ public class BoatPathMover : MonoBehaviour, IMoverController
 
     #region Public API / Properties
 
-    /// <summary>Vitesse courante (m/s).</summary>
-    public float Speed
-    {
-        get => _moveSpeed;
-        set => _moveSpeed = value;
-    }
-
-    /// <summary>Vitesse de base configurée (m/s).</summary>
+    public float Speed { get => _moveSpeed; set => _moveSpeed = value; }
     public float BaseMoveSpeed => _baseMoveSpeed;
-
-    /// <summary>Progression le long du path (0..1).</summary>
     public float Progress => _progress01;
-
-    /// <summary>True si le path est terminé (dernier waypoint atteint et event potentiellement déclenché).</summary>
     public bool IsPathCompleted { get; private set; }
 
     #endregion
@@ -79,14 +62,11 @@ public class BoatPathMover : MonoBehaviour, IMoverController
     private float[] _cumLengths;
     private float _totalLength;
 
-    // état courant
-    private Vector3 _currentPos;    // position simulée (donnée au KCC)
-    private Quaternion _currentRot; // rotation simulée
-    private Vector3 _velocity;      // vel debug
-    private float _currentYawDeg;   // yaw accumulé
+    private Vector3 _currentPos;
+    private Quaternion _currentRot;
+    private Vector3 _velocity;
+    private float _currentYawDeg;
     private bool _initialized;
-
-    // garantit que OnPathCompleted n'est invoqué qu'une fois
     private bool _pathCompletedInvoked;
 
     #endregion
@@ -111,23 +91,18 @@ public class BoatPathMover : MonoBehaviour, IMoverController
 
     #region Initialization
 
-    /// <summary>
-    /// Initialise la position/rotation du bateau sur le path.
-    /// </summary>
     private void InitializeOnPath()
     {
         if (_path == null || _path.Paths == null || _path.Paths.Length == 0)
         {
-            Debug.LogWarning($"{name}: BoatPathMover - Path vide, je désactive.");
+            Debug.LogWarning($"{name}: BoatPathMover - Path vide, dÃ©sactivation.");
             enabled = false;
             return;
         }
 
-        // point de départ
         Vector3 startPos = _path.Paths[0];
         _currentPathIndex = Mathf.Min(1, _path.Paths.Length - 1);
 
-        // direction initiale
         Vector3 dir = (_path.Paths[_currentPathIndex] - startPos);
         dir.y = 0f;
         if (dir.sqrMagnitude < 0.0001f)
@@ -138,19 +113,13 @@ public class BoatPathMover : MonoBehaviour, IMoverController
         _currentPos = startPos;
         _currentRot = startRot;
         _currentYawDeg = _currentRot.eulerAngles.y;
-
-        // init pitch/roll/hauteur mer
         _pitchDeg = 0f;
         _rollDeg = 0f;
         _currentSeaHeight = _currentPos.y;
 
-        // pousser ça directement dans le mover pour qu'il parte synchro
         _mover.SetPositionAndRotation(_currentPos, _currentRot);
-
-        // pré-calcul des longueurs cumulées du path (pour Progress)
         PrecomputePolylineLengths();
 
-        // reset flags
         _initialized = true;
         IsPathCompleted = false;
         _pathCompletedInvoked = false;
@@ -161,25 +130,25 @@ public class BoatPathMover : MonoBehaviour, IMoverController
 
     #region KCC Mover Controller
 
-    /// <summary>
-    /// Appelé par PhysicsMover.VelocityUpdate() chaque tick physique,
-    /// pour donner la pos/rot cible (goal) ce frame.
-    /// </summary>
     public void UpdateMovement(out Vector3 goalPosition, out Quaternion goalRotation, float deltaTime)
     {
-        // Valeurs par défaut si pas prêt
         goalPosition = _currentPos;
         goalRotation = _currentRot;
 
         if (!_initialized || _path == null || _path.Paths == null || _path.Paths.Length == 0)
             return;
 
-        // Si fin du path déjà atteinte, on reste sur place
-        if (_currentPathIndex >= _path.Paths.Length)
+        // ðŸš« SÃ©curitÃ© : si on a dÃ©jÃ  fini le chemin, ne pas lire au-delÃ  du tableau
+        if (IsPathCompleted || _currentPathIndex >= _path.Paths.Length)
+        {
+            _currentPathIndex = Mathf.Clamp(_currentPathIndex, 0, _path.Paths.Length - 1);
+            goalPosition = _currentPos;
+            goalRotation = _currentRot;
             return;
+        }
 
         // -------------------------------------------------
-        // 1. Avancer le long du path (on modifie _currentPos.xz)
+        // 1. Avancer le long du path
         // -------------------------------------------------
         Vector3 targetWp = _path.Paths[_currentPathIndex];
         Vector3 flatToTarget = targetWp - _currentPos;
@@ -190,44 +159,41 @@ public class BoatPathMover : MonoBehaviour, IMoverController
 
         if (distToTarget <= _waypointReachDistance || stepDist >= distToTarget)
         {
-            // on "atteint" ce waypoint
             _currentPos = targetWp;
-
-            // next point
             _currentPathIndex++;
 
             if (_currentPathIndex >= _path.Paths.Length)
             {
-                // fin du path
+                // âœ… Fin du path atteinte
+                _currentPathIndex = _path.Paths.Length - 1;
                 UpdateProgressAlongPath();
-                goalPosition = _currentPos;
-                goalRotation = _currentRot;
 
-                // marque terminé et invoque l'event une seule fois
                 IsPathCompleted = true;
                 if (!_pathCompletedInvoked)
                 {
                     _pathCompletedInvoked = true;
                     OnPathCompleted?.Invoke();
                 }
+
+                goalPosition = _currentPos;
+                goalRotation = _currentRot;
                 return;
             }
         }
         else
         {
-            // déplacement partiel vers le waypoint
-            Vector3 moveDir = (flatToTarget / distToTarget); // normalisé XZ
+            Vector3 moveDir = flatToTarget.normalized;
             _currentPos += moveDir * stepDist;
         }
 
         // -------------------------------------------------
-        // 2. Mettre à jour le yaw cible (_currentYawDeg)
+        // 2. Mettre Ã  jour la rotation (yaw)
         // -------------------------------------------------
         Vector3 desiredDir = (_path.Paths[_currentPathIndex] - _currentPos);
         desiredDir.y = 0f;
+
         if (desiredDir.sqrMagnitude < 0.0001f)
         {
-            // si le point est super proche, fallback sur le forward actuel
             desiredDir = _currentRot * Vector3.forward;
             desiredDir.y = 0f;
             if (desiredDir.sqrMagnitude < 0.0001f)
@@ -246,7 +212,7 @@ public class BoatPathMover : MonoBehaviour, IMoverController
         }
 
         // -------------------------------------------------
-        // 3. Mer (pitch/roll + hauteur) lissée
+        // 3. Effets de la mer
         // -------------------------------------------------
         if (_floater != null)
         {
@@ -284,20 +250,14 @@ public class BoatPathMover : MonoBehaviour, IMoverController
         }
 
         // -------------------------------------------------
-        // 4. Composer la rot finale et la position finale
+        // 4. Calcul final
         // -------------------------------------------------
         _currentRot = Quaternion.Euler(_pitchDeg, _currentYawDeg, _rollDeg);
         _currentPos.y = _currentSeaHeight;
 
-        // -------------------------------------------------
-        // 5. Progress & debug vel
-        // -------------------------------------------------
         _velocity = (_path.Paths[_currentPathIndex] - _currentPos).normalized * _moveSpeed;
         UpdateProgressAlongPath();
 
-        // -------------------------------------------------
-        // 6. Sortie pour PhysicsMover
-        // -------------------------------------------------
         goalPosition = _currentPos;
         goalRotation = _currentRot;
     }
@@ -364,22 +324,13 @@ public class BoatPathMover : MonoBehaviour, IMoverController
 
     #region Helpers
 
-    /// <summary>
-    /// Réinitialise le déplacement au début du path.
-    /// </summary>
-    public void ResetToStart()
-    {
-        InitializeOnPath();
-    }
+    public void ResetToStart() => InitializeOnPath();
 
-    /// <summary>
-    /// Force l’achèvement du path (déclenche l’event si pas encore fait).
-    /// </summary>
     public void CompletePathNow()
     {
         if (IsPathCompleted) return;
 
-        _currentPathIndex = (_path != null && _path.Paths != null) ? _path.Paths.Length : 0;
+        _currentPathIndex = (_path != null && _path.Paths != null) ? _path.Paths.Length - 1 : 0;
         UpdateProgressAlongPath();
 
         IsPathCompleted = true;

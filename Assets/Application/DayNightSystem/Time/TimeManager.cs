@@ -12,90 +12,80 @@ namespace LightHouse.Game.DayNightSystem
         Evening
     }
 
-    public enum TimeOfDaySecondariesSegments
-    {
-        StartMorningTransition,
-        EndMorningTransition,
-        StartDayTransition,
-        EndDayTransition,
-        StartEveningTransition,
-        EndEveningTransition,
-        StartNightTransition,
-        EndNightTransition
-    }
-
     public class TimeManager : MonoBehaviour
     {
         [Range(0f, 24f)]
-        public float currentTime = 6f; // Heure initiale
-        public byte currentDay = 1;
+        public float CurrentTime = 6f; // Heure initiale
+        public byte CurentDay = 1;
+        public float TimeSpeed = 1.0f;
+
         [field: SerializeField] public TimeOfDaySegment CurrentSegment { get; private set; }
-        private TimeOfDaySegment lastSegment;
+        private TimeOfDaySegment _lastSegment;
 
         public TimeConfiguration TimeConfig;
 
-        private List<ITimeCycleObserver> observers = new List<ITimeCycleObserver>();
+        private List<ITimeCycleObserver> _observers = new List<ITimeCycleObserver>();
 
         public void RegisterObserver(ITimeCycleObserver observer)
         {
-            if (!observers.Contains(observer))
-                observers.Add(observer);
+            if (!_observers.Contains(observer))
+                _observers.Add(observer);
         }
 
         public void UnregisterObserver(ITimeCycleObserver observer)
         {
-            if (observers.Contains(observer))
-                observers.Remove(observer);
+            if (_observers.Contains(observer))
+                _observers.Remove(observer);
         }
 
         private void Awake()
         {
             //currentDay = 1;
-            TimeHandlerData.CurrentDay = currentDay;
-            TimeHandlerData.CurrentTime = currentTime;
+            TimeHandlerData.CurrentDay = CurentDay;
+            TimeHandlerData.CurrentTime = CurrentTime;
         }
 
         private void Update()
         {
-            float deltaHours = Time.deltaTime / TimeConfig.RealSecondsPerGameHour;
-            currentTime += deltaHours;
-            currentTime = Mathf.Clamp(currentTime, 0f, 24f);
+            float deltaHours = (Time.deltaTime / TimeConfig.RealSecondsPerGameHour) * TimeSpeed;
+            CurrentTime += deltaHours;
+            CurrentTime = Mathf.Clamp(CurrentTime, 0f, 24f);
 
-            if (currentTime >= 24f)
+            if (CurrentTime >= 24f)
             {
-                currentTime %= 24f;
-                currentDay++;
-                TimeHandlerData.CurrentDay = currentDay;
-                TimeHandlerData.OnDayChanged?.Invoke(currentDay);
+                CurrentTime %= 24f;
+                CurentDay++;
+                TimeHandlerData.CurrentDay = CurentDay;
+                TimeHandlerData.OnDayChanged?.Invoke(CurentDay);
 
-                if (currentDay >= TimeConfig.TotalDays)
+                if (CurentDay >= TimeConfig.TotalDays)
                 {
                     TimeHandlerData.OnTimeReachesEnd?.Invoke();
                 }
             }
 
-            TimeHandlerData.CurrentTime = currentTime;
+            TimeHandlerData.CurrentTime = CurrentTime;
             UpdateTimeSegment();
             NotifyObservers();
-            TimeHandlerData.OnTimeChanged?.Invoke(currentTime);
+            TimeHandlerData.OnTimeChanged?.Invoke(CurrentTime);
         }
 
         private void UpdateTimeSegment()
         {
             TimeOfDaySegment newSegment;
 
-            if (currentTime >= 6f && currentTime < 12f)
+            if (CurrentTime >= 6f && CurrentTime < 12f)
                 newSegment = TimeOfDaySegment.Morning;
-            else if (currentTime >= 12f && currentTime < 18f)
+            else if (CurrentTime >= 12f && CurrentTime < 18f)
                 newSegment = TimeOfDaySegment.Midday;
-            else if (currentTime >= 18f && currentTime < 24f)
+            else if (CurrentTime >= 18f && CurrentTime < 24f)
                 newSegment = TimeOfDaySegment.Evening;
             else
                 newSegment = TimeOfDaySegment.Night;
 
-            if (newSegment != lastSegment)
+            if (newSegment != _lastSegment)
             {
-                lastSegment = newSegment;
+                _lastSegment = newSegment;
                 CurrentSegment = newSegment;
                 TimeHandlerData.TimeOfDay = newSegment;
                 TimeHandlerData.OnTimeSegmentChanged?.Invoke(newSegment);
@@ -105,8 +95,8 @@ namespace LightHouse.Game.DayNightSystem
 
         private void NotifyObservers()
         {
-            foreach (var observer in observers)
-                observer.OnTimeChanged(currentTime);
+            foreach (var observer in _observers)
+                observer.OnTimeChanged(CurrentTime);
         }
     }
 }
