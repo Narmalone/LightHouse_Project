@@ -1,9 +1,12 @@
-﻿using System;
+﻿using LightHouse.Audio;
+using LightHouse.Handlers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using LightHouse.Audio;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 namespace LightHouse.Game.Talkie
@@ -43,6 +46,36 @@ namespace LightHouse.Game.Talkie
             _talkieServiceReference.ResetService();
         }
 
+
+        private IEnumerator LoadLocalizedCue(LocalizedDialogueAudio dialogue, Action<AudioCue, AsyncOperationHandle<AudioCue>> onLoaded)
+        {
+            AsyncOperationHandle<AudioCue> handle;
+
+            try
+            {
+                handle = dialogue.LoadCueAsync();
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[Talkie] LoadCueAsync failed for {dialogue.name}: {e.Message}");
+                onLoaded?.Invoke(null, default);
+                yield break;
+            }
+
+            yield return handle;
+
+            if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
+            {
+                Debug.LogWarning($"[Talkie] Failed to load AudioCue for {dialogue.name}");
+                Addressables.Release(handle);
+                onLoaded?.Invoke(null, default);
+                yield break;
+            }
+
+            onLoaded?.Invoke(handle.Result, handle);
+        }
+
+
         private IEnumerator ProcessTalkieQueue()
         {
             _isPlaying = true;
@@ -54,17 +87,31 @@ namespace LightHouse.Game.Talkie
                 // --- signale qu'on commence ce dialogue ---
                 OnDialogueStarted?.Invoke(dialogue);
 
-                // ici tu pourrais jouer l'audio réel
+                AudioCue loadedCue = null;
+                AsyncOperationHandle<AudioCue> cueHandle = default;
+                bool hasHandle = false;
+
                 if (ServiceLocator.Audio != null)
                 {
-                    // ServiceLocator.Audio.PlayOneShot();
+                    yield return LoadLocalizedCue(dialogue, (cue, handle) =>
+                    {
+                        loadedCue = cue;
+                        cueHandle = handle;
+                        hasHandle = handle.IsValid();
+                    });
+
+                    if (loadedCue != null)
+                    {
+                        // Si tu as des options de play, mets-les ici
+                        ServiceLocator.Audio.PlayOneShot(loadedCue);
+                    }
                 }
 
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_radioTMP.rectTransform.parent as RectTransform);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_radioTMP.rectTransform);
 
                 // on attend la fin d'affichage / audio
-                yield return DisplayRadioText(dialogue.CurrentSubtitleText, dialogue.GetDisplayDuration(), dialogue.CharDelay);
+                yield return DisplayRadioText(dialogue.GetSubtitles(), dialogue.GetDisplayDuration(), dialogue.CharDelay);
 
                 // --- signale qu'on a fini ce dialogue ---
                 OnDialogueFinished?.Invoke(dialogue);
@@ -140,6 +187,22 @@ namespace LightHouse.Game.Talkie
             {
                 StartCoroutine(ProcessTalkieQueue());
             }
+        }
+
+        private IAudioHandle _currentBip;
+        public AudioCue _baseBipSound;
+        public void Bip(AudioCue cue = null)
+        {
+            AudioPlayOptions options = new AudioPlayOptions();
+            options.FollowTransform = true;
+            options.Owner = PlayerHandlerData.MainPlayer.Character.gameObject;
+            _currentBip = ServiceLocator.Audio.PlayAt(cue == null ? _baseBipSound : cue, transform.position, options);
+        }
+
+        public void StopBip(float fadeOut = 1.0f)
+        {
+            if (_currentBip == null) return;
+            _currentBip.Stop(fadeOut);
         }
     }
 }

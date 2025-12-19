@@ -125,7 +125,7 @@ namespace LightHouse.CustomEditors
             var names = new List<string>();
             foreach (var asset in assets)
             {
-                string key = GetEntryKey(asset.LocalizedSubtitle);
+                string key = GetEntryKey(asset.SubtitleRef);
                 if (!string.IsNullOrEmpty(key))
                 {
                     string cleanName = AudioUtils.SanitizeName(key);

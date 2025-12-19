@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Localization;
 
 public enum AudioCategory { Music, Ambience, SFX, UI, Voice }
 public enum Spatialization { TwoD, ThreeD }
