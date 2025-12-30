@@ -1,10 +1,7 @@
-﻿using LightHouse.Game.BootStrap;
-using LightHouse.Handlers;
+﻿using LightHouse.Handlers;
 using LightHouse.Inputs;
 using System;
 using UnityEngine;
-using UnityEngine.Localization.Settings;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 namespace LightHouse.KinematicCharacterController
@@ -79,7 +76,6 @@ namespace LightHouse.KinematicCharacterController
                 InputManager.SetPlayerInputActions(_inputActions);
             }
             _playerCharacter.Initialize();
-            BootStrap.OnGameAssetsLoaded += BootStrap_OnGameSceneInitialized;
         }
 
         private void Start()
@@ -124,22 +120,7 @@ namespace LightHouse.KinematicCharacterController
             InputManager.DisposePlayerInputActions();
             _inputActions.Dispose();
             PlayerHandlerData.Dispose();
-            BootStrap.OnGameAssetsLoaded -= BootStrap_OnGameSceneInitialized;
             ForceChangePlayerState -= PlayerChangeState;
-        }
-        #endregion
-
-        #region BootStrap
-        private void BootStrap_OnGameSceneInitialized()
-        {
-            PlayerHandlerData.InitializeHandlerData(this);
-            InputManager.SetPlayerInputActions(_inputActions);
-            InputManager.InputManagerInitialized();
-
-            _playerCharacter.SetPosition(GameWorldHandlerData.PlayerSpawnPoint.position);
-            _playerCharacter.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
-
-            _isInitialized = true;
         }
         #endregion
 

@@ -1,5 +1,4 @@
 using System;
-using LightHouse.Game.BootStrap;
 using UnityEngine;
 
 namespace LightHouse.GrabableItems
@@ -13,19 +12,9 @@ namespace LightHouse.GrabableItems
         public Transform PlayerGrabableItemsParent => _playerGrabableItemsParent;
         public Transform PlayerCamera => _playerCamera;
 
-        private void Awake()
-        {
-            BootStrap.OnGameAssetsLoaded += GameInitiator_OnGameSceneInitialized;
-        }
-
-        private void GameInitiator_OnGameSceneInitialized()
+        private void Start()
         {
             OnPlayerGrabableInitialized?.Invoke(this);
-        }
-
-        private void OnDestroy()
-        {
-            BootStrap.OnGameAssetsLoaded -= GameInitiator_OnGameSceneInitialized;
         }
     }
 }

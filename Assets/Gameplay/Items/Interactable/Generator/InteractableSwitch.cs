@@ -105,7 +105,6 @@ namespace LightHouse.Items.Interactable
             InvokeObjectInteracted();
         }
 
-        protected override void OnGameInitialized() { }
         #endregion
     }
 

@@ -14,9 +14,6 @@ namespace LightHouse.Utilities
         [Header("Physics")]
         [SerializeField] private Rigidbody _rb;
         [SerializeField] private float _depthBeforeSubmersion = 0.5f;
-        [SerializeField] private float _displacementAmount = 3f;
-        [SerializeField] private float _waterDrag = 1f;
-        [SerializeField] private float _waterAngularDrag = 1f;
 
         [Header("Search Settings")]
         [SerializeField] private float _searchError = 0.01f;
@@ -24,7 +21,6 @@ namespace LightHouse.Utilities
         [Range(1, 200)] public int _maxIterations = 10;
         [SerializeField] private bool _includeDeformation = true;
         [SerializeField] private bool _excludeSimulation = false;
-        [SerializeField] private bool _outputNormal = false;
 
         public Vector3 AverageWaterNormal { get; private set; }
         public float AverageWaterHeight { get; private set; }

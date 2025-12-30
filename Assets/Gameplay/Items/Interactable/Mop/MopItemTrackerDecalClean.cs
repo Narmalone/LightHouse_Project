@@ -11,9 +11,9 @@ namespace LightHouse.Items.Interactable
         [Header("DECALS")]
         [SerializeField] private DecalProjector _targetDecal;
 
-        protected override void OnGameInitialized()
+
+        private void Start()
         {
-            base.OnGameInitialized();
             PlayerHandlerData.MainPlayer.Character.IgnoreCollider(this._detectionCollider);
         }
 

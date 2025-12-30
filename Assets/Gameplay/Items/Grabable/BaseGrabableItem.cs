@@ -228,11 +228,6 @@ namespace LightHouse.Items.Interactable
             if(_targetPoint == null)
                 _targetPoint = obj.PlayerGrabableItemsParent;
         }
-
-        protected override void OnGameInitialized()
-        {
-            
-        }
         #endregion
     }
 }

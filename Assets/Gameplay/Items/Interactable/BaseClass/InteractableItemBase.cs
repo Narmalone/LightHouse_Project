@@ -1,7 +1,6 @@
 using System;
 using LightHouse.Interactions;
 using UnityEngine;
-using LightHouse.Game.BootStrap;
 
 namespace LightHouse.Items.Interactable
 {
@@ -20,14 +19,10 @@ namespace LightHouse.Items.Interactable
         public event Action<string> OnNameUpdated;
         protected virtual void Awake()
         {
-            BootStrap.OnGameAssetsLoaded += OnGameInitialized;
         }
-
-        protected virtual void OnGameInitialized() { }
 
         protected virtual void OnDestroy()
         {
-            BootStrap.OnGameAssetsLoaded -= OnGameInitialized;
         }
 
         public virtual string GetName() => this._name;

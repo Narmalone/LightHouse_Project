@@ -3,7 +3,6 @@ using LightHouse.Interactions;
 using UnityEngine;
 using LightHouse.Items.Detection;
 using LightHouse.Inventory;
-using LightHouse.Game.BootStrap;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -124,7 +123,6 @@ namespace LightHouse.KinematicCharacterController
             SlotManager.Clear();
             InventoryHandlerData.Reset();
             PoolManager.Clear();
-            BootStrap.OnGameAssetsLoaded -= GameInitiator_OnGameSceneInitialized;
         }
 
         #endregion
@@ -137,12 +135,7 @@ namespace LightHouse.KinematicCharacterController
             _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
             SlotManager.Initialize(_slots);
             InitializeControllers();
-            BootStrap.OnGameAssetsLoaded += GameInitiator_OnGameSceneInitialized;
             _isInitialized = true;
-        }
-
-        private void GameInitiator_OnGameSceneInitialized()
-        {
         }
 
         private void InitializeControllers()

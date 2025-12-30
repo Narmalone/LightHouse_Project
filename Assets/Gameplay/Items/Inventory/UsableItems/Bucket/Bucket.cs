@@ -1,5 +1,4 @@
-﻿using LightHouse.Game.BootStrap;
-using LightHouse.Handlers;
+﻿using LightHouse.Handlers;
 using LightHouse.Inventory;
 using LightHouse.Items.Interactable;
 using UnityEngine;
@@ -14,13 +13,6 @@ namespace LightHouse.Items.Inventory
         [SerializeField] private ItemColliderMarker _itemColliderMarker;
         public bool IsFilledWithWater = false;
         private bool _isInitialized = false;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            BootStrap.OnGameAssetsLoaded += BootStrap_OnGameAssetsLoaded;
-        }
-
         private void Start()
         {
             if (!_isInitialized)
@@ -35,17 +27,6 @@ namespace LightHouse.Items.Inventory
             if (PlayerHandlerData.MainPlayer == null) return;
             PlayerHandlerData.MainPlayer.Character.IgnoreCollider(_mopTracker.GetCollider());
             Physics.IgnoreCollision(_mopTracker.GetCollider(), PlayerHandlerData.MainPlayer.Character.Motor.Capsule, true);
-        }
-        private void BootStrap_OnGameAssetsLoaded()
-        {
-            _isInitialized = true;
-            IgnoreMopColliderCollision();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            BootStrap.OnGameAssetsLoaded -= BootStrap_OnGameAssetsLoaded;
         }
 
         public void OnItemAddedToInventory()

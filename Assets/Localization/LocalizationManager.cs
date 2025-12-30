@@ -24,6 +24,14 @@ namespace LightHouse.Localization
             LocalizationSettings.SelectedLocaleChanged -= LocalizationSettings_SelectedLocaleChanged;
         }
 
+        private void LateUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+    
+            }
+        }
+
         private void LocalizationSettings_SelectedLocaleChanged(UnityEngine.Localization.Locale obj)
         {
             Debug.Log(obj.LocaleName);
