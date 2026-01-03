@@ -135,11 +135,11 @@ namespace LightHouse.KinematicCharacterController
         }
 
         // --- Animator params hashes (reprend la logique ThirdPersonController) ---
-        private int _animIDSpeed;
-        private int _animIDGrounded;
-        private int _animIDJump;
-        private int _animIDFreeFall;
-        private int _animIDMotionSpeed;
+        private int AnimIDSpeed;
+        private int AnimIDGrounded;
+        private int AnimIdJump;
+        private int AnimIdFreeFall;
+        private int AnimIDMotionSpeed;
 
         // blend & timers pour l'anim
         [SerializeField] private float _animSpeedChangeRate = 10f;   // même idée que SpeedChangeRate
@@ -166,11 +166,11 @@ namespace LightHouse.KinematicCharacterController
             _uncrouchOverlapResults = new Collider[8];
 
             // Animator param hashes
-            _animIDSpeed = Animator.StringToHash("Speed");
-            _animIDGrounded = Animator.StringToHash("Grounded");
-            _animIDJump = Animator.StringToHash("Jump");
-            _animIDFreeFall = Animator.StringToHash("FreeFall");
-            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            AnimIDSpeed = Animator.StringToHash("Speed");
+            AnimIDGrounded = Animator.StringToHash("Grounded");
+            AnimIdJump = Animator.StringToHash("Jump");
+            AnimIdFreeFall = Animator.StringToHash("FreeFall");
+            AnimIDMotionSpeed = Animator.StringToHash("MotionSpeed");
 
             _fallTimeoutDelta = _fallTimeout;
         }
@@ -514,18 +514,18 @@ namespace LightHouse.KinematicCharacterController
             if (_playerAnimator != null)
             {
                 // 1) Grounded bool
-                _playerAnimator.SetBool(_animIDGrounded, _state.IsGrounded);
+                _playerAnimator.SetBool(AnimIDGrounded, _state.IsGrounded);
 
                 // 2) Jump trigger-bool style (equivalent SetBool("Jump", true) quand on saute)
                 //    On le met true UNIQUEMENT sur le frame du saut,
                 //    puis false immédiatement les frames suivantes s'il est grounded.
                 if (_jumpedThisFrame)
                 {
-                    _playerAnimator.SetBool(_animIDJump, true);
+                    _playerAnimator.SetBool(AnimIdJump, true);
                 }
                 else if (_state.IsGrounded)
                 {
-                    _playerAnimator.SetBool(_animIDJump, false);
+                    _playerAnimator.SetBool(AnimIdJump, false);
                 }
 
                 // 3) FreeFall bool avec timeout
@@ -534,7 +534,7 @@ namespace LightHouse.KinematicCharacterController
                 if (_state.IsGrounded)
                 {
                     _fallTimeoutDelta = _fallTimeout;
-                    _playerAnimator.SetBool(_animIDFreeFall, false);
+                    _playerAnimator.SetBool(AnimIdFreeFall, false);
                 }
                 else
                 {
@@ -543,7 +543,7 @@ namespace LightHouse.KinematicCharacterController
                         _fallTimeoutDelta -= deltaTime;
                         if (_fallTimeoutDelta <= 0f)
                         {
-                            _playerAnimator.SetBool(_animIDFreeFall, true);
+                            _playerAnimator.SetBool(AnimIdFreeFall, true);
                         }
                     }
                 }
@@ -560,10 +560,10 @@ namespace LightHouse.KinematicCharacterController
                 if (_animSpeedBlend < 0.01f)
                     _animSpeedBlend = 0f;
 
-                _playerAnimator.SetFloat(_animIDSpeed, _animSpeedBlend);
+                _playerAnimator.SetFloat(AnimIDSpeed, _animSpeedBlend);
 
                 // 5) MotionSpeed = intensité d'input (stick/clavier)
-                _playerAnimator.SetFloat(_animIDMotionSpeed, _lastInputMagnitude);
+                _playerAnimator.SetFloat(AnimIDMotionSpeed, _lastInputMagnitude);
             }
 
             // IMPORTANT : reset ce flag après usage anim
