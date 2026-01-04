@@ -81,7 +81,7 @@ namespace LightHouse.Inventory
         public static bool IsIndexInvalid(short slotIndex) => slotIndex < 0 || slotIndex >= Slots.Length;
 
         /// <summary>
-        /// If the target slot has an item and a valid ID
+        /// If the target slot has an item and a invalid ID
         /// </summary>
         public static bool IsSlotInvalidOrOccupied(short slotIndex) => IsIndexInvalid(slotIndex) || Slots[CurrentSlotIndex].SlotDatas.HasItem;
 

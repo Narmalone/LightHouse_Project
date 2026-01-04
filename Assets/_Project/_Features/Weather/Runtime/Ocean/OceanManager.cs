@@ -4,6 +4,11 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace LightHouse.Weather.Ocean
 {
+    /// <summary>
+    /// L'océan manager se base pour l'instant sur un Global Setting
+    /// Souvent entre minimum et maximum e.g WindMin et WindMax et se basera par rapport au CurrentWind
+    /// situé dans le WeatherHandlerData
+    /// </summary>
     [RequireComponent(typeof(WaterSurface))]
     public class OceanManager : MonoBehaviour
     {

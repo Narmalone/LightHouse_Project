@@ -90,11 +90,6 @@ namespace LightHouse.Game.Computer.Calendar
                 day.Button.onClick.RemoveAllListeners();
         }
 
-        private void OnValidate()
-        {
-            _calendarDays = _parentDaysToCheck.GetComponentsInChildren<CalendarDayElement>();
-        }
-
         #endregion
 
         #region Calendar Logic

@@ -1,4 +1,4 @@
-using LightHouse.Audio;
+using UnityEngine;
 
 namespace LightHouse.Inventory
 {
@@ -9,7 +9,6 @@ namespace LightHouse.Inventory
         {
             if (item == null) return false;
             ItemSlot targetSlot = null;
-
             if (SlotManager.IsSlotInvalidOrOccupied(slotIndex))
             {
                 SlotManager.FindFirstEmptySlot(out targetSlot);

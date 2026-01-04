@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class AudioSettingsWindow : OptionWindowBase
 {
+    [SerializeField] private AudioSettingsConfig _config;
+    [SerializeField] private AudioVolumeSlider _musicSlider;
+    [SerializeField] private AudioVolumeSlider _sfxSlider;
+    [SerializeField] private AudioVolumeSlider _voiceSlider;
+
+    #region OptionWindowBase
     public override void ApplySettings()
     {
         throw new System.NotImplementedException();
@@ -23,15 +29,29 @@ public class AudioSettingsWindow : OptionWindowBase
         throw new System.NotImplementedException();
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    #endregion
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        if (!_musicSlider.HasKey())
+        {
+            _musicSlider.slider.SetValueWithoutNotify(_config.MusicBaseVolume);
+            _musicSlider.Apply(_config.MusicBaseVolume);
+        }
+        else _musicSlider.Load();
+
+        if (!_sfxSlider.HasKey())
+        {
+            _sfxSlider.slider.SetValueWithoutNotify(_config.SFXBaseVolume);
+            _sfxSlider.Apply(_config.SFXBaseVolume);
+        }
+        else _sfxSlider.Load();
+
+        if (!_voiceSlider.HasKey())
+        {
+            _voiceSlider.slider.SetValueWithoutNotify(_config.DialogsBaseVolume);
+            _voiceSlider.Apply(_config.DialogsBaseVolume);
+        }
+        else _voiceSlider.Load();
     }
 }

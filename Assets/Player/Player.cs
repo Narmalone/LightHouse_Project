@@ -1,10 +1,11 @@
 ﻿using LightHouse.Handlers;
 using LightHouse.Inputs;
+using LightHouse.KinematicCharacterController;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.KinematicCharacterController
+namespace LightHouse.myCharacter
 {
     public enum PlayerState
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using LightHouse.Weather.Utils;
+using LightHouse.EditorTools.SuperGameManager;
 
 namespace LightHouse.Weather
 {
@@ -13,7 +14,11 @@ namespace LightHouse.Weather
     {
         #region Data
 
+        [Header("SHOULD BE DEBUG ONLY")]
+        [SgmExpose(label: "Current Weathers")]
         public List<WeatherData> Weathers = new();
+
+        [SgmExpose(label: "Database Referal")]
         public WeatherConfigDatabase _database;
 
         public WeatherForecast Forecast = null;

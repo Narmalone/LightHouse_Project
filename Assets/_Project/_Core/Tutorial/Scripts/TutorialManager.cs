@@ -1,5 +1,7 @@
 ﻿using LightHouse.Audio;
 using LightHouse.Game.Talkie;
+using LightHouse.Handlers;
+using LightHouse.Inventory;
 using LightHouse.Utilities;
 using LightHouse.Weather;
 using System.Collections;
@@ -48,12 +50,13 @@ namespace LightHouse.Game.Tutorial
             Tutorial_1.Register();
             Tutorial_2.Register();
 
-            _talkieService = _talkieRef.Current;
-            _talkieManager = _talkieRef.Current as TalkieManager;
+            
         }
 
         private void Start()
         {
+            _talkieService = _talkieRef.Current;
+            _talkieManager = _talkieRef.Current as TalkieManager;
             StartCoroutine(StartIntroSequenceRoutine());
         }
 
@@ -74,6 +77,7 @@ namespace LightHouse.Game.Tutorial
                 yield return new WaitForSeconds(_delayBeforeBip);
 
             _talkieManager.Bip();
+            PlayerHandlerData.MainPlayer.Inventory.GenerateAndAddItemToInventory(SlotManager.CurrentSlotIndex, 5, false);
 
             yield return StartCoroutine(StartFirstDialogueRoutine());
         }

@@ -1,6 +1,6 @@
-﻿using LightHouse.Game.DayNightSystem;
+﻿using LightHouse.EditorTools.SuperGameManager;
+using LightHouse.Game.DayNightSystem;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "TimeConfig_Default", menuName = "LightHouse/Time/New Config")]
 public class TimeConfiguration : ScriptableObject
@@ -8,10 +8,12 @@ public class TimeConfiguration : ScriptableObject
     #region ========= Serialized data =========
 
     [Header("Calendar")]
+    [SgmExpose("General", "Total Days", order: 0)]
     public ushort TotalDays = 31;
 
     [Header("Game Day Length")]
     [Tooltip("Durée d’UN jour de jeu (24h in-game) en minutes réelles.")]
+    [SgmExpose("General", "Day Length (minutes)", order: 0)]
     [Min(0.01f)]
     public float DayLengthInMinits = 30.0f;
 

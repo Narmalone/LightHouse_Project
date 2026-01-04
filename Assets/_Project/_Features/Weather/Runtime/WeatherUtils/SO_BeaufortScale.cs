@@ -1,9 +1,11 @@
+using LightHouse.EditorTools.SuperGameManager;
 using LightHouse.Game.Computer.LEO.Weather.Wind;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SO_BeaufortScale", menuName = "LightHouse/Computer/LEO/Weather/New Beaufort Config")]
 public class SO_BeaufortScale : ScriptableObject
 {
+    [SgmExpose(label: "Beaufort Scale")]
     public BeaufortScale[] BeaufortDatas;
 
     public bool FindBeaufortDatasByWindSpeed(float windSpeed, out BeaufortScale beaufortDatas)

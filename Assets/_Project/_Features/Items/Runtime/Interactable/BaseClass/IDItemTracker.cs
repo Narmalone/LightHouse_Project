@@ -17,9 +17,9 @@ namespace LightHouse.Items.Interactable
 
         [Header(" --- LOCALIZATION --- ")]
         [SerializeField] protected LocalizedStringDatabase_InteractionTexts _interactionTextsDB;
-        [SerializeField] protected LocalizedString _missingItemInInventoryTxt => _interactionTextsDB.Need_Item;
-        [SerializeField] protected LocalizedString _needItemOnHandsTxt => _interactionTextsDB.Need_Item_In_Hands;
-        [SerializeField] protected LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
+        protected LocalizedString _missingItemInInventoryTxt => _interactionTextsDB.Need_Item;
+        protected LocalizedString _needItemOnHandsTxt => _interactionTextsDB.Need_Item_In_Hands;
+        protected LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
         [SerializeField] protected LocalizedString _itemNeededName;
 
         [SerializeField] protected string _currentItemNeededName;

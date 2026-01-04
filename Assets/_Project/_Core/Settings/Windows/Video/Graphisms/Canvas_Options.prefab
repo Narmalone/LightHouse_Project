@@ -328,6 +328,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -534,6 +535,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -670,6 +672,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1270,6 +1273,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1441,6 +1445,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1577,6 +1582,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1779,6 +1785,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -2786,6 +2793,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -2922,6 +2930,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -3435,6 +3444,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -4009,6 +4019,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -4105,6 +4116,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 8008651890429968024}
+  _config: {fileID: 11400000, guid: a325a614b1c0ff84a9d944ca652c7ce5, type: 2}
+  _musicSlider: {fileID: 1002824619474682271}
+  _sfxSlider: {fileID: 858371069669765558}
+  _voiceSlider: {fileID: 4443662679707668390}
 --- !u!1 &8813774539791161054
 GameObject:
   m_ObjectHideFlags: 0
@@ -4652,8 +4667,8 @@ MonoBehaviour:
   exposedParameter: SFX_Volume
   slider: {fileID: 636816593428605964}
   prefsKey: 
-  loadOnStart: 0
-  saveOnChange: 0
+  DeleteKeyOnStart: 1
+  saveOnChange: 1
 --- !u!114 &6290985271663695622 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6475088281827534195, guid: 418de030d20a50e48a13a07524f76b4f,
@@ -5143,8 +5158,8 @@ MonoBehaviour:
   exposedParameter: MUSIC_Volume
   slider: {fileID: 1390284615238176193}
   prefsKey: 
-  loadOnStart: 0
-  saveOnChange: 0
+  DeleteKeyOnStart: 1
+  saveOnChange: 1
 --- !u!224 &3729651273509905682 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2796019055076964010, guid: 418de030d20a50e48a13a07524f76b4f,
@@ -6683,8 +6698,8 @@ MonoBehaviour:
   exposedParameter: DIALOG_Volume
   slider: {fileID: 5180682034827284181}
   prefsKey: 
-  loadOnStart: 0
-  saveOnChange: 0
+  DeleteKeyOnStart: 1
+  saveOnChange: 1
 --- !u!1001 &4782435235434941041
 PrefabInstance:
   m_ObjectHideFlags: 0

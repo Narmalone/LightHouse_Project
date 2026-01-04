@@ -229,6 +229,23 @@ namespace LightHouse.KinematicCharacterController
             }
         }
 
+        public void GenerateAndAddItemToInventory(short slotIndex, ushort itemID, bool playSound = true, AudioCue soundToPlay = null)
+        {
+            if (playSound && soundToPlay == null) soundToPlay = _basePickupSound;
+            var prefab = _itemDatabase.GetPrefab(itemID);
+            var instance = Instantiate(prefab);
+            var item = instance.GetComponent<IInventoryItem>();
+            if (_pickupHandler.PickupItem(slotIndex, item, playSound, soundToPlay))
+            {
+                item.ForceDropItemFromInventory += IInventoryItem_ForceDropItemFromInventory;
+                InventoryHandlerData.NotifyAddedToInventory(item);
+            }
+            else
+            {
+                Debug.Log("item non récupéré inventaire plein");
+            }
+        }
+
         public void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID,
             Vector3 position, float force, bool enablePhysicsOnDrop)
         {
