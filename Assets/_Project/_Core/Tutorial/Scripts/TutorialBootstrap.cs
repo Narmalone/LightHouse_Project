@@ -1,6 +1,8 @@
 using LightHouse.Game.Buyoncies;
 using LightHouse.Game.Talkie;
 using LightHouse.Handlers;
+using LightHouse.Items.Interactable;
+using LightHouse.Items.Inventory;
 using LightHouse.Weather;
 using UnityEngine;
 
@@ -13,9 +15,12 @@ namespace LightHouse.Game.Tutorial
 
         [Header("Refs")]
         [SerializeField] private BinocularItem _binocular;
+        [SerializeField] private Hammer _hammer;
         [SerializeField] private Transform _lighthouse;
         [SerializeField] private Transform _rockPoint;
         [SerializeField] private BuyoncyController _nearbyBuoy;
+        [SerializeField] private IDUseItemTracker _pipe;
+
         [SerializeField] private WeatherTimeline _timeline;
 
         private void Start()
@@ -26,8 +31,10 @@ namespace LightHouse.Game.Tutorial
                 Talkie = _talkieRef.Current,
                 TalkieManager = _talkieRef.Current as TalkieManager,
                 Binocular = _binocular,
+                Hammer = _hammer,
                 Lighthouse = _lighthouse,
                 Rock = _rockPoint,
+                Pipe = _pipe,
                 NearbyBuoy = _nearbyBuoy,
                 Timeline = _timeline,
                 ViewTransform = PlayerHandlerData.MainPlayer?.PlayerCamera?.transform

@@ -60,7 +60,6 @@ namespace LightHouse.PhysicsCharacter
         [SerializeField] private Vector3 _gravity = new(0, -30f, 0);
 
         [Header("Grounding")]
-        [SerializeField] private float _groundCheckDistance = 0.08f;
         [SerializeField] private float _maxSlopeAngle = 55f;
         [SerializeField] private LayerMask _groundMask = ~0;
 
@@ -248,7 +247,6 @@ namespace LightHouse.PhysicsCharacter
 
         private Vector3 _groundNormal = Vector3.up;
 
-        [SerializeField] private float _groundSkin = 0.02f;     // petit margin
         [SerializeField] private float _maxGroundSnapUp = 2f;   // tolérance vitesse verticale
         private void UpdateGrounding(float dt)
         {
@@ -315,13 +313,10 @@ namespace LightHouse.PhysicsCharacter
                 if (probeHit && rh.collider != _capsule)
                 {
                     _groundNormal = rh.normal;
-                    _lastGroundHit = rh;      // si tu veux garder ton debug hit
-                    _lastCastHit = true;
                 }
                 else
                 {
                     _groundNormal = up;       // fallback
-                    _lastCastHit = false;
                 }
 
                 float angle = Vector3.Angle(_groundNormal, up);
@@ -342,7 +337,6 @@ namespace LightHouse.PhysicsCharacter
                 _groundNormal = Vector3.up;   // ou up
                 _timeSinceGrounded += dt;
 
-                _lastCastHit = false;
             }
         }
 
@@ -516,12 +510,6 @@ namespace LightHouse.PhysicsCharacter
 
         [Header("Debug Ground Cast")]
         [SerializeField] private bool _drawGroundCastGizmos = true;
-        [SerializeField] private bool _logGroundHit = false;
-
-        private RaycastHit _lastGroundHit;
-        private bool _lastCastHit;
-        private Vector3 _dbgP1, _dbgP2, _dbgUp;
-        private float _dbgRadius, _dbgCastDist;
 
         private void OnDrawGizmosSelected()
         {

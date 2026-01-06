@@ -21,7 +21,7 @@ namespace LightHouse.Game.Tutorial.Steps
             base.Enter(ctx);
             _ctx = ctx;
             _tutorial6.Register();
-            _ctx.NearbyBuoy.BreakDown();
+            //_ctx.NearbyBuoy.BreakDown();
         }
 
         public override void Tick(TutorialContext ctx, float dt)

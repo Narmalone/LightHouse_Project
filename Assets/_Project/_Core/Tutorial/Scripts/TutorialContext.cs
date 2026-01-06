@@ -1,5 +1,6 @@
 using LightHouse.Game.Buyoncies;
 using LightHouse.Game.Talkie;
+using LightHouse.Items.Interactable;
 using LightHouse.Items.Inventory;
 using LightHouse.Weather;
 using UnityEngine;
@@ -18,9 +19,11 @@ namespace LightHouse.Game.Tutorial
 
         public BinocularItem Binocular;
         public Hammer Hammer;
+
         public Transform Lighthouse;
         public Transform Rock;
         public BuyoncyController NearbyBuoy;
+        public IDUseItemTracker Pipe;
 
         public WeatherTimeline Timeline;
 

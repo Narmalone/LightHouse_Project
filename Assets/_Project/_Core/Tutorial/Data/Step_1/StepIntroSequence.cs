@@ -25,6 +25,7 @@ namespace LightHouse.Game.Tutorial.Steps
         {
             base.Enter(ctx);
 
+            InitializeControllersForTheFirstStep(ctx);
             // Register ici OU dans un bootstrap global (à toi de voir)
             _t1.Register();
             _t2.Register();
@@ -32,6 +33,11 @@ namespace LightHouse.Game.Tutorial.Steps
             _runner = ctx.Flow; // simple; sinon injecte le runner dans ctx
             _ctx = ctx;
             _runner.StartCoroutine(Routine(ctx));
+
+            if (PlayerHandlerData.MainPlayer != null)
+            {
+                PlayerHandlerData.MainPlayer.Inventory.Disable();
+            }
         }
 
         private void OnDialogueFinished(LocalizedDialogueAudio audio)
@@ -62,12 +68,21 @@ namespace LightHouse.Game.Tutorial.Steps
 
             ctx.Talkie?.Enqueue(_t1);
             ctx.Talkie?.Enqueue(_t2);
+            if (PlayerHandlerData.MainPlayer != null)
+            {
+                PlayerHandlerData.MainPlayer.Inventory.Enable();
+            }
         }
 
         public override void Exit(TutorialContext ctx)
         {
             _t1.Unregister();
             _t2.Unregister();
+        }
+
+        private void InitializeControllersForTheFirstStep(TutorialContext ctx)
+        {
+            ctx.NearbyBuoy?.BreakDown();
         }
     }
 }

@@ -13,7 +13,6 @@ namespace LightHouse.Utilities
 
         [Header("Physics")]
         [SerializeField] private Rigidbody _rb;
-        [SerializeField] private float _depthBeforeSubmersion = 0.5f;
 
         [Header("Search Settings")]
         [SerializeField] private float _searchError = 0.01f;
