@@ -229,7 +229,7 @@ namespace LightHouse.KinematicCharacterController
             }
         }
 
-        public void GenerateAndAddItemToInventory(short slotIndex, ushort itemID, bool playSound = true, AudioCue soundToPlay = null)
+        public IInventoryItem GenerateAndAddItemToInventory(short slotIndex, ushort itemID, bool playSound = true, AudioCue soundToPlay = null)
         {
             if (playSound && soundToPlay == null) soundToPlay = _basePickupSound;
             var prefab = _itemDatabase.GetPrefab(itemID);
@@ -244,6 +244,7 @@ namespace LightHouse.KinematicCharacterController
             {
                 Debug.Log("item non récupéré inventaire plein");
             }
+            return item;
         }
 
         public void RemoveItemFromInventory(int slotIndex, ushort globalItemID, ushort specificItemID,

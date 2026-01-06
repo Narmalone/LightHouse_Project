@@ -128,7 +128,7 @@ namespace LightHouse.PhysicsCharacter
         }
 
         // Appel� par ton "MyPlayer" (comme SetInputs)
-        public void SetInputs(in PlayerCharacterInputs inputs)
+        public void SetInputs(ref PlayerCharacterInputs inputs)
         {
             _inputs = inputs;
 
@@ -236,53 +236,116 @@ namespace LightHouse.PhysicsCharacter
         }
 
         // -------- Grounding --------
+        [Header("Ground Sphere Check")]
+        [SerializeField] private float _groundSphereRadius = 0.18f;   // ~ 80-90% du radius capsule en général
+        [SerializeField] private float _groundSphereOffsetUp = 0.02f;  // remonte un poil la sphère pour éviter l'auto-contact
+        [SerializeField] private float _groundNormalProbeDistance = 0.35f; // pour récupérer la normale
+
+        private readonly Collider[] _groundHits = new Collider[16];
+
+        private Vector3 _groundSphereCenterWS;
+        private bool _groundSphereHit;
+
         private Vector3 _groundNormal = Vector3.up;
 
+        [SerializeField] private float _groundSkin = 0.02f;     // petit margin
+        [SerializeField] private float _maxGroundSnapUp = 2f;   // tolérance vitesse verticale
         private void UpdateGrounding(float dt)
         {
             _timeSinceJumpPressed += dt;
 
-            // capsule cast down
-            Vector3 up = Vector3.up;
+            Quaternion rot = transform.rotation;
+            Vector3 up = rot * Vector3.up;
+
+            // --- calcule le bas world de la capsule ---
+            // center world
+            Vector3 centerWS = _rb.position + rot * _capsule.center;
+
             float radius = Mathf.Max(0.01f, _capsule.radius);
             float height = Mathf.Max(_capsule.height, radius * 2f);
-            Vector3 center = transform.position + _capsule.center;
 
-            float half = Mathf.Max(0f, (height * 0.5f) - radius);
-            Vector3 p1 = center + up * half;
-            Vector3 p2 = center - up * half;
+            // bas de capsule (centre - (halfHeight - radius))
+            float half = height * 0.5f;
+            float bottomOffset = Mathf.Max(0f, half - radius);
+            Vector3 bottomWS = centerWS - up * bottomOffset;
 
-            bool hit = Physics.CapsuleCast(
-                p1, p2, radius,
-                Vector3.down,
-                out RaycastHit rh,
-                _groundCheckDistance,
+            // centre de la sphère : légèrement au-dessus du bas
+            float sphereR = Mathf.Max(0.01f, _groundSphereRadius);
+            _groundSphereCenterWS = bottomWS + up * (_groundSphereOffsetUp + sphereR);
+
+            // --- overlap ---
+            int count = Physics.OverlapSphereNonAlloc(
+                _groundSphereCenterWS,
+                sphereR,
+                _groundHits,
                 _groundMask,
                 QueryTriggerInteraction.Ignore
             );
 
-            if (hit)
+            // filtre: ignore notre capsule (au cas où) + ignore triggers
+            bool found = false;
+            Collider foundCol = null;
+
+            for (int i = 0; i < count; i++)
             {
-                _groundNormal = rh.normal;
-                float angle = Vector3.Angle(_groundNormal, Vector3.up);
+                var c = _groundHits[i];
+                if (!c) continue;
+                if (c == _capsule) continue;
+                found = true;
+                foundCol = c;
+                break;
+            }
+
+            _groundSphereHit = found;
+
+            if (found)
+            {
+                // probe normale : petit SphereCast / Raycast vers le bas
+                RaycastHit rh;
+                bool probeHit = Physics.SphereCast(
+                    origin: _groundSphereCenterWS + up * 0.05f,
+                    radius: sphereR * 0.6f,
+                    direction: -up,
+                    hitInfo: out rh,
+                    maxDistance: _groundNormalProbeDistance,
+                    layerMask: _groundMask,
+                    queryTriggerInteraction: QueryTriggerInteraction.Ignore
+                );
+
+                if (probeHit && rh.collider != _capsule)
+                {
+                    _groundNormal = rh.normal;
+                    _lastGroundHit = rh;      // si tu veux garder ton debug hit
+                    _lastCastHit = true;
+                }
+                else
+                {
+                    _groundNormal = up;       // fallback
+                    _lastCastHit = false;
+                }
+
+                float angle = Vector3.Angle(_groundNormal, up);
                 _state.GroundAngle = angle;
 
                 bool slopeOk = angle <= _maxSlopeAngle;
-                _state.IsGrounded = slopeOk && Vector3.Dot(_rb.linearVelocity, Vector3.up) <= 2f;
 
-                if (_state.IsGrounded)
-                    _timeSinceGrounded = 0f;
-                else
-                    _timeSinceGrounded += dt;
+                float upVel = Vector3.Dot(_rb.linearVelocity, up);
+                _state.IsGrounded = slopeOk && upVel <= _maxGroundSnapUp;
+
+                if (_state.IsGrounded) _timeSinceGrounded = 0f;
+                else _timeSinceGrounded += dt;
             }
             else
             {
                 _state.IsGrounded = false;
                 _state.GroundAngle = 90f;
-                _groundNormal = Vector3.up;
+                _groundNormal = Vector3.up;   // ou up
                 _timeSinceGrounded += dt;
+
+                _lastCastHit = false;
             }
         }
+
 
         // -------- Jump (coyote + buffer) --------
         private void HandleJump(ref Vector3 v, float dt)
@@ -314,39 +377,31 @@ namespace LightHouse.PhysicsCharacter
         // -------- Crouch / Uncrouch --------
         private void HandleCrouch(float dt)
         {
+            // 1) Demande d'entrer en crouch
             if (_requestedCrouch && _state.Stance != Stance.Crouch)
             {
                 _state.Stance = Stance.Crouch;
                 ApplyCapsuleHeight(_crouchHeight);
+                return;
             }
 
+            // 2) Demande de sortir du crouch
             if (!_requestedCrouch && _state.Stance == Stance.Crouch)
             {
-                // test overlap stand
-                float radius = _capsule.radius;
-                Vector3 centerWorld = transform.position + _capsule.center;
-
-                float standHalf = Mathf.Max(0f, (_standHeight * 0.5f) - radius);
-                Vector3 p1 = centerWorld + Vector3.up * standHalf;
-                Vector3 p2 = centerWorld - Vector3.up * standHalf;
-
-                int count = Physics.OverlapCapsuleNonAlloc(
-                    p1, p2, radius,
-                    _uncrouchOverlap,
-                    _groundMask,
-                    QueryTriggerInteraction.Ignore
-                );
-
-                if (count > 0)
+                // On vérifie si on peut se relever sans collision
+                if (CanStandUp())
                 {
-                    _requestedCrouch = true; // reste accroupi
-                    return;
+                    _state.Stance = Stance.Stand;
+                    ApplyCapsuleHeight(_standHeight);
                 }
-
-                _state.Stance = Stance.Stand;
-                ApplyCapsuleHeight(_standHeight);
+                else
+                {
+                    // Toujours bloqué : on force le maintien en crouch
+                    _requestedCrouch = true;
+                }
             }
         }
+
 
         private void ApplyCapsuleHeight(float height)
         {
@@ -401,5 +456,111 @@ namespace LightHouse.PhysicsCharacter
                 1f - Mathf.Exp(-_crouchHeightResponse * dt)
             );
         }
+
+
+        [Header("Uncrouch")]
+        [SerializeField] private LayerMask _uncrouchObstructionMask = ~0; // mets "Default + Props + Walls" etc, MAIS PAS Ground
+        [SerializeField] private float _uncrouchSkin = 0.02f;
+        private bool CanStandUp()
+        {
+            Quaternion rot = transform.rotation;
+            Vector3 up = rot * Vector3.up;
+
+            float radius = Mathf.Max(0.01f, _capsule.radius);
+            float standHeight = Mathf.Max(_standHeight, radius * 2f);
+
+            // On veut tester la capsule "debout" AU MEME ENDROIT AU SOL.
+            // Donc on calcule le bottom actuel (en crouch), puis on reconstruit la capsule debout en gardant ce bottom.
+            Vector3 centerWS_Current = _rb.position + rot * _capsule.center;
+
+            float currentHeight = Mathf.Max(_capsule.height, radius * 2f);
+            float currentHalf = currentHeight * 0.5f;
+            float currentSegment = Mathf.Max(0f, currentHalf - radius);
+
+            // centre de l'hémisphère du bas actuel
+            Vector3 bottomHemisphereCenterWS = centerWS_Current - up * currentSegment;
+
+            // pour une capsule debout, segment debout
+            float standHalf = standHeight * 0.5f;
+            float standSegment = Mathf.Max(0f, standHalf - radius);
+
+            // centreWS debout = bottomHemisphereCenter + up * standSegment
+            Vector3 centerWS_Stand = bottomHemisphereCenterWS + up * standSegment;
+
+            // endpoints capsule debout (centres des hémisphères)
+            Vector3 p1 = centerWS_Stand + up * standSegment;
+            Vector3 p2 = centerWS_Stand - up * standSegment;
+
+            // un petit skin pour éviter les faux positifs au contact
+            float r = radius - _uncrouchSkin;
+            if (r < 0.001f) r = radius;
+
+            int count = Physics.OverlapCapsuleNonAlloc(
+                p1, p2, r,
+                _uncrouchOverlap,
+                _uncrouchObstructionMask,
+                QueryTriggerInteraction.Ignore
+            );
+
+            // filtre sécurité : ignore notre capsule si jamais
+            for (int i = 0; i < count; i++)
+            {
+                var c = _uncrouchOverlap[i];
+                if (!c) continue;
+                if (c == _capsule) continue;
+                return false; // obstruction
+            }
+
+            return true; // ok pour se relever
+        }
+
+        [Header("Debug Ground Cast")]
+        [SerializeField] private bool _drawGroundCastGizmos = true;
+        [SerializeField] private bool _logGroundHit = false;
+
+        private RaycastHit _lastGroundHit;
+        private bool _lastCastHit;
+        private Vector3 _dbgP1, _dbgP2, _dbgUp;
+        private float _dbgRadius, _dbgCastDist;
+
+        private void OnDrawGizmosSelected()
+        {
+            if (!_drawGroundCastGizmos) return;
+
+            var rb = _rb != null ? _rb : GetComponent<Rigidbody>();
+            var cap = _capsule != null ? _capsule : GetComponent<CapsuleCollider>();
+            if (!rb || !cap) return;
+
+            Quaternion rot = transform.rotation;
+            Vector3 up = rot * Vector3.up;
+
+            float radius = Mathf.Max(0.01f, cap.radius);
+            float height = Mathf.Max(cap.height, radius * 2f);
+
+            Vector3 centerWS = rb.position + rot * cap.center;
+            float half = height * 0.5f;
+            float bottomOffset = Mathf.Max(0f, half - radius);
+            Vector3 bottomWS = centerWS - up * bottomOffset;
+
+            float sphereR = Mathf.Max(0.01f, _groundSphereRadius);
+            Vector3 sphereCenter = bottomWS + up * (_groundSphereOffsetUp + sphereR);
+
+            Gizmos.color = (_state.IsGrounded ? Color.green : (_groundSphereHit ? Color.yellow : Color.red));
+
+            // Sphère overlap
+            Gizmos.DrawWireSphere(sphereCenter, sphereR);
+
+            // Ligne vers le bas pour illustrer la probe de normale
+            Gizmos.DrawLine(sphereCenter, sphereCenter - up * _groundNormalProbeDistance);
+
+            // Normale (si on en a une)
+            if (Application.isPlaying)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawRay(sphereCenter, _groundNormal * 0.5f);
+            }
+        }
+
+
     }
 }

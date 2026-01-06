@@ -10,6 +10,12 @@ public class MoverFollower : MonoBehaviour
     [SerializeField] private float _checkDistance = 0.2f;
     [SerializeField] private LayerMask _groundMask = ~0;
 
+    public void Config(LayerMask mask, float checkDistance)
+    {
+        _groundMask = mask;
+        _checkDistance = checkDistance;
+    }
+
     private void FixedUpdate()
     {
         // 1️⃣ Vérifie s’il y a un PhysicsMover juste en dessous

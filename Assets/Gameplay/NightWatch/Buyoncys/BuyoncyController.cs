@@ -177,6 +177,17 @@ namespace LightHouse.Game.Buyoncies
             _lifeLight.color = _aliveColor;
         }
 
+        public void SetColor(Color targetColor, bool useAliveColor = false, bool useDeadColor = false)
+        {
+            Color selectedColor = targetColor;
+            if(useAliveColor)
+                selectedColor = _aliveColor;
+            else if (useDeadColor)
+                selectedColor = _deadColor;
+            else
+                selectedColor = targetColor;
+        }
+
         #endregion
 
         #region Utility

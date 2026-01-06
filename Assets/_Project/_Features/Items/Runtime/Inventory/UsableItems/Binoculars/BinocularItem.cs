@@ -65,6 +65,8 @@ public class BinocularItem : InventoryItemBase, IInventoryItemUsable, IInventory
     /// </summary>
     public float Zoom01 => _zoom01;
 
+    public bool IsBinocularModeUsed => _isBinocularModeUsed;
+
     private float _baseHoldTime;
     #endregion
 

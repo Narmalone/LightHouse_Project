@@ -1,7 +1,5 @@
 using LightHouse.KinematicCharacterController;
 using System;
-using UnityEngine;
-using UnityEngine.Localization.Settings;
 
 namespace LightHouse.Handlers
 {

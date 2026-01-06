@@ -1,10 +1,15 @@
 using LightHouse.Handlers;
 using LightHouse.Inputs;
+using LightHouse.KinematicCharacterController;
+using LightHouse.PhysicsCharacter;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using CrouchInput = LightHouse.PhysicsCharacter.CrouchInput;
+using PlayerCharacterInputs = LightHouse.PhysicsCharacter.PlayerCharacterInputs;
+using SprintInput = LightHouse.PhysicsCharacter.SprintInput;
 
-namespace LightHouse.KinematicCharacterController
+namespace LightHouse.myCharacter
 {
     public enum PlayerState
     {
@@ -25,17 +30,11 @@ namespace LightHouse.KinematicCharacterController
         public static Action<PlayerState> ForceChangePlayerState;
 
         [Header("Character")]
-        [SerializeField] private PlayerCharacter _playerCharacter;
+        [SerializeField] private RigidbodyCharacterMotor _playerCharacter;
         [SerializeField] private LayerMask _skyBlockerMask = 1 << 1;
 
         [Header("Camera")]
         [SerializeField] private PlayerCamera _playerCamera;
-
-        [Header("Interactions")]
-        [SerializeField] private InteractionItemsUIManager _interactions;
-
-        [Header("Inventory")]
-        [SerializeField] private PlayerInventoryManager _inventoryController;
 
         [SerializeField] private Image _playerCenterDotImage;
 
@@ -49,10 +48,6 @@ namespace LightHouse.KinematicCharacterController
 
         private bool _isInitialized = false;
         private PlayerInputActions _inputActions;
-
-        public PlayerCharacter Character => _playerCharacter;
-        public PlayerCamera PlayerCamera => _playerCamera;
-        public PlayerInventoryManager Inventory => _inventoryController;
         #endregion
 
         #region UNITY LIFECYCLE
@@ -69,23 +64,23 @@ namespace LightHouse.KinematicCharacterController
                 _inputActions.Enable();
                 InputManager.SetPlayerInputActions(_inputActions);
             }
-            _playerCharacter.Initialize();
+            //_playerCharacter.Initialize();
         }
 
         private void Start()
         {
             if (EnableDebugMode)
             {
-                PlayerHandlerData.InitializeHandlerData(this);
+                //PlayerHandlerData.InitializeHandlerData(this);
                 if (!InputManager.IsInitialized)
                     InputManager.InputManagerInitialized();
                 _isInitialized = true;
 
-                if (GameWorldHandlerData.PlayerSpawnPoint != null)
+             /*   if (GameWorldHandlerData.PlayerSpawnPoint != null)
                 {
                     _playerCharacter.SetPosition(GameWorldHandlerData.PlayerSpawnPoint.position);
                     _playerCharacter.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
-                }
+                }*/
             }
         }
 
@@ -98,7 +93,7 @@ namespace LightHouse.KinematicCharacterController
         {
             if (!_isInitialized) return;
             HandleCharacterInput();
-            _playerCharacter.UpdateCapsuleMeshRoot(Time.deltaTime);
+            //_playerCharacter.UpdateCapsuleMeshRoot(Time.deltaTime);
         }
 
         private void LateUpdate()
@@ -166,14 +161,14 @@ namespace LightHouse.KinematicCharacterController
         public bool IsOccluded;
         public bool IsPlayerOccluded()
         {
-            Vector3 origin = Character.transform.position + Vector3.up * 0.1f;
+            Vector3 origin = _playerCharacter.transform.position + Vector3.up * 0.1f;
             return Physics.Raycast(origin, Vector3.up, 15.0f, _skyBlockerMask, QueryTriggerInteraction.Ignore);
         }
 
         // ---- STATE MACHINE ----
         private void PlayerChangeState(PlayerState requested)
         {
-            // Interpréter "LastState" comme "aller au dernier état entré"
+            /*// Interpréter "LastState" comme "aller au dernier état entré"
 
             // Si on demande le même état, ne rien faire
             if (requested == PlayerState) return;
@@ -192,7 +187,7 @@ namespace LightHouse.KinematicCharacterController
             }
 
             // Valider le changement
-            PlayerState = requested;  // <- courant
+            PlayerState = requested;  // <- courant*/
         }
 
         // Helper : revenir au vrai état précédent (si tu en as besoin)
@@ -214,8 +209,8 @@ namespace LightHouse.KinematicCharacterController
             Cursor.visible = false;
             _playerCenterDotImage.gameObject.SetActive(true);
             _enableAllCharacterInputs = true;
-            _inventoryController.Enable();
-            _interactions.Enable();
+            /*_inventoryController.Enable();
+            _interactions.Enable();*/
         }
 
         private void EnterCameraMode()
@@ -224,9 +219,9 @@ namespace LightHouse.KinematicCharacterController
             Cursor.visible = true;
             _playerCenterDotImage.gameObject.SetActive(false);
             _enableAllCharacterInputs = false;
-            _playerCharacter.ForceCutVelocity();
+           /* _playerCharacter.ForceCutVelocity();
             _inventoryController.Disable();
-            _interactions.Disable();
+            _interactions.Disable();*/
         }
 
         private void EnterOptionsMode()
@@ -235,9 +230,9 @@ namespace LightHouse.KinematicCharacterController
             Cursor.visible = true;
             _playerCenterDotImage.gameObject.SetActive(false);
             _enableAllCharacterInputs = false;
-            _playerCharacter.ForceCutVelocity();
+           /* _playerCharacter.ForceCutVelocity();
             _inventoryController.Disable();
-            _interactions.Disable();
+            _interactions.Disable();*/
         }
 
         private void EnterCutScenes()
@@ -246,9 +241,9 @@ namespace LightHouse.KinematicCharacterController
             Cursor.visible = false;
             _playerCenterDotImage.gameObject.SetActive(false);
             _enableAllCharacterInputs = false;
-            _playerCharacter.ForceCutVelocity();
+           /* _playerCharacter.ForceCutVelocity();
             _inventoryController.Disable();
-            _interactions.Disable();
+            _interactions.Disable();*/
         }
     }
 }

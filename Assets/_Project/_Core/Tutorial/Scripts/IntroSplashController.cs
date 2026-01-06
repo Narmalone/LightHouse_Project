@@ -68,7 +68,7 @@ namespace LightHouse.Game.Tutorial
             if (!_allowSkip) return;
 
             // Simple & efficace : clavier + clic + submit (si tu veux, on branchera le new Input System après)
-            if (Input.GetKeyDown(_skipKey) || Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(_skipKey) || Input.GetKeyDown(KeyCode.Return))
                 _skipRequested = true;
         }
 
