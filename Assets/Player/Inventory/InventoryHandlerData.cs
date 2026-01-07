@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightHouse.Inventory
@@ -35,7 +36,7 @@ namespace LightHouse.Inventory
         /// <summary>
         /// The Generated Slots
         /// </summary>
-        private static ItemSlot[] _slots => SlotManager.Slots;
+        private static List<ItemSlot> _slots => SlotManager.Slots;
         #endregion
 
         #region INIT & RESET
@@ -44,11 +45,12 @@ namespace LightHouse.Inventory
             InventoryTargetPosition = inventoryTargetPosition;
         }
 
-        public static void Initialized()
+        public static void Initialize()
         {
-            OnInitialized?.Invoke();
             IsInitialized = true;
+            OnInitialized?.Invoke();
         }
+
         public static void Reset()
         {
             IsInitialized = false;

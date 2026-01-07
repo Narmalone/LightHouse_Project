@@ -3,6 +3,7 @@ using LightHouse.Inputs;
 using LightHouse.Items;
 using UnityEngine;
 using LightHouse.Audio;
+using System.Collections.Generic;
 
 namespace LightHouse.Inventory
 {
@@ -17,7 +18,7 @@ namespace LightHouse.Inventory
 
         [Header("Debug only")]
         public Collider[] DropOverlappingColliders = new Collider[0];
-        private ItemSlot[] _slots => SlotManager.Slots;
+        private List<ItemSlot> _slots => SlotManager.Slots;
         private Transform _inventoryTarget;
         private float _dropChargeTimer = 0f;
         private float _dropPower = 0f;

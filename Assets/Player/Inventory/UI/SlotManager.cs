@@ -1,4 +1,6 @@
+using LightHouse.Handlers;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightHouse.Inventory
@@ -6,7 +8,7 @@ namespace LightHouse.Inventory
     public static class SlotManager
     {
         #region FIELDS & PROPTERTIES
-        public static ItemSlot[] Slots;
+        public static List<ItemSlot> Slots;
         public static short CurrentSlotIndex = -1;
         public static byte NumberOfSlotsTaken
         {
@@ -21,17 +23,32 @@ namespace LightHouse.Inventory
                 return count;
             }
         }
-        public static short SlotLength => (short)Slots.Length;
+        public static byte SlotLength => (byte)Slots.Count;
         public static ItemSlot CurrentSelectedSlot => Slots[CurrentSlotIndex];
 
         public static event Action OnSlotSelectedChanged;
         #endregion
 
         #region Init & Clear
-        public static void Initialize(ItemSlot[] slots)
+        public static void Initialize()
         {
-            Slots = slots;
+            Slots = new List<ItemSlot>();
             CurrentSlotIndex = -1;
+        }
+
+        public static void AddSlots(List<ItemSlot> slotsToAdd)
+        {
+            if (Slots == null)
+                Slots = new List<ItemSlot>();
+            Debug.Log("Adding slots: " + slotsToAdd.Count);
+            Slots.AddRange(slotsToAdd);
+        }
+
+        public static void AddSlot(ItemSlot slotToAdd)
+        {
+            if (Slots == null)
+                Slots = new List<ItemSlot>();
+            Slots.Add(slotToAdd);
         }
 
         public static void Clear() => Slots = null;
@@ -78,7 +95,7 @@ namespace LightHouse.Inventory
         /// <summary>
         /// If the index is inside the bounds of the slots
         /// </summary>
-        public static bool IsIndexInvalid(short slotIndex) => slotIndex < 0 || slotIndex >= Slots.Length;
+        public static bool IsIndexInvalid(short slotIndex) => slotIndex < 0 || slotIndex >= Slots.Count;
 
         /// <summary>
         /// If the target slot has an item and a invalid ID

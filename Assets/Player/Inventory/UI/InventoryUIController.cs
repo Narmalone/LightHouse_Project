@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ namespace LightHouse.Inventory
         [SerializeField] private RectTransform _inventoryLayoutGroup;
         [SerializeField] private Image _holdItemImage;
         [SerializeField] private Image _dropHoldPowerImage;
-        private ItemSlot[] _generatedSlots;
+
         #endregion
 
         #region Public API
@@ -36,15 +37,23 @@ namespace LightHouse.Inventory
         #endregion
 
         #region GENERATE
-        public ItemSlot[] GenerateItemSlot(int numberOfSlots, ItemDatabase database)
+        public List<ItemSlot> GenerateItemSlot(int numberOfSlots, ItemDatabase database)
         {
-            _generatedSlots = new ItemSlot[numberOfSlots];
-            for (int i = 0; i < _generatedSlots.Length; i++)
+            List<ItemSlot> generatedSlots = new List<ItemSlot>();
+            for (int i = 0; i < numberOfSlots; i++)
             {
-                _generatedSlots[i] = Instantiate(_slotPrefab, _inventoryLayoutGroup);
-                _generatedSlots[i].Init(database, (byte)i);
+                ItemSlot newSlot = Instantiate(_slotPrefab, _inventoryLayoutGroup);
+                generatedSlots.Add(newSlot);
+                SlotManager.AddSlot(newSlot);
+                newSlot.Init(database, (byte)(SlotManager.SlotLength - 1));
             }
-            return _generatedSlots;
+            return generatedSlots;
+        }
+
+        public List<ItemSlot> AddItemToSlots(int slotsToAdd, ItemDatabase database)
+        {
+            SlotManager.AddSlots(GenerateItemSlot(slotsToAdd, database));
+            return SlotManager.Slots;
         }
         #endregion
 

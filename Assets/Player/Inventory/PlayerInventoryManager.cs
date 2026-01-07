@@ -3,6 +3,7 @@ using LightHouse.Interactions;
 using UnityEngine;
 using LightHouse.Items.Detection;
 using LightHouse.Inventory;
+using System.Collections.Generic;
 
 namespace LightHouse.KinematicCharacterController
 {
@@ -46,13 +47,11 @@ namespace LightHouse.KinematicCharacterController
         [SerializeField] private AudioCue _baseDropSound;
 
         public RaycastDetector<IInventoryItem> RaycastDetector => _inventoryRaycastDetector;
+        public InventoryUIController InventoryUI => _inventoryUiController;
+        public ItemDatabase ItemDatabase => _itemDatabase;
         #endregion
 
         #region PRIVATE / HIDED FIELDS
-
-        //generated Slots
-        private ItemSlot[] _slots;
-
         private short CurrentSlotIndex => SlotManager.CurrentSlotIndex;
 
         //Raycast datas
@@ -132,9 +131,10 @@ namespace LightHouse.KinematicCharacterController
         {
             InventoryHandlerData.SetInventoryTarget(_inventoryTarget);
             RegisterInputs();
-            _slots = _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
-            SlotManager.Initialize(_slots);
+            SlotManager.Initialize();
+            _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
             InitializeControllers();
+            InventoryHandlerData.Initialize();
             _isInitialized = true;
         }
 
