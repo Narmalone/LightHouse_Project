@@ -1,23 +1,28 @@
 using LightHouse.Handlers;
 using LightHouse.Inventory;
+using LightHouse.Items.Interactable;
 using System;
 using UnityEngine;
 
-public class BagItem : MonoBehaviour
+public class BagItem : InteractableItemBase
 {
     [SerializeField] private byte _additionalSlots = 2;
 
-    private void Update()
+    public override string GetInteractionName()
     {
-        if(Input.GetKeyDown(KeyCode.T))
-        {
-            OnEquipped();
-        }
+        return "Press E to grab";
+    }
+
+    public override void Interact()
+    {
+        OnEquipped();
+        InvokeObjectInteracted();
+        Destroy(this.gameObject);
     }
 
     public void OnEquipped()
     {
-        if(PlayerHandlerData.MainPlayer != null && InventoryHandlerData.IsInitialized)
+        if (PlayerHandlerData.MainPlayer != null && InventoryHandlerData.IsInitialized)
         {
             Debug.Log("on equiped");
             InventoryUIController inventoryUI = PlayerHandlerData.MainPlayer.Inventory.InventoryUI;
