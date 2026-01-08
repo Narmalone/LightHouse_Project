@@ -1,4 +1,5 @@
 using LightHouse.Audio;
+using LightHouse.Weather;
 using System;
 using UnityEngine;
 
@@ -28,7 +29,34 @@ namespace LightHouse.Game.Tutorial.Steps
             {
                 collider.enabled = false;
             }
+
+            ChangeCurrentWeatherToStorm();
+
             _tutorialBoat.BoatPathMover.OnPathCompleted -= BoatMover_OnPathCompleted;
+        }
+
+        private void ChangeCurrentWeatherToStorm()
+        {
+            if (_ctx.Timeline == null) return;
+
+            int idx = _ctx.Timeline.CurrentIndex;
+            if (idx < 0 || idx + 1 >= _ctx.Timeline.Weathers.Count) return;
+
+            var w0 = _ctx.Timeline.GenerateSingleWeatherData(
+                WeatherType.Stormy,
+                _ctx.Timeline.Weathers[idx].StartTimeInSeconds,
+                _ctx.Timeline.Weathers[idx].DurationInSeconds
+            );
+
+            var w1 = _ctx.Timeline.GenerateSingleWeatherData(
+                WeatherType.Stormy,
+                _ctx.Timeline.Weathers[idx + 1].StartTimeInSeconds,
+                _ctx.Timeline.Weathers[idx + 1].DurationInSeconds
+            );
+
+            _ctx.Timeline.Weathers[idx] = w0;
+            _ctx.Timeline.Weathers[idx + 1] = w1;
+            _ctx.Timeline.NotifyChanged();
         }
 
         public override void Tick(TutorialContext ctx, float dt) { }
