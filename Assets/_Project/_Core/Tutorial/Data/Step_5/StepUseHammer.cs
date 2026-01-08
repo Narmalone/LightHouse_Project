@@ -28,15 +28,12 @@ namespace LightHouse.Game.Tutorial.Steps
         private void OnPipeUsed()
         {
             //TO DOO Remplacer le pipe fantome par le vrai pipe.
-            Debug.Log("le pipe a été réparé avec le marteau");
             _ctx.Talkie?.Enqueue(_tutorial8);
             _ctx.Pipe.OnItemUsedOnMe -= OnPipeUsed;
+            IsComplete = true;
         }
 
-        public override void Tick(TutorialContext ctx, float dt)
-        {
-            if (IsComplete) return;
-        }
+        public override void Tick(TutorialContext ctx, float dt) { }
 
         public override void Exit(TutorialContext ctx)
         {

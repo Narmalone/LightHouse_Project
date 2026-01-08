@@ -28,7 +28,7 @@ namespace LightHouse.Localization
         {
             if (Input.GetKeyDown(KeyCode.Alpha9))
             {
-    
+                //LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[0];
             }
         }
 

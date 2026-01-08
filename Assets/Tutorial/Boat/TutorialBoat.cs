@@ -1,5 +1,4 @@
 using LightHouse.Handlers;
-using System.Collections;
 using UnityEngine;
 
 public class TutorialBoat : MonoBehaviour
@@ -7,6 +6,10 @@ public class TutorialBoat : MonoBehaviour
     [SerializeField] private BoatPathMover _boid;
     [SerializeField] private VectorPath _targetPath;
     [SerializeField] private Transform _playerSpawnPoint;
+    [SerializeField] private Collider[] _subBoatColliders;
+
+    public Collider[] SubBoatColliders => _subBoatColliders;
+    public BoatPathMover BoatPathMover => _boid;
 
     private void Start()
     {

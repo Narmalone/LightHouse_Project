@@ -24,6 +24,8 @@ namespace LightHouse.Game.Tutorial
         public Transform Rock;
         public BuyoncyController NearbyBuoy;
         public IDUseItemTracker Pipe;
+        public BagItem Bag;
+        public TutorialBoat TutoBoat;
 
         public WeatherTimeline Timeline;
 

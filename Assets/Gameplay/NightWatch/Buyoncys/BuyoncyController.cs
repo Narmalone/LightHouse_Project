@@ -77,12 +77,8 @@ namespace LightHouse.Game.Buyoncies
             InitializeTimer();
             RegisterEvents();
             SonarHandlerData.Register(this);
-        }
-
-        private void Start()
-        {
-            _timer.StartTimer();
             _lifeLight.color = _aliveColor;
+            _timer.StartTimer();
             SonarInfo = $"#{BuyoncyID:D2}";
         }
 

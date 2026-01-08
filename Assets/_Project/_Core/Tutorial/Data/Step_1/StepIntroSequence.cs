@@ -37,6 +37,7 @@ namespace LightHouse.Game.Tutorial.Steps
             if (PlayerHandlerData.MainPlayer != null)
             {
                 PlayerHandlerData.MainPlayer.Inventory.Disable();
+                PlayerHandlerData.MainPlayer.Interactions.Disable();
             }
         }
 
@@ -71,6 +72,7 @@ namespace LightHouse.Game.Tutorial.Steps
             if (PlayerHandlerData.MainPlayer != null)
             {
                 PlayerHandlerData.MainPlayer.Inventory.Enable();
+                PlayerHandlerData.MainPlayer.Interactions.Enable();
             }
         }
 
@@ -83,6 +85,7 @@ namespace LightHouse.Game.Tutorial.Steps
         private void InitializeControllersForTheFirstStep(TutorialContext ctx)
         {
             ctx.NearbyBuoy?.BreakDown();
+            ctx.Bag?.gameObject.SetActive(false);
         }
     }
 }

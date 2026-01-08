@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using KinematicCharacterController;
+using System;
 
 [RequireComponent(typeof(Rigidbody))]
 public class MoverFollower : MonoBehaviour
 {
+    public event Action OnMoverAttached;
     private PhysicsMover _currentMover;
 
     // Hauteur de raycast pour détecter un sol sous l’objet
@@ -23,6 +25,7 @@ public class MoverFollower : MonoBehaviour
         {
             _currentMover = hit.collider.GetComponentInParent<PhysicsMover>();
             this.transform.SetParent(_currentMover.transform);
+            OnMoverAttached?.Invoke();
         }
         else
         {

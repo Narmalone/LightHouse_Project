@@ -59,6 +59,7 @@ namespace LightHouse.KinematicCharacterController
         public PlayerCharacter Character => _playerCharacter;
         public PlayerCamera PlayerCamera => _playerCamera;
         public PlayerInventoryManager Inventory => _inventoryController;
+        public InteractionItemsUIManager Interactions => _interactions;
         #endregion
 
         #region UNITY LIFECYCLE
