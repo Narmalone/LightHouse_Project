@@ -1,6 +1,5 @@
 using LightHouse.Audio;
 using LightHouse.Weather;
-using System;
 using UnityEngine;
 
 namespace LightHouse.Game.Tutorial.Steps
