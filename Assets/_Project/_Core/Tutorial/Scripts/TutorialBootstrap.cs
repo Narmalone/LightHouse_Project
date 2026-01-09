@@ -11,7 +11,6 @@ namespace LightHouse.Game.Tutorial
     public sealed class TutorialBootstrap : MonoBehaviour
     {
         [SerializeField] private bool _skipTutorial = false;
-        [SerializeField] private bool _forcePlayerSpawnOnIsland = false;
         [SerializeField] private TalkieServiceReference _talkieRef;
         [SerializeField] private TutorialFlow _flow;
 
