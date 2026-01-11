@@ -1,10 +1,12 @@
-using System;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Core.Player.Inventory.Pool;
+using LightHouse.Features.Items.Inventory.Databases;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Features.Items.Inventory.UI
 {
     [System.Serializable]
     public struct SlotData
@@ -71,7 +73,7 @@ namespace LightHouse.Inventory
         {
             item = null;
             if (ItemSpecificIds.Count <= 0) return false;
-            return PoolManager.GetWithoutRemovingFromPool((ushort)ItemGlobalID, ItemSpecificIds[0], out item);
+            return InventoryPoolManager.GetWithoutRemovingFromPool((ushort)ItemGlobalID, ItemSpecificIds[0], out item);
         }
 
         /// <summary>
@@ -84,7 +86,7 @@ namespace LightHouse.Inventory
             if (ItemSpecificIds.Count <= 0 || ItemGlobalID != globalID) return false;
             if (ItemSpecificIds.Contains(specificID))
             {
-                return PoolManager.GetWithoutRemovingFromPool((ushort)ItemGlobalID, specificID, out item);
+                return InventoryPoolManager.GetWithoutRemovingFromPool((ushort)ItemGlobalID, specificID, out item);
             }
             return false;
         }

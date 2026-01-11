@@ -1,11 +1,12 @@
-using LightHouse.Game.Computer.OS;
-using UnityEngine;
 
-public class LEOShortcut : ShortCutController
+namespace LightHouse.Features.Computer.OS
 {
-    private void Start()
+    public class LEOShortcut : ShortCutController
     {
-        OnExecute(false);
-        _currentInstance.OnClose(false);
+        private void Start()
+        {
+            OnExecute(false);
+            _currentInstance.OnClose(false);
+        }
     }
 }

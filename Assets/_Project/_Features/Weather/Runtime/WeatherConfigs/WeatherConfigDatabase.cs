@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace LightHouse.Weather
+namespace LightHouse.Features.Weather
 {
     [CreateAssetMenu(fileName = "WeatherDatabase", menuName = "LightHouse/Weather/Database")]
     public class WeatherConfigDatabase : ScriptableObject

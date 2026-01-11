@@ -1,8 +1,8 @@
+using LightHouse.Features.Interactions;
 using System;
-using LightHouse.Interactions;
 using UnityEngine;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public abstract class InteractableItemBase : MonoBehaviour, IInteractable
     {

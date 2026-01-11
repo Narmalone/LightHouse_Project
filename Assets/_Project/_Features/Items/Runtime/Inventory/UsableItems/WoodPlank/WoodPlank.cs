@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Woodplank
 {
     public class WoodPlank : Key
     {

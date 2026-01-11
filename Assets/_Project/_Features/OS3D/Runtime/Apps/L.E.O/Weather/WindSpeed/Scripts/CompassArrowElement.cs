@@ -1,9 +1,10 @@
+using LightHouse.Features.UI;
+using LightHouse.Features.Weather;
 using System;
 using TMPro;
 using UnityEngine;
-using LightHouse.Weather;
 
-namespace LightHouse.Game.Computer.LEO.Weather.Wind
+namespace LightHouse.Features.Computer.LEO.Weather.Wind
 {
     /// <summary>
     /// Élément de la boussole : un bouton + un label cardinal.

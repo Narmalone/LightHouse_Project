@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Localization.Settings;
 
-namespace LightHouse.Localization
+namespace LightHouse.Core.Localization
 {
     [System.Serializable]
     public enum InteractionsObjectsType

@@ -1,13 +1,13 @@
-﻿using LightHouse.Game.Buyoncies;
-using LightHouse.Game.Computer.LEO.NightWatch.Signals;
-using LightHouse.Money;
+﻿using LightHouse.Features.Buyoncies;
+using LightHouse.Features.Computer.LEO.NightWatch.Signals;
+using LightHouse.Core.Player.Money;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
+namespace LightHouse.Features.Computer.LEO.NightWatch.Buoys
 {
 
     public struct MoneyLine
@@ -132,7 +132,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
 
         #region Event Handlers
 
-        private void OnAnomalyExpired(BuyoncyAnomalyDatas datas)
+        private void OnAnomalyExpired(BuyoncyBreakdownDatas datas)
         {
             var buoy = _buoys.FirstOrDefault(b => b.ID == datas.ID);
             if (buoy != null)

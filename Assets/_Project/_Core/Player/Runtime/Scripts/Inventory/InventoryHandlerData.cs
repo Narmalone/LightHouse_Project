@@ -1,8 +1,10 @@
-﻿using System;
+﻿using LightHouse.Features.Items.Inventory;
+using LightHouse.Features.Items.Inventory.UI;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Core.Player.Inventory
 {
     public static class InventoryHandlerData
     {

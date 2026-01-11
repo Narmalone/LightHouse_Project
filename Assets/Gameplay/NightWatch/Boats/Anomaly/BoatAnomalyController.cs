@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace LightHouse.Game.Boats
+namespace LightHouse.Features.Boats.Anomalies
 {
     /// <summary>
     /// Gère la logique d'apparition, de déclenchement et de résolution d'une anomalie pour un bateau.

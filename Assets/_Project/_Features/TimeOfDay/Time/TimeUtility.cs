@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LightHouse.Game.DayNightSystem
+namespace LightHouse.Features.TimeOfDay.TimeCore
 {
     /// <summary>
     /// Time Utility contains utilities functions that helps to manage about Day Night & Time System

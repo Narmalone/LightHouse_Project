@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace LightHouse.Game.Tutorial
+namespace LightHouse.Core.Tutorial
 {
     /// <summary>
     /// Chaque Step du tutoriel hérite de cette classe.

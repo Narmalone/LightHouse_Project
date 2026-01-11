@@ -1,11 +1,12 @@
-using LightHouse.Interactions;
+using LightHouse.Features.Electricity;
+using LightHouse.Features.Interactions;
+
 using System;
 using UnityEngine;
-using LightHouse.Electricity;
 using UnityEngine.Localization;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class ElectricalPannelSwitch : InteractableSwitchRotate, IInteractable
     {

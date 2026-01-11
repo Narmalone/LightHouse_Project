@@ -1,10 +1,11 @@
-﻿using LightHouse.Game.Computer.LEO.Weather;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Weather.Utils;
+﻿using LightHouse.Features.Computer.LEO.Weather;
+using LightHouse.Features.TimeOfDay;
+using LightHouse.Features.TimeOfDay.TimeCore;
+using LightHouse.Features.Weather.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Weather
+namespace LightHouse.Features.Weather
 {
     /// <summary>
     /// Génère et expose des prévisions discrètes (matin / midi / soir / nuit) pour N jours,

@@ -1,6 +1,6 @@
 using System;
 
-namespace LightHouse.Game.DayNightSystem
+namespace LightHouse.Features.TimeOfDay.TimeCore
 {
     /// <summary>
     /// Contient les données globales du système jour/nuit accessibles à tout moment.

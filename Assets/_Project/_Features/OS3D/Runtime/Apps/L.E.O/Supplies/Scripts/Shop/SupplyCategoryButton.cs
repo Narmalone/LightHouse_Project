@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.Supplies 
+namespace LightHouse.Features.Computer.LEO.Supplies 
 {
     [RequireComponent(typeof(Button))]
     public class SupplyCategoryButton : MonoBehaviour

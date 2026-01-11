@@ -1,8 +1,8 @@
-using LightHouse.Game.Computer.OS;
+using LightHouse.Features.Computer.OS;
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.NoteSystem
+namespace LightHouse.Features.Computer.NoteSystem
 {
     /// <summary>
     /// Contrôleur de raccourci de note affiché dans l’interface principale.

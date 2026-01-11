@@ -1,7 +1,4 @@
-using System;
-using UnityEngine;
-
-namespace LightHouse.Inventory
+namespace LightHouse.Features.Items.Inventory
 {
     public interface IInventoryStackable
     {

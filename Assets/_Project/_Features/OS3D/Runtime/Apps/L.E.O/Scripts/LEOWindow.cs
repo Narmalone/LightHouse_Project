@@ -1,9 +1,8 @@
-using LightHouse.Game.Computer.OS;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO
+namespace LightHouse.Features.Computer.LEO
 {
     public abstract class LEOWindow : MonoBehaviour, ILEOWindow
     {

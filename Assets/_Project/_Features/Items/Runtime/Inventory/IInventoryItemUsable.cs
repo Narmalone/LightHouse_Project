@@ -1,6 +1,6 @@
 using System;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Features.Items.Inventory
 {
     public interface IInventoryItemUsable 
     {

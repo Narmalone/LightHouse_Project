@@ -1,9 +1,8 @@
-﻿using LightHouse.Inputs;
-using LightHouse.Inventory;
+﻿using LightHouse.Core.Inputs;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Interactions.Samples
+namespace LightHouse.Features.Items.Interactable.Doors
 {
     public class Door : MonoBehaviour, IDoor
     {

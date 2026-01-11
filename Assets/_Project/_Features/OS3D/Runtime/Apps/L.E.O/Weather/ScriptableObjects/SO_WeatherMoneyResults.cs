@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.Weather
+namespace LightHouse.Features.Computer.LEO.Weather
 {
     [CreateAssetMenu(fileName = "SO_Money_Money_Config_Default", menuName = "LightHouse/LEO/Weather/New Money Config")]
     public class SO_WeatherMoneyResults : ScriptableObject

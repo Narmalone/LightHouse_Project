@@ -1,89 +1,98 @@
-using LightHouse.Game.Options;
-using LightHouse.Options.V3;
+using LightHouse.Core.Settings.Video.Display;
+using LightHouse.Core.Settings.Video.Display.FrameRate;
+using LightHouse.Core.Settings.Video.Graphism.Quality;
+using LightHouse.Core.Settings.Video.Display.Refreshrate;
+using LightHouse.Core.Settings.Video.Display.VSync;
+using LightHouse.Core.Settings.Video.Display.Screenresolution;
+
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using LightHouse.Core.Settings.Video.Display.Monitor;
 
-public class VideoOptionsController : OptionWindowBase
+namespace LightHouse.Core.Settings.Video
 {
-    public List<IOption> VideosOptions = new List<IOption>();
-    public DisplayModeController DisplayModeController;
-    public MonitorController MonitorController;
-    public ResolutionController ResolutionController;
-    public RefreshRateController RefreshRateController;
-    public FrameRateController FrameRateController;
-    public VSyncController VSyncController;
-    public QualityConfigController QualityController;
-
-    private void Awake()
+    public class VideoOptionsController : OptionWindowBase
     {
-        VideosOptions = GetComponentsInChildren<IOption>().ToList();
-        FrameRateController.OnApplied += FrameRateController_OnApplied;
-    }
+        public List<IOption> VideosOptions = new List<IOption>();
+        public DisplayModeController DisplayModeController;
+        public MonitorController MonitorController;
+        public ResolutionController ResolutionController;
+        public RefreshRateController RefreshRateController;
+        public FrameRateController FrameRateController;
+        public VSyncController VSyncController;
+        public QualityConfigController QualityController;
 
-    private void OnDestroy()
-    {
-        FrameRateController.OnApplied -= FrameRateController_OnApplied;
-    }
-
-    private void FrameRateController_OnApplied(int obj)
-    {
-        if(obj == -1)
+        private void Awake()
         {
-            VSyncController.OnFrameRateIllimited();
+            VideosOptions = GetComponentsInChildren<IOption>().ToList();
+            FrameRateController.OnApplied += FrameRateController_OnApplied;
         }
-        else
+
+        private void OnDestroy()
         {
-            VSyncController.OnFrameRateDifferentThanIllimited();
+            FrameRateController.OnApplied -= FrameRateController_OnApplied;
         }
-    }
 
-    public override void ApplySettings()
-    {
-        DisplayModeController?.Apply();
-        MonitorController?.Apply();
-        ResolutionController?.Apply();
-        RefreshRateController?.Apply();
-        FrameRateController?.Apply();
-        VSyncController?.Apply();
-        QualityController?.Apply();
-    }
-
-    public override bool HasChanges()
-    {
-        foreach(IOption option in VideosOptions)
+        private void FrameRateController_OnApplied(int obj)
         {
-            if (option.HasChanges()) return true;
+            if (obj == -1)
+            {
+                VSyncController.OnFrameRateIllimited();
+            }
+            else
+            {
+                VSyncController.OnFrameRateDifferentThanIllimited();
+            }
         }
-        return false;
-    }
 
-    public void RevertAllSettings()
-    {
-        foreach (var option in VideosOptions)
+        public override void ApplySettings()
         {
-            option.Revert();
+            DisplayModeController?.Apply();
+            MonitorController?.Apply();
+            ResolutionController?.Apply();
+            RefreshRateController?.Apply();
+            FrameRateController?.Apply();
+            VSyncController?.Apply();
+            QualityController?.Apply();
+        }
+
+        public override bool HasChanges()
+        {
+            foreach (IOption option in VideosOptions)
+            {
+                if (option.HasChanges()) return true;
+            }
+            return false;
+        }
+
+        public void RevertAllSettings()
+        {
+            foreach (var option in VideosOptions)
+            {
+                option.Revert();
+            }
+        }
+
+        private void OnValidate()
+        {
+            VideosOptions = GetComponentsInChildren<IOption>().ToList();
+        }
+
+        public override void InitializeControllers()
+        {
+
+        }
+
+        public override void RevertSettings()
+        {
+            DisplayModeController?.Revert();
+            MonitorController?.Revert();
+            ResolutionController?.Revert();
+            RefreshRateController?.Revert();
+            FrameRateController?.Revert();
+            VSyncController?.Revert();
+            QualityController?.Revert();
         }
     }
 
-    private void OnValidate()
-    {
-        VideosOptions = GetComponentsInChildren<IOption>().ToList();
-    }
-
-    public override void InitializeControllers()
-    {
-        
-    }
-
-    public override void RevertSettings()
-    {
-        DisplayModeController?.Revert();
-        MonitorController?.Revert();
-        ResolutionController?.Revert();
-        RefreshRateController?.Revert();
-        FrameRateController?.Revert();
-        VSyncController?.Revert();
-        QualityController?.Revert();
-    }
 }

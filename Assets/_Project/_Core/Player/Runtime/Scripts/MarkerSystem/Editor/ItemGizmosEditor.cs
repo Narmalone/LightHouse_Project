@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEditor;
-using LightHouse.Items.Inventory;
-using LightHouse.Items.Interactable;
-using LightHouse.Items;
 
-namespace LightHouse.CustomEditors
+using LightHouse.Features.Items;
+using LightHouse.Features.Items.Inventory;
+using LightHouse.Features.Items.Interactable;
+
+namespace LightHouse.Core.CustomEditors
 {
     [InitializeOnLoad]
     public static class ItemsGizmosEditor

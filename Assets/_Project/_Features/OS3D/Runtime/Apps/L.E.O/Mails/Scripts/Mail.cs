@@ -1,6 +1,6 @@
-using LightHouse.Game.DayNightSystem;
+using LightHouse.Features.TimeOfDay.TimeCore;
 
-namespace LightHouse.Game.Computer.LEO.Mails
+namespace LightHouse.Features.Computer.LEO.Mails
 {
     [System.Serializable]
     public class MailDatas

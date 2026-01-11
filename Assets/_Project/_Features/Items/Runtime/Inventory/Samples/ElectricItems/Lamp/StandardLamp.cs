@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace LightHouse.Electricity
+namespace LightHouse.Features.Electricity
 {
     public class StandardLamp : MonoBehaviour, IElectricItem
     {

@@ -1,4 +1,4 @@
-namespace LightHouse.Game.DayNightSystem
+namespace LightHouse.Features.TimeOfDay.TimeCore
 {
     public interface ITimeCycleObserver 
     {

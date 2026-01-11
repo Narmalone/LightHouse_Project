@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO
+namespace LightHouse.Features.Computer.LEO
 {
     [RequireComponent(typeof(Button))]
     public class LEOWindowButton : MonoBehaviour

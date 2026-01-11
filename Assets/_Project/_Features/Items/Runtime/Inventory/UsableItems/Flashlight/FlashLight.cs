@@ -1,12 +1,13 @@
-using LightHouse.Inputs;
-using LightHouse.Inventory;
+using LightHouse.Core.Inputs;
+using UnityEngine.Localization;
+using LightHouse.Core.Audio;
+using LightHouse.Core.Services;
+
 using System;
 using UnityEngine;
-using LightHouse.Localization;
-using UnityEngine.Localization;
-using LightHouse.Audio;
+using LightHouse.Core.Localization;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Flashlight
 {
     public class FlashLight : InventoryItemBase, IInventoryItemUsable
     {

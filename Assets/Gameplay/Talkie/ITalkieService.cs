@@ -1,6 +1,6 @@
-using LightHouse.Audio;
+using LightHouse.Core.Audio;
 
-namespace LightHouse.Game.Talkie
+namespace LightHouse.Features.Talkie
 {
     public interface ITalkieService
     {

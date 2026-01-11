@@ -1,28 +1,32 @@
 using UnityEngine;
 
-public class CombinedSurfaceProvider : MonoBehaviour
+namespace LightHouse.Features.TerrainSurface
 {
-    public TerrainSurfaceProvider terrainProvider;   // optionnel
-    public SurfaceFallbackMap fallbackMap;           // optionnel
-
-    public SurfaceType GetSurface(in RaycastHit hit)
+    public class CombinedSurfaceProvider : MonoBehaviour
     {
-        // 1) Terrain
-        if (terrainProvider && terrainProvider.TryGetSurfaceAt(hit, out var s))
-            return s;
+        public TerrainSurfaceProvider terrainProvider;   // optionnel
+        public SurfaceFallbackMap fallbackMap;           // optionnel
 
-        // 2) PhysicMaterial / Layer
-        var col = hit.collider;
-        if (fallbackMap)
+        public SurfaceType GetSurface(in RaycastHit hit)
         {
-            if (col && col.sharedMaterial)
-            {
-                var t = fallbackMap.FromPhysMat(col.sharedMaterial);
-                if (t != fallbackMap.defaultSurface) return t;
-            }
-            return fallbackMap.FromLayer(col ? col.gameObject.layer : 0);
-        }
+            // 1) Terrain
+            if (terrainProvider && terrainProvider.TryGetSurfaceAt(hit, out var s))
+                return s;
 
-        return SurfaceType.Default;
+            // 2) PhysicMaterial / Layer
+            var col = hit.collider;
+            if (fallbackMap)
+            {
+                if (col && col.sharedMaterial)
+                {
+                    var t = fallbackMap.FromPhysMat(col.sharedMaterial);
+                    if (t != fallbackMap.defaultSurface) return t;
+                }
+                return fallbackMap.FromLayer(col ? col.gameObject.layer : 0);
+            }
+
+            return SurfaceType.Default;
+        }
     }
+
 }

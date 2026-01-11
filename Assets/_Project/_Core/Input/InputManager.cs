@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace LightHouse.Inputs
+namespace LightHouse.Core.Inputs
 {
     public static class InputManager
     {

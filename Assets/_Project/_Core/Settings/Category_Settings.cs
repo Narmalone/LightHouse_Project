@@ -1,9 +1,12 @@
-public enum CategorySetting
+namespace LightHouse.Core.Settings
 {
-    Audio,
-    Accessibility,
-    Controls,
-    Game,
-    Video,
-    Developpement
+    public enum CategorySetting
+    {
+        Audio,
+        Accessibility,
+        Controls,
+        Game,
+        Video,
+        Developpement
+    }
 }

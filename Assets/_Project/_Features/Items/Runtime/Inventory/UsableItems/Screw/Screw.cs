@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
-using LightHouse.Inventory;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Screw
 {
     public class Screw : InventoryItemBase, IInventoryItemUsable, IInventoryStackable
     {

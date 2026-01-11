@@ -1,7 +1,7 @@
-using LightHouse.Audio;
+using LightHouse.Core.Audio;
 using UnityEngine;
 
-namespace LightHouse.Game.Tutorial.Steps
+namespace LightHouse.Core.Tutorial.Steps
 {
     [CreateAssetMenu(menuName = "LightHouse/Tutorial/Steps/LookLighthouseWithBinoculars")]
     public sealed class StepLookLighthouseWithBinoculars : TutorialStep

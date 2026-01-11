@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
-namespace LightHouse.Game.Boats.Frequencies
+namespace LightHouse.Features.Boats.Frequencies
 {
     [CreateAssetMenu(fileName = "BoatFrequencyAllocator", menuName = "LightHouse/Boats/Frequency Allocator")]
     public class BoatFrequencyAllocator : ScriptableObject

@@ -3,7 +3,7 @@ using System.Globalization;
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.Weather.Wind
+namespace LightHouse.Features.Computer.LEO.Weather.Wind
 {
     #region Data
 

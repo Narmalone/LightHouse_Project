@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LightHouse.Features.TimeOfDay.TimeCore;
+using System;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-namespace LightHouse.Game.DayNightSystem
+namespace LightHouse.Features.TimeOfDay.Moon
 {
     public class MoonController : MonoBehaviour, ITimeCycleObserver
     {

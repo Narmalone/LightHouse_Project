@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
+namespace LightHouse.Features.Computer.LEO.NightWatch.Buoys
 {
     /// <summary>
     /// Calculs d'argent : plat + bonus basé sur une courbe/temps.

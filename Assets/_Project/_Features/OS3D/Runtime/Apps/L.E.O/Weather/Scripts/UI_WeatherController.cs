@@ -1,20 +1,22 @@
-﻿using LightHouse.Game.Computer.Calendar;
-using LightHouse.Game.Computer.LEO.Mails;
-using LightHouse.Game.Computer.LEO.Weather.Humidity;
-using LightHouse.Game.Computer.LEO.Weather.Pressure;
-using LightHouse.Game.Computer.LEO.Weather.Temperature;
-using LightHouse.Game.Computer.LEO.Weather.Wind;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Money;
-using LightHouse.Weather;
-using LightHouse.Weather.Utils;
+﻿using LightHouse.Features.Computer.Calendar;
+using LightHouse.Features.Computer.LEO.Mails;
+using LightHouse.Features.Computer.LEO.Weather.Humidity;
+using LightHouse.Features.Computer.LEO.Weather.Pressure;
+using LightHouse.Features.Computer.LEO.Weather.Temperature;
+using LightHouse.Features.Computer.LEO.Weather.Wind;
+using LightHouse.Core.Player.Money;
+using LightHouse.Features.Weather;
+using LightHouse.Features.Computer.Calendar.Events;
+using LightHouse.Features.Weather.Utils;
+
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using LightHouse.Features.TimeOfDay.TimeCore;
 
-namespace LightHouse.Game.Computer.LEO.Weather
+namespace LightHouse.Features.Computer.LEO.Weather
 {
     #region Data
 
@@ -339,7 +341,7 @@ namespace LightHouse.Game.Computer.LEO.Weather
 
         private MailGenerator.ForecastLine LineFromWeather(
             string periodLabel,
-            LightHouse.Weather.WeatherData w,
+            WeatherData w,
             float confidencePct)
         {
             if (w == null) return null;

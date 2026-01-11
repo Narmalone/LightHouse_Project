@@ -1,12 +1,15 @@
-﻿using AYellowpaper.SerializedCollections;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Weather;
+﻿using LightHouse.Features.Weather;
+using LightHouse.Features.TimeOfDay.Sun;
+using LightHouse.Features.TimeOfDay.Moon;
+using LightHouse.Features.TimeOfDay.TimeCore;
+
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 using System.Collections.Generic;
 
-namespace LightHouse.Game.Rendering
+
+namespace LightHouse.Features.TimeOfDay.Lighting
 {
     // Un "snapshot" numérique pour faire les lerps sans toucher à l'engine à chaque étape
     struct ResolvedLighting

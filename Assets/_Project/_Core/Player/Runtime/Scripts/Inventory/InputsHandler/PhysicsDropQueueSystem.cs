@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Items
+namespace LightHouse.Core.Player.Inventory.InputsHandler
 {
     public class PhysicsDropQueueSystem : MonoBehaviour
     {

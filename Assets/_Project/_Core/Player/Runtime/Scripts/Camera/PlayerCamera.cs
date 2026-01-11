@@ -1,7 +1,8 @@
 ﻿using Cinemachine;
+using LightHouse.Core.Extensions;
 using UnityEngine;
 
-namespace LightHouse.KinematicCharacterController
+namespace LightHouse.Core.Player
 {
     [System.Serializable]
     public struct CameraInput

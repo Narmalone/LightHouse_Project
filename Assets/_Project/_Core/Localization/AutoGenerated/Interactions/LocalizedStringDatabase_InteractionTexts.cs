@@ -1,9 +1,8 @@
 // Auto-generated ScriptableObject for localization keys
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.Localization.Components;
 
-namespace LightHouse.Localization
+namespace LightHouse.Core.Localization
 {
 	[CreateAssetMenu(menuName = "Localization/LocalizedStringDatabase_InteractionTexts")]
 	public class LocalizedStringDatabase_InteractionTexts : ScriptableObject

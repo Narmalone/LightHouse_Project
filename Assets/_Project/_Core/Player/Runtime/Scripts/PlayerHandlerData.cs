@@ -1,11 +1,10 @@
-using LightHouse.KinematicCharacterController;
 using System;
 
-namespace LightHouse.Handlers
+namespace LightHouse.Core.Player
 {
     public static class PlayerHandlerData
     {
-        public static Player MainPlayer;
+        public static PlayerController MainPlayer;
 
         public static event Action OnHandlerInitialized;
         public static bool IsInitialized = false;
@@ -17,7 +16,7 @@ namespace LightHouse.Handlers
             return MainPlayer.IsOccluded;
         }
 
-        public static void InitializeHandlerData(Player player)
+        public static void InitializeHandlerData(PlayerController player)
         {
             IsInitialized = true;
             MainPlayer = player;

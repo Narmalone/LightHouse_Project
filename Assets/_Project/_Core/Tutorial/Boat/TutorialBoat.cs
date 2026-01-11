@@ -1,21 +1,25 @@
-using LightHouse.Handlers;
+using LightHouse.Core.Player;
+using LightHouse.Features.Boats;
 using UnityEngine;
 
-public class TutorialBoat : MonoBehaviour
+namespace LightHouse.Core.Tutorial.Boat
 {
-    [SerializeField] private BoatPathMover _boid;
-    [SerializeField] private VectorPath _targetPath;
-    [SerializeField] private Transform _playerSpawnPoint;
-    [SerializeField] private Collider[] _subBoatColliders;
-
-    public Collider[] SubBoatColliders => _subBoatColliders;
-    public BoatPathMover BoatPathMover => _boid;
-
-    private void Start()
+    public class TutorialBoat : MonoBehaviour
     {
-        if (PlayerHandlerData.MainPlayer != null && PlayerHandlerData.MainPlayer.Character != null)
+        [SerializeField] private BoatPathMover _boid;
+        [SerializeField] private VectorPath _targetPath;
+        [SerializeField] private Transform _playerSpawnPoint;
+        [SerializeField] private Collider[] _subBoatColliders;
+
+        public Collider[] SubBoatColliders => _subBoatColliders;
+        public BoatPathMover BoatPathMover => _boid;
+
+        private void Start()
         {
-            PlayerHandlerData.MainPlayer.Character.SetPosition(_playerSpawnPoint.position);
+            if (PlayerHandlerData.MainPlayer != null && PlayerHandlerData.MainPlayer.Character != null)
+            {
+                PlayerHandlerData.MainPlayer.Character.SetPosition(_playerSpawnPoint.position);
+            }
         }
     }
 }

@@ -1,10 +1,15 @@
-﻿using UnityEngine;
+﻿using LightHouse.Core.Audio;
+using LightHouse.Core.Services;
+
+using LightHouse.Features.Computer.OS;
+
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using TMPro;
 using System;
 
-namespace LightHouse.Game.Computer.LEO
+namespace LightHouse.Features.Computer.LEO
 {
     public enum DataStatus
     {

@@ -1,8 +1,9 @@
-using LightHouse.Audio;
-using LightHouse.Weather;
+using LightHouse.Core.Audio;
+using LightHouse.Core.Tutorial.Boat;
+using LightHouse.Features.Weather;
 using UnityEngine;
 
-namespace LightHouse.Game.Tutorial.Steps
+namespace LightHouse.Core.Tutorial.Steps
 {
     [CreateAssetMenu(menuName = "LightHouse/Tutorial/Steps/StepPlayerLandOnTheIsland")]
     public sealed class StepPlayerLandOnTheIsland : TutorialStep

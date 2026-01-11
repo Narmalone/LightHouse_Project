@@ -1,8 +1,9 @@
-using LightHouse.Handlers;
-using LightHouse.Inventory;
+using LightHouse.Core.Inventory;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Features.Items.Inventory;
 using UnityEngine;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable.Screw
 {
     public class ScrewNeeder : IDUseItemTracker
     {

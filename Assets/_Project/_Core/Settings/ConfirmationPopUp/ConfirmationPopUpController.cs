@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.UI;
 using TMPro;
 
-namespace LightHouse.Game.Options
+namespace LightHouse.Core.Settings
 {
     public class ConfirmationPopupController : MonoBehaviour
     {

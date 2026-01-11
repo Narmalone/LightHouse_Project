@@ -1,8 +1,8 @@
-﻿using LightHouse.Game.Boats;
+﻿using LightHouse.Features.Boats.Anomalies;
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
+namespace LightHouse.Features.Computer.LEO.NightWatch.Boats
 {
     public class UI_BoatsLowestTimerAlert : MonoBehaviour
     {

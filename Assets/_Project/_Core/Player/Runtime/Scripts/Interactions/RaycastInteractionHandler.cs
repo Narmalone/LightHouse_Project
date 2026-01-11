@@ -1,8 +1,7 @@
-using UnityEngine;
-using LightHouse.Inputs;
-using LightHouse.Interactions;
+using LightHouse.Core.Inputs;
+using LightHouse.Features.Interactions.UI;
 
-namespace LightHouse.Interactions
+namespace LightHouse.Features.Interactions
 {
     public class RaycastInteractionHandler
     {

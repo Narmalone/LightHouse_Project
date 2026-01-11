@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Items
+namespace LightHouse.Features.Items
 {
     public enum ItemRole
     {

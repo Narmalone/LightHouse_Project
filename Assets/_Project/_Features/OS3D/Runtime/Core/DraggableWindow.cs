@@ -1,35 +1,39 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(RectTransform))]
-public class DraggableWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
+namespace LightHouse.Features.Computer.OS
 {
-    public RectTransform dragArea; // Ex: la barre de titre
-    private RectTransform window;
-    private Vector2 offset;
-
-    private void Awake()
+    [RequireComponent(typeof(RectTransform))]
+    public class DraggableWindow : MonoBehaviour, IPointerDownHandler, IDragHandler
     {
-        window = GetComponent<RectTransform>();
-    }
+        public RectTransform dragArea; // Ex: la barre de titre
+        private RectTransform window;
+        private Vector2 offset;
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (dragArea == null || RectTransformUtility.RectangleContainsScreenPoint(dragArea, eventData.position, eventData.enterEventCamera))
+        private void Awake()
         {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(window, eventData.position, eventData.pressEventCamera, out offset);
+            window = GetComponent<RectTransform>();
         }
-    }
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        if (dragArea == null || RectTransformUtility.RectangleContainsScreenPoint(dragArea, eventData.position, eventData.enterEventCamera))
+        public void OnPointerDown(PointerEventData eventData)
         {
-            Vector2 localPoint;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(window.parent as RectTransform, eventData.position, eventData.pressEventCamera, out localPoint))
+            if (dragArea == null || RectTransformUtility.RectangleContainsScreenPoint(dragArea, eventData.position, eventData.enterEventCamera))
             {
-                window.localPosition = localPoint - offset;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(window, eventData.position, eventData.pressEventCamera, out offset);
+            }
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            if (dragArea == null || RectTransformUtility.RectangleContainsScreenPoint(dragArea, eventData.position, eventData.enterEventCamera))
+            {
+                Vector2 localPoint;
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(window.parent as RectTransform, eventData.position, eventData.pressEventCamera, out localPoint))
+                {
+                    window.localPosition = localPoint - offset;
+                }
             }
         }
     }
+
 }

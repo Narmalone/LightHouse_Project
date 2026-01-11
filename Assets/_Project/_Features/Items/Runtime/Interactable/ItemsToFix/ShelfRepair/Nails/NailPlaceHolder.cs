@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using LightHouse.Features.Items.Interactable.PlaceHolderKey;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class NailPlaceHolder : PlaceHolderKeyMover
     {

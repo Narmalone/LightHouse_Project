@@ -1,49 +1,59 @@
-﻿using UnityEngine;
+﻿using LightHouse.Core.Services;
+using LightHouse.Features.TerrainSurface;
+using UnityEngine;
 
-public class FootstepEmitter : MonoBehaviour
+namespace LightHouse.Core.Player.Footsteps
 {
-    [Header("Refs")]
-    public LayerMask _groundMask = ~0;
-    public float _rayLength = 0.9f;
-
-    [SerializeField] private CombinedSurfaceProvider _surfaceProvider;
-    [SerializeField] private FootstepSet _footStepSet;
-
-    [Header("Ajustement son (optionnel)")]
-    public float crouchVolMul = 0.85f;
-    public float runVolMul = 1.05f;
-
-    private void OnFootstep(AnimationEvent animationEvent)
+    public class FootstepEmitter : MonoBehaviour
     {
-        if (animationEvent.animatorClipInfo.weight < 0.5f) return;
-        if (Physics.Raycast(this.transform.position + Vector3.up * 0.05f, Vector3.down, out var hit, _rayLength, _groundMask, QueryTriggerInteraction.Ignore))
+        [Header("Refs")]
+        public LayerMask _groundMask = ~0;
+        public float _rayLength = 0.9f;
+
+        [SerializeField] private CombinedSurfaceProvider _surfaceProvider;
+        [SerializeField] private FootstepSet _footStepSet;
+
+        [Header("Ajustement son (optionnel)")]
+        public float crouchVolMul = 0.85f;
+        public float runVolMul = 1.05f;
+
+        /// <summary>
+        /// Animation Event appelé par l'animation de marche à des moments précis
+        /// (fait automatiquement) d'ou le fait qu'il y'ait 0 références.
+        /// </summary>
+        /// <param name="animationEvent"></param>
+        private void OnFootstep(AnimationEvent animationEvent)
         {
-            var surface = _surfaceProvider.GetSurface(in hit);
-            var cue = _footStepSet.GetCue(surface);
-            if (!cue) return;
-
-            // Volume/pitch simple selon l’état
-            float volMul = 1f;
-
-            //Si on veut modifier le volume car il est crouch ou il sprint on peut.
-
-            float baseVol = cue.Volume * volMul;
-            //float basePitch = cue.Pitch * (_state == MoveState.Crouch ? 0.98f : 1f);
-            float basePitch = cue.Pitch;
-
-            if (ServiceLocator.Audio != null)
+            if (animationEvent.animatorClipInfo.weight < 0.5f) return;
+            if (Physics.Raycast(this.transform.position + Vector3.up * 0.05f, Vector3.down, out var hit, _rayLength, _groundMask, QueryTriggerInteraction.Ignore))
             {
-                var s = ServiceLocator.Audio.PlayAt(cue, hit.point);
-                s.SetVolume(baseVol);
-                s.SetPitch(basePitch);
+                var surface = _surfaceProvider.GetSurface(in hit);
+                var cue = _footStepSet.GetCue(surface);
+                if (!cue) return;
+
+                // Volume/pitch simple selon l’état
+                float volMul = 1f;
+
+                //Si on veut modifier le volume car il est crouch ou il sprint on peut.
+
+                float baseVol = cue.Volume * volMul;
+                //float basePitch = cue.Pitch * (_state == MoveState.Crouch ? 0.98f : 1f);
+                float basePitch = cue.Pitch;
+
+                if (ServiceLocator.Audio != null)
+                {
+                    var s = ServiceLocator.Audio.PlayAt(cue, hit.point);
+                    s.SetVolume(baseVol);
+                    s.SetPitch(basePitch);
+                }
             }
         }
-    }
 
-    private void OnLand(AnimationEvent animationEvent)
-    {
-        //Desfois il se lance en "double"
-        //Debug.Log("on land trigger");
-        //Play land sound
+        private void OnLand(AnimationEvent animationEvent)
+        {
+            //Desfois il se lance en "double"
+            //Debug.Log("on land trigger");
+            //Play land sound
+        }
     }
 }

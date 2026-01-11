@@ -1,12 +1,14 @@
-﻿using System;
+﻿using LightHouse.Features.Nightwatch;
+using LightHouse.Features.Boats.Anomalies;
+using LightHouse.Features.Weather;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using LightHouse.Game.Nightwatch;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Weather;
+using LightHouse.Features.TimeOfDay.TimeCore;
 
-namespace LightHouse.Game.Boats
+namespace LightHouse.Features.Boats
 {
     /// <summary>
     /// Gère le cycle de vie des bateaux: planification des spawns, instanciation,

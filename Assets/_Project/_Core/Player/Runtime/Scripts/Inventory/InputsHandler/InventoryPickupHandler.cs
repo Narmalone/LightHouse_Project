@@ -1,6 +1,11 @@
-using UnityEngine;
+using LightHouse.Core.Audio;
+using LightHouse.Core.Player.Inventory.Callbacks;
+using LightHouse.Core.Player.Inventory.Pool;
+using LightHouse.Core.Services;
+using LightHouse.Features.Items.Inventory;
+using LightHouse.Features.Items.Inventory.UI;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Core.Player.Inventory.InputsHandler
 {
     public class InventoryPickupHandler
     {
@@ -33,7 +38,7 @@ namespace LightHouse.Inventory
 
             if (targetSlot == null) return false; //inventory full even for the stackable ones
 
-            PoolManager.Add(item);
+            InventoryPoolManager.Add(item);
             item.IsItemInInventory = true;
             if(playSound && ServiceLocator.Audio != null && soundToPlay != null)
                 ServiceLocator.Audio.PlayAt(soundToPlay, item.GetGameObject().transform.position);

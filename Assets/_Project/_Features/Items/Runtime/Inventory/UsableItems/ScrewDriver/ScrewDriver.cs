@@ -1,16 +1,16 @@
-using System;
-using System.Threading.Tasks;
-using LightHouse.CustomAttributes;
-using LightHouse.Handlers;
-using LightHouse.Inputs;
-using LightHouse.Inventory;
-using LightHouse.Items.Detection;
-using LightHouse.Items.Interactable;
-using LightHouse.Localization;
-using UnityEngine;
-using UnityEngine.Localization;
+using LightHouse.Core.Attributes;
+using LightHouse.Core.Inventory;
+using LightHouse.Core.Player;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Features.Items.Detection;
+using LightHouse.Features.Items.Interactable;
+using LightHouse.Features.Items.Inventory.Databases;
+using LightHouse.Features.Items.Inventory.UI;
 
-namespace LightHouse.Items.Inventory
+using System;
+using UnityEngine;
+
+namespace LightHouse.Features.Items.Inventory.Screw
 {
     public class ScrewDriver : InventoryItemBase, IInventoryItemUsable
     {

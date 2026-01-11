@@ -1,6 +1,6 @@
-using LightHouse.Items.Inventory;
+using LightHouse.Features.Items.Inventory.Bucket;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class BucketFaucet : IDUseItemTracker
     {

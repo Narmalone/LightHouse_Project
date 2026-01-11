@@ -1,6 +1,6 @@
 using System;
 
-namespace LightHouse.Locators
+namespace LightHouse.Core.Locators
 {
     public static class Locator<T> where T : class
     {

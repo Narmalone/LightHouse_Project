@@ -1,10 +1,9 @@
 using Cinemachine;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Inputs;
+using LightHouse.Core.Inputs;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.Cameras
+namespace LightHouse.Features.Computer.LEO.Cameras
 {
     public class LightHouseCameraController : MonoBehaviour
     {

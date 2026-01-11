@@ -1,17 +1,21 @@
+using LightHouse.Features.Computer.Calendar.Clock;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(ClockTextPlacer))]
-public class ClockTextPlacerEditor : Editor
+namespace LightHouse.Core.CustomEditors
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(ClockTextPlacer))]
+    public class ClockTextPlacerEditor : Editor
     {
-        DrawDefaultInspector();
-
-        ClockTextPlacer placer = (ClockTextPlacer)target;
-        if (GUILayout.Button("Générer les chiffres"))
+        public override void OnInspectorGUI()
         {
-            placer.PlaceTextsInCircle();
+            DrawDefaultInspector();
+
+            ClockTextPlacer placer = (ClockTextPlacer)target;
+            if (GUILayout.Button("Générer les chiffres"))
+            {
+                placer.PlaceTextsInCircle();
+            }
         }
     }
 }

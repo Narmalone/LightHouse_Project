@@ -1,8 +1,7 @@
 using System;
-using LightHouse.Inventory;
 using UnityEngine;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Bernacles
 {
     public class BernacleInventory : InventoryItemBase, IInventoryItemUsable, IInventoryStackable
     {

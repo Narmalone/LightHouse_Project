@@ -1,10 +1,11 @@
-using LightHouse.Handlers;
-using LightHouse.Inventory;
-using LightHouse.Items.Inventory;
+using LightHouse.Core.Player;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Features.Items.Inventory;
+using LightHouse.Features.Items.Inventory.Mop;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable.Mop
 {
     public class MopItemTrackerDecalClean : IDUseItemTracker
     {
@@ -19,7 +20,7 @@ namespace LightHouse.Items.Interactable
 
         protected override void Usable_OnItemUsed()
         {
-            var currMop = _inventoryItemUsable as Mop;
+            var currMop = _inventoryItemUsable as MopController;
             if (!currMop.IsWet) return;
             base.Usable_OnItemUsed();
             this.gameObject.SetActive(false);
@@ -51,7 +52,7 @@ namespace LightHouse.Items.Interactable
             {
                 _inventoryItemUsable = usable;
 
-                if (IsMopUsable(out Mop mop))
+                if (IsMopUsable(out MopController mop))
                 {
                     SubscribeFromCheckCondition();
                     UpdateInteractionText();
@@ -74,12 +75,12 @@ namespace LightHouse.Items.Interactable
             CheckConditions();
         }
 
-        private bool IsMopUsable(out Mop mop)
+        private bool IsMopUsable(out MopController mop)
         {
             mop = null;
             if (HasKeyOnHands)
             {
-                mop = _inventoryItemUsable as Mop;
+                mop = _inventoryItemUsable as MopController;
                 if (mop == null) return false;
                 if (!mop.IsWet)
                     return false;

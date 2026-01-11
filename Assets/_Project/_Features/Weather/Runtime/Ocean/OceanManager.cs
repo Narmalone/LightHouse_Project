@@ -1,8 +1,8 @@
-﻿using LightHouse.Game.DayNightSystem;
+﻿using LightHouse.Features.TimeOfDay.TimeCore;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-namespace LightHouse.Weather.Ocean
+namespace LightHouse.Features.Weather.Ocean
 {
     /// <summary>
     /// L'océan manager se base pour l'instant sur un Global Setting

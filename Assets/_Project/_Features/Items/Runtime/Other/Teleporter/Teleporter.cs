@@ -1,7 +1,8 @@
+using LightHouse.Core.Player;
 using System;
 using UnityEngine;
 
-namespace LightHouse.KinematicCharacterController
+namespace LightHouse.Features.Items.Other
 {
     public class Teleporter : MonoBehaviour
     {

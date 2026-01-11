@@ -1,9 +1,9 @@
-﻿using LightHouse.Handlers;
-using LightHouse.Inventory;
-using LightHouse.Items.Interactable;
+﻿using LightHouse.Core.Player;
+using LightHouse.Core.Player.Inventory.Callbacks;
+using LightHouse.Features.Items.Interactable.Mop;
 using UnityEngine;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Bucket
 {
     public class Bucket : Key, IInventoryItemCallback
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch
+namespace LightHouse.Features.Computer.LEO.NightWatch
 {
     public abstract class NightWatchReportWindow : MonoBehaviour
     {

@@ -1,7 +1,8 @@
-﻿using UnityEditor;
+﻿using LightHouse.Features.Computer.NoteSystem;
+using UnityEditor;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.NoteSystem.Editor
+namespace LightHouse.Core.CustomEditors
 {
     /// <summary>
     /// Custom editor pour SavedNotesApp avec un bouton pour supprimer le fichier de sauvegarde.

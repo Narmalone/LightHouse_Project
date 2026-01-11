@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Localization;
 
-namespace LightHouse.Localization
+namespace LightHouse.Core.Localization
 {
 	[CreateAssetMenu(menuName = "Localization/LocalizedStringDatabase_Menu_Main")]
 	public class LocalizedStringDatabase_Menu_Main : ScriptableObject

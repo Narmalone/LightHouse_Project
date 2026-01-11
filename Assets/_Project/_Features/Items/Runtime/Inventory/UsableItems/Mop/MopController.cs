@@ -1,6 +1,6 @@
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Mop
 {
-    public class Mop : Key
+    public class MopController : Key
     {
 
         public int _mopMaxUseCount = 3;

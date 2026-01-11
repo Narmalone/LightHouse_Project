@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
+namespace LightHouse.Features.Computer.LEO.NightWatch.Signals
 {
     /// <summary>
     /// Signal affiché dans l'historique si il est réussi ou non

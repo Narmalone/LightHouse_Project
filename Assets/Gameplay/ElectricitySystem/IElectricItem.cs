@@ -1,6 +1,6 @@
 using System;
 
-namespace LightHouse.Electricity
+namespace LightHouse.Features.Electricity
 {
     public interface IElectricItem
     {

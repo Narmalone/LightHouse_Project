@@ -1,24 +1,29 @@
+using LightHouse.Features.Weather.Lightnings;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(LightningPointsGenerator))]
-public class LightningPointsGeneratorEditor : Editor
+namespace LightHouse.Core.CustomEditors
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(LightningPointsGenerator))]
+    public class LightningPointsGeneratorEditor : Editor
     {
-        base.OnInspectorGUI();
-
-        var current = (LightningPointsGenerator)target;
-
-        if (GUILayout.Button("Regenerate"))
+        public override void OnInspectorGUI()
         {
-            current.Regenerate();
-            EditorUtility.SetDirty(target); 
-        }
-        if(GUILayout.Button("Set VFX Binder"))
-        {
-            current.AssignChildrenToVFXBinder_Reflection();
-            EditorUtility.SetDirty(target);
+            base.OnInspectorGUI();
+
+            var current = (LightningPointsGenerator)target;
+
+            if (GUILayout.Button("Regenerate"))
+            {
+                current.Regenerate();
+                EditorUtility.SetDirty(target);
+            }
+            if (GUILayout.Button("Set VFX Binder"))
+            {
+                current.AssignChildrenToVFXBinder_Reflection();
+                EditorUtility.SetDirty(target);
+            }
         }
     }
+
 }

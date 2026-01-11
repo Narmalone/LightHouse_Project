@@ -1,10 +1,10 @@
-﻿using LightHouse.Money;
+﻿using LightHouse.Core.Player.Money;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace LightHouse.Game.Computer.LEO.Supplies
+namespace LightHouse.Features.Computer.LEO.Supplies
 {
     /// <summary>
     /// Fenêtre de confirmation d'une commande de ravitaillement.

@@ -1,9 +1,11 @@
-﻿using UnityEngine;
-using LightHouse.Items.Detection;
-using LightHouse.Interactions;
-using System;
+﻿using LightHouse.Features.Items.Detection;
+using LightHouse.Features.Interactions;
+using LightHouse.Features.Interactions.UI;
 
-namespace LightHouse.KinematicCharacterController
+using System;
+using UnityEngine;
+
+namespace LightHouse.Core.Player.Interactions.UI
 {
     /// <summary>
     /// Handles interactions (not name display) with objects in the world.

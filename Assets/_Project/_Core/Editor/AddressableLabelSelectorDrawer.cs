@@ -2,9 +2,9 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.AddressableAssets;
-using LightHouse.CustomAttributes;
+using LightHouse.Core.Attributes;
 
-namespace LightHouse.CustomEditors
+namespace LightHouse.Core.CustomEditors
 {
     [CustomPropertyDrawer(typeof(AddressableLabelSelectorAttribute))]
     public class AddressableLabelSelectorDrawer : PropertyDrawer

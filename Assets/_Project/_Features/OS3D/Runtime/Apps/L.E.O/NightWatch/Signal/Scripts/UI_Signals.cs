@@ -1,11 +1,11 @@
-﻿using LightHouse.Game.Buyoncies;
-using LightHouse.Game.Signals;
-using LightHouse.Game.Boats;
+﻿using LightHouse.Features.Buyoncies;
+using LightHouse.Features.Signals;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using LightHouse.Features.Boats.Anomalies;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
+namespace LightHouse.Features.Computer.LEO.NightWatch.Signals
 {
     public enum SignalHistoryType
     {
@@ -214,7 +214,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
                 historyElement.Icon.rectTransform.eulerAngles = new Vector3(0, 0, -90f);
                 reasonTxt = boatdatas.BoatName + " : " + boatdatas.AnomalyType.ToString();
             }
-            else if(model is BuyoncyAnomalyDatas buyoncydatas)
+            else if(model is BuyoncyBreakdownDatas buyoncydatas)
             {
                 reasonTxt = "Defective Buoy: " + buyoncydatas.ID.ToString("00");
             }
@@ -233,7 +233,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
             model switch
             {
                 BoatAnomalyDatas => _boatIcon,
-                BuyoncyAnomalyDatas => _buoyIcon,
+                BuyoncyBreakdownDatas => _buoyIcon,
                 _ => null
             };
 

@@ -1,13 +1,16 @@
-﻿using LightHouse.Game.Boats;
-using LightHouse.Money;
-using System;
+﻿using LightHouse.Core.Player.Money;
+using LightHouse.Core.Audio;
+using LightHouse.Core.Services;
+using LightHouse.Features.Boats;
+using LightHouse.Features.Boats.Anomalies;
+
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.GPUSort;
+using LightHouse.Features.Boats.Nationalities;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
+namespace LightHouse.Features.Computer.LEO.NightWatch.Boats
 {
     [System.Serializable]
     public struct MoneyBoatLine

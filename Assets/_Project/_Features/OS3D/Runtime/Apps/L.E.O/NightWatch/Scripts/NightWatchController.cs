@@ -1,18 +1,20 @@
-﻿using LightHouse.Game.Computer.Calendar;
-using LightHouse.Game.Computer.LEO.Mails;
-using LightHouse.Game.Computer.LEO.NightWatch.Boats;
-using LightHouse.Game.Computer.LEO.NightWatch.Buoys;
-using LightHouse.Game.Computer.LEO.NightWatch.Signals;
-using LightHouse.Game.Computer.LEO.NightWatch.Sonar;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Game.Nightwatch;
+﻿using LightHouse.Features.Computer.Calendar;
+using LightHouse.Features.Computer.Calendar.Events;
+using LightHouse.Features.Computer.LEO.Mails;
+using LightHouse.Features.Computer.LEO.NightWatch.Boats;
+using LightHouse.Features.Computer.LEO.NightWatch.Buoys;
+using LightHouse.Features.Computer.LEO.NightWatch.Signals;
+using LightHouse.Features.Computer.LEO.NightWatch.Sonar;
+using LightHouse.Features.Computer.OS;
+using LightHouse.Features.Nightwatch;
+using LightHouse.Features.TimeOfDay.TimeCore;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch
+namespace LightHouse.Features.Computer.LEO.NightWatch
 {
     public enum E_NightWatchMode { Boat, Buoys, Signals }
 

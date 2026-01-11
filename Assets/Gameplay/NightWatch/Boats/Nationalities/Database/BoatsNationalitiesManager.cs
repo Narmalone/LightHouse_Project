@@ -1,71 +1,74 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BoatsNationalities_", menuName = "LightHouse/Boats/BoatDabatase")]
-public class BoatsNationalitiesManager : ScriptableObject
+namespace LightHouse.Features.Boats.Nationalities
 {
-    public BoatsNationalitiesConfig[] PossibleConfigs;
-
-    public List<BoatNationalityDatas> PossibleBoatDatas = new();
-    public List<BoatNationalityDatas> CurrentUsedBoatDatas = new();
-
-    private void OnValidate()
+    [CreateAssetMenu(fileName = "BoatsNationalities_", menuName = "LightHouse/Boats/BoatDabatase")]
+    public class BoatsNationalitiesManager : ScriptableObject
     {
-        PossibleBoatDatas = new List<BoatNationalityDatas>();
-        CurrentUsedBoatDatas = new List<BoatNationalityDatas>();
+        public BoatsNationalitiesConfig[] PossibleConfigs;
 
-        foreach (var config in PossibleConfigs)
+        public List<BoatNationalityDatas> PossibleBoatDatas = new();
+        public List<BoatNationalityDatas> CurrentUsedBoatDatas = new();
+
+        private void OnValidate()
         {
-            if (config == null || config.BoatsDatas == null) continue;
+            PossibleBoatDatas = new List<BoatNationalityDatas>();
+            CurrentUsedBoatDatas = new List<BoatNationalityDatas>();
 
-            foreach (var boat in config.BoatsDatas)
+            foreach (var config in PossibleConfigs)
             {
-                if (!PossibleBoatDatas.Contains(boat))
-                    PossibleBoatDatas.Add(boat);
-                boat.NationalityFlag = config.Flag;
-            }
-        }
-    }
+                if (config == null || config.BoatsDatas == null) continue;
 
-    public BoatNationalityDatas Register()
-    {
-        if (PossibleBoatDatas.Count == 0)
-        {
-            Debug.LogWarning("Tous les bateaux ont été utilisés.");
-            return null;
-        }
-
-        int index = Random.Range(0, PossibleBoatDatas.Count);
-        BoatNationalityDatas selected = PossibleBoatDatas[index];
-
-        // Déplacer vers Used
-        PossibleBoatDatas.RemoveAt(index);
-        CurrentUsedBoatDatas.Add(selected);
-
-        return selected;
-    }
-
-    public void Unregister(BoatNationalityDatas data)
-    {
-        if (CurrentUsedBoatDatas.Remove(data))
-        {
-            if (!PossibleBoatDatas.Contains(data)) // Sécurité
-                PossibleBoatDatas.Add(data);
-        }
-    }
-
-    public bool FindName(string name, out BoatNationalityDatas datas)
-    {
-        datas = null;
-        foreach (var boat in CurrentUsedBoatDatas)
-        {
-            if (boat.Name == name)
-            {
-                datas = boat;
-                return true;
+                foreach (var boat in config.BoatsDatas)
+                {
+                    if (!PossibleBoatDatas.Contains(boat))
+                        PossibleBoatDatas.Add(boat);
+                    boat.NationalityFlag = config.Flag;
+                }
             }
         }
 
-        return false;
+        public BoatNationalityDatas Register()
+        {
+            if (PossibleBoatDatas.Count == 0)
+            {
+                Debug.LogWarning("Tous les bateaux ont été utilisés.");
+                return null;
+            }
+
+            int index = Random.Range(0, PossibleBoatDatas.Count);
+            BoatNationalityDatas selected = PossibleBoatDatas[index];
+
+            // Déplacer vers Used
+            PossibleBoatDatas.RemoveAt(index);
+            CurrentUsedBoatDatas.Add(selected);
+
+            return selected;
+        }
+
+        public void Unregister(BoatNationalityDatas data)
+        {
+            if (CurrentUsedBoatDatas.Remove(data))
+            {
+                if (!PossibleBoatDatas.Contains(data)) // Sécurité
+                    PossibleBoatDatas.Add(data);
+            }
+        }
+
+        public bool FindName(string name, out BoatNationalityDatas datas)
+        {
+            datas = null;
+            foreach (var boat in CurrentUsedBoatDatas)
+            {
+                if (boat.Name == name)
+                {
+                    datas = boat;
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

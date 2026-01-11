@@ -1,12 +1,15 @@
-using LightHouse.Game.Buyoncies;
-using LightHouse.Game.Talkie;
-using LightHouse.Handlers;
-using LightHouse.Items.Interactable;
-using LightHouse.Items.Inventory;
-using LightHouse.Weather;
+using LightHouse.Core.Player;
+using LightHouse.Core.Tutorial.Boat;
+using LightHouse.Features.Buyoncies;
+using LightHouse.Features.Items.Interactable;
+using LightHouse.Features.Items.Interactable.Bag;
+using LightHouse.Features.Items.Inventory.Binoculars;
+using LightHouse.Features.Items.Inventory.Hammer;
+using LightHouse.Features.Talkie;
+using LightHouse.Features.Weather;
 using UnityEngine;
 
-namespace LightHouse.Game.Tutorial
+namespace LightHouse.Core.Tutorial
 {
     public sealed class TutorialBootstrap : MonoBehaviour
     {

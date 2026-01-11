@@ -1,34 +1,36 @@
-using LightHouse.Items.Interactable;
 using UnityEngine;
 
-public class ScotchManager : MonoBehaviour
+namespace LightHouse.Features.Items.Interactable.Scotch
 {
-    [SerializeField] private ScotchNeeder[] _scotchNeeder;
-    private int _scotchNeederCount;
-    
-    private void Awake()
+    public class ScotchManager : MonoBehaviour
     {
-        _scotchNeederCount = _scotchNeeder.Length;
-        foreach (var scotchNeeder in _scotchNeeder)
+        [SerializeField] private ScotchNeeder[] _scotchNeeder;
+        private int _scotchNeederCount;
+
+        private void Awake()
         {
-            scotchNeeder.OnItemUsedOnMe += ScotchNeeder_OnItemUsed;
+            _scotchNeederCount = _scotchNeeder.Length;
+            foreach (var scotchNeeder in _scotchNeeder)
+            {
+                scotchNeeder.OnItemUsedOnMe += ScotchNeeder_OnItemUsed;
+            }
         }
-    }
-    
-    private void OnDestroy()
-    {
-        foreach (var scotchNeeder in _scotchNeeder)
+
+        private void OnDestroy()
         {
-            scotchNeeder.OnItemUsedOnMe -= ScotchNeeder_OnItemUsed;
+            foreach (var scotchNeeder in _scotchNeeder)
+            {
+                scotchNeeder.OnItemUsedOnMe -= ScotchNeeder_OnItemUsed;
+            }
         }
-    }
-    
-    private void ScotchNeeder_OnItemUsed()
-    {
-        _scotchNeederCount--;
-        if (_scotchNeederCount <= 0)
+
+        private void ScotchNeeder_OnItemUsed()
         {
-            print("Tout est bouché !");
+            _scotchNeederCount--;
+            if (_scotchNeederCount <= 0)
+            {
+                print("Tout est bouché !");
+            }
         }
     }
 }

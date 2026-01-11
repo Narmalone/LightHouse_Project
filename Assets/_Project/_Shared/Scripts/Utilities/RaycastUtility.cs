@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Utilities
+namespace LightHouse.Core.Utilities
 {
     public static class RaycastUtility
     {

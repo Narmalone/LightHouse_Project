@@ -1,8 +1,7 @@
+using LightHouse.Features.Items.Detection;
 using System;
-using UnityEngine;
-using LightHouse.Interactions;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class ScrewInteractable : IDUseItemTracker, IDestroyable
     {

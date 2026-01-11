@@ -1,7 +1,8 @@
-using LightHouse.Interactions;
+using LightHouse.Features.Interactions;
+using LightHouse.Features.Interactions.UI;
 using UnityEngine;
 
-namespace LightHouse.Items.Detection
+namespace LightHouse.Features.Items.Detection
 {
     public class ItemNamesUIManager : MonoBehaviour
     {

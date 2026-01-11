@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace LightHouse.Game.Tutorial
+namespace LightHouse.Features.Tutorial
 {
     public sealed class SplashSequenceController : MonoBehaviour
     {

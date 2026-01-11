@@ -1,8 +1,8 @@
-﻿using LightHouse.Weather;
-using LightHouse.Game.Computer.LEO.Weather.Pressure;
+﻿using LightHouse.Features.Computer.LEO.Weather.Pressure;
+using LightHouse.Features.Weather;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.Weather
+namespace LightHouse.Features.Computer.LEO.Weather
 {
     public struct WeatherPayoutResult
     {

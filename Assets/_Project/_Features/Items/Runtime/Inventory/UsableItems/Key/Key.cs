@@ -1,12 +1,12 @@
-using UnityEngine;
-using LightHouse.Inputs;
-using System;
-using LightHouse.Inventory;
+using LightHouse.Core.Inputs;
 using UnityEngine.Localization;
-using LightHouse.Localization;
-using System.Threading.Tasks;
 
-namespace LightHouse.Items.Inventory
+using UnityEngine;
+using System;
+using System.Threading.Tasks;
+using LightHouse.Core.Localization;
+
+namespace LightHouse.Features.Items.Inventory
 {
     //You should use this class to make inventory with key for other objects
     public class Key : InventoryItemBase, IInventoryItemUsable

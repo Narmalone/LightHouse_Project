@@ -1,10 +1,9 @@
 using System;
-using LightHouse.Inventory;
 using UnityEngine;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Scotch
 {
-    public class Scotch : InventoryItemBase, IInventoryItemUsable
+    public class ScotchController : InventoryItemBase, IInventoryItemUsable
     {
         public event Action OnItemUsed;
         public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;

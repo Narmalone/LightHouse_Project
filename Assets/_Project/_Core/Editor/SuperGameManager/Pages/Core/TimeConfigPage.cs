@@ -1,3 +1,4 @@
+using LightHouse.Features.TimeOfDay.TimeCore;
 using UnityEngine.UIElements;
 
 namespace LightHouse.EditorTools.SuperGameManager

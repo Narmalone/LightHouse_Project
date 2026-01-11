@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-namespace LightHouse.Utilities
+namespace LightHouse.Core.Utilities
 {
     public class FloaterGetterController : MonoBehaviour
     {

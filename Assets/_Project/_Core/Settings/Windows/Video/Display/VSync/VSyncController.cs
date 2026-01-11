@@ -1,127 +1,128 @@
-﻿using LightHouse.Options.V3;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class VSyncController : MonoBehaviour, IOption
+namespace LightHouse.Core.Settings.Video.Display.VSync
 {
-    [Header("UI")]
-    public OptionToggle Toggle;  // <-- ton custom toggle
-
-    [Header("State (committed)")]
-    public bool CurrentVSync;    // état committé (appliqué)
-    public bool BackupVSync;     // miroir pour revert
-
-    private bool _suppress;      // évite les boucles pendant MAJ UI
-
-    private void Awake()
+    public class VSyncController : MonoBehaviour, IOption
     {
-        if (!Toggle)
+        [Header("UI")]
+        public OptionToggle Toggle; 
+
+        [Header("State (committed)")]
+        public bool CurrentVSync;    // état committé (appliqué)
+        public bool BackupVSync;     // miroir pour revert
+
+        private bool _suppress;      // évite les boucles pendant MAJ UI
+
+        private void Awake()
         {
-            Debug.LogError("[VSyncController] OptionToggle manquant.");
-            enabled = false;
-            return;
+            if (!Toggle)
+            {
+                Debug.LogError("[VSyncController] OptionToggle manquant.");
+                enabled = false;
+                return;
+            }
+
+            // Seed depuis le système
+            CurrentVSync = QualitySettings.vSyncCount > 0;
+            BackupVSync = CurrentVSync;
+
+            _suppress = true;
+            Toggle.SwitchSelected(CurrentVSync);
+            _suppress = false;
+
+            Toggle.OnValueChanged += OnToggleChanged;
         }
 
-        // Seed depuis le système
-        CurrentVSync = QualitySettings.vSyncCount > 0;
-        BackupVSync = CurrentVSync;
+        private void OnDestroy()
+        {
+            if (Toggle) Toggle.OnValueChanged -= OnToggleChanged;
+        }
 
-        _suppress = true;
-        Toggle.SwitchSelected(CurrentVSync);
-        _suppress = false;
+        public void OnFrameRateDifferentThanIllimited()
+        {
+            if (QualitySettings.vSyncCount > 0) QualitySettings.vSyncCount = 0;
 
-        Toggle.OnValueChanged += OnToggleChanged;
-    }
+            // ✅ on commit l’état pour rester cohérent (sinon HasChanges peut rester faux/ambigu)
+            CurrentVSync = false;
+            BackupVSync = false;
 
-    private void OnDestroy()
-    {
-        if (Toggle) Toggle.OnValueChanged -= OnToggleChanged;
-    }
+            // ✅ UI = OFF + désactivation
+            _suppress = true;
+            Toggle.SetValueWithoutNotify(false);
+            Toggle.SwitchSelected(false);
+            Toggle.DisableAll();
+            _suppress = false;
+        }
 
-    public void OnFrameRateDifferentThanIllimited()
-    {
-        if (QualitySettings.vSyncCount > 0) QualitySettings.vSyncCount = 0;
+        public void OnFrameRateIllimited()
+        {
+            // ✅ on redonne la main à l’utilisateur sans forcer ON/OFF
+            Toggle.EnableAll();
+            QualitySettings.vSyncCount = CurrentVSync ? 1 : 0;
 
-        // ✅ on commit l’état pour rester cohérent (sinon HasChanges peut rester faux/ambigu)
-        CurrentVSync = false;
-        BackupVSync = false;
-
-        // ✅ UI = OFF + désactivation
-        _suppress = true;
-        Toggle.SetValueWithoutNotify(false);
-        Toggle.SwitchSelected(false);
-        Toggle.DisableAll();
-        _suppress = false;
-    }
-
-    public void OnFrameRateIllimited()
-    {
-        // ✅ on redonne la main à l’utilisateur sans forcer ON/OFF
-        Toggle.EnableAll();
-        QualitySettings.vSyncCount = CurrentVSync ? 1 : 0;
-
-        _suppress = true;
-        Toggle.SetValueWithoutNotify(CurrentVSync);
-        Toggle.SwitchSelected(CurrentVSync);
-        _suppress = false;
-    }
-
-    
+            _suppress = true;
+            Toggle.SetValueWithoutNotify(CurrentVSync);
+            Toggle.SwitchSelected(CurrentVSync);
+            _suppress = false;
+        }
 
 
-    private void OnToggleChanged(bool value)
-    {
-        if (_suppress) return;
-        // Pas d’auto-apply : tes boutons Apply/Revert s’en occupent
-        // (Si tu veux auto-apply, appelle Apply() ici.)
-        Debug.Log($"[VSyncController] UI changed → {(value ? "ON" : "OFF")} (HasChanges={HasChanges()})");
-    }
 
-    // ---------- IOption ----------
 
-    public bool HasChanges()
-    {
-        if (!Toggle) return false;
-        return Toggle.isOn != CurrentVSync;
-    }
+        private void OnToggleChanged(bool value)
+        {
+            if (_suppress) return;
+            // Pas d’auto-apply : tes boutons Apply/Revert s’en occupent
+            // (Si tu veux auto-apply, appelle Apply() ici.)
+            Debug.Log($"[VSyncController] UI changed → {(value ? "ON" : "OFF")} (HasChanges={HasChanges()})");
+        }
 
-    public void Apply()
-    {
-        if (!Toggle) return;
-        if (!HasChanges()) return;                // ✅ utilise HasChanges ici
+        // ---------- IOption ----------
 
-        bool desired = Toggle.isOn;
+        public bool HasChanges()
+        {
+            if (!Toggle) return false;
+            return Toggle.isOn != CurrentVSync;
+        }
 
-        QualitySettings.vSyncCount = desired ? 1 : 0;
+        public void Apply()
+        {
+            if (!Toggle) return;
+            if (!HasChanges()) return;                // ✅ utilise HasChanges ici
 
-        // Optionnel : si tu veux libérer le cap quand VSync ON, garde ceci :
-        if (desired && Application.targetFrameRate != -1)
-            Application.targetFrameRate = -1;
+            bool desired = Toggle.isOn;
 
-        CurrentVSync = BackupVSync = desired;
+            QualitySettings.vSyncCount = desired ? 1 : 0;
 
-        _suppress = true;
-        Toggle.SetValueWithoutNotify(CurrentVSync);
-        Toggle.SwitchSelected(CurrentVSync);
-        _suppress = false;
+            // Optionnel : si tu veux libérer le cap quand VSync ON, garde ceci :
+            if (desired && Application.targetFrameRate != -1)
+                Application.targetFrameRate = -1;
 
-        Debug.Log($"[VSyncController] Apply → vSync={(desired ? "ON(1)" : "OFF(0)")}, targetFPS={Application.targetFrameRate}");
-    }
+            CurrentVSync = BackupVSync = desired;
 
-    public void Revert()
-    {
-        // Revient à l’état committé précédent (backup)
-        QualitySettings.vSyncCount = BackupVSync ? 1 : 0;
+            _suppress = true;
+            Toggle.SetValueWithoutNotify(CurrentVSync);
+            Toggle.SwitchSelected(CurrentVSync);
+            _suppress = false;
 
-        if (BackupVSync && Application.targetFrameRate != -1)
-            Application.targetFrameRate = -1;
+            Debug.Log($"[VSyncController] Apply → vSync={(desired ? "ON(1)" : "OFF(0)")}, targetFPS={Application.targetFrameRate}");
+        }
 
-        CurrentVSync = BackupVSync;
+        public void Revert()
+        {
+            // Revient à l’état committé précédent (backup)
+            QualitySettings.vSyncCount = BackupVSync ? 1 : 0;
 
-        _suppress = true;
-        Toggle.SwitchSelected(CurrentVSync);
-        _suppress = false;
+            if (BackupVSync && Application.targetFrameRate != -1)
+                Application.targetFrameRate = -1;
 
-        Debug.Log($"[VSyncController] Revert → vSync={(CurrentVSync ? "ON(1)" : "OFF(0)")}, targetFPS={Application.targetFrameRate}");
+            CurrentVSync = BackupVSync;
+
+            _suppress = true;
+            Toggle.SwitchSelected(CurrentVSync);
+            _suppress = false;
+
+            Debug.Log($"[VSyncController] Revert → vSync={(CurrentVSync ? "ON(1)" : "OFF(0)")}, targetFPS={Application.targetFrameRate}");
+        }
     }
 }

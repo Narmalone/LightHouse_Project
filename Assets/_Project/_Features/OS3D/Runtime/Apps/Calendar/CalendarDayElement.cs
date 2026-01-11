@@ -1,10 +1,11 @@
+using LightHouse.Features.Computer.Calendar.Events;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.Calendar
+namespace LightHouse.Features.Computer.Calendar
 {
     /// <summary>
     /// Représente un jour dans le calendrier, incluant son affichage, ses événements et la notification visuelle.

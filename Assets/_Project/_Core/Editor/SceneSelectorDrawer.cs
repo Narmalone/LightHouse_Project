@@ -1,13 +1,13 @@
 
 
-namespace LightHouse.CustomEditors
+namespace LightHouse.Core.CustomEditors
 {
 
 #if UNITY_EDITOR
-    using LightHouse.CustomAttributes;
     using UnityEngine;
     using UnityEditor;
     using System.Linq;
+    using LightHouse.Core.Attributes;
 
     [CustomPropertyDrawer(typeof(SceneSelectorAttribute))]
     public class SceneSelectorDrawer : PropertyDrawer

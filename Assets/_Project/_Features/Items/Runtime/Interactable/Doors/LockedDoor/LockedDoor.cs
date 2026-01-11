@@ -1,11 +1,12 @@
-﻿using LightHouse.Inputs;
+﻿using LightHouse.Core.Inputs;
 using UnityEngine;
-using LightHouse.Handlers;
 using UnityEngine.Localization;
-using LightHouse.Localization;
-using LightHouse.Audio;
+using LightHouse.Core.Localization;
+using LightHouse.Core.Audio;
+using LightHouse.Core.Services;
+using LightHouse.Core.Player;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable.Doors
 {
     public class LockedDoor : IDUseItemTracker, IDoor
     {

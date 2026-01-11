@@ -1,9 +1,10 @@
+using LightHouse.Features.UI;
 using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.Mails
+namespace LightHouse.Features.Computer.LEO.Mails
 {
     public enum E_MailState
     {

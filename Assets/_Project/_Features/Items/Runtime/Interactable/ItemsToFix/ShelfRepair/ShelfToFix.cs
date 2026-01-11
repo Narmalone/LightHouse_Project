@@ -1,8 +1,9 @@
+using LightHouse.Features.Items.Interactable.Doors;
+using LightHouse.Features.Items.Interactable.PlaceHolderKey;
 using System;
 using UnityEngine;
-using LightHouse.Items.Interactable;
 
-namespace LightHouse.Items.Samples
+namespace LightHouse.Features.Items.Samples
 {
     public class ShelfToFix : MonoBehaviour
     {

@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
+namespace LightHouse.Features.Computer.LEO.NightWatch.Buoys
 {
     /// <summary>
     /// Contrôle l'affichage et l'état d'une bouée dans l'UI.

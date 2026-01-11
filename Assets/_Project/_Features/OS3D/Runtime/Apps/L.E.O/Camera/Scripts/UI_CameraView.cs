@@ -1,14 +1,11 @@
-using LightHouse.Game.Computer.Cameras;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Inputs;
-using LightHouse.Weather;
-using LightHouse.Weather.Utils;
-using System;
+using LightHouse.Features.TimeOfDay.TimeCore;
+using LightHouse.Features.Weather;
+using LightHouse.Features.Weather.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.CameraSystem
+namespace LightHouse.Features.Computer.LEO.Cameras
 {
     /// <summary>
     /// UI logic for interacting with the camera system: zoom, fullscreen, render.

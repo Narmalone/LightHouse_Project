@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class VectorPathVisualiser : MonoBehaviour
+namespace LightHouse.Features.Boats
 {
-    public VectorPath path;
+    public class VectorPathVisualiser : MonoBehaviour
+    {
+        public VectorPath path;
+    }
 }

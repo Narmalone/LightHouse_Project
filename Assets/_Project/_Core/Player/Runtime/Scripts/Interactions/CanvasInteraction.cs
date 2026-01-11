@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Interactions
+namespace LightHouse.Features.Interactions.UI
 {
     public class CanvasInteraction : MonoBehaviour
     {

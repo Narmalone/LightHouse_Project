@@ -1,8 +1,9 @@
+using LightHouse.Features.Computer.Calendar.Events;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.Calendar
+namespace LightHouse.Features.Computer.Calendar
 {
     [CreateAssetMenu(fileName = "CalendarEventDatabase", menuName = "Calendar/Calendar Event Database")]
     public class CalendarEventDatabase : ScriptableObject

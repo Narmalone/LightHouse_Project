@@ -1,8 +1,8 @@
-using System;
+using LightHouse.Core.Audio;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.OS
+namespace LightHouse.Features.Computer.OS
 {
     /// <summary>
     /// Mode d’ouverture d’une application :

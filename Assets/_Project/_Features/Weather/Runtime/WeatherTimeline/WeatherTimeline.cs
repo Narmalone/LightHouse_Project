@@ -1,10 +1,12 @@
-﻿using System;
+﻿using LightHouse.Features.Weather.Utils;
+using LightHouse.EditorTools.SuperGameManager;
+using LightHouse.Features.TimeOfDay.TimeCore;
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using LightHouse.Weather.Utils;
-using LightHouse.EditorTools.SuperGameManager;
 
-namespace LightHouse.Weather
+namespace LightHouse.Features.Weather
 {
     /// <summary>
     /// Ligne de temps météo pour toute la durée du jeu (enchaînement de segments).

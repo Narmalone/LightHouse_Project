@@ -1,4 +1,4 @@
-using LightHouse.Weather;
+using LightHouse.Features.Weather;
 using UnityEngine.UIElements;
 
 namespace LightHouse.EditorTools.SuperGameManager

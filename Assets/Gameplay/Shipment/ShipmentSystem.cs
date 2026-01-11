@@ -1,11 +1,11 @@
-﻿using LightHouse.Game.DayNightSystem;
+﻿using LightHouse.Features.Computer.LEO.Mails;
+using LightHouse.Features.TimeOfDay.TimeCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 
-namespace LightHouse.Game.Computer.LEO.Supplies
+namespace LightHouse.Features.Computer.LEO.Supplies
 {
     /// <summary>Etapes du cycle d’un shipment.</summary>
     public enum ShipmentPhase

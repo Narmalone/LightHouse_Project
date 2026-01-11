@@ -1,7 +1,7 @@
 using UnityEngine;
-using LightHouse.Game.Signals;
+using LightHouse.Features.Signals;
 
-namespace LightHouse.Game.Buyoncies
+namespace LightHouse.Features.Buyoncies
 {
     public class BuyoncyManager : MonoBehaviour
     {
@@ -23,7 +23,7 @@ namespace LightHouse.Game.Buyoncies
         {
             foreach (var buoy in _buyoncies)
             {
-                if (obj is BuyoncyAnomalyDatas datas)
+                if (obj is BuyoncyBreakdownDatas datas)
                 {
                     if (datas.ID == buoy.BuyoncyID)
                     {

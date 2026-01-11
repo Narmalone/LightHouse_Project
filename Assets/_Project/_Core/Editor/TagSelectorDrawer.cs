@@ -1,8 +1,8 @@
-using LightHouse.CustomAttributes;
+using LightHouse.Core.Attributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace LightHouse.CustomEditors
+namespace LightHouse.Core.CustomEditors
 {
 #if UNITY_EDITOR
     [UnityEditor.CustomPropertyDrawer(typeof(TagSelectorAttribute))]

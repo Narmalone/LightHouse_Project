@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LightHouse.Game.Boats
+namespace LightHouse.Features.Boats
 {
     /// <summary>
     /// Classe permettant de récupérer des informations générales sur les bateaux

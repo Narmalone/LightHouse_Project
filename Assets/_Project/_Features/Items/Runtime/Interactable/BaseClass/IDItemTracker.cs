@@ -1,13 +1,15 @@
-using LightHouse.Interactions;
+using LightHouse.Core.Inputs;
+using LightHouse.Features.Interactions;
+using LightHouse.Core.Localization;
+using LightHouse.Features.Items.Inventory;
+using LightHouse.Core.Inventory;
+using LightHouse.Core.Player.Inventory;
+
 using UnityEngine;
-using LightHouse.Inventory;
-using LightHouse.Inputs;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
-using LightHouse.Localization;
-using System;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public abstract class IDItemTracker : InteractableItemBase, IItemCallback
     {

@@ -1,5 +1,5 @@
 
-namespace LightHouse.Game.Signals
+namespace LightHouse.Features.Signals
 {
     public interface ISignal
     {

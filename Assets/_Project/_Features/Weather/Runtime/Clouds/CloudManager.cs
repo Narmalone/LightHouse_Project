@@ -1,11 +1,13 @@
-﻿using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.HighDefinition;
-using System.Collections.Generic;
-using LightHouse.Utilities;
-using LightHouse.Game.DayNightSystem;
+﻿using LightHouse.Core.Utilities;
 
-namespace LightHouse.Weather.Clouds
+using UnityEngine;
+using UnityEngine.Rendering;
+using System.Collections.Generic;
+
+using CloudSettings = LightHouse.Features.Weather.Clouds.Settings.CloudSettings;
+using LightHouse.Features.TimeOfDay.TimeCore;
+
+namespace LightHouse.Features.Weather.Clouds
 {
     public class CloudManager : MonoBehaviour
     {
@@ -15,7 +17,7 @@ namespace LightHouse.Weather.Clouds
 
         public bool RealisticMode = true;
 
-        private VolumetricClouds clouds;
+        private UnityEngine.Rendering.HighDefinition.VolumetricClouds clouds;
 
         [Header("Presets météo")]
         public CloudSettings Sunny;
@@ -25,7 +27,6 @@ namespace LightHouse.Weather.Clouds
         public CloudSettings Foggy;
         public CloudSettings Snowy;
         public CloudSettings Stormy;
-
 
         public bool EnableUpdateErrosion;
         public float erosionUpdateInterval = 20f;
@@ -124,7 +125,7 @@ namespace LightHouse.Weather.Clouds
             clouds.scatteringTint.value = baseColor;
         }
 
-        private void ApplyPresetSettings(VolumetricClouds target, CloudSettings from, CloudSettings to, float t)
+        private void ApplyPresetSettings(UnityEngine.Rendering.HighDefinition.VolumetricClouds target, CloudSettings from, CloudSettings to, float t)
         {
             target.densityMultiplier.value = Mathf.SmoothDamp(
                 target.densityMultiplier.value,

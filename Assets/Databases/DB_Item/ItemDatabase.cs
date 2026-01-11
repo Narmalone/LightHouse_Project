@@ -1,19 +1,21 @@
 using AYellowpaper.SerializedCollections;
-using LightHouse.Inventory;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemDB_", menuName = "LightHouse/Databases/InventoryItems")]
-public class ItemDatabase : ScriptableObject
+namespace LightHouse.Features.Items.Inventory.Databases
 {
-    public SerializedDictionary<ushort, GameObject> items = new SerializedDictionary<ushort, GameObject>();
-
-    public IInventoryItem Get(ushort ID)
+    [CreateAssetMenu(fileName = "ItemDB_", menuName = "LightHouse/Databases/InventoryItems")]
+    public class ItemDatabase : ScriptableObject
     {
-        return items[ID].GetComponentInChildren<IInventoryItem>();
-    }
+        public SerializedDictionary<ushort, GameObject> items = new SerializedDictionary<ushort, GameObject>();
 
-    public GameObject GetPrefab(ushort ID)
-    {
-        return items[ID];
+        public IInventoryItem Get(ushort ID)
+        {
+            return items[ID].GetComponentInChildren<IInventoryItem>();
+        }
+
+        public GameObject GetPrefab(ushort ID)
+        {
+            return items[ID];
+        }
     }
 }

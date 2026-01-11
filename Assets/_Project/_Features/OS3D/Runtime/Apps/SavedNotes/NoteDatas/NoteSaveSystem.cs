@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.NoteSystem
+namespace LightHouse.Features.Computer.NoteSystem
 {
     /// <summary>
     /// Gère la sauvegarde, le chargement et la suppression des notes utilisateur.

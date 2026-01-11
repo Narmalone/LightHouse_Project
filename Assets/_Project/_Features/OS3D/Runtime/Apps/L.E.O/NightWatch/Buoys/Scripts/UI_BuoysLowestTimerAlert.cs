@@ -1,8 +1,8 @@
-using LightHouse.Game.Buyoncies;
+using LightHouse.Features.Buyoncies;
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
+namespace LightHouse.Features.Computer.LEO.NightWatch.Buoys
 {
     /// <summary>
     /// Affiche en permanence le timer restant pour l'anomalie de bouée
@@ -51,7 +51,7 @@ namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
         /// <summary>
         /// Retourne le temps restant le plus bas parmi les anomalies données.
         /// </summary>
-        private float GetLowestRemainingTime(System.Collections.Generic.IReadOnlyList<BuyoncyAnomalyDatas> anomalies)
+        private float GetLowestRemainingTime(System.Collections.Generic.IReadOnlyList<BuyoncyBreakdownDatas> anomalies)
         {
             float lowest = float.MaxValue;
 

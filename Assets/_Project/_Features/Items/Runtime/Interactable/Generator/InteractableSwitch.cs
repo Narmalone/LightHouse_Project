@@ -1,11 +1,11 @@
-using LightHouse.Inputs;
-using LightHouse.Interactions;
-using LightHouse.Localization;
+using LightHouse.Core.Inputs;
+using LightHouse.Core.Localization;
+using LightHouse.Features.Interactions;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class InteractableSwitch : InteractableItemBase, IInteractable
     {

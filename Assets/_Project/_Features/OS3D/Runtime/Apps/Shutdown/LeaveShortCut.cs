@@ -1,9 +1,11 @@
-using LightHouse.Game.Computer.OS;
-
-public class LeaveShortCut : ShortCutController
+namespace LightHouse.Features.Computer.OS
 {
-    public override void OnExecute(bool playSound = true)
+    public class LeaveShortCut : ShortCutController
     {
-        _os.LeaveOS();
+        public override void OnExecute(bool playSound = true)
+        {
+            _os.LeaveOS();
+        }
     }
 }
+

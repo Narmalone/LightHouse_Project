@@ -1,7 +1,8 @@
+using LightHouse.Features.Computer.LEO.Supplies;
 using UnityEditor;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.Supplies
+namespace LightHouse.Core.CustomEditors
 {
     /// <summary>
     /// Script d'editor du Configurateur de Shop

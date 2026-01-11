@@ -1,35 +1,39 @@
 using UnityEngine;
 
-public enum NationalitiesBoats
+namespace LightHouse.Features.Boats.Nationalities
 {
-    EN,
-    FR,
-    RU,
-    DE,
-    SPA,
-    CA
-}
-
-[System.Serializable]
-public class BoatNationalityDatas
-{
-    public string Name;
-    public Sprite NationalityFlag;
-}
-
-[CreateAssetMenu(fileName = "BoatDatabase_", menuName = "LightHouse/Databases/New Boat Config")]
-public class BoatsNationalitiesConfig : ScriptableObject
-{
-    public NationalitiesBoats Country;
-    public string NationalityName;
-    public Sprite Flag;
-    public BoatNationalityDatas[] BoatsDatas;
-
-    private void OnValidate()
+    public enum NationalitiesBoats
     {
-        foreach(var boatData in BoatsDatas)
+        EN,
+        FR,
+        RU,
+        DE,
+        SPA,
+        CA
+    }
+
+    [System.Serializable]
+    public class BoatNationalityDatas
+    {
+        public string Name;
+        public Sprite NationalityFlag;
+    }
+
+    [CreateAssetMenu(fileName = "BoatDatabase_", menuName = "LightHouse/Databases/New Boat Config")]
+    public class BoatsNationalitiesConfig : ScriptableObject
+    {
+        public NationalitiesBoats Country;
+        public string NationalityName;
+        public Sprite Flag;
+        public BoatNationalityDatas[] BoatsDatas;
+
+        private void OnValidate()
         {
-            boatData.NationalityFlag = Flag;
+            foreach (var boatData in BoatsDatas)
+            {
+                boatData.NationalityFlag = Flag;
+            }
         }
     }
+
 }

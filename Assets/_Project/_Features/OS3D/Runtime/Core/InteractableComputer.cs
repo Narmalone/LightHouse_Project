@@ -1,8 +1,8 @@
-using LightHouse.Interactions;
-using LightHouse.Items.Interactable;
+using LightHouse.Features.Interactions;
+using LightHouse.Features.Items.Interactable;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer
+namespace LightHouse.Features.Computer
 {
     public class InteractableComputer : InteractableItemBase, IInteractable
     {

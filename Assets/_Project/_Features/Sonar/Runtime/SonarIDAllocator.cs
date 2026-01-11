@@ -1,36 +1,38 @@
 using System.Collections.Generic;
-using UnityEngine;
 
-public static class SonarIDAllocator
+namespace LightHouse.Features.Sonar
 {
-    private static readonly SortedSet<int> _availableIDs = new();
-    private static int _nextID = 0;
-
-    public static int AllocateID()
+    public static class SonarIDAllocator
     {
-        if (_availableIDs.Count > 0)
+        private static readonly SortedSet<int> _availableIDs = new();
+        private static int _nextID = 0;
+
+        public static int AllocateID()
         {
-            int id = _availableIDs.Min;
-            _availableIDs.Remove(id);
-            return id;
+            if (_availableIDs.Count > 0)
+            {
+                int id = _availableIDs.Min;
+                _availableIDs.Remove(id);
+                return id;
+            }
+
+            return _nextID++;
         }
 
-        return _nextID++;
-    }
+        public static void ReleaseID(int id)
+        {
+            _availableIDs.Add(id);
+        }
 
-    public static void ReleaseID(int id)
-    {
-        _availableIDs.Add(id);
-    }
+        public static void Reset()
+        {
+            _availableIDs.Clear();
+            _nextID = 0;
+        }
 
-    public static void Reset()
-    {
-        _availableIDs.Clear();
-        _nextID = 0;
-    }
-
-    public static string GetDotName(uint id)
-    {
-        return $"dot{id}";
+        public static string GetDotName(uint id)
+        {
+            return $"dot{id}";
+        }
     }
 }

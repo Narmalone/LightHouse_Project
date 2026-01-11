@@ -1,12 +1,13 @@
-﻿using LightHouse.Audio;
-using LightHouse.Game.Sonar.Core;
+﻿using LightHouse.Core.Audio;
+using LightHouse.Core.Services;
+using LightHouse.Features.Sonar.Core;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
+namespace LightHouse.Features.Computer.LEO.NightWatch.Sonar
 {
     /// <summary>
     /// UI Sonar : dots, balayage et lien visuel (dot -> label du bas).

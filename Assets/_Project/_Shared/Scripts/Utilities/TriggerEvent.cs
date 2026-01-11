@@ -1,8 +1,8 @@
 using System;
-using LightHouse.CustomAttributes;
+using LightHouse.Core.Attributes;
 using UnityEngine;
 
-namespace LightHouse.Utilities
+namespace LightHouse.Core.Utilities
 {
     public class TriggerEvent : MonoBehaviour
     {

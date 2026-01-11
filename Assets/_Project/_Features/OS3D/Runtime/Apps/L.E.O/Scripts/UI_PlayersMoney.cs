@@ -1,40 +1,39 @@
-using LightHouse.Money;
+using LightHouse.Core.Player.Money;
 using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(TextMeshProUGUI))]
-public class UI_PlayersMoney : MonoBehaviour
+namespace LightHouse.Core.Player.Money
 {
-    [SerializeField] private TextMeshProUGUI _moneyValueText;
-
-    private void Awake()
+    [RequireComponent(typeof(TextMeshProUGUI))]
+    public class UI_PlayersMoney : MonoBehaviour
     {
-        PlayerCurrency.OnBalanceChanged += PlayerCurrency_OnBalanceChanged;
-    }
+        [SerializeField] private TextMeshProUGUI _moneyValueText;
 
-    private void Start()
-    {
-        UpdateUI(PlayerCurrency.Balance);
-    }
+        private void Awake()
+        {
+            if (_moneyValueText == null)
+                _moneyValueText = GetComponent<TextMeshProUGUI>();
+            PlayerCurrency.OnBalanceChanged += PlayerCurrency_OnBalanceChanged;
+        }
 
-    private void PlayerCurrency_OnBalanceChanged(float obj)
-    {
-        UpdateUI(obj);
-    }
+        private void Start()
+        {
+            UpdateUI(PlayerCurrency.Balance);
+        }
 
-    private void UpdateUI(float value)
-    {
-        _moneyValueText.text = value.ToString();
-    }
+        private void PlayerCurrency_OnBalanceChanged(float obj)
+        {
+            UpdateUI(obj);
+        }
 
-    private void OnDestroy()
-    {
-        PlayerCurrency.OnBalanceChanged -= PlayerCurrency_OnBalanceChanged;
-    }
+        private void UpdateUI(float value)
+        {
+            _moneyValueText.text = value.ToString();
+        }
 
-    private void OnValidate()
-    {
-        if (_moneyValueText == null)
-            _moneyValueText = GetComponent<TextMeshProUGUI>();
+        private void OnDestroy()
+        {
+            PlayerCurrency.OnBalanceChanged -= PlayerCurrency_OnBalanceChanged;
+        }
     }
 }

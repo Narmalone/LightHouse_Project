@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace LightHouse.Items.Detection
+namespace LightHouse.Features.Items.Detection
 {
     [System.Serializable]
     public class CameraRaycastSystem

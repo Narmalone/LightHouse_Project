@@ -1,11 +1,16 @@
-﻿using TMPro;
-using UnityEngine;
-using LightHouse.Game.Computer.OS;
-using LightHouse.Game.DayNightSystem;
-using System.Text;
-using UnityEngine.UI;
+﻿using LightHouse.Features.Computer.OS;
+using LightHouse.Core.Services;
+using LightHouse.Features.Computer.Calendar.Events;
+using LightHouse.Features.Computer.Calendar.Clock;
+using LightHouse.Features.Computer.Settings;
 
-namespace LightHouse.Game.Computer.Calendar
+using TMPro;
+using System.Text;
+using UnityEngine;
+using UnityEngine.UI;
+using LightHouse.Features.TimeOfDay.TimeCore;
+
+namespace LightHouse.Features.Computer.Calendar
 {
     /// <summary>
     /// Application calendrier affichant les événements journaliers

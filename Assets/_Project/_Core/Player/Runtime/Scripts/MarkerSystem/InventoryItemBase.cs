@@ -1,13 +1,13 @@
 using System;
-using LightHouse.Inputs;
-using LightHouse.Inventory;
-using LightHouse.Localization;
+using LightHouse.Core.Inputs;
+using LightHouse.Core.Localization;
+
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory
 {
     public abstract class InventoryItemBase : MonoBehaviour, IInventoryItem
     {

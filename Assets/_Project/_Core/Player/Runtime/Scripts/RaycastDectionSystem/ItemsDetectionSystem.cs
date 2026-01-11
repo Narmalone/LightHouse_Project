@@ -1,8 +1,8 @@
-﻿using LightHouse.Interactions;
-using LightHouse.Inventory;
+﻿using LightHouse.Features.Interactions;
+using LightHouse.Features.Items.Inventory;
 using UnityEngine;
 
-namespace LightHouse.Items.Detection
+namespace LightHouse.Features.Items.Detection
 {
     public class ItemsDetectionSystem : MonoBehaviour
     {

@@ -1,51 +1,57 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using LightHouse.Weather;
+using LightHouse.Features.Weather;
 
-[CreateAssetMenu(fileName = "AnomalyConfig", menuName = "LightHouse/Boats/Anomaly Configuration")]
-public class AnomalyConfiguration : ScriptableObject
+namespace LightHouse.Features.Boats.Anomalies
 {
-    [Header("Configuration météo")]
-    public WeatherType weatherType;
-
-    [Header("Anomalies et leurs chances d’apparition")]
-    public List<AnomalyChance> anomalies = new();
-
-    public AnomalyType? PickRandomAnomaly()
+    public enum AnomalyType
     {
-        float total = 0f;
-        foreach (var anomaly in anomalies)
-            total += anomaly.probability;
+        FireAboard,
+        MedicalEmergency,
+        HostileBehaviour,
+        DamagedBoat,
+        FuelLeak,
+        LightsOutage,
+        Quarantine
+    }
 
-        float pick = UnityEngine.Random.Range(0f, total);
-        float sum = 0f;
+    [CreateAssetMenu(fileName = "AnomalyConfig", menuName = "LightHouse/Boats/Anomaly Configuration")]
+    public class AnomalyConfiguration : ScriptableObject
+    {
+        [Header("Configuration météo")]
+        public WeatherType weatherType;
 
-        foreach (var anomaly in anomalies)
+        [Header("Anomalies et leurs chances d’apparition")]
+        public List<AnomalyChance> anomalies = new();
+
+        public AnomalyType? PickRandomAnomaly()
         {
-            sum += anomaly.probability;
-            if (pick <= sum)
-                return anomaly.anomaly;
+            float total = 0f;
+            foreach (var anomaly in anomalies)
+                total += anomaly.probability;
+
+            float pick = UnityEngine.Random.Range(0f, total);
+            float sum = 0f;
+
+            foreach (var anomaly in anomalies)
+            {
+                sum += anomaly.probability;
+                if (pick <= sum)
+                    return anomaly.anomaly;
+            }
+
+            return AnomalyType.FireAboard;
         }
 
-        return AnomalyType.FireAboard;
+        [Serializable]
+        public class AnomalyChance
+        {
+            public AnomalyType anomaly;
+            [Range(0f, 1f)]
+            public float probability = 0.1f;
+        }
     }
+   
+}
 
-    [Serializable]
-    public class AnomalyChance
-    {
-        public AnomalyType anomaly;
-        [Range(0f, 1f)]
-        public float probability = 0.1f;
-    }
-}
-public enum AnomalyType
-{
-    FireAboard,
-    MedicalEmergency,
-    HostileBehaviour,
-    DamagedBoat,
-    FuelLeak,
-    LightsOutage,
-    Quarantine
-}

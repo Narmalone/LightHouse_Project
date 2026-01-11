@@ -1,4 +1,4 @@
-namespace LightHouse.Inventory
+namespace LightHouse.Core.Player.Inventory.Callbacks
 {
     public interface IInventoryItemCallback
     {

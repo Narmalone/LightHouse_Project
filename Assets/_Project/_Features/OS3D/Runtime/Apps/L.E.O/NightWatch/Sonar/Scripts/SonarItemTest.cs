@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace LightHouse.Game.Sonar.Core
+namespace LightHouse.Features.Sonar.Core
 {
     public class SonarItemTest : MonoBehaviour, ISonarable
     {

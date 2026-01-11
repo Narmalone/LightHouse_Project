@@ -1,5 +1,6 @@
-﻿using LightHouse.Audio;
-using LightHouse.Handlers;
+﻿using LightHouse.Core.Audio;
+using LightHouse.Core.Player;
+using LightHouse.Core.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Talkie
+namespace LightHouse.Features.Talkie
 {
     public class TalkieManager : MonoBehaviour, ITalkieService
     {

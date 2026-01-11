@@ -1,9 +1,12 @@
-using LightHouse.Game.Sonar.Core;
-using LightHouse.Game.Boats.Frequencies;
+using LightHouse.Features.Sonar.Core;
+using LightHouse.Features.Boats.Frequencies;
+using LightHouse.Features.Boats.Anomalies;
+using LightHouse.Features.Boats.Nationalities;
+
 using System;
 using UnityEngine;
 
-namespace LightHouse.Game.Boats
+namespace LightHouse.Features.Boats
 {
     /// <summary>
     /// Représente un bateau dans le monde.

@@ -1,9 +1,11 @@
 using System;
+using LightHouse.Features.Sonar.Core;
+using LightHouse.Features.UI;
+
 using UnityEngine;
 using UnityEngine.UI;
-using LightHouse.Game.Sonar.Core;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
+namespace LightHouse.Features.Computer.LEO.NightWatch.Sonar
 {
     public class SonarDotController : MonoBehaviour
     {

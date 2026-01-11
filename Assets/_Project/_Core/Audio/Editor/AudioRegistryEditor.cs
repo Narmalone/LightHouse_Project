@@ -1,16 +1,22 @@
+using LightHouse.Core.Audio;
+
 using UnityEngine;
 using UnityEditor;
-[CustomEditor(typeof(AudioRegistry))]
-public class AudioRegistryEditor : Editor
+
+namespace LightHouse.Core.CustomEditors
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(AudioRegistry))]
+    public class AudioRegistryEditor : Editor
     {
-        base.OnInspectorGUI();
-        AudioRegistry asset = (AudioRegistry)target;
-        if (GUILayout.Button("Refresh"))
+        public override void OnInspectorGUI()
         {
-            asset.RegenerateDatas();
-            EditorUtility.SetDirty(asset);
+            base.OnInspectorGUI();
+            AudioRegistry asset = (AudioRegistry)target;
+            if (GUILayout.Button("Refresh"))
+            {
+                asset.RegenerateDatas();
+                EditorUtility.SetDirty(asset);
+            }
         }
     }
 }

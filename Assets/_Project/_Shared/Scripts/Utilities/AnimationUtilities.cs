@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LightHouse.Utilities
+namespace LightHouse.Core.Utilities
 {
     public static class AnimationUtilities
     {

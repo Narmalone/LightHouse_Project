@@ -1,4 +1,6 @@
-namespace LightHouse.Inventory
+using LightHouse.Features.Items.Inventory.Databases;
+
+namespace LightHouse.Core.Player.Inventory.InputsHandler
 {
     public class InventoryScrollHandler
     {

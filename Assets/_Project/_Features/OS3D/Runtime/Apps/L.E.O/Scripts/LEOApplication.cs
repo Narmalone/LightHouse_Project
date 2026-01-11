@@ -1,13 +1,14 @@
-using LightHouse.Game.Computer.LEO.Mails;
-using LightHouse.Game.Computer.LEO.NightWatch;
-using LightHouse.Game.Computer.LEO.Weather;
-using LightHouse.Game.Computer.LEO.Supplies;
-using LightHouse.Game.Computer.OS;
+using LightHouse.Features.Computer.LEO.Mails;
+using LightHouse.Features.Computer.LEO.NightWatch;
+using LightHouse.Features.Computer.LEO.Weather;
+using LightHouse.Features.Computer.LEO.Supplies;
+using LightHouse.Features.Computer.OS;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using LightHouse.Core.Services;
 
-namespace LightHouse.Game.Computer.LEO
+namespace LightHouse.Features.Computer.LEO
 {
     public enum ELEOWindow
     {

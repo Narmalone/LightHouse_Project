@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Talkie
+namespace LightHouse.Features.Talkie
 {
     [CreateAssetMenu(menuName = "LightHouse/Services/TalkieServiceReference")]
     public class TalkieServiceReference : ScriptableObject

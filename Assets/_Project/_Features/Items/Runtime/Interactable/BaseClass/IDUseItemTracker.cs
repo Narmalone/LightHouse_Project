@@ -1,8 +1,8 @@
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Features.Items.Inventory;
 using System;
-using UnityEngine;
-using LightHouse.Inventory;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class IDUseItemTracker : IDItemTracker
     {

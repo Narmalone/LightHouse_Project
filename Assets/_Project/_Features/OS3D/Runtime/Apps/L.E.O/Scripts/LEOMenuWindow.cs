@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO
+namespace LightHouse.Features.Computer.LEO
 {
     public class LEOMenuWindow : LEOWindow
     {

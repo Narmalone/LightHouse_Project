@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.Weather
+namespace LightHouse.Features.Computer.LEO.Weather
 {
     /// <summary>
     /// Bouton de sélection d'une plage de pression atmosphérique (en hPa).

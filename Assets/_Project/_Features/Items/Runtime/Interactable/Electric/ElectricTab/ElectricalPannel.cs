@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using LightHouse.Electricity;
+using LightHouse.Features.Electricity;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class ElectricalPannel : MonoBehaviour
     {

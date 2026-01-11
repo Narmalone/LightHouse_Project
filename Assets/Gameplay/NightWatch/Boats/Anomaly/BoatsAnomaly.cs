@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Boats
+namespace LightHouse.Features.Boats.Anomalies
 {
     /// <summary>
     /// Classe de base abstraite pour toutes les anomalies de bateau.

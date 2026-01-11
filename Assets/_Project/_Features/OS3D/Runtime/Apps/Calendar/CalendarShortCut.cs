@@ -1,9 +1,9 @@
-using LightHouse.Game.Computer.OS;
-using LightHouse.Game.DayNightSystem;
+using LightHouse.Features.Computer.OS;
+using LightHouse.Features.TimeOfDay.TimeCore;
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.Calendar
+namespace LightHouse.Features.Computer.Calendar
 {
     /// <summary>
     /// Gère le raccourci du calendrier sur le bureau.

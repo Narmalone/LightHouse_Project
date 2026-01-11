@@ -1,9 +1,10 @@
-﻿using System;
+﻿using LightHouse.Features.TimeOfDay.TimeCore;
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 
-namespace LightHouse.Game.DayNightSystem
+namespace LightHouse.Features.TimeOfDay.Sun
 {
     public class SunController : MonoBehaviour, ITimeCycleObserver
     {

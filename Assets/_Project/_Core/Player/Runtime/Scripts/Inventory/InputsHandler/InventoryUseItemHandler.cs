@@ -1,7 +1,9 @@
-using LightHouse.Inputs;
+using LightHouse.Core.Inputs;
+using LightHouse.Core.Player.Inventory.UI;
+using LightHouse.Features.Items.Inventory;
 using UnityEngine;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Core.Player.Inventory.InputsHandler
 {
     public class InventoryUseItemHandler
     {

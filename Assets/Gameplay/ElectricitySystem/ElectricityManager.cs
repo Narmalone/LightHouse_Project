@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using LightHouse.Features.Items.Interactable.Generator;
+using LightHouse.Features.Items.Interactable;
+
+using UnityEngine;
 using System.Collections.Generic;
 using System;
-using LightHouse.Items.Interactable;
 
-namespace LightHouse.Electricity
+namespace LightHouse.Features.Electricity
 {
     #region ENUMS & UTILITIES
     public enum ElectricityZones

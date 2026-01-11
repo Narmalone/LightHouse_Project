@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace LightHouse.GrabableItems
+namespace LightHouse.Core.Player.GrabableItems
 {
     public class PlayerGrabableItems : MonoBehaviour
     {

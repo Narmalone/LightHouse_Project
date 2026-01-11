@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Nightwatch
+namespace LightHouse.Features.Nightwatch
 {
     [CreateAssetMenu(fileName = "Nightwatch_", menuName = "LightHouse/Computer/LEO/NightWatch/New Config")]
     public class SO_NightWatchConfiguration : ScriptableObject

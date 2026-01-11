@@ -1,10 +1,10 @@
-using LightHouse.Game.Signals;
+using LightHouse.Features.Signals;
 using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Signals
+namespace LightHouse.Features.Computer.LEO.NightWatch.Signals
 {
     /// <summary>
     /// Élément UI affichant un signal actif (icône, label, timer).

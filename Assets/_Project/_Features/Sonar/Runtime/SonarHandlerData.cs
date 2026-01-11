@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LightHouse.Game.Sonar.Core
+namespace LightHouse.Features.Sonar.Core
 {
     /// <summary>
     /// Stocke et gère les objets sonarables ainsi que la référence au sonar principal.

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Options.V3
+namespace LightHouse.Core.Settings.Video.Display.Monitor
 {
     public class MonitorController : MonoBehaviour, IOption
     {
         [Header("UI (passive)")]
         public OptionEnumPassive optionEnum;
-        public global::DisplayModeController modeProvider; // assigne dans l’inspector
+        public DisplayModeController modeProvider; // assigne dans l’inspector
 
         public bool ShowDebugMode = true;
 

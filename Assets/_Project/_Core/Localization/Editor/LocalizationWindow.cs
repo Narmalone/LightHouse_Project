@@ -1,7 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.Localization.Tables;
 using UnityEditor.Localization;
 using System.IO;
 using System.Text;
@@ -9,7 +8,7 @@ using System.Linq;
 using System;
 using System.Reflection;
 
-namespace LightHouse.CustomEditors
+namespace LightHouse.Core.CustomEditors
 {
     public class LocalizationWindow : EditorWindow
     {

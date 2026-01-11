@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.CustomAttributes
+namespace LightHouse.Core.Attributes
 {
     public class SceneSelectorAttribute : PropertyAttribute
     {

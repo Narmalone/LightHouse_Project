@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
+namespace LightHouse.Features.Computer.LEO.NightWatch.Buoys
 {
     /// <summary>
     /// Évalue un rapport de bouées en fonction des anomalies en cours.

@@ -1,14 +1,18 @@
-using LightHouse.Weather;
+using LightHouse.Features.Weather;
 using TMPro;
 using UnityEngine;
 
-public class PlaceHolder_WaterTempUI : MonoBehaviour
+namespace LightHouse.Features.PlaceHolders.Weather
 {
-    [SerializeField] private TextMeshProUGUI _waterTempTxt;
-
-    private void LateUpdate()
+    public class PlaceHolder_WaterTempUI : MonoBehaviour
     {
-        if (WeatherHandlerData.CurrentWeather == null) return;
-        _waterTempTxt.text = "Water Temp: " + WeatherHandlerData.CurrentWeather.WaterTemperature.ToString("#.00") + " °C";
+        [SerializeField] private TextMeshProUGUI _waterTempTxt;
+
+        private void LateUpdate()
+        {
+            if (WeatherHandlerData.CurrentWeather == null) return;
+            _waterTempTxt.text = "Water Temp: " + WeatherHandlerData.CurrentWeather.WaterTemperature.ToString("#.00") + " °C";
+        }
     }
+
 }

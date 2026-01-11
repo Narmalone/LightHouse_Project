@@ -1,11 +1,14 @@
-using LightHouse.Game.Sonar.Core;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Weather;
-using LightHouse.Game.Nightwatch;
+using LightHouse.Features.Sonar.Core;
+using LightHouse.Features.Nightwatch;
+using LightHouse.Features.Weather;
+using LightHouse.Features.TimeOfDay.TimeCore;
+
 using System;
 using UnityEngine;
+using LightHouse.Core.Utilities;
 
-namespace LightHouse.Game.Buyoncies
+
+namespace LightHouse.Features.Buyoncies
 {
     /// <summary>
     /// Contrôleur d'une bouée (Buyoncy) dans le monde.

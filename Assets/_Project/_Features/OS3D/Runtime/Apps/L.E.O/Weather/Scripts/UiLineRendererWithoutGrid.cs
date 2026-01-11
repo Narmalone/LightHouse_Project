@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.UI
+namespace LightHouse.Features.UI
 {
     /// <summary>
     /// Petit renderer de polyline 2D (UI) sans grille :

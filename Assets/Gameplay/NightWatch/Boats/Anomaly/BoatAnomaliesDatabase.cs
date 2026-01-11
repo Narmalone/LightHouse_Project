@@ -1,10 +1,10 @@
-﻿using LightHouse.Game.Signals;
+﻿using LightHouse.Features.Signals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace LightHouse.Game.Boats
+namespace LightHouse.Features.Boats.Anomalies
 {
     #region Data Model
 

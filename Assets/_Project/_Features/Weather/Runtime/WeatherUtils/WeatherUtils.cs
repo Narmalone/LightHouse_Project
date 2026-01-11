@@ -1,7 +1,7 @@
-﻿using LightHouse.Game.Computer.LEO.Weather.Wind;
+﻿using LightHouse.Features.TimeOfDay.TimeCore;
 using UnityEngine;
 
-namespace LightHouse.Weather.Utils
+namespace LightHouse.Features.Weather.Utils
 {
     /// <summary>
     /// Utilitaires météo :
@@ -168,18 +168,18 @@ namespace LightHouse.Weather.Utils
         /// <summary>
         /// Retourne la lettre cardinale courte pour une orientation (N, NE, E, …).
         /// </summary>
-        public static string GetCardinalLetter(LightHouse.Weather.WindOrientationType t)
+        public static string GetCardinalLetter(WindOrientationType t)
         {
             switch (t)
             {
-                case LightHouse.Weather.WindOrientationType.North: return "N";
-                case LightHouse.Weather.WindOrientationType.North_East: return "NE";
-                case LightHouse.Weather.WindOrientationType.East: return "E";
-                case LightHouse.Weather.WindOrientationType.South_East: return "SE";
-                case LightHouse.Weather.WindOrientationType.South: return "S";
-                case LightHouse.Weather.WindOrientationType.South_West: return "SW";
-                case LightHouse.Weather.WindOrientationType.West: return "W";
-                case LightHouse.Weather.WindOrientationType.North_West: return "NW";
+                case WindOrientationType.North: return "N";
+                case WindOrientationType.North_East: return "NE";
+                case WindOrientationType.East: return "E";
+                case WindOrientationType.South_East: return "SE";
+                case WindOrientationType.South: return "S";
+                case WindOrientationType.South_West: return "SW";
+                case WindOrientationType.West: return "W";
+                case WindOrientationType.North_West: return "NW";
                 default: return "";
             }
         }

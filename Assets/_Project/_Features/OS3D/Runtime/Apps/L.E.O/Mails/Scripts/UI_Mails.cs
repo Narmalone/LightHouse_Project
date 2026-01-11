@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.Mails
+namespace LightHouse.Features.Computer.LEO.Mails
 {
     public class UI_Mails : LEOWindow
     {

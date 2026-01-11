@@ -1,7 +1,7 @@
 using AYellowpaper.SerializedCollections;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.Supplies
+namespace LightHouse.Features.Computer.LEO.Supplies
 {
     /// <summary>
     /// Base de donnée permettant de configurer le Shop / ravitaillement

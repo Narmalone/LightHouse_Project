@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Boats
+namespace LightHouse.Features.Boats.Anomalies
 {
     /// <summary>
     /// Définition d'une anomalie de bateau (type, nom d'affichage, prefab).

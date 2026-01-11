@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace LightHouse.Interactions
+namespace LightHouse.Features.Interactions
 {
     public interface IItemName
     {

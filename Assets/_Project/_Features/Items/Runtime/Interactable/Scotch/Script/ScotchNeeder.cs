@@ -1,7 +1,7 @@
-using System;
+using LightHouse.Items.Interactable.Scotch;
 using UnityEngine;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class ScotchNeeder : IDUseItemTracker
     {

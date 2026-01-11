@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
+namespace LightHouse.Features.Computer.LEO.NightWatch.Boats
 {
     /// <summary>
     /// Calculs d'argent : plat + bonus basé sur une courbe/temps.

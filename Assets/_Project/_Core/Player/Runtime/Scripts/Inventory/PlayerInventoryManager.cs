@@ -1,11 +1,15 @@
-﻿using LightHouse.Inputs;
-using LightHouse.Interactions;
+﻿using LightHouse.Core.Audio;
+using LightHouse.Core.Inputs;
+using LightHouse.Core.Player.Inventory.InputsHandler;
+using LightHouse.Core.Player.Inventory.Pool;
+using LightHouse.Core.Player.Inventory.UI;
+using LightHouse.Features.Interactions.UI;
+using LightHouse.Features.Items.Detection;
+using LightHouse.Features.Items.Inventory;
+using LightHouse.Features.Items.Inventory.Databases;
 using UnityEngine;
-using LightHouse.Items.Detection;
-using LightHouse.Inventory;
-using System.Collections.Generic;
 
-namespace LightHouse.KinematicCharacterController
+namespace LightHouse.Core.Player.Inventory
 {
     /// <summary>
     /// Main controller of the inventory system
@@ -121,7 +125,7 @@ namespace LightHouse.KinematicCharacterController
             _inventoryRaycastDetector.OnItemLost -= ResetSeenObject;
             SlotManager.Clear();
             InventoryHandlerData.Reset();
-            PoolManager.Clear();
+            InventoryPoolManager.Clear();
         }
 
         #endregion

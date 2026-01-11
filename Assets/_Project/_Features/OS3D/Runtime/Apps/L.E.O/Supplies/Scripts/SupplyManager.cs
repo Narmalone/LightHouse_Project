@@ -1,16 +1,19 @@
-﻿using LightHouse.Game.Computer.Calendar;
-using LightHouse.Game.Computer.LEO.Mails;
-using LightHouse.Game.DayNightSystem;
-using LightHouse.Money;
-using LightHouse.Weather;
-using LightHouse.Weather.Utils;
+﻿using LightHouse.Features.Computer.Calendar;
+using LightHouse.Features.Computer.LEO.Mails;
+using LightHouse.Core.Player.Money;
+using LightHouse.Features.Weather;
+using LightHouse.Features.Weather.Utils;
+using LightHouse.Features.Computer.Calendar.Events;
+using LightHouse.Features.TimeOfDay.TimeCore;
+using LightHouse.Features.Computer.LEO.Supplies.Order;
+
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.Supplies
+namespace LightHouse.Features.Computer.LEO.Supplies
 {
     public class SupplyManager : LEOWindow
     {

@@ -1,14 +1,18 @@
-[System.Serializable]
-public class NoteData
+namespace LightHouse.Features.Computer.NoteSystem
 {
-    public string ID;
-    public string Title;
-    public string Content;
-
-    public NoteData(string title, string content)
+    [System.Serializable]
+    public class NoteData
     {
-        Title = title;
-        Content = content;
-        ID = System.Guid.NewGuid().ToString();
+        public string ID;
+        public string Title;
+        public string Content;
+
+        public NoteData(string title, string content)
+        {
+            Title = title;
+            Content = content;
+            ID = System.Guid.NewGuid().ToString();
+        }
     }
+
 }

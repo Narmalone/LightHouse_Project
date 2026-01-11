@@ -1,9 +1,10 @@
+using LightHouse.Features.TimeOfDay.TimeCore;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace LightHouse.Game.Computer.LEO.Supplies
+namespace LightHouse.Features.Computer.LEO.Supplies
 {
     /// <summary>
     /// Configuration générale des expéditions (délais, retard météo, heure de livraison).

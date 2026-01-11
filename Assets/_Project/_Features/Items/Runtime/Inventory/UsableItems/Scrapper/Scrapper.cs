@@ -1,16 +1,19 @@
+using LightHouse.Core.Attributes;
+using LightHouse.Core.Inputs;
+using LightHouse.Core.Inventory;
+using LightHouse.Core.Localization;
+using LightHouse.Core.Player;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Features.Items.Detection;
+using LightHouse.Features.Items.Interactable;
+using LightHouse.Features.Items.Inventory.Databases;
+
 using System;
 using System.Threading.Tasks;
-using LightHouse.CustomAttributes;
-using LightHouse.Handlers;
-using LightHouse.Inputs;
-using LightHouse.Inventory;
-using LightHouse.Items.Detection;
-using LightHouse.Items.Interactable;
-using LightHouse.Localization;
 using UnityEngine;
 using UnityEngine.Localization;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Scrapper
 {
     public class Scrapper : InventoryItemBase, IInventoryItemUsable
     {

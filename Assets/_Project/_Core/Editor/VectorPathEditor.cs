@@ -1,26 +1,29 @@
-using System;
-using System.Collections.Generic;
+using LightHouse.Features.Boats;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(VectorPath))]
-public class VectorPathEditor : Editor
+namespace LightHouse.Core.CustomEditors
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(VectorPath))]
+    public class VectorPathEditor : Editor
     {
-        DrawDefaultInspector();
-
-        VectorPath path = (VectorPath)target;
-
-        if (GUILayout.Button("Générer un nouveau chemin"))
+        public override void OnInspectorGUI()
         {
-            GenerateNewPath(path);
-            EditorUtility.SetDirty(path);
+            DrawDefaultInspector();
+
+            VectorPath path = (VectorPath)target;
+
+            if (GUILayout.Button("Générer un nouveau chemin"))
+            {
+                GenerateNewPath(path);
+                EditorUtility.SetDirty(path);
+            }
+        }
+
+        private void GenerateNewPath(VectorPath path)
+        {
+            path.GenerateNewPath();
         }
     }
 
-    private void GenerateNewPath(VectorPath path)
-    {
-        path.GenerateNewPath();
-    }
 }

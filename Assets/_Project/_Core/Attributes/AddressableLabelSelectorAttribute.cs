@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace LightHouse.CustomAttributes
+namespace LightHouse.Core.Attributes
 {
     public class AddressableLabelSelectorAttribute : PropertyAttribute
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace LightHouse.Interactions
+namespace LightHouse.Features.Items.Detection
 {
     public interface IDestroyable
     {

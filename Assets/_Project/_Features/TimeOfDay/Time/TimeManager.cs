@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Game.DayNightSystem
+namespace LightHouse.Features.TimeOfDay.TimeCore
 {
     public enum TimeOfDaySegment
     {

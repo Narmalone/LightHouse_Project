@@ -1,7 +1,7 @@
 using Cinemachine;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer
+namespace LightHouse.Features.Computer
 {
     public class LightHouseComputerCamera : MonoBehaviour
     {

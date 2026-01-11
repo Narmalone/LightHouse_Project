@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Sonar
+namespace LightHouse.Features.Computer.LEO.NightWatch.Sonar
 {
     public class BoatDotController : SonarDotController
     {

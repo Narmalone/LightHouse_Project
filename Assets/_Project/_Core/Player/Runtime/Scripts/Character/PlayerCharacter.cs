@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.KinematicCharacterController
+namespace LightHouse.Core.Player
 {
     //enum and not a bool if we want to press or hold...
     public enum CrouchInput

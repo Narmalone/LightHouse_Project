@@ -1,4 +1,4 @@
-namespace LightHouse.Game.Computer.LEO.Supplies
+namespace LightHouse.Features.Computer.LEO.Supplies
 {
     public enum E_SupplyCategory
     {

@@ -1,9 +1,8 @@
-using LightHouse.Inputs;
-using LightHouse.Inventory;
+using LightHouse.Core.Inputs;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Jerrican
 {
     public class JerricanEssence : InventoryItemBase, IInventoryItemUsable
     {

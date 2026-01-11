@@ -1,4 +1,4 @@
-namespace LightHouse.Inventory
+namespace LightHouse.Core.Inventory
 {
     public enum ItemIDEnum : ushort
     {

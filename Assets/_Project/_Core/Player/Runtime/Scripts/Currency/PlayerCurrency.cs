@@ -1,6 +1,6 @@
 using System;
 
-namespace LightHouse.Money
+namespace LightHouse.Core.Player.Money
 {
     public static class PlayerCurrency
     {

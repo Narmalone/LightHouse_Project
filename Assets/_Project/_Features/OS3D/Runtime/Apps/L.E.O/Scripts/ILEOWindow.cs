@@ -1,8 +1,11 @@
 using UnityEngine;
 
-public interface ILEOWindow
+namespace LightHouse.Features.Computer.LEO
 {
-    void Open();
-    void Close();
-    CanvasGroup CanvasGroup { get; }
+    public interface ILEOWindow
+    {
+        void Open();
+        void Close();
+        CanvasGroup CanvasGroup { get; }
+    }
 }

@@ -1,9 +1,10 @@
+using LightHouse.Core.Extensions;
 using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.Weather.Temperature
+namespace LightHouse.Features.Computer.LEO.Weather.Temperature
 {
     #region Data
 

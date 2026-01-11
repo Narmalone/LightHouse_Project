@@ -1,9 +1,8 @@
-﻿using LightHouse.Game.DayNightSystem;
-using LightHouse.Weather.Utils;
-using System.Collections.Generic;
+﻿using LightHouse.Features.TimeOfDay.TimeCore;
+using LightHouse.Features.Weather.Utils;
 using UnityEngine;
 
-namespace LightHouse.Weather
+namespace LightHouse.Features.Weather
 {
     /// <summary>
     /// Pilote l'état météo courant en interpolant entre deux segments de la timeline.

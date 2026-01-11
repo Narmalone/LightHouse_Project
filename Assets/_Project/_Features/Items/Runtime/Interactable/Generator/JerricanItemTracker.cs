@@ -1,8 +1,8 @@
-using LightHouse.Items.Inventory;
-using LightHouse.Inventory;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Features.Items.Inventory.Jerrican;
 using System;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class JerricanItemTracker : IDUseItemTracker
     {

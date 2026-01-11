@@ -1,8 +1,11 @@
-using LightHouse.Interactions;
+using LightHouse.Features.Interactions;
 
-public interface IDoor : IInteractable
+namespace LightHouse.Features.Items.Interactable.Doors
 {
-    bool IsOpen { get; }
-    void Open();
-    void Close();
+    public interface IDoor : IInteractable
+    {
+        bool IsOpen { get; }
+        void Open();
+        void Close();
+    }
 }

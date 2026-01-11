@@ -1,8 +1,9 @@
+using LightHouse.Features.Electricity;
+
 using System;
-using LightHouse.Electricity;
 using UnityEngine;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable
 {
     public class ElectricalSwitch : InteractableSwitch, IElectricItem
     {

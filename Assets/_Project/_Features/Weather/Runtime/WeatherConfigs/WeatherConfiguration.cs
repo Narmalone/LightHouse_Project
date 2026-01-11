@@ -1,7 +1,7 @@
 using LightHouse.EditorTools.SuperGameManager;
 using UnityEngine;
 
-namespace LightHouse.Weather
+namespace LightHouse.Features.Weather
 {
     [CreateAssetMenu(fileName = "NewWeatherDefinition", menuName = "LightHouse/Weather/Definition")]
     public class WeatherConfiguration : ScriptableObject

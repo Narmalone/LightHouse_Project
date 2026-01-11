@@ -1,8 +1,8 @@
+using LightHouse.Features.Weather;
 using System;
 using UnityEngine;
-using LightHouse.Weather;
 
-namespace LightHouse.Game.Computer.LEO.Weather.Wind
+namespace LightHouse.Features.Computer.LEO.Weather.Wind
 {
     /// <summary>
     /// Gère la sélection de la direction du vent via une "boussole" de boutons.

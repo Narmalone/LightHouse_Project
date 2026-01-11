@@ -1,28 +1,31 @@
 using UnityEngine;
 
-public class TerrainSurfaceProvider : MonoBehaviour
+namespace LightHouse.Features.TerrainSurface
 {
-    [SerializeField] private TerrainSurfaceMap map;
-
-    public bool TryGetSurfaceAt(RaycastHit hit, out SurfaceType type)
+    public class TerrainSurfaceProvider : MonoBehaviour
     {
-        type = map ? map.defaultSurface : SurfaceType.Default;
+        [SerializeField] private TerrainSurfaceMap map;
 
-        if (hit.collider is TerrainCollider tc)
+        public bool TryGetSurfaceAt(RaycastHit hit, out SurfaceType type)
         {
-            var terrain = tc.GetComponent<Terrain>();
-            if (terrain)
+            type = map ? map.defaultSurface : SurfaceType.Default;
+
+            if (hit.collider is TerrainCollider tc)
             {
-                int idx = TerrainSampling.GetDominantLayerIndex(terrain, hit.point);
-                var layers = terrain.terrainData.terrainLayers;
-                if (idx >= 0 && idx < layers.Length)
+                var terrain = tc.GetComponent<Terrain>();
+                if (terrain)
                 {
-                    var layer = layers[idx];
-                    if (map) type = map.FromLayer(layer);
-                    return true;
+                    int idx = TerrainSampling.GetDominantLayerIndex(terrain, hit.point);
+                    var layers = terrain.terrainData.terrainLayers;
+                    if (idx >= 0 && idx < layers.Length)
+                    {
+                        var layer = layers[idx];
+                        if (map) type = map.FromLayer(layer);
+                        return true;
+                    }
                 }
             }
+            return false;
         }
-        return false;
     }
 }

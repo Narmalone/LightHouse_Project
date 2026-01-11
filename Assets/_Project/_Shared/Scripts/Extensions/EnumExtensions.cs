@@ -1,20 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public static class EnumExtensions
+namespace LightHouse.Core.Extensions
 {
-    public static void GetAllFlags<T>(this T argument)
+    public static class EnumExtensions
     {
-        foreach (T arg in Enum.GetValues(typeof(T))) 
+        public static void GetAllFlags<T>(this T argument)
         {
-            Debug.Log(arg);
+            foreach (T arg in Enum.GetValues(typeof(T)))
+            {
+                Debug.Log(arg);
+            }
         }
-    }
-    
-    public static bool HasFlag<T>(T argument, T flag) where T : Enum
-    {
-        return argument.HasFlag(flag);
+
+        public static bool HasFlag<T>(T argument, T flag) where T : Enum
+        {
+            return argument.HasFlag(flag);
+        }
     }
 }

@@ -1,14 +1,15 @@
-using System;
 using UnityEngine;
 
-public class LineRendererPath : MonoBehaviour
+namespace LightHouse.Items.Interactable.Scotch
 {
-    [SerializeField] private Transform[] _linePos;
-    
-    public Transform[] LinePos
+    public class LineRendererPath : MonoBehaviour
     {
-        get => _linePos;
-        set => _linePos = value;
-    }
+        [SerializeField] private Transform[] _linePos;
 
+        public Transform[] LinePos
+        {
+            get => _linePos;
+            set => _linePos = value;
+        }
+    }
 }

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine.Localization;
 
-namespace LightHouse.Localization
+namespace LightHouse.Core.Localization
 {
     public static class InteractionTextBuilder
     {

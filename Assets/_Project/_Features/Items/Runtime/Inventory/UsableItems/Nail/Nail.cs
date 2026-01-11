@@ -1,8 +1,7 @@
-using LightHouse.Inventory;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Items.Inventory
+namespace LightHouse.Features.Items.Inventory.Nail
 {
     public class Nail : Key, IInventoryStackable
     {

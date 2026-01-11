@@ -1,17 +1,17 @@
-using LightHouse.Game.Signals;
+using LightHouse.Features.Signals;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace LightHouse.Game.Buyoncies
+namespace LightHouse.Features.Buyoncies
 {
     /// <summary>
     /// Représente les données d'une anomalie sur une bouée.
     /// </summary>
     [Serializable]
-    public class BuyoncyAnomalyDatas : ISignal
+    public class BuyoncyBreakdownDatas : ISignal
     {
         public int ID;
         public float RemainingTime { get; set; }
@@ -36,7 +36,7 @@ namespace LightHouse.Game.Buyoncies
         [SerializeField] private float _timeToReportAnomalies = 300f;
 
         [SerializeField, HideInInspector]
-        private List<BuyoncyAnomalyDatas> _anomalies = new List<BuyoncyAnomalyDatas>();
+        private List<BuyoncyBreakdownDatas> _anomalies = new List<BuyoncyBreakdownDatas>();
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace LightHouse.Game.Buyoncies
 
         public event Action<ISignal> OnAnomalyAdded;
         public event Action<ISignal> OnAnomalyRemoved;
-        public event Action<BuyoncyAnomalyDatas> OnAnomalyExpired;
+        public event Action<BuyoncyBreakdownDatas> OnAnomalyExpired;
 
         #endregion
 
@@ -68,7 +68,7 @@ namespace LightHouse.Game.Buyoncies
             }
             else
             {
-                var data = new BuyoncyAnomalyDatas
+                var data = new BuyoncyBreakdownDatas
                 {
                     ID = id,
                     RemainingTime = _timeToReportAnomalies,
@@ -110,7 +110,7 @@ namespace LightHouse.Game.Buyoncies
         /// <summary>
         /// Retourne toutes les anomalies en cours.
         /// </summary>
-        public IReadOnlyList<BuyoncyAnomalyDatas> GetAnomalies() => _anomalies;
+        public IReadOnlyList<BuyoncyBreakdownDatas> GetAnomalies() => _anomalies;
 
         /// <summary>
         /// Vérifie si une anomalie est enregistrée pour l'ID donné.

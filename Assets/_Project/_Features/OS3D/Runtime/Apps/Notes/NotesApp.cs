@@ -1,9 +1,11 @@
-using LightHouse.Game.Computer.OS;
+using LightHouse.Core.Audio;
+using LightHouse.Core.Services;
+using LightHouse.Features.Computer.OS;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.NoteSystem
+namespace LightHouse.Features.Computer.NoteSystem
 {
     /// <summary>
     /// Application permettant de lire, éditer et sauvegarder une note individuelle.

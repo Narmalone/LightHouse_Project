@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace LightHouse.Weather
+namespace LightHouse.Features.Weather
 {
     public static class WeatherHandlerData
     {

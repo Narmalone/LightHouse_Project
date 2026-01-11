@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Options.V3
+namespace LightHouse.Core.Settings.Video.Display.FrameRate
 {
     public class FrameRateController : MonoBehaviour, IOption
     {
@@ -152,11 +152,11 @@ namespace LightHouse.Options.V3
         // (Optionnel) Petit overlay debug :
         private void OnGUI()
         {
-            const int w = 500;
+            /*const int w = 500;
             GUI.Label(new Rect(10, 10, w, 20), "[FrameRateController]");
             GUI.Label(new Rect(10, 30, w, 20), $"Committed: {(CurrentFrameRate < 0 ? "Illimité" : CurrentFrameRate + " FPS")}");
             GUI.Label(new Rect(10, 50, w, 20), $"Selected:  {(_choices[Mathf.Clamp(_frameRateDropDown.value, 0, _choices.Count - 1)] < 0 ? "Illimité" : _choices[_frameRateDropDown.value] + " FPS")}");
-            GUI.Label(new Rect(10, 70, w, 20), $"System:    {(Application.targetFrameRate <= 0 ? "Illimité" : Application.targetFrameRate + " FPS")} | vSync:{QualitySettings.vSyncCount}");
+            GUI.Label(new Rect(10, 70, w, 20), $"System:    {(Application.targetFrameRate <= 0 ? "Illimité" : Application.targetFrameRate + " FPS")} | vSync:{QualitySettings.vSyncCount}");*/
         }
     }
 }

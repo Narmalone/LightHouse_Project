@@ -1,8 +1,8 @@
+using LightHouse.Features.Interactions;
 using System;
 using UnityEngine;
-using LightHouse.Interactions;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Features.Items.Inventory
 {
     public interface IInventoryItem : IItemName
     {

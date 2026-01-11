@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace LightHouse.Game.Computer.LEO.Weather.Humidity
+namespace LightHouse.Features.Computer.LEO.Weather.Humidity
 {
     /// <summary>
     /// Slider circulaire cliquable/drag (en forme d'anneau, supporte ellipse).

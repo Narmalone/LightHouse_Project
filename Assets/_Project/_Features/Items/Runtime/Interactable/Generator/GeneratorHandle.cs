@@ -1,10 +1,6 @@
-using LightHouse.Interactions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Items
+namespace LightHouse.Features.Items.Interactable.Generator
 {
     public class GeneratorHandle : MonoBehaviour
     {

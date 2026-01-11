@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace LightHouse.Weather
+namespace LightHouse.Features.Weather
 {
     public enum WeatherType
     {

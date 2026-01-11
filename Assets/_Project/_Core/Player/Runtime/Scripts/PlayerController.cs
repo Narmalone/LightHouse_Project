@@ -1,10 +1,12 @@
-﻿using LightHouse.Handlers;
-using LightHouse.Inputs;
+﻿using LightHouse.Core.Inputs;
+using LightHouse.Core.Player.Interactions.UI;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Core.World;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.KinematicCharacterController
+namespace LightHouse.Core.Player
 {
     public enum PlayerState
     {
@@ -16,7 +18,7 @@ namespace LightHouse.KinematicCharacterController
     }
 
     [DefaultExecutionOrder(-20)]
-    public class Player : MonoBehaviour
+    public class PlayerController : MonoBehaviour
     {
         #region FIELDS
         public bool EnableDebugMode = false;

@@ -4,7 +4,7 @@ using UnityEngine.Localization;
 using UnityEngine.Localization.Tables;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace LightHouse.Audio
+namespace LightHouse.Core.Audio
 {
     [CreateAssetMenu(fileName = "LocalizedDialogue_", menuName = "LightHouse/Audio/Localized Dialogue")]
     public class LocalizedDialogueAudio : ScriptableObject

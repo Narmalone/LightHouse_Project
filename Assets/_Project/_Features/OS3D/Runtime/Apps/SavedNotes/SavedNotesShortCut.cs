@@ -1,6 +1,6 @@
-using LightHouse.Game.Computer.OS;
+using LightHouse.Features.Computer.OS;
 
-namespace LightHouse.Game.Computer.NoteSystem
+namespace LightHouse.Features.Computer.NoteSystem
 {
     public class SavedNotesShortCut : ShortCutController
     {

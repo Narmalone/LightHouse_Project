@@ -1,4 +1,4 @@
-namespace LightHouse.Game.Computer.LEO.Mails
+namespace LightHouse.Features.Computer.LEO.Mails
 {
     [System.Serializable]
     public class MailAttachedFile 

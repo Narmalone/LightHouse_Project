@@ -1,7 +1,6 @@
 using System;
-using UnityEngine;
 
-namespace LightHouse.Game.World
+namespace LightHouse.Core.World
 {
     public static class GameZoneHandlerData
     {

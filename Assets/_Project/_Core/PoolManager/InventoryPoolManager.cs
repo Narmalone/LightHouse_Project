@@ -1,8 +1,9 @@
+using LightHouse.Features.Items.Inventory;
 using System.Collections.Generic;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Core.Player.Inventory.Pool
 {
-    public static class PoolManager
+    public static class InventoryPoolManager
     {
         public static Dictionary<ushort, List<IInventoryItem>> InventoryItemPools = new();
         private static Dictionary<ushort, ushort> _specificIdCounters = new(); //Needed to make a proper count and set of specific id's taking in count dropping etc...

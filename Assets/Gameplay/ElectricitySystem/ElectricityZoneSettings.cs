@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-namespace LightHouse.Electricity
+namespace LightHouse.Features.Electricity
 {
     [CreateAssetMenu(fileName = "ElectricityZoneSettings", menuName = "LightHouse/Electricity/Electricity Zone Settings")]
     public class ElectricityZoneSettings : ScriptableObject

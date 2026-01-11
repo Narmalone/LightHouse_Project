@@ -1,8 +1,8 @@
-using LightHouse.Audio;
-using System;
+using LightHouse.Core.Audio;
+using LightHouse.Features.Items.Other;
 using UnityEngine;
 
-namespace LightHouse.Game.Tutorial.Steps
+namespace LightHouse.Core.Tutorial.Steps
 {
     [CreateAssetMenu(menuName = "LightHouse/Tutorial/Steps/StepDropHammerOnTheBoat")]
     public sealed class StepDropHammerOnTheBoat : TutorialStep

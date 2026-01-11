@@ -1,6 +1,7 @@
+using LightHouse.Features.UI;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.OS
+namespace LightHouse.Features.Computer.OS
 {
     /// <summary>
     /// Contrôleur générique pour les raccourcis d'application sur le bureau.

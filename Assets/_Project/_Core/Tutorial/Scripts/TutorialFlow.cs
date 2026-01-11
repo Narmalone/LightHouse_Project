@@ -1,7 +1,7 @@
-using LightHouse.Handlers;
+using LightHouse.Core.Player;
 using UnityEngine;
 
-namespace LightHouse.Game.Tutorial
+namespace LightHouse.Core.Tutorial
 {
     /// <summary>
     /// Possède une liste ordonée d'étapes.

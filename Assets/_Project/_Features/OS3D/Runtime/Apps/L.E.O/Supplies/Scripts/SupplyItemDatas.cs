@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.Supplies
+namespace LightHouse.Features.Computer.LEO.Supplies
 {
     /// <summary>
     /// Données d'un item de ravitaillement (ID, nom, coût) + états runtime (stock/select).

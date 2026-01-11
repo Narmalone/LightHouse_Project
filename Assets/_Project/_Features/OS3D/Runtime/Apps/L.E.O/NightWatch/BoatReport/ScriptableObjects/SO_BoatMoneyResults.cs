@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Boats
+namespace LightHouse.Features.Computer.LEO.NightWatch.Boats
 {
     [CreateAssetMenu(fileName = "Money_Boat_Config_", menuName = "LightHouse/LEO/NightWatch/Boats/New Money Config")]
     public class SO_BoatMoneyResults : ScriptableObject

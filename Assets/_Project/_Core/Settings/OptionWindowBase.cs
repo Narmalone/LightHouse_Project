@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
-namespace LightHouse.Game.Options
+namespace LightHouse.Core.Settings
 {
     [System.Serializable]
     public abstract class OptionWindowBase : MonoBehaviour

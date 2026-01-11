@@ -1,9 +1,7 @@
-using LightHouse.Game.DayNightSystem;
-using LightHouse.KinematicCharacterController;
 using System;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.Cameras
+namespace LightHouse.Features.Computer.LEO.Cameras
 {
     public class LightHouseCamerasSystem : MonoBehaviour
     {

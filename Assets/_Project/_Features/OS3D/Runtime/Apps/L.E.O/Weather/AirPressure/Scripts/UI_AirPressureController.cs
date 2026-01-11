@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LightHouse.Game.Computer.LEO.Weather.Pressure
+namespace LightHouse.Features.Computer.LEO.Weather.Pressure
 {
     #region Data
 

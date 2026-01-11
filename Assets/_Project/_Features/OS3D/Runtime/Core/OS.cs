@@ -1,12 +1,16 @@
-﻿using LightHouse.Game.Computer.Calendar;
-using LightHouse.Handlers;
-using LightHouse.Inputs;
+﻿using LightHouse.Features.Computer.LEO;
+using LightHouse.Core.Audio;
+using LightHouse.Features.Computer.Calendar;
+using LightHouse.Core.Inputs;
+using LightHouse.Core.Services;
+using LightHouse.Core.Player;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.OS
+namespace LightHouse.Features.Computer.OS
 {
     /// <summary>
     /// Gère le système d'exploitation in-game : ouverture des apps, gestion des raccourcis, etc.
@@ -47,6 +51,7 @@ namespace LightHouse.Game.Computer.OS
         /// Dictionnaire des apps ouvertes indexées par nom.
         /// </summary>
         private Dictionary<string, ComputerApp> _openedApps = new();
+        private IAudioHandle _loopOs;
 
         public bool PlayerOnComputer { get; set; } = false;
         public ComputerServices Services => _services;
@@ -93,7 +98,7 @@ namespace LightHouse.Game.Computer.OS
         {
             if (ServiceLocator.Audio != null && _clickSoundEffect != null && 
                 PlayerHandlerData.MainPlayer != null && 
-                PlayerHandlerData.MainPlayer.PlayerState == KinematicCharacterController.PlayerState.ComputerMode)
+                PlayerHandlerData.MainPlayer.PlayerState == PlayerState.ComputerMode)
                 ServiceLocator.Audio.PlayAt(_clickSoundEffect, transform.position);
         }
 
@@ -102,7 +107,6 @@ namespace LightHouse.Game.Computer.OS
             this._services = services;
         }
 
-        private IAudioHandle _loopOs;
         public void BootOS()
         {
             _bootSystem.StartBoot(() =>

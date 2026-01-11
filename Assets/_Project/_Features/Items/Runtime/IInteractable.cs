@@ -1,7 +1,6 @@
-using LightHouse.Items;
 using System;
 
-namespace LightHouse.Interactions
+namespace LightHouse.Features.Interactions
 {
     public interface IInteractable : IItemName
     {

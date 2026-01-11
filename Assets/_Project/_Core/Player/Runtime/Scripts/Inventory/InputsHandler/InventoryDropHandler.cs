@@ -1,11 +1,16 @@
-using LightHouse.Handlers;
-using LightHouse.Inputs;
-using LightHouse.Items;
-using UnityEngine;
-using LightHouse.Audio;
-using System.Collections.Generic;
+using LightHouse.Core.Services;
+using LightHouse.Core.Inputs;
+using LightHouse.Core.Audio;
+using LightHouse.Features.Items.Inventory.UI;
+using LightHouse.Core.Player.Inventory.UI;
+using LightHouse.Features.Items.Inventory;
 
-namespace LightHouse.Inventory
+using UnityEngine;
+using System.Collections.Generic;
+using LightHouse.Core.Player.Inventory.Pool;
+using LightHouse.Core.Player.Inventory.Callbacks;
+
+namespace LightHouse.Core.Player.Inventory.InputsHandler
 {
     public class InventoryDropHandler
     {
@@ -43,7 +48,7 @@ namespace LightHouse.Inventory
         {
             droppedItem = null;
             if (!_slots[slotID].SlotDatas.HasItem) return;
-            IInventoryItem item = PoolManager.Get(itemGlobalID, specificID, enablePhysicsOnDrop);
+            IInventoryItem item = InventoryPoolManager.Get(itemGlobalID, specificID, enablePhysicsOnDrop);
             droppedItem = item;
 
             Vector3 finalPos = GetAdjustedDropPosition(_inventoryTarget, pos);
@@ -170,5 +175,4 @@ namespace LightHouse.Inventory
         #endregion
 
     }
-
 }

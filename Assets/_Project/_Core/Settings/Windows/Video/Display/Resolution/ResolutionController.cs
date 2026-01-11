@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Options.V3
+namespace LightHouse.Core.Settings.Video.Display.Screenresolution
 {
     public class ResolutionController : MonoBehaviour, IOption
     {

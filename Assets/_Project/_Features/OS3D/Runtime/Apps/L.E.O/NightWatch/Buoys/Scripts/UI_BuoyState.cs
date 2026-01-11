@@ -1,5 +1,5 @@
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
+namespace LightHouse.Features.Computer.LEO.NightWatch.Buoys
 {
     public enum UI_BuoyState
     {

@@ -1,19 +1,23 @@
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-public static class GameWorldHandlerData
+namespace LightHouse.Core.World
 {
-    public static bool IsInitialized { get; private set; } = false;
-
-    public static Transform PlayerSpawnPoint;
-    public static Transform IslandCenterPoint;
-
-    public static WaterSurface MainOceanSurface;
-
-    public static void Reset()
+    public static class GameWorldHandlerData
     {
-        PlayerSpawnPoint = null;
-        IslandCenterPoint = null;
-        MainOceanSurface = null;
+        public static bool IsInitialized { get; private set; } = false;
+
+        public static Transform PlayerSpawnPoint;
+        public static Transform IslandCenterPoint;
+
+        public static WaterSurface MainOceanSurface;
+
+        public static void Reset()
+        {
+            PlayerSpawnPoint = null;
+            IslandCenterPoint = null;
+            MainOceanSurface = null;
+        }
     }
+
 }

@@ -1,11 +1,9 @@
-using LightHouse.Inputs;
-using LightHouse.Inventory;
-using LightHouse.Locators;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Features.Items.Inventory;
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable.PlaceHolderKey
 {
     public class PlaceHolderKeyMover : IDUseItemTracker
     {

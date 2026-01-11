@@ -1,32 +1,41 @@
-using LightHouse.Handlers;
-using LightHouse.Inventory;
-using LightHouse.Items.Interactable;
-using System;
+using LightHouse.Core.Player;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Core.Player.Inventory.UI;
 using UnityEngine;
 
-public class BagItem : InteractableItemBase
+namespace LightHouse.Features.Items.Interactable.Bag
 {
-    [SerializeField] private byte _additionalSlots = 2;
-
-    public override string GetInteractionName()
+    public class BagItem : InteractableItemBase
     {
-        return "Press E to grab";
-    }
+        [SerializeField] private byte _additionalSlots = 2;
 
-    public override void Interact()
-    {
-        OnEquipped();
-        InvokeObjectInteracted();
-        Destroy(this.gameObject);
-    }
-
-    public void OnEquipped()
-    {
-        if (PlayerHandlerData.MainPlayer != null && InventoryHandlerData.IsInitialized)
+        public override string GetInteractionName()
         {
-            Debug.Log("on equiped");
-            InventoryUIController inventoryUI = PlayerHandlerData.MainPlayer.Inventory.InventoryUI;
-            inventoryUI.AddItemToSlots(_additionalSlots, PlayerHandlerData.MainPlayer.Inventory.ItemDatabase);
+            return "Press E to grab";
+        }
+
+        public override void Interact()
+        {
+            OnEquipped();
+            InvokeObjectInteracted();
+            this.gameObject.SetActive(false);
+            
+        }
+
+        private void OnDisable()
+        {
+            Destroy(this.gameObject);
+        }
+
+        public void OnEquipped()
+        {
+            if (PlayerHandlerData.MainPlayer != null && InventoryHandlerData.IsInitialized)
+            {
+                Debug.Log("on equiped");
+                InventoryUIController inventoryUI = PlayerHandlerData.MainPlayer.Inventory.InventoryUI;
+                inventoryUI.AddItemToSlots(_additionalSlots, PlayerHandlerData.MainPlayer.Inventory.ItemDatabase);
+            }
         }
     }
 }
+

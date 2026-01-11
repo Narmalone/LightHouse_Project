@@ -1,4 +1,4 @@
-namespace LightHouse.Game.World
+namespace LightHouse.Core.World
 {
     public enum ZoneType
     {

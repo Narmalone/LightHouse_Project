@@ -1,11 +1,13 @@
+using LightHouse.Core.Player;
+using LightHouse.Core.Player.Inventory;
+using LightHouse.Core.Audio;
+using LightHouse.Features.Items.Inventory;
+using LightHouse.Features.Items.Other;
+
 using System.Collections;
 using UnityEngine;
-using LightHouse.Inventory;
-using LightHouse.Handlers;
-using LightHouse.Audio;
-using System;
 
-namespace LightHouse.Game.Tutorial.Steps
+namespace LightHouse.Core.Tutorial.Steps
 {
     [CreateAssetMenu(menuName = "LightHouse/Tutorial/Steps/IntroSequence")]
     public sealed class StepIntroSequence : TutorialStep

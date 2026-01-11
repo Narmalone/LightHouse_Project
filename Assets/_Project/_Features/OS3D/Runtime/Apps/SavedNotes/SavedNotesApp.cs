@@ -1,8 +1,9 @@
-using LightHouse.Game.Computer.OS;
+using LightHouse.Core.Services;
+using LightHouse.Features.Computer.OS;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.NoteSystem
+namespace LightHouse.Features.Computer.NoteSystem
 {
     /// <summary>
     /// Gère l'affichage et la gestion des notes sauvegardées via des raccourcis dans l'interface utilisateur.

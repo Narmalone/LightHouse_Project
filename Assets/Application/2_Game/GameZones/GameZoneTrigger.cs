@@ -1,7 +1,7 @@
-using LightHouse.Utilities;
+using LightHouse.Core.Utilities;
 using UnityEngine;
 
-namespace LightHouse.Game.World
+namespace LightHouse.Core.World
 {
     public class GameZoneTrigger : TriggerEvent
     {

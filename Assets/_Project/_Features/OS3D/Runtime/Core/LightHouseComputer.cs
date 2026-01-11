@@ -1,8 +1,8 @@
-using LightHouse.Game.Computer.Cameras;
-using LightHouse.KinematicCharacterController;
+using LightHouse.Core.Player;
+using LightHouse.Features.Computer.LEO.Cameras;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer
+namespace LightHouse.Features.Computer.LEO
 {
     public class LightHouseComputer : MonoBehaviour
     {
@@ -50,7 +50,7 @@ namespace LightHouse.Game.Computer
             //_computerInteractionSystem.gameObject.SetActive(false);
             _os.BootOS();
             _os.PlayerOnComputer = true;
-            Player.ForceChangePlayerState?.Invoke(PlayerState.ComputerMode);
+            PlayerController.ForceChangePlayerState?.Invoke(PlayerState.ComputerMode);
         }
 
         public void ComputerExit()
@@ -59,7 +59,7 @@ namespace LightHouse.Game.Computer
             _computerInteractionSystem.Collider.enabled = true;
             //_computerInteractionSystem.gameObject.SetActive(true);
             _os.PlayerOnComputer = false;
-            Player.ForceChangePlayerState?.Invoke(PlayerState.Normal);
+            PlayerController.ForceChangePlayerState?.Invoke(PlayerState.Normal);
         }
     }
 

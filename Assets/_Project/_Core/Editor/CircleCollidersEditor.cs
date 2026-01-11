@@ -1,30 +1,35 @@
+using LightHouse.Core.Utilities;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(CircularColliderRing))]
-public class CircularColliderRingEditor : Editor
+namespace LightHouse.Core.CustomEditors
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(CircularColliderRing))]
+    public class CircularColliderRingEditor : Editor
     {
-        DrawDefaultInspector();
-
-        CircularColliderRing ring = (CircularColliderRing)target;
-
-        EditorGUILayout.Space();
-        EditorGUILayout.BeginHorizontal();
-
-        if (GUILayout.Button("Regenerate"))
+        public override void OnInspectorGUI()
         {
-            Undo.RecordObject(ring, "Regenerate Colliders");
-            ring.GenerateColliders();
-        }
+            DrawDefaultInspector();
 
-        if (GUILayout.Button("Clear"))
-        {
-            Undo.RecordObject(ring, "Clear Colliders");
-            ring.ClearColliders();
-        }
+            CircularColliderRing ring = (CircularColliderRing)target;
 
-        EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("Regenerate"))
+            {
+                Undo.RecordObject(ring, "Regenerate Colliders");
+                ring.GenerateColliders();
+            }
+
+            if (GUILayout.Button("Clear"))
+            {
+                Undo.RecordObject(ring, "Clear Colliders");
+                ring.ClearColliders();
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
     }
+
 }

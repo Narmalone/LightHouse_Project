@@ -1,4 +1,4 @@
-namespace LightHouse.Game.Options
+namespace LightHouse.Core.Settings
 {
     public interface IOptionSetting
     {

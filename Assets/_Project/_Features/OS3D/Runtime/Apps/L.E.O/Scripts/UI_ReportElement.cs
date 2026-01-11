@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO
+namespace LightHouse.Features.Computer.LEO
 {
     public class UI_ReportElement : MonoBehaviour
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch
+namespace LightHouse.Features.Computer.LEO.NightWatch
 {
     public class NightwatchTransitionButton : LEOWindowButton
     {

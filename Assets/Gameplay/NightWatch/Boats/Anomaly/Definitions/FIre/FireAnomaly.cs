@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.VFX;
 
-namespace LightHouse.Game.Boats.Anomalies
+namespace LightHouse.Features.Boats.Anomalies
 {
     /// <summary>
     /// Anomalie représentant un incendie à bord d'un bateau.

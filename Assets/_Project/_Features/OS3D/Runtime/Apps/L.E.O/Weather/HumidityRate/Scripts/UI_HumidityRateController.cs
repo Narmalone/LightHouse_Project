@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using LightHouse.Game.UI; // pour UILineRendererWithoutGrid
+using LightHouse.Features.UI; // pour UILineRendererWithoutGrid
 
-namespace LightHouse.Game.Computer.LEO.Weather.Humidity
+namespace LightHouse.Features.Computer.LEO.Weather.Humidity
 {
     /// <summary>
     /// Contrôleur d'humidité :
@@ -95,6 +95,7 @@ namespace LightHouse.Game.Computer.LEO.Weather.Humidity
         /// <summary>Reçoit la valeur normalisée [0..1] du slider radial.</summary>
         private void OnRadialSliderValueChanged(float normalizedValue)
         {
+            Debug.Log(normalizedValue);
             SetHumidity01(normalizedValue);
         }
 

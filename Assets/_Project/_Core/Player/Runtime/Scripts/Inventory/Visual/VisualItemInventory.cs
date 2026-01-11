@@ -1,7 +1,7 @@
-using LightHouse.Handlers;
+using LightHouse.Features.Items.Inventory;
 using UnityEngine;
 
-namespace LightHouse.Inventory
+namespace LightHouse.Core.Player.Inventory
 {
     public class VisualItemInventory : MonoBehaviour
     {

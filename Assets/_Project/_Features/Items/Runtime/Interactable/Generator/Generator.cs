@@ -1,10 +1,11 @@
-using LightHouse.Audio;
-using LightHouse.Items.Inventory;
+using LightHouse.Core.Audio;
+using LightHouse.Core.Services;
+using LightHouse.Features.Items.Inventory.Jerrican;
 using System;
 using System.Collections;
 using UnityEngine;
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable.Generator
 {
     public class Generator : MonoBehaviour
     {

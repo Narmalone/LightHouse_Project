@@ -1,7 +1,7 @@
-using LightHouse.Game.DayNightSystem;
+using LightHouse.Features.TimeOfDay.TimeCore;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.NoteSystem
+namespace LightHouse.Features.Computer.NoteSystem
 {
     /// <summary>
     /// Raccourci spécial de note sur le bureau : crée une nouvelle note automatiquement nommée selon l'heure actuelle.

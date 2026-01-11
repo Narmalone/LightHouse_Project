@@ -1,22 +1,20 @@
 ﻿#region LIGHTHOUSE NAMES
-using LightHouse.GrabableItems;
-using LightHouse.Handlers;
-using LightHouse.Inputs;
-using LightHouse.Interactions;
-using LightHouse.Inventory;
-using LightHouse.KinematicCharacterController;
-using LightHouse.Items.Detection;
-using LightHouse.Localization;
+using LightHouse.Core.Player;
+using LightHouse.Core.Inputs;
+using LightHouse.Core.Player.GrabableItems;
+using LightHouse.Core.Localization;
+using LightHouse.Features.Interactions;
+using LightHouse.Features.Items.Detection;
+using LightHouse.Core.Player.Inventory;
 #endregion
 
 #region UNITY NAMES
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
-using UnityEngine.ResourceManagement.AsyncOperations;
 #endregion
 
-namespace LightHouse.Items.Interactable
+namespace LightHouse.Features.Items.Interactable.Grabable
 {
     [RequireComponent(typeof(Rigidbody))]
     public class BaseGrabableItem : InteractableItemBase, IInteractable, IItemCallback

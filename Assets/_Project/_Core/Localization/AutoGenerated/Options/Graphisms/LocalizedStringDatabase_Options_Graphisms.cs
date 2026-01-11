@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Localization;
 
-namespace LightHouse.Localization
+namespace LightHouse.Core.Localization
 {
 	[CreateAssetMenu(menuName = "Localization/LocalizedStringDatabase_Options_Graphisms")]
 	public class LocalizedStringDatabase_Options_Graphisms : ScriptableObject

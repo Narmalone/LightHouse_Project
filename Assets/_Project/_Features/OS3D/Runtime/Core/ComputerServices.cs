@@ -1,7 +1,7 @@
-using LightHouse.Game.Computer.Cameras;
+using LightHouse.Features.Computer.LEO.Cameras;
 using UnityEngine;
 
-namespace LightHouse.Game.Computer
+namespace LightHouse.Features.Computer.LEO
 {
     [System.Serializable]
     public class ComputerServices

@@ -1,6 +1,7 @@
-using UnityEngine;
+using LightHouse.Features.Interactions;
+using LightHouse.Features.Interactions.UI;
 
-namespace LightHouse.Interactions
+namespace LightHouse.Features.Items.Detection
 {
     /// <summary>
     /// Class to handle datas and UI with the interface <see cref="IItemName"/>

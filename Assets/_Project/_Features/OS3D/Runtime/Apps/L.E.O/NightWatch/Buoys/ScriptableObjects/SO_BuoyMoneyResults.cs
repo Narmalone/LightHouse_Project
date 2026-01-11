@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LightHouse.Game.Computer.LEO.NightWatch.Buoys
+namespace LightHouse.Features.Computer.LEO.NightWatch.Buoys
 {
     [CreateAssetMenu(fileName = "Money_Buoy_Config_", menuName = "LightHouse/LEO/NightWatch/Buoys/New Money Config")]
     public class SO_BuoyMoneyResults : ScriptableObject

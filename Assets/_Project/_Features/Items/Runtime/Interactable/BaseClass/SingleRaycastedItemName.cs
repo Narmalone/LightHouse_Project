@@ -1,11 +1,10 @@
-using LightHouse.Interactions;
-using LightHouse.Localization;
+using LightHouse.Features.Interactions;
 using System;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 
-namespace LightHouse.Items
+namespace LightHouse.Features.Items
 {
     public class SingleRaycastedItemName : MonoBehaviour, IItemName
     {

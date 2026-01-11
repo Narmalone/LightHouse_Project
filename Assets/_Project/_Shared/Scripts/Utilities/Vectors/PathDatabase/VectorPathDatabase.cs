@@ -1,13 +1,17 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Vector Path Database", menuName = "Utilities/Vectors/Vector Path Database")]
-public class VectorPathDatabase : ScriptableObject
+namespace LightHouse.Features.Boats
 {
-    public VectorPath[] Paths;
 
-    public VectorPath GetRandomPath()
+    [CreateAssetMenu(fileName = "New Vector Path Database", menuName = "Utilities/Vectors/Vector Path Database")]
+    public class VectorPathDatabase : ScriptableObject
     {
-        int rdm = Random.Range(0, Paths.Length);
-        return Paths[rdm];
+        public VectorPath[] Paths;
+
+        public VectorPath GetRandomPath()
+        {
+            int rdm = Random.Range(0, Paths.Length);
+            return Paths[rdm];
+        }
     }
 }

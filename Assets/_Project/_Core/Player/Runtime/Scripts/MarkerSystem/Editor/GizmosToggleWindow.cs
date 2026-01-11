@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace LightHouse.CustomEditors
+namespace LightHouse.Core.CustomEditors
 {
     public class GizmoToggleWindow : EditorWindow
     {
