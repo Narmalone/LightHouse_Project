@@ -14,12 +14,14 @@ namespace LightHouse.Core.Tutorial.Boat
         public Collider[] SubBoatColliders => _subBoatColliders;
         public BoatPathMover BoatPathMover => _boid;
 
+        public Transform _playerSpawnTutorial;
+
         private void Start()
         {
-            if (PlayerHandlerData.MainPlayer != null && PlayerHandlerData.MainPlayer.Character != null)
-            {
-                PlayerHandlerData.MainPlayer.Character.SetPosition(_playerSpawnPoint.position);
-            }
+            _boid.InitializeOnPath();
+            PlayerHandlerData.MainPlayer.Character.SetPosition(_playerSpawnTutorial.position);
+            PlayerHandlerData.MainPlayer.Character.SetRotation(_playerSpawnTutorial.rotation);
         }
+
     }
 }

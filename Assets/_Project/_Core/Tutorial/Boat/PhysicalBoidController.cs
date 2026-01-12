@@ -85,16 +85,11 @@ namespace LightHouse.Features.Boats
                 _mover.MoverController = this;
         }
 
-        private void Start()
-        {
-            InitializeOnPath();
-        }
-
         #endregion
 
         #region Initialization
 
-        private void InitializeOnPath()
+        public void InitializeOnPath()
         {
             if (_path == null || _path.Paths == null || _path.Paths.Length == 0)
             {

@@ -38,7 +38,7 @@ namespace LightHouse.Core.Tutorial.Steps
         private void ChangeCurrentWeatherToStorm()
         {
             if (_ctx.Timeline == null) return;
-
+            Debug.Log("change weather");
             int idx = _ctx.Timeline.CurrentIndex;
             if (idx < 0 || idx + 1 >= _ctx.Timeline.Weathers.Count) return;
 

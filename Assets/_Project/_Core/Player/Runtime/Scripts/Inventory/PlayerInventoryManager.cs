@@ -237,7 +237,7 @@ namespace LightHouse.Core.Player.Inventory
         {
             if (playSound && soundToPlay == null) soundToPlay = _basePickupSound;
             var prefab = _itemDatabase.GetPrefab(itemID);
-            var instance = Instantiate(prefab);
+            var instance = Instantiate(prefab, Vector3.zero, Quaternion.identity);
             var item = instance.GetComponent<IInventoryItem>();
             if (_pickupHandler.PickupItem(slotIndex, item, playSound, soundToPlay))
             {

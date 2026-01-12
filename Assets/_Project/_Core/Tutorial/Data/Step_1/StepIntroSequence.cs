@@ -40,6 +40,9 @@ namespace LightHouse.Core.Tutorial.Steps
             {
                 PlayerHandlerData.MainPlayer.Inventory.Disable();
                 PlayerHandlerData.MainPlayer.Interactions.Disable();
+                PlayerHandlerData.MainPlayer.EnableAllCharacterInputs = false;
+
+                PlayerHandlerData.MainPlayer.EnableCameraRotationInput = false;
             }
         }
 
@@ -75,6 +78,7 @@ namespace LightHouse.Core.Tutorial.Steps
             {
                 PlayerHandlerData.MainPlayer.Inventory.Enable();
                 PlayerHandlerData.MainPlayer.Interactions.Enable();
+                //PlayerHandlerData.MainPlayer.EnableAllCharacterInputs = true;
             }
         }
 

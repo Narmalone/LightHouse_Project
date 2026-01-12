@@ -62,6 +62,18 @@ namespace LightHouse.Core.Player
         public PlayerCamera PlayerCamera => _playerCamera;
         public PlayerInventoryManager Inventory => _inventoryController;
         public InteractionItemsUIManager Interactions => _interactions;
+
+        public bool EnableAllCharacterInputs
+        {
+            get => _enableAllCharacterInputs;
+            set => _enableAllCharacterInputs = value;
+        }
+
+        public bool EnableCameraRotationInput
+        {
+            get => _enableCameraRotationInput;
+            set => _enableCameraRotationInput = value;
+        }
         #endregion
 
         #region UNITY LIFECYCLE
@@ -79,23 +91,15 @@ namespace LightHouse.Core.Player
                 InputManager.SetPlayerInputActions(_inputActions);
             }
             _playerCharacter.Initialize();
+
+            PlayerHandlerData.InitializeHandlerData(this);
+                
+            _isInitialized = true;
         }
 
         private void Start()
         {
-            if (EnableDebugMode)
-            {
-                PlayerHandlerData.InitializeHandlerData(this);
-                if(!InputManager.IsInitialized)
-                    InputManager.InputManagerInitialized();
-                _isInitialized = true;
-
-                if(GameWorldHandlerData.PlayerSpawnPoint != null)
-                {
-                    _playerCharacter.SetPosition(GameWorldHandlerData.PlayerSpawnPoint.position);
-                    _playerCharacter.SetRotation(GameWorldHandlerData.PlayerSpawnPoint.rotation);
-                }
-            }
+            InputManager.InputManagerInitialized();
         }
 
         private void FixedUpdate()

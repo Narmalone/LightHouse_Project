@@ -1,13 +1,17 @@
 using LightHouse.Core.Player;
 using LightHouse.Core.Player.Inventory;
 using LightHouse.Core.Player.Inventory.UI;
+using LightHouse.Features.Items.Detection;
+using System;
 using UnityEngine;
 
 namespace LightHouse.Features.Items.Interactable.Bag
 {
-    public class BagItem : InteractableItemBase
+    public class BagItem : InteractableItemBase, IDestroyable
     {
         [SerializeField] private byte _additionalSlots = 2;
+
+        public event Action OnDestroyed;
 
         public override string GetInteractionName()
         {
@@ -18,12 +22,9 @@ namespace LightHouse.Features.Items.Interactable.Bag
         {
             OnEquipped();
             InvokeObjectInteracted();
-            this.gameObject.SetActive(false);
-            
-        }
+            //this.gameObject.SetActive(false);
 
-        private void OnDisable()
-        {
+            OnDestroyed?.Invoke();
             Destroy(this.gameObject);
         }
 

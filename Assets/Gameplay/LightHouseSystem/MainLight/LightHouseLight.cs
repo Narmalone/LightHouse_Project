@@ -28,35 +28,35 @@ namespace LightHouse.Features.LightHouse
         [Tooltip("Durée d'un cycle de flash en secondes")]
         public float flashDuration = 2f;
 
-        private Light _spot;
+        [SerializeField] private Light _spot;
         private float _time;
-
-        void Awake()
-        {
-            _spot = GetComponentInChildren<Light>();
-            StopLight();
-        }
 
         private IAudioHandle _currentGearHandler;
         public void StartLight()
         {
-            if (Application.isPlaying || ServiceLocator.Audio != null)
-                _currentGearHandler = ServiceLocator.Audio.PlayAt(LoopGearCue, this.transform.position);
             Enable = true;
-            if (!_spot.isActiveAndEnabled)
+
+            if (_spot != null && !_spot.gameObject.activeSelf)
                 _spot.gameObject.SetActive(true);
+
+            if (Application.isPlaying && ServiceLocator.Audio != null && LoopGearCue != null)
+                _currentGearHandler = ServiceLocator.Audio.PlayAt(LoopGearCue, transform.position);
         }
 
         public void StopLight()
         {
+            Enable = false;
+
             if (_currentGearHandler != null)
             {
                 _currentGearHandler.Stop(1.5f);
+                _currentGearHandler = null;
             }
-            Enable = false;
-            if (_spot.isActiveAndEnabled)
+
+            if (_spot != null && _spot.gameObject.activeSelf)
                 _spot.gameObject.SetActive(false);
         }
+
 
 
         void Update()

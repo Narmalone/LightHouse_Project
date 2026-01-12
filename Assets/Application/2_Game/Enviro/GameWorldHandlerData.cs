@@ -7,10 +7,10 @@ namespace LightHouse.Core.World
     {
         public static bool IsInitialized { get; private set; } = false;
 
-        public static Transform PlayerSpawnPoint;
-        public static Transform IslandCenterPoint;
+        public static Transform PlayerSpawnPoint { get; set; }
+        public static Transform IslandCenterPoint { get; set; }
 
-        public static WaterSurface MainOceanSurface;
+        public static WaterSurface MainOceanSurface { get; set; }
 
         public static void Reset()
         {
