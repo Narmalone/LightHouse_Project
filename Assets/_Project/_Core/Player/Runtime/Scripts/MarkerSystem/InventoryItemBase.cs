@@ -14,6 +14,7 @@ namespace LightHouse.Features.Items.Inventory
         #region FIELDS & PROPERTIES
         [Header(" --- BASE FIELDS --- ")]
         [SerializeField] protected string _name;
+        public bool EnableAutomaticSetName = true;
         [SerializeField] protected Sprite _inventorySprite;
         [SerializeField] protected Collider _detectionCollider;
         [SerializeField] protected Rigidbody _rb;
@@ -28,6 +29,7 @@ namespace LightHouse.Features.Items.Inventory
         protected LocalizedString _pressToAction => _interactionTextsDB.Press_To_Action;
         protected LocalizedString _pickupText => _interactionTextsDB.Pickup;
         protected string _currentPickupText;
+        public bool EnableAutomaticSetPickupText = true;
 
         public Sprite ItemSprite => _inventorySprite;
         [field: SerializeField] public ushort GlobalItemID { get; set; }
@@ -36,12 +38,14 @@ namespace LightHouse.Features.Items.Inventory
         public bool IsItemOnHands { get; set; }
 
         public bool IsItemRaycasted { get; set; }
+        [field: SerializeField] public bool CanBePickedUp { get; set; } = true;
 
         public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
 
-        protected bool _textsHasBeenInitialized = false;
 #pragma warning disable
         public event Action<string> OnNameUpdated;
+#pragma warning disable
+        public event Action<string> OnPickupTextUpdated;
 
         #endregion
 
@@ -64,12 +68,13 @@ namespace LightHouse.Features.Items.Inventory
 
         private void Start()
         {
-            //means that the item has been instantiated
-            if (!_textsHasBeenInitialized)
+            if (EnableAutomaticSetName)
             {
                 UpdateNameText();
-                UpdatePickupText();
-                _textsHasBeenInitialized = true;
+            }
+            if (EnableAutomaticSetPickupText)
+            {
+                SetPickupTextToDefault();
             }
         }
 
@@ -85,14 +90,16 @@ namespace LightHouse.Features.Items.Inventory
         protected virtual void InputManager_OnInitialized()
         {
             UpdateNameText();
-            UpdatePickupText();
-            _textsHasBeenInitialized = true;
+            SetPickupTextToDefault();
         }
         #endregion
 
         #region INVENTORY CALLBACKS
         public virtual void InvokeForceDropItemFromInventory(Vector3 pos, float force, bool enablePhysics)
             => ForceDropItemFromInventory?.Invoke(this.GlobalItemID, this.ItemSpecificID, pos, force, enablePhysics);
+
+        public virtual void InvokeOnPickupTextUpdated()
+            => OnPickupTextUpdated?.Invoke(_currentPickupText);
         #endregion
 
         #region LOCALIZATION
@@ -100,7 +107,7 @@ namespace LightHouse.Features.Items.Inventory
         protected virtual void LocalizationSettings_SelectedLocaleChanged(Locale obj)
         {
             UpdateNameText();
-            UpdatePickupText();
+            SetPickupTextToDefault();
         }
 
         public async virtual void UpdateNameText()
@@ -113,7 +120,7 @@ namespace LightHouse.Features.Items.Inventory
             OnNameUpdated?.Invoke(_name);
         }
 
-        protected async virtual void UpdatePickupText()
+        public async virtual void SetPickupTextToDefault()
         {
             string input = InputManager.Pickup_Bind_Name;
             _currentPickupText = await InteractionTextBuilder.Build(
@@ -122,7 +129,38 @@ namespace LightHouse.Features.Items.Inventory
                 _pressToAction
             );
         }
+
+        public async virtual void SetPickupTextToCustom(LocalizedString customPickupText)
+        {
+            string input = InputManager.Pickup_Bind_Name;
+            var op = customPickupText.GetLocalizedStringAsync();
+            await op.Task;
+            _currentPickupText = op.Result;
+            InvokeOnPickupTextUpdated();
+        }
+
+        public async virtual void SetPickupTextToCustom(string customPickupText)
+        {
+            _currentPickupText = customPickupText;
+            InvokeOnPickupTextUpdated();
+        }
         #endregion
+
+        public void SetUnpickable(bool useCallback = true)
+        {
+            CanBePickedUp = false;
+            _currentPickupText = "Cannot pickup the item for now.";
+            if(useCallback)
+                InvokeOnPickupTextUpdated();
+        }
+
+        public void SetPickable(bool useCallback = true)
+        {
+            CanBePickedUp = true;
+            SetPickupTextToDefault();
+            if (useCallback)
+                InvokeOnPickupTextUpdated();
+        }
     }
 
 }

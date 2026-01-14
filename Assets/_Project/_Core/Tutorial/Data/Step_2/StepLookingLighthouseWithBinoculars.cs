@@ -22,7 +22,9 @@ namespace LightHouse.Core.Tutorial.Steps
             base.Enter(ctx);
             _ctx = ctx;
             _ctx.Binocular.ItemAddedToInventory += Binocular_ItemAddedToInventory;
-            _ctx.Binocular.CanBeRaycasted = true;
+            _ctx.Binocular.CanBePickedUp = true;
+            _ctx.Binocular.SetPickupTextToDefault();
+            _ctx.Binocular.InvokeOnPickupTextUpdated();
             _tutorial3.Register();
             _tutorial4.Register();
         }

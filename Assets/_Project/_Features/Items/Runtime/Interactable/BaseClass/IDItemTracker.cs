@@ -17,15 +17,12 @@ namespace LightHouse.Features.Items.Interactable
         [Header(" --- ID ITEM TRACKER --- ")]
         [SerializeField] protected ItemIDEnum _itemNeeded;
 
-        [Header(" --- LOCALIZATION --- ")]
-        [SerializeField] protected LocalizedStringDatabase_InteractionTexts _interactionTextsDB;
         protected LocalizedString _missingItemInInventoryTxt => _interactionTextsDB.Need_Item;
         protected LocalizedString _needItemOnHandsTxt => _interactionTextsDB.Need_Item_In_Hands;
         protected LocalizedString _holdToAction => _interactionTextsDB.Hold_To_Action;
         [SerializeField] protected LocalizedString _itemNeededName;
 
         [SerializeField] protected string _currentItemNeededName;
-        [SerializeField] protected string _currentInteractionText;
 
         [Header("Read Only / Debug purposes")]
         [SerializeField] protected bool _hasKeyInInventory = false;
@@ -90,7 +87,7 @@ namespace LightHouse.Features.Items.Interactable
         {
             str.StringChanged += result =>
             {
-                _currentInteractionText = result;
+                InteractionText = result;
                 if (IsItemRaycasted)
                     InvokeInteractionDescriptionUpdated();
             };
@@ -100,12 +97,12 @@ namespace LightHouse.Features.Items.Interactable
         private async void ResolveWithWrapper(LocalizedString wrapper, LocalizedString actionText, string input)
         {
             var finalText = await InteractionTextBuilder.Build(
-                baseText: actionText,
+                actionText: actionText,
                 bindKey: input,
-                wrapperTemplate: wrapper
+                prefixSentence: wrapper
             );
 
-            _currentInteractionText = finalText;
+            InteractionText = finalText;
             if (IsItemRaycasted)
                 InvokeInteractionDescriptionUpdated();
         }
@@ -113,8 +110,6 @@ namespace LightHouse.Features.Items.Interactable
         #endregion
 
         #region IInteractable
-        public override string GetInteractionName()
-            =>  _currentInteractionText;
 
         public override void Interact() => InvokeObjectInteracted();
 

@@ -9,15 +9,12 @@ namespace LightHouse.Features.Interactions
         public event Action OnObjectInteracted;
         public event Action OnInteractionNameChanged;
 
+        public string InteractionText { get; set; }
+
         /// <summary>
         /// If we can use the interaction Key to call Interact Method
         /// </summary>
         public bool CanBeInteracted { get; set; }
-
-        /// <summary>
-        /// Give the text to display when raycasting the item
-        /// </summary>
-        string GetInteractionName();
 
         /// <summary>
         /// When the player interacted with the item what should I do ?

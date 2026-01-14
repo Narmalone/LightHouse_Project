@@ -6,26 +6,26 @@ namespace LightHouse.Core.Localization
     public static class InteractionTextBuilder
     {
         public static async Task<string> Build(
-            LocalizedString baseText,
+            LocalizedString actionText,
             string bindKey = null,
-            LocalizedString wrapperTemplate = null)
+            LocalizedString prefixSentence = null)
         {
-            if (wrapperTemplate == null || string.IsNullOrEmpty(bindKey))
+            if (prefixSentence == null || string.IsNullOrEmpty(bindKey))
             {
-                var op = baseText.GetLocalizedStringAsync();
+                var op = actionText.GetLocalizedStringAsync();
                 await op.Task;
                 return op.Result;
             }
 
-            var baseOp = baseText.GetLocalizedStringAsync();
+            var baseOp = actionText.GetLocalizedStringAsync();
             await baseOp.Task;
             string resolvedAction = baseOp.Result;
 
             // Clone safe pour éviter les conflits d’arguments partagés
             var wrapperCopy = new LocalizedString
             {
-                TableReference = wrapperTemplate.TableReference,
-                TableEntryReference = wrapperTemplate.TableEntryReference,
+                TableReference = prefixSentence.TableReference,
+                TableEntryReference = prefixSentence.TableEntryReference,
                 Arguments = new object[]
                 {
                 new { key = bindKey, action = resolvedAction }

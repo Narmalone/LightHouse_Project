@@ -15,7 +15,8 @@ namespace LightHouse.Core.Tutorial.Steps
             base.Enter(ctx);
             _ctx = ctx;
             _ctx.Bag.OnObjectInteracted += Bag_OnObjectInteracted;
-            ctx.Bag?.gameObject.SetActive(true);
+            ctx.Bag.CanBeInteracted = true;
+            ctx.Bag.InvokeInteractionDescriptionUpdated();
             _tutorial9.Register();
             _ctx.Talkie?.Enqueue(_tutorial9);
         }

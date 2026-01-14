@@ -22,13 +22,9 @@ namespace LightHouse.Features.Items.Interactable.Grabable
         #region FIELDS
         [Header(" --- GRABABLE FIELDS --- ")]
         [SerializeField] private Rigidbody _rb;
-
-        [Header(" --- LOCALIZATION --- ")]
-        [SerializeField] private LocalizedStringDatabase_InteractionTexts _interactionTextsDB;
         private LocalizedString _grabText => _interactionTextsDB.Grab;
         private LocalizedString _releaseText => _interactionTextsDB.Release;
         private LocalizedString _alreadyGrabbingAnItemText => _interactionTextsDB.Already_Grabbing_Item;
-        private LocalizedString _pressToAction => _interactionTextsDB.Press_To_Action;
 
         [Header(" --- GRAB FIELDS --- ")]
         [SerializeField] private float _moveForce = 500f;
@@ -40,7 +36,6 @@ namespace LightHouse.Features.Items.Interactable.Grabable
 
 #pragma warning disable
 
-        private string _currentText;
         //DEBUG ONLY
         private Transform _targetPoint;
         private bool _isGrabbed = false;
@@ -52,11 +47,6 @@ namespace LightHouse.Features.Items.Interactable.Grabable
         #endregion
 
         #region IInteractable
-        public override string GetInteractionName()
-        {
-            return _currentText;
-        }
-
         public override void Interact()
         {
             if (_isGrabbed)
@@ -152,7 +142,7 @@ namespace LightHouse.Features.Items.Interactable.Grabable
             {
                 var op = _alreadyGrabbingAnItemText.GetLocalizedStringAsync();
                 await op.Task;
-                _currentText = op.Result;
+                InteractionText = op.Result;
 
                 if (IsItemRaycasted)
                     InvokeInteractionDescriptionUpdated();
@@ -163,7 +153,7 @@ namespace LightHouse.Features.Items.Interactable.Grabable
             var actionText = _isGrabbed ? _releaseText : _grabText;
 
             // Utilisation du builder pour construire le texte final
-            _currentText = await InteractionTextBuilder.Build(
+            InteractionText = await InteractionTextBuilder.Build(
                 actionText,
                 input,
                 _pressToAction

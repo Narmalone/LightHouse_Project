@@ -1,19 +1,17 @@
 using LightHouse.Core.Inputs;
 using LightHouse.Core.Localization;
-using LightHouse.Features.Interactions;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 
 namespace LightHouse.Features.Items.Interactable
 {
-    public class InteractableSwitch : InteractableItemBase, IInteractable
+    public class InteractableSwitch : InteractableItemBase
     {
         #region FIELDS
         [Header(" --- LOCALIZATION --- ")]
         [SerializeField] protected LocalizedStringDatabase_InteractionTexts _interactionsTextsDb;
         [SerializeField] protected InteractionsObjectsType _interactionObjectsType;
-        protected LocalizedString _pressToAction => _interactionsTextsDb.Press_To_Action;
         protected LocalizedString _onText;
         protected LocalizedString _offText;
         protected string _currentText;
@@ -60,7 +58,7 @@ namespace LightHouse.Features.Items.Interactable
 
         protected virtual void OnLocaleChanged(Locale locale)
         {
-            UpdateInteractionText();
+            //UpdateInteractionText();
         }
 
         /// <summary>
@@ -72,7 +70,7 @@ namespace LightHouse.Features.Items.Interactable
             string input = InputManager.Interact_Bind_Name;
             LocalizedString actionString = _isSwitchOn ? _offText : _onText;
 
-            _currentText = await InteractionTextBuilder.Build(
+            InteractionText = await InteractionTextBuilder.Build(
                 actionString,
                 input,
                 _pressToAction
@@ -87,21 +85,16 @@ namespace LightHouse.Features.Items.Interactable
         #region INPUT MANAGER CALLBACKS
         private void InputManager_OnInputManagerInitialized()
         {
-            UpdateInteractionText();
+            //UpdateInteractionText();
         }
         #endregion
 
         #region INTERACTIONS METHODS
 
-        public override string GetInteractionName()
-        {
-            return _currentText ?? "...";
-        }
-
         public override void Interact()
         {
             _isSwitchOn = !_isSwitchOn;
-            UpdateInteractionText();
+            //UpdateInteractionText();
             InvokeObjectInteracted();
         }
 

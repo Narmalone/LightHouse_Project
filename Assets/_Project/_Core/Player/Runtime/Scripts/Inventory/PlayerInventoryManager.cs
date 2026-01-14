@@ -220,6 +220,7 @@ namespace LightHouse.Core.Player.Inventory
 
         public void AddItemToInventory(short slotIndex, IInventoryItem item, bool playSound = true, AudioCue soundToPlay = null)
         {
+            if (!item.CanBePickedUp) return;
             if (playSound && soundToPlay == null) soundToPlay = _basePickupSound;
             if (_pickupHandler.PickupItem(slotIndex, item, playSound, soundToPlay))
             {
@@ -283,8 +284,14 @@ namespace LightHouse.Core.Player.Inventory
         {
             if (!item.CanBeRaycasted) return;
             _lastInventoryItemSeen = item;
+            item.OnPickupTextUpdated += CurrentSeenItem_OnPickupTextUpdated;
             _interactionUiController.ShowItemPickup();
             _interactionUiController.SetItemPickupText(item.GetPickupName());
+        }
+
+        private void CurrentSeenItem_OnPickupTextUpdated(string obj)
+        {
+            _interactionUiController.SetItemPickupText(obj);
         }
 
         private void ResetSeenObject()
@@ -294,6 +301,7 @@ namespace LightHouse.Core.Player.Inventory
 
             if (_lastInventoryItemSeen != null)
             {
+                _lastInventoryItemSeen.OnPickupTextUpdated -= CurrentSeenItem_OnPickupTextUpdated;
                 _interactionUiController.HideItemPickup();
                 _lastInventoryItemSeen = null;
             }

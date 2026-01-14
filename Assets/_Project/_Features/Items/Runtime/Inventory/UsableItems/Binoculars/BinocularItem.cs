@@ -26,6 +26,13 @@ namespace LightHouse.Features.Items.Inventory.Binoculars
         public event Action<string> UseTextSlotChanged;
 
         public event Action ItemAddedToInventory;
+
+        public string PickupText
+        {
+            get => _currentPickupText;
+            set => _currentPickupText = value;
+        }
+
         #endregion
 
         #region ► FOV / Zoom settings

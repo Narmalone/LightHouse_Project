@@ -33,7 +33,6 @@ namespace LightHouse.Core.Tutorial
 
         private void Start()
         {
-            PlayerHandlerData.MainPlayer.EnableAllCharacterInputs = false;
 
             if (_skipTutorial)
             {

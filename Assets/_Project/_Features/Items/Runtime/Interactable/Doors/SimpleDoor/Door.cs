@@ -32,6 +32,7 @@ namespace LightHouse.Features.Items.Interactable.Doors
         public bool IsOpen => _isOpen;
 
         [field: SerializeField] public bool CanBeRaycasted { get; set; } = true;
+        [field: SerializeField] public string InteractionText { get; set; }
 
         #region IINTERACTABLE EVENTS
         public event Action OnInteractionNameChanged;

@@ -47,7 +47,7 @@ namespace LightHouse.Features.Interactions
         {
             if (_currentInteractable == null) return;
 
-            string name = _currentInteractable.GetInteractionName();
+            string name = _currentInteractable.InteractionText;
 
             if (!_currentInteractable.CanBeRaycasted || string.IsNullOrEmpty(name))
             {

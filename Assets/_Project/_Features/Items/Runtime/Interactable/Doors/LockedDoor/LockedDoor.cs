@@ -19,7 +19,6 @@ namespace LightHouse.Features.Items.Interactable.Doors
 
         [Header(" --- LOCALIZATION --- ")]
         protected LocalizedString _openText => _interactionTextsDB.Open;
-        protected LocalizedString _pressToAction => _interactionTextsDB.Press_To_Action;
         protected LocalizedString _closeText => _interactionTextsDB.Close;
         protected LocalizedString _unlockText => _interactionTextsDB.Unlock;
 
@@ -143,7 +142,7 @@ namespace LightHouse.Features.Items.Interactable.Doors
                 wrapper = _pressToAction;
             }
 
-            _currentInteractionText = await InteractionTextBuilder.Build(
+            InteractionText = await InteractionTextBuilder.Build(
                 targetString,
                 bind,
                 wrapper
@@ -156,11 +155,6 @@ namespace LightHouse.Features.Items.Interactable.Doors
         #endregion
 
         #region IInteractable
-        public override string GetInteractionName()
-        {
-            return _currentInteractionText;
-        }
-
         public override void Interact()
         {
             if (!_isUnLocked)

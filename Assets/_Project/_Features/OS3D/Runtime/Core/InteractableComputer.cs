@@ -8,10 +8,6 @@ namespace LightHouse.Features.Computer
     {
         public bool Enabled = false;
         public Collider Collider => _detectionCollider;
-        public override string GetInteractionName()
-        {
-            return "Press to enter in the computer";
-        }
 
         public override void Interact()
         {

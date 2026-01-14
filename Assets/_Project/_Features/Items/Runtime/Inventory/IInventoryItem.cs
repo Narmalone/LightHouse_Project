@@ -14,7 +14,7 @@ namespace LightHouse.Features.Items.Inventory
 
         /// <summary>
         /// The Specific ID of the item while in inventory.
-        /// It's setted via the <see cref="PoolManager"/> and to recover
+        /// It's setted via the <see cref="InventoryPool"/> and to recover
         /// the intance of the item in the inventory.
         /// </summary>
         public ushort ItemSpecificID { get; set; }
@@ -24,6 +24,13 @@ namespace LightHouse.Features.Items.Inventory
         /// <para>Parameters: GlobalID, Specific ID, Position, Force, EnablePhysicsOnDrop </para>
         /// </summary>
         public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
+
+        /// <summary>
+        /// A boolean to pickup or not the item. it's checked by the PlayerInventoryManayer
+        /// </summary>
+        public bool CanBePickedUp { get; set; }
+
+        public event Action<string> OnPickupTextUpdated;
 
         /// <summary>
         /// Automatically setted by the <see cref="PlayerInventorManager"/> to let you know if the instance
@@ -52,6 +59,7 @@ namespace LightHouse.Features.Items.Inventory
         /// Used by <see cref="VisualItemInventory"/>
         /// </summary>
         public Vector3 InventoryEulerAnglesForLocalRotation { get; set; }
+
 
         /// <summary>
         /// Automatically retrieved by the <see cref="PlayerInventory"/> and <seealso cref="CameraRaycastDetector"/>.

@@ -12,22 +12,22 @@ namespace LightHouse.Core.Settings.Audio
         #region OptionWindowBase
         public override void ApplySettings()
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public override bool HasChanges()
         {
-            throw new System.NotImplementedException();
+            return false;
         }
 
         public override void InitializeControllers()
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public override void RevertSettings()
         {
-            throw new System.NotImplementedException();
+            
         }
 
         #endregion

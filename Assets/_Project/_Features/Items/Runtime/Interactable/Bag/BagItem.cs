@@ -1,22 +1,18 @@
 using LightHouse.Core.Player;
 using LightHouse.Core.Player.Inventory;
 using LightHouse.Core.Player.Inventory.UI;
+using LightHouse.Features.Interactions;
 using LightHouse.Features.Items.Detection;
 using System;
 using UnityEngine;
 
 namespace LightHouse.Features.Items.Interactable.Bag
 {
-    public class BagItem : InteractableItemBase, IDestroyable
+    public class BagItem : InteractableItemBase, IDestroyable, IItemCallback
     {
         [SerializeField] private byte _additionalSlots = 2;
 
         public event Action OnDestroyed;
-
-        public override string GetInteractionName()
-        {
-            return "Press E to grab";
-        }
 
         public override void Interact()
         {
@@ -37,6 +33,15 @@ namespace LightHouse.Features.Items.Interactable.Bag
                 inventoryUI.AddItemToSlots(_additionalSlots, PlayerHandlerData.MainPlayer.Inventory.ItemDatabase);
             }
         }
+
+        public void OnRaycastStart()
+        {
+            if (!CanBeInteracted)
+                InteractionText = "Cannot interact at the moment";
+            else
+                InteractionText = "PickUpBag";
+        }
+        public void OnRaycastEnd() { }
     }
 }
 
