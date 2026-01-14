@@ -7,6 +7,7 @@ using LightHouse.Features.Interactions.UI;
 using LightHouse.Features.Items.Detection;
 using LightHouse.Features.Items.Inventory;
 using LightHouse.Features.Items.Inventory.Databases;
+using LightHouse.Features.Items.Inventory.UI;
 using UnityEngine;
 
 namespace LightHouse.Core.Player.Inventory
@@ -286,7 +287,18 @@ namespace LightHouse.Core.Player.Inventory
             _lastInventoryItemSeen = item;
             item.OnPickupTextUpdated += CurrentSeenItem_OnPickupTextUpdated;
             _interactionUiController.ShowItemPickup();
-            _interactionUiController.SetItemPickupText(item.GetPickupName());
+
+            //Checker si on peut récup l'item ou non et si on est full on affiche tout simplement que l'inventaire est full
+            //on check à la fin pour laisser si on met à jour le texte tout en droppant l'objet ou autre pour laisser des mises à jour UI
+            if (!SlotManager.FindFirstEmptySlot(out ItemSlot emptySlot) && !SlotManager.TryFindStackableSlot(item.GlobalItemID, out ItemSlot stackableSlot))
+            {
+                _interactionUiController.SetItemPickupText("Your inventory is full");
+            }
+            else
+            {
+                _interactionUiController.SetItemPickupText(item.GetPickupName());
+            }
+            
         }
 
         private void CurrentSeenItem_OnPickupTextUpdated(string obj)
