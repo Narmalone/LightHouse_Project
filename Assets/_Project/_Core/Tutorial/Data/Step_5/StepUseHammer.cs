@@ -19,7 +19,7 @@ namespace LightHouse.Core.Tutorial.Steps
             _tutorial7.Register();
             _tutorial8.Register();
             _ctx.Talkie?.Enqueue(_tutorial7);
-            _ctx.Hammer.gameObject.SetActive(true);
+            _ctx.Hammer.SetPickable();
             _ctx.Pipe.OnItemUsedOnMe += OnPipeUsed;
             _ctx.Pipe.CanBeRaycasted = true;
             _ctx.Pipe.CanBeInteracted = true;
