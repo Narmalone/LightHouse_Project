@@ -26,6 +26,7 @@ namespace LightHouse.Core.Tutorial.Steps
         private void Hammer_OnMoverAttached()
         {
             IsComplete = true;
+            Debug.Log("le hammer est attaché");
             _hammerFolower.OnMoverAttached -= Hammer_OnMoverAttached;
         }
 
