@@ -21,7 +21,7 @@ namespace LightHouse.Core.Audio
                 { "Cue:Env/Rain/Heavy", 2 }
             };
             _service.Init(new TokenBucketLimiter(limits));
-            ServiceLocator.Audio = _service; // simple locator si tu n’utilises pas Zenject
+            ServiceLocator.Audio = _service;
         }
     }
 }

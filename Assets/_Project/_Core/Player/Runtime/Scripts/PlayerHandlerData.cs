@@ -2,6 +2,12 @@ using System;
 
 namespace LightHouse.Core.Player
 {
+    public enum EnvironmentState
+    {
+        Indoor,
+        Outdoor
+    }
+
     public static class PlayerHandlerData
     {
         public static PlayerController MainPlayer;

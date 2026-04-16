@@ -38,6 +38,7 @@ namespace LightHouse.Core.Audio
         public AudioSource Rent(AudioMixerGroup group, bool persistent)
         {
             var src = _pool.Count > 0 ? _pool.Dequeue() : Create(persistent);
+            Debug.Log(persistent);
             src.outputAudioMixerGroup = group;
             src.gameObject.SetActive(true);
             return src;
@@ -48,7 +49,7 @@ namespace LightHouse.Core.Audio
             if (!s) return;
             s.Stop();
             s.clip = null;
-            s.transform.SetParent(s.outputAudioMixerGroup ? _persistRoot : _sceneRoot, true);
+            s.transform.SetParent(s.outputAudioMixerGroup ? _sceneRoot : _persistRoot, true);
             s.gameObject.SetActive(false);
             _pool.Enqueue(s);
         }
