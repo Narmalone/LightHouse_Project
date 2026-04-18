@@ -3,12 +3,16 @@ using UnityEngine;
 
 namespace LightHouse.Core.Audio
 {
-    public class AudioService : MonoBehaviour, IAudioPlayer
+    public class AudioService : IAudioPlayer
     {
         [SerializeField] private AudioRegistry _registry;
         [SerializeField] private UnityAudioBackend _backend;
 
-        public void Init(IVoiceLimiter limiter) => _backend.Initialize(limiter);
+        public AudioService(IVoiceLimiter limiter, AudioRegistry registry, AudioSourcePool pool)
+        {
+            _backend = new UnityAudioBackend(limiter, pool);
+            _registry = registry;
+        }
 
         public IAudioHandle PlayAt(string cueId, Vector3 pos, AudioPlayOptions opt = default)
         {

@@ -119,80 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &1424672
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 835404723}
-    m_Modifications:
-    - target: {fileID: 3468859659576851872, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_Name
-      value: LocalizationManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 30f378ec77ad9de4492677844ac4e538, type: 3}
---- !u!4 &1424673 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7985008192087666891, guid: 30f378ec77ad9de4492677844ac4e538,
-    type: 3}
-  m_PrefabInstance: {fileID: 1424672}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &11313437
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1552,7 +1478,7 @@ PrefabInstance:
     - target: {fileID: 7459628998355096380, guid: 4838dc685ab4b3f42a71c22c463f5f48,
         type: 3}
       propertyPath: m_Name
-      value: Canvas_Options
+      value: OPTIONS
       objectReference: {fileID: 0}
     - target: {fileID: 7679878513936366685, guid: 4838dc685ab4b3f42a71c22c463f5f48,
         type: 3}
@@ -4317,7 +4243,7 @@ MonoBehaviour:
   _skipTutorial: 0
   _talkieRef: {fileID: 11400000, guid: 28ec02c10b621ff4f8f7eda93f509052, type: 2}
   _flow: {fileID: 728096125}
-  _playerSpawnTutorial: {fileID: 92116642}
+  _playerDefaultIslandPosition: {fileID: 0}
   _binocular: {fileID: 1417021757}
   _hammer: {fileID: 786940225}
   _lighthouse: {fileID: 1027493068}
@@ -4911,7 +4837,7 @@ GameObject:
   m_Component:
   - component: {fileID: 802296914}
   m_Layer: 0
-  m_Name: --- AUDIO ---
+  m_Name: --- DEPENDENCY ENABLE THIS FOR DEBUG PURPOSES ONLY---
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4930,9 +4856,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1265079912}
   - {fileID: 626987422}
-  - {fileID: 1260119115}
-  - {fileID: 837830648}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &824996595
@@ -5039,7 +4964,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1498098358}
-  - {fileID: 1424673}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &837830648 stripped
@@ -8712,7 +8636,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1265079912}
   - {fileID: 346381289}
   - {fileID: 2072563522}
   - {fileID: 267830689}
@@ -8726,6 +8649,39 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 772091380}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1785882134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1785882135}
+  m_Layer: 0
+  m_Name: --- AUDIO ---
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1785882135
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1785882134}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1260119115}
+  - {fileID: 837830648}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1793309215
 GameObject:
   m_ObjectHideFlags: 0
@@ -9154,6 +9110,11 @@ PrefabInstance:
       propertyPath: WeatherManager
       value: 
       objectReference: {fileID: 279505120}
+    - target: {fileID: 8922498527540492722, guid: ab9cdf1c0905d3849b60a332517e2195,
+        type: 3}
+      propertyPath: waterMask
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8922498527540492722, guid: ab9cdf1c0905d3849b60a332517e2195,
         type: 3}
       propertyPath: waterMaskRemap.y
@@ -10498,7 +10459,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1752444993}
+    m_TransformParent: {fileID: 802296914}
     m_Modifications:
     - target: {fileID: 5393236326207042363, guid: 56ce661d3c2021646af64f5a41b6e92d,
         type: 3}
@@ -10980,7 +10941,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 802296914}
+    m_TransformParent: {fileID: 1785882135}
     m_Modifications:
     - target: {fileID: 1174932946450918687, guid: 2a8773071860af048b15ec65c4c5dd10,
         type: 3}
@@ -13913,7 +13874,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 802296914}
+    m_TransformParent: {fileID: 1785882135}
     m_Modifications:
     - target: {fileID: 5265384811088180585, guid: e959f762dbfe42e4288aa285d320a75e,
         type: 3}
@@ -14076,6 +14037,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AudioBootstrap
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558317224887833471, guid: a874dea775a793842a3453b166ac0d65,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5122812441856428311, guid: a874dea775a793842a3453b166ac0d65,
         type: 3}
@@ -14282,6 +14248,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 802296914}
   - {fileID: 835404723}
+  - {fileID: 1785882135}
   - {fileID: 1300274313}
   - {fileID: 1752444993}
   - {fileID: 456032962}

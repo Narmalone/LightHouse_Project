@@ -10,19 +10,25 @@ namespace LightHouse.Core.Audio
         void Return(AudioSource s);
     }
 
-    public class AudioSourcePool : MonoBehaviour, IAudioSourcePool
+    public class AudioSourcePool : IAudioSourcePool
     {
-        [SerializeField] int initial = 16;
+        private int _initialSize = 20;
         private readonly Queue<AudioSource> _pool = new();
         private Transform _persistRoot, _sceneRoot;
 
-        void Awake()
+        public AudioSourcePool(int initialSize)
+        {
+            _initialSize = initialSize;
+            Init();
+        }
+
+        void Init()
         {
             _sceneRoot = new GameObject("Audio_Scene").transform;
             _persistRoot = new GameObject("Audio_Persistent").transform;
-            DontDestroyOnLoad(_persistRoot.gameObject);
+            UnityEngine.Object.DontDestroyOnLoad(_persistRoot.gameObject);
 
-            for (int i = 0; i < initial; i++) _pool.Enqueue(Create(false));
+            for (int i = 0; i < _initialSize; i++) _pool.Enqueue(Create(false));
         }
 
         private AudioSource Create(bool persistent)
@@ -38,7 +44,6 @@ namespace LightHouse.Core.Audio
         public AudioSource Rent(AudioMixerGroup group, bool persistent)
         {
             var src = _pool.Count > 0 ? _pool.Dequeue() : Create(persistent);
-            Debug.Log(persistent);
             src.outputAudioMixerGroup = group;
             src.gameObject.SetActive(true);
             return src;

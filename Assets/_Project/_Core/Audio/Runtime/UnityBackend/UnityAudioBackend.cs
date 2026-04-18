@@ -3,13 +3,17 @@ using UnityEngine;
 
 namespace LightHouse.Core.Audio.UnityBackend
 {
-    public class UnityAudioBackend : MonoBehaviour, IAudioBackend
+    public class UnityAudioBackend : IAudioBackend
     {
-        [SerializeField] private AudioSourcePool _pool;
+        private AudioSourcePool _pool;
         //[SerializeField] private string busPrefix = "Bus:"; // ex: "Bus:SFX"
         private IVoiceLimiter _limiter;
 
-        public void Initialize(IVoiceLimiter limiter) => _limiter = limiter;
+        public UnityAudioBackend(IVoiceLimiter limiter, AudioSourcePool pool)
+        {
+            _limiter = limiter;
+            _pool = pool;
+        }
 
         public IAudioHandle Play(AudioCue cue, Vector3 pos, AudioPlayOptions opt)
         {

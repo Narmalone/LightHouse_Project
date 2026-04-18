@@ -17,7 +17,7 @@ namespace LightHouse.Core.Tutorial
         [SerializeField] private bool _skipTutorial = false;
         [SerializeField] private TalkieServiceReference _talkieRef;
         [SerializeField] private TutorialFlow _flow;
-        [SerializeField] private Transform _playerSpawnTutorial;
+        [SerializeField] private Transform _playerDefaultIslandPosition;
 
         [Header("Refs")]
         [SerializeField] private BinocularItem _binocular;
@@ -63,16 +63,15 @@ namespace LightHouse.Core.Tutorial
                 Timeline = _timeline,
                 ViewTransform = PlayerHandlerData.MainPlayer?.PlayerCamera?.transform
             };
-
             _flow.Init(ctx);
         }
 
         private void SkipTutorial()
         {
-            if(_playerSpawnTutorial != null && PlayerHandlerData.MainPlayer != null)
+            if(_playerDefaultIslandPosition != null && PlayerHandlerData.MainPlayer != null)
             {
-                PlayerHandlerData.MainPlayer.Character.SetPosition(_playerSpawnTutorial.position);
-                PlayerHandlerData.MainPlayer.Character.SetRotation(_playerSpawnTutorial.rotation);
+                PlayerHandlerData.MainPlayer.Character.SetPosition(_playerDefaultIslandPosition.position);
+                PlayerHandlerData.MainPlayer.Character.SetRotation(_playerDefaultIslandPosition.rotation);
             }
         }
     }

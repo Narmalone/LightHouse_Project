@@ -1,0 +1,92 @@
+﻿using LightHouse.Core.Utilities;
+using LightHouse.Localization;
+using TMPro;
+using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.ResourceManagement.AsyncOperations;
+
+public class TipsController : MonoBehaviour
+{
+    [SerializeField] private float _timerTipsDuration = 7.5f;
+    [SerializeField] private LocalizedStringDatabase_Tips _tips;
+    [SerializeField] private TextMeshProUGUI _tipsText;
+
+    private Timer _timer;
+    private int _currentTipIndex = 0;
+
+    private void Awake()
+    {
+        _timer = new Timer(_timerTipsDuration);
+        _timer.OnTimerComplete += Timer_OnTimerComplete;
+        _timer.StartTimer();
+    }
+
+    private void Start()
+    {
+        ShowTip(_currentTipIndex);
+    }
+
+    private void Update()
+    {
+        if (!gameObject.activeInHierarchy) return;
+
+        _timer?.Tick(Time.deltaTime);
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            ShowNextTip();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_timer != null)
+            _timer.OnTimerComplete -= Timer_OnTimerComplete;
+    }
+
+    private void Timer_OnTimerComplete()
+    {
+        ShowNextTip();
+    }
+
+    public void ShowTip(int index)
+    {
+        if (_tips == null || _tips.All == null || _tips.All.Length == 0)
+        {
+            Debug.LogWarning("❌ Aucun tip disponible !");
+            return;
+        }
+
+        // Clamp pour éviter crash
+        index = Mathf.Clamp(index, 0, _tips.All.Length - 1);
+        _currentTipIndex = index;
+
+        var handle = _tips.All[index].GetLocalizedStringAsync();
+
+        handle.Completed += (AsyncOperationHandle<string> op) =>
+        {
+            if (op.Status == AsyncOperationStatus.Succeeded)
+            {
+                _tipsText.text = op.Result;
+            }
+        };
+
+        _timer.ResetTimer();
+    }
+
+    public void ShowNextTip()
+    {
+        if (_tips == null || _tips.All == null || _tips.All.Length == 0)
+            return;
+
+        _currentTipIndex++;
+
+        // ✅ FIX : boucle correcte
+        if (_currentTipIndex >= _tips.All.Length)
+        {
+            _currentTipIndex = 0;
+        }
+
+        ShowTip(_currentTipIndex);
+    }
+}

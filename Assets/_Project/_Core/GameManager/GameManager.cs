@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public AudioBootstrap AudioCore;
+    public AudioManager AudioCore;
 
     private void Start()
     {
