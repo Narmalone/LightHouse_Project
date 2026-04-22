@@ -21,11 +21,6 @@ public class TipsController : MonoBehaviour
         _timer.StartTimer();
     }
 
-    private void Start()
-    {
-        ShowTip(_currentTipIndex);
-    }
-
     private void Update()
     {
         if (!gameObject.activeInHierarchy) return;
@@ -81,12 +76,17 @@ public class TipsController : MonoBehaviour
 
         _currentTipIndex++;
 
-        // ✅ FIX : boucle correcte
         if (_currentTipIndex >= _tips.All.Length)
         {
             _currentTipIndex = 0;
         }
 
+        ShowTip(_currentTipIndex);
+    }
+
+    public void ShowRandomTip()
+    {
+        _currentTipIndex = Random.Range(0, _tips.All.Length);
         ShowTip(_currentTipIndex);
     }
 }

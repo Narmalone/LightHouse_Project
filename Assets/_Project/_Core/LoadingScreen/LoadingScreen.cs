@@ -5,11 +5,16 @@ using TMPro;
 public class LoadingScreen : PersistentSingleton<LoadingScreen>
 {
     [SerializeField] private GameObject root;
+    [SerializeField] private TipsController tipController;
     [SerializeField] private Image progressBar;
     [SerializeField] private TextMeshProUGUI label;
     [SerializeField] private TextMeshProUGUI subLabel;
 
-    public void Show() => root.SetActive(true);
+    public void Show()
+    {
+        root.SetActive(true);
+        tipController.ShowRandomTip();
+    }
     public void Hide() => root.SetActive(false);
 
     protected override void Awake()

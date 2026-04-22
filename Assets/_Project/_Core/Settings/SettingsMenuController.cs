@@ -76,7 +76,8 @@ namespace LightHouse.Core.Settings
 
         public void Enable()
         {
-            PlayerController.ForceChangePlayerState.Invoke(PlayerState.Options);
+            if(PlayerHandlerData.MainPlayer != null)
+                PlayerController.ForceChangePlayerState?.Invoke(PlayerState.Options);
             IsEnabled = true;
             _optionCanvasGroup.interactable = true;
             _optionCanvasGroup.alpha = 1.0f;
@@ -168,23 +169,6 @@ namespace LightHouse.Core.Settings
         private void OnBackButtonClicked()
         {
             OnBackClicked?.Invoke();
-        }
-
-        private void OnLocaleChanged(UnityEngine.Localization.Locale obj)
-        {
-
-        }
-
-        private void OnDisplayScreenChanged()
-        {
-            /* if (DisplaysSetting.IsRevertingDisplay)
-             {
-                 Debug.Log("[OptionsMenuController] Display reverted, skipping reinitialization.");
-                 return;
-             }
-
-             _displayOptionsWindow.InitializeControllers();
-             _displayOptionsWindow.ApplySettings();*/
         }
 
         #endregion
