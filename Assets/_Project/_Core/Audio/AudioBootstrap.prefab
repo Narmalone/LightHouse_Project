@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5122812441856428311}
-  - component: {fileID: 6563214878400440774}
+  - component: {fileID: -4296262054577892684}
   m_Layer: 0
   m_Name: AudioBootstrap
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6563214878400440774
+--- !u!114 &-4296262054577892684
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,11 +41,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4558317224887833471}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58fa05b08aca5a348aa11775f38a966d, type: 3}
+  m_Script: {fileID: 11500000, guid: 9f11a0638361e9f4f9b2217f8e429986, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightHouse.Core.Audio.AudioManager
-  _registry: {fileID: 11400000, guid: d7a0360574d7ce14db5e942c86356077, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::LightHouse.Core.Audio.AudioService
+  UnparentOnAwake: 1
   _poolInitialSize: 20
   MaxAmbianceAtSameTime: 8
   MaxSFXAtSameTime: 32
   MaxMusicsAtSameTime: 2
+  _registry: {fileID: 11400000, guid: d7a0360574d7ce14db5e942c86356077, type: 2}

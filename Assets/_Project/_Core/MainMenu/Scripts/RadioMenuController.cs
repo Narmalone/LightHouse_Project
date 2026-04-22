@@ -1,114 +1,103 @@
 using Cinemachine;
-using LightHouse.Core.Audio;
-using LightHouse.Core.Services;
-using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class RadioMenuController : MonoBehaviour
+public class RadioMenuController : MonoBehaviour, IRaycastable, ILeavableMenuItem
 {
-    [SerializeField] private AudioCue _radioMusic;
-    [SerializeField] private AudioCue _radioSpeach;
-
+    [SerializeField] private BoxCollider _mainCollider;
+    [SerializeField] private RadioDial _radioDial;
+    [SerializeField] private RadioSystemBinder _radioBinder;
+    [SerializeField] private RadioFrequencyController _frequencyController;
+    [SerializeField] private RadioAudioController _radioAudioController;
+    [SerializeField] private RadioOnOffController _radioOnOffController;
     [SerializeField] private CinemachineVirtualCamera _radioCamera;
-    [SerializeField] private Renderer _radioOnOffMaterial;
 
-    private MaterialPropertyBlock _radioOnOffPropertyBlock;
-
-    [SerializeField] private float _emissiveIntensity = 10f;
-
-    [SerializeField] private Canvas _choiceCanvas;
-    [SerializeField] private Button _listenBriefButton;
-    [SerializeField] private Button _stopListeningBriefButton;
-    [SerializeField] private Button _continueGameButton;
-    [SerializeField] private RaycastableMenuItem _raycastableMenuItem;
-
-    private IAudioHandle _radioSpeachHandler;
+    private bool _isPlayerInsideTheRadio = false;
 
     private void Awake()
     {
-        InitializeMaterial();
-        _listenBriefButton.onClick.AddListener(StartEventRoutine);
-        _stopListeningBriefButton.onClick.AddListener(StopEventRoutine);
-        _continueGameButton.onClick.AddListener(ContinueGameRoutine);
-        _raycastableMenuItem.OnShowInformationsEvent += RaycastableMenuItem_OnShowInformationsEvent;
-        _raycastableMenuItem.OnHideInformationsEvent += RaycastableMenuItem_OnHideInformationsEvent;
-        _choiceCanvas.gameObject.SetActive(false);
+        _radioOnOffController.Toggle.IsOnChanged += Toggle_IsOnChanged;
+        PlayerControllerMenu.OnRightClickPressed += PlayerControllerMenu_OnRightClickPressed;
     }
 
-    private void ContinueGameRoutine()
+    private void PlayerControllerMenu_OnRightClickPressed()
     {
-        //TO DO : implement continue game logic Check last saved files
-        // and load the scene
-    }
-
-    private void RaycastableMenuItem_OnHideInformationsEvent()
-    {
-        _radioCamera.Priority = -1;
-        _choiceCanvas.gameObject.SetActive(false);
-    }
-
-    private void RaycastableMenuItem_OnShowInformationsEvent()
-    {
-        _radioCamera.Priority = 100;
-        _choiceCanvas.gameObject.SetActive(true);
-        if(_radioSpeachHandler != null && _radioSpeachHandler.CurrentSource != null && _radioSpeachHandler.CurrentSource.isPlaying)
-        {
-            _stopListeningBriefButton.gameObject.SetActive(true);
-        }
+        if (!_isPlayerInsideTheRadio) return;
+        OnRadioLeave();
     }
 
     private void OnDestroy()
     {
-        _listenBriefButton.onClick.RemoveListener(StartEventRoutine);
-        _raycastableMenuItem.OnShowInformationsEvent -= RaycastableMenuItem_OnShowInformationsEvent;
-        _raycastableMenuItem.OnHideInformationsEvent -= RaycastableMenuItem_OnHideInformationsEvent;
-        _stopListeningBriefButton.onClick.RemoveListener(StopEventRoutine);
-        _continueGameButton.onClick.RemoveListener(ContinueGameRoutine);
+        _radioOnOffController.Toggle.IsOnChanged -= Toggle_IsOnChanged;
+        PlayerControllerMenu.OnRightClickPressed -= PlayerControllerMenu_OnRightClickPressed;
     }
 
-    private void InitializeMaterial()
+    private void Start()
     {
-        _radioOnOffPropertyBlock = new MaterialPropertyBlock();
-        _radioOnOffPropertyBlock.SetColor("_EmissiveColor", Color.red * _emissiveIntensity);
-        _radioOnOffMaterial.SetPropertyBlock(_radioOnOffPropertyBlock);
+        Initialize();
     }
 
-    private void StartEventRoutine()
+    private void Initialize()
     {
-        _radioOnOffPropertyBlock.SetColor("_EmissiveColor", Color.green * _emissiveIntensity);
-        _radioOnOffMaterial.SetPropertyBlock(_radioOnOffPropertyBlock);
+        _radioCamera.Priority = -1;
+        DisableRadio();
+        OnRadioLeave();
+    }
 
-        if(_radioSpeachHandler != null && _radioSpeachHandler.CurrentSource != null)
+    private void DisableRadio()
+    {
+        _radioBinder.SetEnable(false);
+        _radioAudioController.StopAudio();
+        _frequencyController.HideFrequencyText();
+    }
+
+    private void EnableRadio()
+    {
+        _radioBinder.SetEnable(true);
+        _radioAudioController.PlayAudio();
+        _frequencyController.ShowFrequencyText();
+        _radioDial.ForceUpdateValue();
+    }
+
+    private void Toggle_IsOnChanged(bool obj)
+    {
+        //couper ou lancer la radio
+        if (obj)
         {
-            _radioSpeachHandler.Stop();
+            EnableRadio();
         }
-        _radioSpeachHandler = ServiceLocator.Audio.PlayAt(_radioSpeach, this.transform.position);
-        _stopListeningBriefButton.gameObject.SetActive(true);
-        StartCoroutine(OnSpeachEnded());
+        else
+        {
+            DisableRadio();
+        }
     }
 
-    private void StopEventRoutine()
+    private void OnRadioInteracted()
     {
-        if (_radioSpeachHandler != null && _radioSpeachHandler.CurrentSource != null)
-        {
-            _radioSpeachHandler.Stop();
-        }
-        _radioOnOffPropertyBlock.SetColor("_EmissiveColor", Color.red * _emissiveIntensity);
-        _radioOnOffMaterial.SetPropertyBlock(_radioOnOffPropertyBlock);
-        _stopListeningBriefButton.gameObject.SetActive(true);
+        _isPlayerInsideTheRadio = true;
+        _mainCollider.enabled = false;
+        _radioCamera.Priority = 100;
     }
 
-    private IEnumerator OnSpeachEnded()
+    private void OnRadioLeave()
     {
-        while (_radioSpeachHandler != null && _radioSpeachHandler.CurrentSource != null && _radioSpeachHandler.CurrentSource.isPlaying)
-        {
-            yield return null;
-        }
-        _radioOnOffPropertyBlock.SetColor("_EmissiveColor", Color.red * _emissiveIntensity);
-        _radioOnOffMaterial.SetPropertyBlock(_radioOnOffPropertyBlock);
-        _radioSpeachHandler = null;
-        _stopListeningBriefButton.gameObject.SetActive(false);
+        _isPlayerInsideTheRadio = false;
+        _mainCollider.enabled = true;
+        _radioCamera.Priority = -1;
+    }
+
+    public void OnRaycastEnter() { }
+
+    public void OnRaycastLeave() { }
+
+    public void OnClicked() 
+    {
+        OnRadioInteracted();
+    }
+
+    public void OnClickReleased() { }
+
+    public void OnLeaveSend()
+    {
+        OnRadioLeave();
     }
 }

@@ -1,17 +1,29 @@
 using LightHouse.Core.Audio.UnityBackend;
+using LightHouse.Core.Services;
 using UnityEngine;
 
 namespace LightHouse.Core.Audio
 {
-    public class AudioService : IAudioPlayer
+    public class AudioService : MonoBehaviour, IAudioPlayer
     {
+        [SerializeField] private int _poolInitialSize = 20;
+        [SerializeField] private int MaxAmbianceAtSameTime = 8;
+        [SerializeField] private int MaxSFXAtSameTime = 32;
+        [SerializeField] private int MaxMusicsAtSameTime = 2;
         [SerializeField] private AudioRegistry _registry;
         [SerializeField] private UnityAudioBackend _backend;
 
-        public AudioService(IVoiceLimiter limiter, AudioRegistry registry, AudioSourcePool pool)
+        protected void Awake()
         {
-            _backend = new UnityAudioBackend(limiter, pool);
-            _registry = registry;
+            var limits = new System.Collections.Generic.Dictionary<string, int>
+            {
+                { "Bus:Ambience", MaxAmbianceAtSameTime },
+                { "Bus:SFX", MaxSFXAtSameTime },
+                { "Bus:MUSICS", MaxMusicsAtSameTime },
+                // par Cue (facultatif, redondant avec cue.MaxSimultaneousVoices)
+            };
+            _backend = new UnityAudioBackend(new TokenBucketLimiter(limits), new AudioSourcePool(_poolInitialSize));
+            ServiceLocator.SetAudioPlayer(this);
         }
 
         public IAudioHandle PlayAt(string cueId, Vector3 pos, AudioPlayOptions opt = default)

@@ -1,84 +1,95 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PlayerControllerMenu : MonoBehaviour
 {
-    private GameObject _lastHittedObject;
-    private RaycastableMenuItem _lastHittedItem;
+    public static event Action OnRightClickPressed;
+    [SerializeField] private float maxDistance = 25f;
 
-    private RaycastableMenuItem _selectedItem; // 👈 IMPORTANT
+    private Camera _cam;
+
+    private GameObject _lastObject;
+    private IRaycastable _currentItem;
+    private IRaycastable _lockedItem;
+    private void Awake()
+    {
+        _cam = Camera.main;
+    }
 
     private void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        HandleClick();
+        if (_lockedItem != null)
+        {
+            // On reste focus sur l'objet lock
+            return;
+        }
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 25f))
+        Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, maxDistance))
         {
             HandleHit(hit);
         }
         else
         {
-            ClearCurrentItem();
+            ClearCurrent();
         }
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            HandleClick();
-        }
     }
 
     private void HandleClick()
     {
-        if (_lastHittedItem == null)
-            return;
-
-        // Si on clique sur un autre → on cache l'ancien
-        if (_selectedItem != null && _selectedItem != _lastHittedItem)
+        if (Input.GetMouseButtonDown(0) && _currentItem != null)
         {
-            _selectedItem.HideInformations();
+            _currentItem.OnClicked();
+            _lockedItem = _currentItem;
         }
 
-        if (_selectedItem == _lastHittedItem)
+        if (Input.GetMouseButtonUp(0))
         {
-            _selectedItem.HideInformations();
-            _selectedItem = null;
-            return;
+            if(_currentItem != null)
+                _currentItem.OnClickReleased();
+            _lockedItem = null;
         }
 
-        _selectedItem = _lastHittedItem;
-        _selectedItem.ShowInformations();
+        if (Input.GetMouseButtonDown(1) && _lockedItem == null)
+        {
+            OnRightClickPressed?.Invoke();
+        }
     }
 
     private void HandleHit(RaycastHit hit)
     {
         GameObject hitObject = hit.collider.gameObject;
 
-        if (_lastHittedObject == hitObject)
+        // 👉 Même objet → ne rien faire
+        if (_lastObject == hitObject)
             return;
 
-        if (_lastHittedItem != null)
+        // 👉 Leave ancien
+        if (_currentItem != null)
         {
-            _lastHittedItem.OnRaycastExit();
-            _lastHittedItem = null;
-            _lastHittedObject = null;
+            _currentItem.OnRaycastLeave();
+            _currentItem = null;
         }
 
-        _lastHittedObject = hitObject;
+        _lastObject = hitObject;
 
-        RaycastableMenuItem menuItem = hit.collider.GetComponent<RaycastableMenuItem>();
-        if (menuItem != null)
+        if (hit.collider.TryGetComponent(out IRaycastable newItem))
         {
-            _lastHittedItem = menuItem;
-            _lastHittedItem.OnRaycastEnter();
+            _currentItem = newItem;
+            _currentItem.OnRaycastEnter();
         }
     }
 
-    private void ClearCurrentItem()
+    private void ClearCurrent()
     {
-        if (_lastHittedItem != null)
-        {
-            _lastHittedItem.OnRaycastExit();
-            _lastHittedItem = null;
-            _lastHittedObject = null;
-        }
+        if (_currentItem == null)
+            return;
+
+        _currentItem.OnRaycastLeave();
+        _currentItem = null;
+        _lastObject = null;
     }
 }

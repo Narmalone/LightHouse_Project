@@ -8,13 +8,10 @@ public class ComputerMenuController : MonoBehaviour
 {
     [SerializeField] private Canvas _choiceCanvas;
     [SerializeField] private Button _enterInComputer;
-    [SerializeField] private RaycastableMenuItem _raycastableMenuItem;
     [SerializeField] private CinemachineVirtualCamera _computerCam;
 
-    private void Awake()
+  /*  private void Awake()
     {
-        _raycastableMenuItem.OnShowInformationsEvent += RaycastableMenuItem_OnShowInformationsEvent;
-        _raycastableMenuItem.OnHideInformationsEvent += RaycastableMenuItem_OnHideInformationsEvent;
         _enterInComputer.onClick.AddListener(EnterInComputerRoutine);
     }
 
@@ -40,8 +37,6 @@ public class ComputerMenuController : MonoBehaviour
 
     private void OnDestroy()
     {
-        _raycastableMenuItem.OnShowInformationsEvent -= RaycastableMenuItem_OnShowInformationsEvent;
-        _raycastableMenuItem.OnHideInformationsEvent -= RaycastableMenuItem_OnHideInformationsEvent;
         _enterInComputer.onClick.RemoveListener(EnterInComputerRoutine);
-    }
+    }*/
 }
