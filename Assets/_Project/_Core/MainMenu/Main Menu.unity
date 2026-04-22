@@ -8729,6 +8729,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AmbianceMenuController
   _sfxMixer: {fileID: 24100000, guid: a0427fdc99acb7040a6f5710eeaa5e9c, type: 2}
+  _ambianceHorrorSound: {fileID: 11400000, guid: f192ed0a3684ff741b4c6a8684482353,
+    type: 2}
   _rainEffect: {fileID: 11400000, guid: 9d3f393e26837b8439a355c926bf3f10, type: 2}
   _windEffect: {fileID: 11400000, guid: 7bea491999bc234408e0200b01cc8252, type: 2}
 --- !u!114 &785905723
@@ -15337,12 +15339,27 @@ PrefabInstance:
     - target: {fileID: 1102128726871723855, guid: f46e055003964224c8eddde5a624db20,
         type: 3}
       propertyPath: openness
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1102128726871723855, guid: f46e055003964224c8eddde5a624db20,
+        type: 3}
+      propertyPath: windAtMax
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1102128726871723855, guid: f46e055003964224c8eddde5a624db20,
+        type: 3}
+      propertyPath: windAtExtreme
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1102128726871723855, guid: f46e055003964224c8eddde5a624db20,
+        type: 3}
+      propertyPath: defaultWindSpeedIfNoWeatherData
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5831817121495009152, guid: f46e055003964224c8eddde5a624db20,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 7.234
+      value: 6.75
       objectReference: {fileID: 0}
     - target: {fileID: 5831817121495009152, guid: f46e055003964224c8eddde5a624db20,
         type: 3}
@@ -15885,8 +15902,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: CONTINUE
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dc2ef4421eb70064186c0dfa2c34b6ed, type: 2}
+  m_sharedMaterial: {fileID: -3586495956612561286, guid: dc2ef4421eb70064186c0dfa2c34b6ed,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -13,6 +13,7 @@ namespace LightHouse.Core.Audio
 
         [Header("Window State")]
         [Range(0f, 1f)] public float openness = 0.5f; // 0 = fermée, 1 = ouverte
+        [Range(0f, 130f)] public float defaultWindSpeedIfNoWeatherData = 50f; // 0 = fermée, 1 = ouverte
 
         [Header("Vent -> Volume (loop)")]
         public float windAtMin = 0f;
@@ -68,7 +69,7 @@ namespace LightHouse.Core.Audio
         {
             return (WeatherHandlerData.CurrentWeather != null)
                 ? WeatherHandlerData.CurrentWeather.WindSpeed
-                : 50f;
+                : defaultWindSpeedIfNoWeatherData;
         }
 
         // ── Loop: volume + pitch ──────────────────────────────────────────────

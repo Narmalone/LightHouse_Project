@@ -4,13 +4,21 @@ using UnityEngine;
 public class PlayerControllerMenu : MonoBehaviour
 {
     public static event Action OnRightClickPressed;
+
     [SerializeField] private float maxDistance = 25f;
 
     private Camera _cam;
 
     private GameObject _lastObject;
-    private IRaycastable _currentItem;
-    private IRaycastable _lockedItem;
+
+    private IRaycastEnter _currentEnter;
+    private IRaycastExit _currentExit;
+    private IClickable _currentClickable;
+    private IClickableUp _currentClickableUp;
+
+    private IClickable _lockedClickable;
+    private IClickableUp _lockedClickableUp;
+
     private void Awake()
     {
         _cam = Camera.main;
@@ -19,11 +27,10 @@ public class PlayerControllerMenu : MonoBehaviour
     private void Update()
     {
         HandleClick();
-        if (_lockedItem != null)
-        {
-            // On reste focus sur l'objet lock
+
+        // 🔒 Si lock → pas de raycast
+        if (_lockedClickable != null)
             return;
-        }
 
         Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
 
@@ -35,61 +42,71 @@ public class PlayerControllerMenu : MonoBehaviour
         {
             ClearCurrent();
         }
-
     }
+
+    // ─────────────────────────────
+    // CLICK
+    // ─────────────────────────────
 
     private void HandleClick()
     {
-        if (Input.GetMouseButtonDown(0) && _currentItem != null)
+        if (Input.GetMouseButtonDown(0) && _currentClickable != null)
         {
-            _currentItem.OnClicked();
-            _lockedItem = _currentItem;
+            _currentClickable.OnClicked();
+
+            _lockedClickable = _currentClickable;
+            _lockedClickableUp = _currentClickableUp;
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            if(_currentItem != null)
-                _currentItem.OnClickReleased();
-            _lockedItem = null;
+            _lockedClickableUp?.OnClickReleased();
+
+            _lockedClickable = null;
+            _lockedClickableUp = null;
         }
 
-        if (Input.GetMouseButtonDown(1) && _lockedItem == null)
+        if (Input.GetMouseButtonDown(1) && _lockedClickable == null)
         {
             OnRightClickPressed?.Invoke();
         }
     }
 
+    // ─────────────────────────────
+    // RAYCAST
+    // ─────────────────────────────
+
     private void HandleHit(RaycastHit hit)
     {
         GameObject hitObject = hit.collider.gameObject;
 
-        // 👉 Même objet → ne rien faire
         if (_lastObject == hitObject)
             return;
 
-        // 👉 Leave ancien
-        if (_currentItem != null)
-        {
-            _currentItem.OnRaycastLeave();
-            _currentItem = null;
-        }
+        ClearCurrent();
 
         _lastObject = hitObject;
 
-        if (hit.collider.TryGetComponent(out IRaycastable newItem))
-        {
-            _currentItem = newItem;
-            _currentItem.OnRaycastEnter();
-        }
+        // 🔥 On récupère chaque capacité indépendamment
+        hit.collider.TryGetComponent(out _currentEnter);
+        hit.collider.TryGetComponent(out _currentExit);
+        hit.collider.TryGetComponent(out _currentClickable);
+        hit.collider.TryGetComponent(out _currentClickableUp);
+
+        _currentEnter?.OnRaycastEnter();
     }
 
     private void ClearCurrent()
     {
-        if (_currentItem == null)
-            return;
+        if (_currentExit != null)
+        {
+            _currentExit.OnRaycastExit();
+        }
 
-        _currentItem.OnRaycastLeave();
-        _currentItem = null;
+        _currentEnter = null;
+        _currentExit = null;
+        _currentClickable = null;
+        _currentClickableUp = null;
         _lastObject = null;
     }
 }

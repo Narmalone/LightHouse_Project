@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class InteractableBase : MonoBehaviour, IRaycastable
+public class InteractableBase : MonoBehaviour, IClickable, IRaycastEnter, IRaycastExit
 {
     public event Action OnHoverEnter;
     public event Action OnHoverExit;
@@ -9,7 +9,7 @@ public class InteractableBase : MonoBehaviour, IRaycastable
     public event Action OnClickUp;
 
     public void OnRaycastEnter() => OnHoverEnter?.Invoke();
-    public void OnRaycastLeave() => OnHoverExit?.Invoke();
+    public void OnRaycastExit() => OnHoverExit?.Invoke();
     public void OnClicked() => OnClickDown?.Invoke();
     public void OnClickReleased() => OnClickUp?.Invoke();
 }

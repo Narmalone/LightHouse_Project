@@ -2,7 +2,7 @@ using Cinemachine;
 using System;
 using UnityEngine;
 
-public class ComputerMenuController : MonoBehaviour, IRaycastable
+public class ComputerMenuController : MonoBehaviour, IRaycastEnter, IRaycastExit, IClickable
 {
     [SerializeField] private CinemachineVirtualCamera _computerCam;
 
@@ -11,11 +11,11 @@ public class ComputerMenuController : MonoBehaviour, IRaycastable
         EnterInComputerRoutine();
     }
 
-    public void OnClickReleased() { }
-
     public void OnRaycastEnter() { }
-
-    public void OnRaycastLeave() { }
+    public void OnRaycastExit()
+    {
+        throw new NotImplementedException();
+    }
 
     private void Awake()
     {
@@ -36,4 +36,6 @@ public class ComputerMenuController : MonoBehaviour, IRaycastable
     {
         _computerCam.Priority = -1;
     }
+
+
 }

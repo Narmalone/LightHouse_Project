@@ -1,12 +1,11 @@
 using Cinemachine;
 using Eflatun.SceneReference;
 using LightHouse.Core.Save;
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NoteBookMenuController : MonoBehaviour, IRaycastable
+public class NoteBookMenuController : MonoBehaviour, IClickable
 {
     [SerializeField] private Canvas _canvas;
     [SerializeField] private CinemachineVirtualCamera _noteBookCamera;

@@ -1,9 +1,21 @@
-using UnityEngine;
 
-public interface IRaycastable
+
+public interface IRaycastEnter
 {
     void OnRaycastEnter();
-    void OnRaycastLeave();
+}
+
+public interface IRaycastExit
+{
+    void OnRaycastExit();
+}
+
+public interface IClickable
+{
     void OnClicked();
+}
+
+public interface IClickableUp
+{
     void OnClickReleased();
 }
