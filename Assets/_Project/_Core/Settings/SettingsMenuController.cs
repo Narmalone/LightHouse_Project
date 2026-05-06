@@ -13,6 +13,8 @@ namespace LightHouse.Core.Settings
     {
         #region FIELDS
         public event Action OnBackClicked;
+        public static event Action OnSettingsMenuOpened;
+        public static event Action OnSettingsMenuClosed;
 
         [Header("UI References")]
         //[SerializeField] private UIDocument _pauseMenuDocument;
@@ -78,10 +80,12 @@ namespace LightHouse.Core.Settings
         {
             if(PlayerHandlerData.MainPlayer != null)
                 PlayerController.ForceChangePlayerState?.Invoke(PlayerState.Options);
+
             IsEnabled = true;
             _optionCanvasGroup.interactable = true;
             _optionCanvasGroup.alpha = 1.0f;
             _optionCanvasGroup.blocksRaycasts = true;
+            OnSettingsMenuOpened?.Invoke();
         }
 
         public void Disable()
@@ -97,6 +101,7 @@ namespace LightHouse.Core.Settings
             _optionCanvasGroup.interactable = false;
             _optionCanvasGroup.alpha = 0.0f;
             _optionCanvasGroup.blocksRaycasts = false;
+            OnSettingsMenuClosed?.Invoke();
         }
 
         #region Initialization

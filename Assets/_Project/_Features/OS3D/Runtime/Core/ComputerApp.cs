@@ -109,6 +109,16 @@ namespace LightHouse.Features.Computer.OS
             OnMinimize();
         }
 
+        public void RandomizePositionOnComputer()
+        {
+            this.RectTransform.anchoredPosition = new Vector2(Random.Range(-200, 200), Random.Range(-100, 100));
+        }
+
+        public void RandomizePositionOnComputer(Vector2 leftRandom, Vector2 rightRandom)
+        {
+            this.RectTransform.anchoredPosition = new Vector2(Random.Range(leftRandom.x, leftRandom.y), Random.Range(rightRandom.x, rightRandom.y));
+        }
+
         #endregion
 
         #region Abstract Methods

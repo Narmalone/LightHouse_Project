@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using CloudSettings = LightHouse.Features.Weather.Clouds.Settings.CloudSettings;
 using LightHouse.Features.TimeOfDay.TimeCore;
+using LightHouse.Features.TimeOfDay.Lighting;
 
 namespace LightHouse.Features.Weather.Clouds
 {
@@ -40,26 +41,45 @@ namespace LightHouse.Features.Weather.Clouds
 
         private void Awake()
         {
+
+            presetMap = new Dictionary<WeatherType, CloudSettings>
+            {
+                { WeatherType.Sunny, Sunny },
+                { WeatherType.Cloudy, Cloudy },
+                { WeatherType.Windy, Windy },
+                { WeatherType.Rainy, Rainy },
+                { WeatherType.Foggy, Foggy },
+                { WeatherType.Stormy, Stormy }
+            };
+        }
+
+        private void Start()
+        {
+            if (!volume)
+            {
+                volume = FindFirstObjectByType<Volume>();
+            }
+
+            if(!SunLight)
+            {
+                SunLight = FindFirstObjectByType<LightingProfileManager>().SunController.SunLight;
+            }
+
+            if(!WeatherManager)
+            {
+                WeatherManager = FindFirstObjectByType<WeatherManager>();
+            }
+
             if (!volume.profile.TryGet(out clouds))
             {
                 Debug.LogError("Le Volume n’a pas de composant Volumetric Clouds.");
                 return;
             }
-
-            presetMap = new Dictionary<WeatherType, CloudSettings>
-        {
-            { WeatherType.Sunny, Sunny },
-            { WeatherType.Cloudy, Cloudy },
-            { WeatherType.Windy, Windy },
-            { WeatherType.Rainy, Rainy },
-            { WeatherType.Foggy, Foggy },
-            { WeatherType.Stormy, Stormy }
-        };
         }
 
         private void Update()
         {
-            if (WeatherManager.CurrentWeather == null || clouds == null || SunLight == null) return;
+            if (WeatherManager == null || WeatherManager.CurrentWeather == null || clouds == null || SunLight == null) return;
 
             WeatherData weather = WeatherManager.CurrentWeather;
             WeatherData from = WeatherManager.FromWeather;

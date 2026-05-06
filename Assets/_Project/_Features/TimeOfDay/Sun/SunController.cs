@@ -30,14 +30,21 @@ namespace LightHouse.Features.TimeOfDay.Sun
         public LensFlareComponentSRP SunLens => _lens;
         public HDAdditionalLightData LightData => _lightData;
 
+        private void Awake()
+        {
+            TimeHandlerData.OnTimeChanged += OnTimeChanged;
+        }
+
+        private void OnDestroy()
+        {
+            TimeHandlerData.OnTimeChanged -= OnTimeChanged;
+        }
+
         private void Start()
         {
             _previousSunState = _sunLight.enabled;
             OnSunLightToggled?.Invoke(_previousSunState);
         }
-
-        public void RegisterToTimeManager(TimeManager tm) => tm.RegisterObserver(this);
-        public void UnregisterFromTimeManager(TimeManager tm) => tm.UnregisterObserver(this);
 
         public void OnTimeChanged(float timeOfDay)
         {

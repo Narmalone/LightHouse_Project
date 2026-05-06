@@ -13,9 +13,14 @@ namespace LightHouse.Core.Save
 
         public FileDataService(ISerializer serializer)
         {
-            this.dataPath = Application.persistentDataPath;
+            this.dataPath = Path.Combine(Application.persistentDataPath, "GameSaves");
             this.fileExtension = "json";
             this.serializer = serializer;
+
+            if(!Directory.Exists(dataPath))
+            {
+                Directory.CreateDirectory(dataPath);
+            }
         }
 
         private string GetPathToFile(string fileName)
@@ -68,10 +73,23 @@ namespace LightHouse.Core.Save
         {
             foreach (string filepath in Directory.EnumerateFiles(dataPath))
             {
-                if(Path.GetExtension(filepath) == fileExtension)
+                if(Path.GetExtension(filepath) == $".{fileExtension}")
                 {
                     yield return Path.GetFileNameWithoutExtension(filepath);
                 }
+            }
+        }
+
+        // FileDataService.cs
+        public IEnumerable<GameData> ListSavesMetadata()
+        {
+            foreach (var name in ListSaves())
+            {
+                GameData data = null;
+                try { data = Load(name); }
+                catch { /* fichier corrompu, on skip */ }
+
+                if (data != null) yield return data;
             }
         }
     }

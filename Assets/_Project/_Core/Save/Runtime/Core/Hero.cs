@@ -4,7 +4,7 @@ namespace LightHouse.Core.Save.Sample
 {
     public class Hero : MonoBehaviour, IBind<PlayerData>
     {
-        [field: SerializeField] public SerializableGuid Id { get; set; } = SerializableGuid.NewGuid();
+        [field: SerializeField] public SerializableGuid Id { get; set; }
         [SerializeField] private PlayerData _data;
 
         private void Start()
@@ -33,5 +33,6 @@ namespace LightHouse.Core.Save.Sample
         [field : SerializeField] public SerializableGuid Id { get; set; }
         public Vector3 position;
         public Quaternion rotation;
+        public string Money;
     }
 }

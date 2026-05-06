@@ -1,4 +1,3 @@
-using LightHouse.Core.Player;
 using LightHouse.Features.Boats;
 using UnityEngine;
 
@@ -19,8 +18,8 @@ namespace LightHouse.Core.Tutorial.Boat
         private void Start()
         {
             _boid.InitializeOnPath();
-            PlayerHandlerData.MainPlayer.Character.SetPosition(_playerSpawnTutorial.position);
-            PlayerHandlerData.MainPlayer.Character.SetRotation(_playerSpawnTutorial.rotation);
+            /*PlayerHandlerData.MainPlayer.Character.SetPosition(_playerSpawnTutorial.position);
+            PlayerHandlerData.MainPlayer.Character.SetRotation(_playerSpawnTutorial.rotation);*/
         }
 
     }

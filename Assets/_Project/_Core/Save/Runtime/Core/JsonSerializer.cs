@@ -1,19 +1,28 @@
-using UnityEngine;
+﻿// JsonUtility ne supporte pas :
+// ❌ Dictionary<K,V>
+// ❌ Propriétés (seulement fields)
+// ❌ Types polymorphiques
+// ❌ List<interface>
 
-namespace LightHouse.Core.Save
+// Remplace par Newtonsoft (déjà dans Unity via Package Manager) :
+using LightHouse.Core.Save;
+
+public class JsonSerializer : ISerializer
 {
-    public class JsonSerializer : ISerializer
+    private readonly Newtonsoft.Json.JsonSerializerSettings _settings = new()
     {
-        public string Serialize<T>(T obj)
+        Formatting = Newtonsoft.Json.Formatting.Indented,
+        Converters = new Newtonsoft.Json.JsonConverter[]
         {
-            return JsonUtility.ToJson(obj, true);
-        }
-        public T Deserialize<T>(string json)
-        {
-            return JsonUtility.FromJson<T>(json);
-        }
+            new Vector3Converter(),
+            new QuaternionConverter()
+        },
+        TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto // pour le polymorphisme
+    };
 
-        
-    }
+    public string Serialize<T>(T obj) =>
+        Newtonsoft.Json.JsonConvert.SerializeObject(obj, _settings);
 
+    public T Deserialize<T>(string json) =>
+        Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json, _settings);
 }

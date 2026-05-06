@@ -25,7 +25,6 @@ namespace LightHouse.Features.Computer.OS
         protected OS _os;
         [SerializeField] protected ComputerApp _currentInstance;
         private RectTransform _runningAppsParent => _os.RunningAppParent;
-
         #endregion
 
         #region Unity Lifecycle
@@ -41,7 +40,7 @@ namespace LightHouse.Features.Computer.OS
             if (_shortCutButton != null)
                 _shortCutButton.OnClick -= OnDoubleClicked;
             if(_os != null)
-                _os.ShortCuts.Remove(this);
+                _os.ShortcutButtonsManager.Unregister(_shortCutButton);
         }
 
         protected virtual void OnValidate()

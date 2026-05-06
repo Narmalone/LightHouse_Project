@@ -43,12 +43,13 @@ namespace LightHouse.Features.Weather.Rain
 
         private void Start()
         {
-            Target = Camera.main.transform;
+            Target = FindFirstObjectByType<Camera>().transform;
         }
 
         void Update()
         {
             Vector3 targetPos = (Target != null) ? Target.position : TargetPoint;
+            if (PlayerHandlerData.MainPlayer == null) return;
             TargetPoint = PlayerHandlerData.MainPlayer.Character.transform.position;
 
             // Position visée : centré au-dessus (XZ aligné), Y = hauteur au-dessus ou Y courant

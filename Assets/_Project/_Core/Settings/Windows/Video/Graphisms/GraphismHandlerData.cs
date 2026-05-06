@@ -7,7 +7,7 @@ namespace LightHouse.Core.Settings.Video.Graphism.Quality
     public static class GraphismHandlerData
     {
         public static bool IsInitialized { get; private set; }
-        public static GfxTier CurrentTier { get; private set; } = GfxTier.Medium;
+        public static GfxTier CurrentTier { get; private set; } = GfxTier.High;
         public static VideoPresetSettings CurrentPreset { get; private set; }
 
         // Optionnel : event si d’autres systèmes veulent réagir

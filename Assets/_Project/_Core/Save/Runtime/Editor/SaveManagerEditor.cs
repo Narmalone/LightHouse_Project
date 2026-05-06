@@ -1,4 +1,4 @@
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace LightHouse.Core.Save
@@ -22,6 +22,12 @@ namespace LightHouse.Core.Save
             {
                 _saveLoadSystem.SaveGame();
                 Debug.Log("Game saved");
+            }
+
+            if (GUILayout.Button("📁 Open Saves Folder"))
+            {
+                string path = Application.persistentDataPath;
+                EditorUtility.RevealInFinder(path);
             }
 
             if (GUILayout.Button("Load Game"))

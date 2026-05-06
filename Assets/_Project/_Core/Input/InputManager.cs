@@ -10,11 +10,25 @@ namespace LightHouse.Core.Inputs
         public static bool IsInitialized { get; private set; } = false; 
         public static event Action OnInputManagerWillClear;
         private static PlayerInputActions _player_Input_Actions;
-        public static PlayerInputActions PLAYER_INPUTS_ACTIONS => _player_Input_Actions;
+        public static PlayerInputActions PLAYER_INPUTS_ACTIONS
+        {
+            get
+            {
+                if(_player_Input_Actions == null)
+                {
+                    Debug.LogWarning("PlayerInputActions n'est pas défini dans InputManager ! Création automatique...");
+                    _player_Input_Actions = new PlayerInputActions();
+                    _player_Input_Actions.Enable();
+                    InputManagerInitialized();
+                    return _player_Input_Actions;
+                }
+                return _player_Input_Actions;
+            }
+        }
 
         //Fast references to direct acces ton InputActions / Maps
-        public static PlayerInputActions.PlayerActions Player => _player_Input_Actions.Player;
-        public static PlayerInputActions.UIActions UI => _player_Input_Actions.UI;
+        public static PlayerInputActions.PlayerActions Player => PLAYER_INPUTS_ACTIONS.Player;
+        public static PlayerInputActions.UIActions UI => PLAYER_INPUTS_ACTIONS.UI;
 
         public static InputAction Interact => Player.Interact;
         public static InputAction Select => Player.Select;
@@ -66,6 +80,7 @@ namespace LightHouse.Core.Inputs
         {
             OnInputManagerWillClear?.Invoke();
             IsInitialized = false;
+            _player_Input_Actions?.Dispose();
             _player_Input_Actions = null;
         }
 

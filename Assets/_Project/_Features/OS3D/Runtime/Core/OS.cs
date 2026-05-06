@@ -3,12 +3,19 @@ using LightHouse.Core.Audio;
 using LightHouse.Features.Computer.Calendar;
 using LightHouse.Core.Inputs;
 using LightHouse.Core.Services;
-using LightHouse.Core.Player;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using LightHouse.Core.Settings;
+
+public enum OSInteractionContext
+{
+    None,
+    Computer,
+    Locked // options, popup etc
+}
 
 namespace LightHouse.Features.Computer.OS
 {
@@ -38,8 +45,10 @@ namespace LightHouse.Features.Computer.OS
 
         [SerializeField] private CalendarEventDatabase _eventDatabase;
         [SerializeField] private CanvasGroup _desktopGroup;
-        [SerializeField] private OsBoot _bootSystem;
+        [SerializeField] private CanvasGroup _bootGroup;
+        [SerializeField] private BootController _bootSystem;
         [SerializeField] private AudioCue _osLoopSound;
+        [SerializeField] private AudioCue _startOsSound;
         /// <summary>
         /// Le parent dans la hiérarchie pour les applications ouvertes.
         /// </summary>
@@ -51,6 +60,7 @@ namespace LightHouse.Features.Computer.OS
         /// Dictionnaire des apps ouvertes indexées par nom.
         /// </summary>
         private Dictionary<string, ComputerApp> _openedApps = new();
+        private IAudioHandle _startOsSoundAudio;
         private IAudioHandle _loopOs;
 
         public bool PlayerOnComputer { get; set; } = false;
@@ -59,8 +69,26 @@ namespace LightHouse.Features.Computer.OS
         public event Action OnLeftComputerCalled;
 
         [SerializeField] private AudioCue _clickSoundEffect;
+        public OSInteractionContext CurrentContext { get; private set; } = OSInteractionContext.None;
 
         #endregion
+
+        public void SetContext(OSInteractionContext context)
+        {
+            CurrentContext = context;
+        }
+
+        private void SettingsMenuController_OnSettingsMenuClosed()
+        {
+            if (!PlayerOnComputer) return;
+            this.SetContext(OSInteractionContext.Computer);
+        }
+
+        private void SettingsMenuController_OnSettingsMenuOpened()
+        {
+            if (!PlayerOnComputer) return;
+            this.SetContext(OSInteractionContext.Locked);
+        }
 
         #region Unity Lifecycle
 
@@ -68,13 +96,15 @@ namespace LightHouse.Features.Computer.OS
         {
             ShortCuts = GetComponentsInChildren<ShortCutController>().ToList();
             _eventDatabase.ClearRuntimeEvents();
+
+            SettingsMenuController.OnSettingsMenuOpened += SettingsMenuController_OnSettingsMenuOpened;
+            SettingsMenuController.OnSettingsMenuClosed += SettingsMenuController_OnSettingsMenuClosed;
+
             // Initialise chaque raccourci avec cette instance d'OS
             foreach (var shortcut in ShortCuts)
             {
                 shortcut.Initialize(this);
             }
-            InputManager.UI.Click.performed += Click_performed;
-            InputManager.OnInputManagerWillClear += OnInputManagerCleared;
         }
 
         private void Start()
@@ -82,11 +112,18 @@ namespace LightHouse.Features.Computer.OS
             _desktopGroup.alpha = 0.0f;
             _desktopGroup.interactable = false;
             _desktopGroup.blocksRaycasts = false;
+
+            InputManager.UI.Click.performed += Click_performed;
+            InputManager.OnInputManagerWillClear += OnInputManagerCleared;
         }
 
         private void OnDestroy()
         {
             _eventDatabase.ClearRuntimeEvents();
+            InputManager.UI.Click.performed -= Click_performed;
+            InputManager.OnInputManagerWillClear -= OnInputManagerCleared;
+            SettingsMenuController.OnSettingsMenuOpened -= SettingsMenuController_OnSettingsMenuOpened;
+            SettingsMenuController.OnSettingsMenuClosed -= SettingsMenuController_OnSettingsMenuClosed;
         }
 
         private void OnInputManagerCleared()
@@ -96,10 +133,13 @@ namespace LightHouse.Features.Computer.OS
 
         private void Click_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
         {
-            if (ServiceLocator.Audio != null && _clickSoundEffect != null && 
-                PlayerHandlerData.MainPlayer != null && 
-                PlayerHandlerData.MainPlayer.PlayerState == PlayerState.ComputerMode)
-                ServiceLocator.Audio.PlayAt(_clickSoundEffect, transform.position);
+            if (ServiceLocator.Audio != null && _clickSoundEffect != null)
+            {
+                if (CurrentContext == OSInteractionContext.Computer)
+                {
+                    ServiceLocator.Audio.PlayAt(_clickSoundEffect, transform.position);
+                }
+            }
         }
 
         public void SetService(ComputerServices services)
@@ -109,31 +149,56 @@ namespace LightHouse.Features.Computer.OS
 
         public void BootOS()
         {
+            this.SetContext(OSInteractionContext.Computer);
+            _bootGroup.alpha = 1.0f;
+            if (ServiceLocator.Audio != null && _startOsSound)
+            {
+                _startOsSoundAudio = ServiceLocator.Audio.PlayAt(_startOsSound, this.transform.position);
+            }
+            StartCoroutine(StartOsLoopSound());
+
             _bootSystem.StartBoot(() =>
             {
                 _desktopGroup.alpha = 1.0f;
                 _desktopGroup.interactable = true;
                 _desktopGroup.blocksRaycasts = true;
 
-                if(ServiceLocator.Audio != null && _osLoopSound)
-                {
-                    _loopOs = ServiceLocator.Audio.PlayAt(_osLoopSound, this.transform.position);
-                }
+                _bootGroup.alpha = 0.0f;
+                _bootGroup.interactable = false;
+                _bootGroup.blocksRaycasts = false;  
             });
+            PlayerOnComputer = true;
+
+        }
+
+        private System.Collections.IEnumerator StartOsLoopSound()
+        {
+            yield return new WaitForSeconds(_startOsSoundAudio.SelectedClip.length);
+            if (_startOsSoundAudio != null)
+                _startOsSoundAudio = null;
+
+            if (ServiceLocator.Audio != null && _osLoopSound)
+            {
+                _loopOs = ServiceLocator.Audio.PlayAt(_osLoopSound, this.transform.position);
+            }
         }
 
         public void LeaveOS()
         {
-            if(_loopOs != null)
+            this.SetContext(OSInteractionContext.None);
+            if (_loopOs != null)
             {
                 _loopOs.Stop(1f);
                 _loopOs = null;
             }
+
             OnLeftComputerCalled?.Invoke();
-            ShortcutButtonsManager.SwitchSelectedButton(null);
+            ShortcutButtonsManager.ForceUnselect();
             _desktopGroup.alpha = 0.0f;
             _desktopGroup.interactable = false;
             _desktopGroup.blocksRaycasts = false;
+
+            PlayerOnComputer = false;
         }
 
         #endregion

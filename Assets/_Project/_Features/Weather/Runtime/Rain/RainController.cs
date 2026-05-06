@@ -278,6 +278,13 @@ namespace LightHouse.Features.Weather.Rain
             RainIntensity = 0f; SafeEnablePass(false);
             if (PlayerHandlerData.MainPlayer != null)
                 YFollowTarget = PlayerHandlerData.MainPlayer.Character.transform;
+            PlayerHandlerData.OnHandlerInitialized += PlayerHandlerData_OnHandlerInitialized;
+        }
+
+        private void PlayerHandlerData_OnHandlerInitialized()
+        {
+            if (PlayerHandlerData.MainPlayer != null)
+                YFollowTarget = PlayerHandlerData.MainPlayer.Character.transform;
         }
 
         void Update()
@@ -316,6 +323,11 @@ namespace LightHouse.Features.Weather.Rain
                 RainIntensity = MapHumidityToRain01(humidityPercent);
                 WindSpeed = WeatherHandlerData.CurrentWeather.WindSpeed;
             }
+        }
+
+        private void OnDestroy()
+        {
+            PlayerHandlerData.OnHandlerInitialized -= PlayerHandlerData_OnHandlerInitialized;
         }
         #endregion
 

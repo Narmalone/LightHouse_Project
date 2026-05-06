@@ -1,6 +1,8 @@
 ﻿using LightHouse.Core.Inputs;
 using LightHouse.Core.Player.Interactions.UI;
 using LightHouse.Core.Player.Inventory;
+using LightHouse.Core.Save;
+using LightHouse.Core.Save.Sample;
 using LightHouse.Core.World;
 using System;
 using UnityEngine;
@@ -18,7 +20,7 @@ namespace LightHouse.Core.Player
     }
 
     [DefaultExecutionOrder(-20)]
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IBind<PlayerData>, ICapturableState
     {
         #region FIELDS
         public bool EnableDebugMode = false;
@@ -56,7 +58,7 @@ namespace LightHouse.Core.Player
         [SerializeField] private bool _enableCrouchInput = true;
 
         private bool _isInitialized = false;
-        private PlayerInputActions _inputActions;
+        private PlayerInputActions _inputActions => InputManager.PLAYER_INPUTS_ACTIONS;
 
         public PlayerCharacter Character => _playerCharacter;
         public PlayerCamera PlayerCamera => _playerCamera;
@@ -76,6 +78,12 @@ namespace LightHouse.Core.Player
         }
         #endregion
 
+        #region SAVE 
+        [SerializeField] private PlayerData _data;
+        [field:  SerializeField] public SerializableGuid Id { get; set; }
+
+        #endregion
+
         #region UNITY LIFECYCLE
         private void Awake()
         {
@@ -84,12 +92,12 @@ namespace LightHouse.Core.Player
 
             ForceChangePlayerState += PlayerChangeState;
 
-            if (!InputManager.IsInitialized)
+/*            if (!InputManager.IsInitialized)
             {
                 _inputActions = new PlayerInputActions();
                 _inputActions.Enable();
                 InputManager.SetPlayerInputActions(_inputActions);
-            }
+            }*/
             _playerCharacter.Initialize();
 
             PlayerHandlerData.InitializeHandlerData(this);
@@ -99,16 +107,30 @@ namespace LightHouse.Core.Player
 
         private void Start()
         {
-            InputManager.InputManagerInitialized();
+            //InputManager.InputManagerInitialized();
+
         }
 
         private void FixedUpdate()
         {
             IsOccluded = IsPlayerOccluded();
+            if(_wasOccluded != IsOccluded)
+            {
+                if (IsOccluded) AudioEnvironmentController.Instance.SetIndoor();
+                else { AudioEnvironmentController.Instance.SetOutdoor(); }
+                _wasOccluded = IsOccluded;
+            }
+            
         }
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                Debug.Log("saving...");
+                Save.SaveLoadSystem.Instance.SaveGame();
+            }
+
             if (!_isInitialized) return;
             HandleCharacterInput();
             _playerCharacter.UpdateCapsuleMeshRoot(Time.deltaTime);
@@ -125,7 +147,6 @@ namespace LightHouse.Core.Player
         private void OnDestroy()
         {
             InputManager.DisposePlayerInputActions();
-            _inputActions.Dispose();
             PlayerHandlerData.Dispose();
             ForceChangePlayerState -= PlayerChangeState;
         }
@@ -177,6 +198,7 @@ namespace LightHouse.Core.Player
         #endregion
 
         public bool IsOccluded;
+        private bool _wasOccluded;
         public bool IsPlayerOccluded()
         {
             Vector3 origin = Character.transform.position + Vector3.up * 0.1f;
@@ -270,5 +292,28 @@ namespace LightHouse.Core.Player
             _inventoryController.Disable();
             _interactions.Disable();
         }
+
+        #region SAVE
+        /// <summary>
+        /// Est appelé quand la scène de jeu est chargée uniquement
+        /// </summary>
+        /// <param name="data"></param>
+        public void Bind(PlayerData data)
+        {
+            this._data = data;
+            this._data.Id = Id;
+            this.Character.SetPosition(data.position);
+            this.Character.SetRotation(data.rotation);
+        }
+
+        /// <summary>
+        /// Rentrer les données à save
+        /// </summary>
+        public void CaptureState()
+        {
+            _data.position = Character.transform.position;
+            _data.rotation = Character.transform.rotation;
+        }
+        #endregion
     }
 }

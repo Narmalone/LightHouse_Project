@@ -25,12 +25,14 @@ namespace LightHouse.Features.UI
         public bool IsHover { get; private set; }
         public bool IsDisabled { get; private set; }
 
+        public bool PreventSelection = false;
+
         public event Action<UI_CustomButton> OnClick;
 
         public void OnPointerClick(PointerEventData eventData)
         {
             if (IsDisabled) return;
-            if (eventData.clickCount >= NumberOfClickNeededToSelect)
+            if (eventData.clickCount == NumberOfClickNeededToSelect)
             {
                 OnClick?.Invoke(this);
             }
@@ -54,12 +56,14 @@ namespace LightHouse.Features.UI
         {
             IsSelected = true;
             ApplyVisual();
+            Debug.Log("Selected " + gameObject.name);
         }
 
         public void Unselect()
         {
             IsSelected = false;
             ApplyVisual();
+            Debug.Log("UnSelected " + gameObject.name);
         }
 
         public void Disable()

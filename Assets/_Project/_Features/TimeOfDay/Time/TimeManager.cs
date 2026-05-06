@@ -24,20 +24,6 @@ namespace LightHouse.Features.TimeOfDay.TimeCore
 
         public TimeConfiguration TimeConfig;
 
-        private List<ITimeCycleObserver> _observers = new List<ITimeCycleObserver>();
-
-        public void RegisterObserver(ITimeCycleObserver observer)
-        {
-            if (!_observers.Contains(observer))
-                _observers.Add(observer);
-        }
-
-        public void UnregisterObserver(ITimeCycleObserver observer)
-        {
-            if (_observers.Contains(observer))
-                _observers.Remove(observer);
-        }
-
         private void Awake()
         {
             //currentDay = 1;
@@ -66,7 +52,6 @@ namespace LightHouse.Features.TimeOfDay.TimeCore
 
             TimeHandlerData.CurrentTime = CurrentTime;
             UpdateTimeSegment();
-            NotifyObservers();
             TimeHandlerData.OnTimeChanged?.Invoke(CurrentTime);
         }
 
@@ -90,13 +75,6 @@ namespace LightHouse.Features.TimeOfDay.TimeCore
                 TimeHandlerData.TimeOfDay = newSegment;
                 TimeHandlerData.OnTimeSegmentChanged?.Invoke(newSegment);
             }
-        }
-
-
-        private void NotifyObservers()
-        {
-            foreach (var observer in _observers)
-                observer.OnTimeChanged(CurrentTime);
         }
     }
 }

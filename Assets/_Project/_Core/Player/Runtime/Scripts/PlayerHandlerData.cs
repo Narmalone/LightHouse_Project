@@ -15,7 +15,6 @@ namespace LightHouse.Core.Player
         public static event Action OnHandlerInitialized;
         public static bool IsInitialized = false;
 
-
         public static bool IsPlayerOccluded()
         {
             if (MainPlayer == null) return false;

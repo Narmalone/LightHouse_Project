@@ -152,6 +152,8 @@ namespace LightHouse.Features.Computer.NoteSystem
         {
             if (ServiceLocator.Audio != null && _onOpenSound && playSound)
                 ServiceLocator.Audio.PlayAt(_onOpenSound, this.transform.position);
+
+            RandomizePositionOnComputer();
         }
 
         #endregion

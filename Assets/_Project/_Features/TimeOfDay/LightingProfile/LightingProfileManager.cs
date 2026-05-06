@@ -65,6 +65,9 @@ namespace LightHouse.Features.TimeOfDay.Lighting
         [SerializeField] private MoonController _moonController;
         [SerializeField] private Volume _globalVolume;
 
+        public SunController SunController => _sunController;
+        public MoonController MoonController => _moonController;
+
         #endregion
 
         #region Profiles (Météo → 4 profils temps de jour)
@@ -141,14 +144,7 @@ namespace LightHouse.Features.TimeOfDay.Lighting
         private void Awake()
         {
             _sunController.OnSunLightToggled += Sun_OnSunLightToggled;
-
-            _timeManager = FindFirstObjectByType<TimeManager>();
-            if (_timeManager != null)
-            {
-                _timeManager.RegisterObserver(this);
-                _timeManager.RegisterObserver(_sunController);
-                _timeManager.RegisterObserver(_moonController);
-            }
+            TimeHandlerData.OnTimeChanged += OnTimeChanged;
 
             RebuildCache();
 
@@ -185,12 +181,7 @@ namespace LightHouse.Features.TimeOfDay.Lighting
         private void OnDestroy()
         {
             _sunController.OnSunLightToggled -= Sun_OnSunLightToggled;
-            if (_timeManager != null)
-            {
-                _timeManager.UnregisterObserver(this);
-                _timeManager.UnregisterObserver(_sunController);
-                _timeManager.UnregisterObserver(_moonController);
-            }
+            TimeHandlerData.OnTimeChanged -= OnTimeChanged;
         }
 
         private void OnValidate() => RebuildCache();

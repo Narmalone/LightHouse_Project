@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
@@ -73,6 +74,7 @@ public class SceneLoader
 
     public void SetActive(string sceneName)
     {
+        Debug.Log($"Setting active scene: {sceneName}");
         if (_loadedScenes.TryGetValue(sceneName, out var scene))
         {
             SceneManager.SetActiveScene(scene);

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8551311890460837320}
   - component: {fileID: 4231678600157447046}
   - component: {fileID: 2335206892839582315}
-  - component: {fileID: 5165885131445003762}
   - component: {fileID: 1938811242339823583}
   m_Layer: 0
   m_Name: BootingOs
@@ -32,6 +31,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4231770741125735877}
   - {fileID: 114954538056872232}
   m_Father: {fileID: 3727096552290618337}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -78,22 +78,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5165885131445003762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 54350182514568312}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 278ca989651d7ac408771cd01ff2e3a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slider: {fileID: 1554627324169465568}
-  osBootGroup: {fileID: 1938811242339823583}
-  Speed: 1
-  _startBoot: {fileID: 11400000, guid: 308d8b8e00450ba42a0f03793ee2f2fc, type: 2}
 --- !u!225 &1938811242339823583
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3281,6 +3265,8 @@ GameObject:
   - component: {fileID: 4559859822483445884}
   - component: {fileID: 1777914383833461067}
   - component: {fileID: 5039597973797560449}
+  - component: {fileID: 3022916097220787915}
+  - component: {fileID: 7412786172682314502}
   m_Layer: 0
   m_Name: OS
   m_TagString: Untagged
@@ -3405,8 +3391,10 @@ MonoBehaviour:
   _shortcutButtonsManager: {fileID: 5039597973797560449}
   _eventDatabase: {fileID: 11400000, guid: aa5f0af79a406914db247b43393a4b7c, type: 2}
   _desktopGroup: {fileID: 7240396746993356799}
-  _bootSystem: {fileID: 5165885131445003762}
+  _bootGroup: {fileID: 1938811242339823583}
+  _bootSystem: {fileID: 3022916097220787915}
   _osLoopSound: {fileID: 11400000, guid: 85bd798297cc5544baae6153b0c7f6f8, type: 2}
+  _startOsSound: {fileID: 11400000, guid: 308d8b8e00450ba42a0f03793ee2f2fc, type: 2}
   _clickSoundEffect: {fileID: 11400000, guid: 54ab4d25e2f45524bb3becb14e12d030, type: 2}
 --- !u!114 &5039597973797560449
 MonoBehaviour:
@@ -3429,6 +3417,59 @@ MonoBehaviour:
   - {fileID: 5752720062022731778}
   - {fileID: 0}
   - {fileID: 795058670627139301}
+--- !u!114 &3022916097220787915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5762086505571381818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4eaf9af6d885fb04da4e53c58d6354ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BootController
+  sequence: {fileID: 11400000, guid: 2f7d6a4843413f64291bdba5acf1410e, type: 2}
+  terminal: {fileID: 0}
+  _glitchErrorBootStep:
+    text: ERROR
+    baseCharDelay: 0.03
+    randomCharDelay: 0.05
+    postDelay: 0.5
+    textColor: {r: 11.313708, g: 0, b: 0, a: 1}
+    glitch: 1
+    randomPauses: 1
+    pauseChance: 0.1
+    pauseDuration: 0.2
+    typingSound: {fileID: 0}
+    glitchSound: {fileID: 11400000, guid: 36fc7a414a0a1cd43af7d4372f10192a, type: 2}
+  _creepyBootStep:
+    text: DO NOT TRUST THE MAN WHO'S TALKING TO YOU...
+    baseCharDelay: 0.03
+    randomCharDelay: 0.05
+    postDelay: 0.5
+    textColor: {r: 0.548003, g: 0, b: 2.027929, a: 1}
+    glitch: 1
+    randomPauses: 1
+    pauseChance: 0.1
+    pauseDuration: 0.2
+    typingSound: {fileID: 0}
+    glitchSound: {fileID: 11400000, guid: 36fc7a414a0a1cd43af7d4372f10192a, type: 2}
+--- !u!114 &7412786172682314502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5762086505571381818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9db1c7a58e2bd343840ccf8239eacfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BootTerminalView
+  container: {fileID: 4231770741125735877}
+  linePrefab: {fileID: 3902049729632728002, guid: f987c8fc3e783d94492d3ad7066956f5,
+    type: 3}
 --- !u!1 &5842639403577162954
 GameObject:
   m_ObjectHideFlags: 0
@@ -4487,6 +4528,68 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &7632366482181468774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4231770741125735877}
+  - component: {fileID: 4683096818406275155}
+  m_Layer: 0
+  m_Name: TextsContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4231770741125735877
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7632366482181468774}
+  m_LocalRotation: {x: -0, y: -1.0072965e-10, z: -0.0000000018599193, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.00022584572}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8551311890460837320}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 40}
+  m_SizeDelta: {x: -240, y: -160}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4683096818406275155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7632366482181468774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &7643297917367688438
 GameObject:
   m_ObjectHideFlags: 0

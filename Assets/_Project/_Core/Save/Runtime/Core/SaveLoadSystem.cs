@@ -1,4 +1,6 @@
+﻿using LightHouse.Core.Player;
 using LightHouse.Core.Save.Sample;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,17 +23,20 @@ namespace LightHouse.Core.Save
 
         private void OnEnable()
         {
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
-        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+        private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            Bind<Hero, PlayerData>(_gameData.PlayerData);
+            if(arg0.name == "ComputerScene")
+            {
+                Bind<PlayerController, PlayerData>(ref _gameData.PlayerData);
+            }
         }
 
         private void OnDisable()
         {
-            SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
+            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         /// <summary>
@@ -40,13 +45,14 @@ namespace LightHouse.Core.Save
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="TData"></typeparam>
         /// <param name="data"></param>
-        void Bind<T, TData>(TData data) where T : MonoBehaviour, IBind<TData> where TData : ISaveable, new()
+        void Bind<T, TData>(ref TData data) where T : MonoBehaviour, IBind<TData> where TData : ISaveable, new()
         {
             var entity = FindObjectsByType<T>(FindObjectsSortMode.None).FirstOrDefault();
             if(entity != null)
             {
                 if(data == null)
                 {
+                    Debug.Log("data is null, creating new one");
                     data = new TData { Id = entity.Id }; 
                 }
                 entity.Bind(data);
@@ -54,7 +60,7 @@ namespace LightHouse.Core.Save
         }
 
         /// <summary>
-        /// Pour plusieures entit�es comme plusieurs ennemis, plusieurs bateaux etc...
+        /// Pour plusieures entitées comme plusieurs ennemis, plusieurs bateaux etc...
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <typeparam name="TData"></typeparam>
@@ -74,19 +80,48 @@ namespace LightHouse.Core.Save
             }
         }
 
+        void BindList<T, TData>(List<TData> datas)
+            where T : MonoBehaviour, IBind<TData>
+            where TData : ISaveable, new()
+                {
+                    var entities = FindObjectsByType<T>(FindObjectsSortMode.None);
+                    foreach (var entity in entities)
+                    {
+                        var data = datas.FirstOrDefault(d => d.Id == entity.Id);
+                        if (data == null)
+                        {
+                            data = new TData { Id = entity.Id };
+                            datas.Add(data);
+                        }
+                        entity.Bind(data);
+                    }
+
+                    // ✅ AJOUT : désactiver les objets qui étaient ramassés/détruits
+                    foreach (var data in datas.Where(d => entities.All(e => e.Id != d.Id)))
+                    {
+                        // Logique à définir selon ton besoin (ex: ne pas spawner)
+                    }
+                }
+
         public void NewGame()
         {
             _gameData = new GameData
             { 
-                Name = "New Game",
-                CurrentLevelName = "ComputerScene"
+                Name = $"SaveNameRandom_{UnityEngine.Random.Range(0, 999)}",
+                //CurrentLevelName = "ComputerScene"
             };
         }
 
         public void SaveGame()
         {
+            foreach (var capturable in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
+                                .OfType<ICapturableState>())
+            {
+                capturable.CaptureState();
+            }
+
+            _gameData.LastSaveTime = DateTime.UtcNow.ToString("o");
             _dataService.Save(_gameData);
-            Debug.Log("saving game");
         }
 
         public void LoadGame(string gameName)
@@ -111,6 +146,17 @@ namespace LightHouse.Core.Save
         public void DeleteAllGames()
         {
             _dataService.DeleteAll();
+        }
+
+        public List<string> GetSaveList()
+        {
+            return _dataService.ListSaves().ToList();
+        }
+
+        // SaveLoadSystem.cs
+        public List<GameData> GetSaveMetadataList()
+        {
+            return _dataService.ListSavesMetadata().ToList();
         }
     }
 }

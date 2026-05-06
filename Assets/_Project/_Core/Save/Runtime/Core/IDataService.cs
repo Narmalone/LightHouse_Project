@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LightHouse.Core.Save
 {
@@ -9,6 +9,8 @@ namespace LightHouse.Core.Save
         void Delete(string name);
         void DeleteAll();
         IEnumerable<string> ListSaves();
+        IEnumerable<GameData> ListSavesMetadata(); // ← AJOUT
+
     }
 
 }

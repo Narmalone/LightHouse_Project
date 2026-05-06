@@ -179,6 +179,7 @@ public class BootStrap : MonoBehaviour
                         loadingScreen.SetSubLabel(Clean(assetName));
                         loadingScreen.SetProgress(progress);
                     }
+                    , true
                 )
             );
         }

@@ -1,12 +1,13 @@
 ﻿using LightHouse.Core.Player;
+using System;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class AudioEnvironmentController : MonoBehaviour
+public class AudioEnvironmentController : PersistentSingleton<AudioEnvironmentController>
 {
-    public static AudioEnvironmentController Instance { get; private set; }
-
     public AudioMixer mixer;
+
+    public static event Action<EnvironmentState> OnEnvironmentStateChanged;
 
     [Header("Occlusion")]
     public string occlusionLowpassParam = "Occlusion_LowPass";
@@ -24,19 +25,9 @@ public class AudioEnvironmentController : MonoBehaviour
     private int _contributors = 0;
 
     public EnvironmentState CurrentEnvironmentState;
+    public bool IsStateOccluded => CurrentEnvironmentState == EnvironmentState.Indoor ? true : false;
 
     // ──────────────────────────────────────────────────────────────────────
-
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-    }
 
     void Update()
     {
@@ -80,11 +71,13 @@ public class AudioEnvironmentController : MonoBehaviour
     public void SetIndoor()
     {
         CurrentEnvironmentState = EnvironmentState.Indoor;
+        OnEnvironmentStateChanged?.Invoke(CurrentEnvironmentState);
     }
 
     public void SetOutdoor()
     {
         CurrentEnvironmentState = EnvironmentState.Outdoor;
+        OnEnvironmentStateChanged?.Invoke(CurrentEnvironmentState);
     }
 
     public void SetExposure(float value)
