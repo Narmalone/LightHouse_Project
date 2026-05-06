@@ -10,15 +10,17 @@ public class GameLogic
     public event Action OnGameLost;
     public event Action OnGameWon;
 
+    public bool CanInteractWithCells { get; private set; }
+
     public void Initialize(GridData gridData)
     {
         grid = gridData;
-        // TODO : placer mines + calcul adjacence
+        CanInteractWithCells = true;
     }
 
     public void Reveal(int x, int y)
     {
-        if (!grid.IsInside(x, y)) return;
+        if (!grid.IsInside(x, y) || !CanInteractWithCells) return;
 
         if (!isInitialized)
         {
@@ -38,6 +40,7 @@ public class GameLogic
         if (cell.IsMine)
         {
             OnGameLost?.Invoke();
+            CanInteractWithCells = false;
             return;
         }
 
@@ -49,6 +52,7 @@ public class GameLogic
         if (CheckWin())
         {
             OnGameWon?.Invoke();
+            CanInteractWithCells = false;
         }
     }
 
@@ -112,6 +116,7 @@ public class GameLogic
 
         if (cell.IsRevealed) return;
 
+        UnityEngine.Debug.Log($"Flag dropped on: {x}, {y}");
         cell.IsFlagged = !cell.IsFlagged;
         OnCellFlagged?.Invoke(x, y);
     }

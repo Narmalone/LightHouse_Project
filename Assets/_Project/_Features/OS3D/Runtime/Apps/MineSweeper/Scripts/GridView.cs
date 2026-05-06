@@ -31,6 +31,14 @@ public class GridView : MonoBehaviour
             }
     }
 
+    public void Clear()
+    {
+        foreach (Transform child in parent)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
     public CellView GetCellView(int x, int y)
         => views[x, y];
 
