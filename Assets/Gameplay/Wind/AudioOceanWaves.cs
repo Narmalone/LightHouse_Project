@@ -19,9 +19,9 @@ namespace LightHouse.Core.Audio
         public enum WaveBand { Light, Medium, Heavy }
 
         [Header("Clips par bande")]
-        [SerializeField] private AudioCue _lightWaves;
-        [SerializeField] private AudioCue _mediumWaves;
-        [SerializeField] private AudioCue _heavyWaves;
+        [SerializeField] private SO_AudioCue _lightWaves;
+        [SerializeField] private SO_AudioCue _mediumWaves;
+        [SerializeField] private SO_AudioCue _heavyWaves;
 
         [Header("Entrée météo")]
         [Tooltip("Si vrai, WindSpeed est en m/s; sinon elle est déjà en km/h.")]

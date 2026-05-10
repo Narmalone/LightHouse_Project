@@ -35,13 +35,13 @@ namespace LightHouse.Features.Computer.LEO
         [SerializeField] private RectTransform _loadingContent;
         [SerializeField] private AnimationCurve _loadingCurve;
         [SerializeField] private float _loadingDuration = 3f;
-        [SerializeField] private AudioCue _loadingSound;
+        [SerializeField] private SO_AudioCue _loadingSound;
 
         [Header("Success")]
         [SerializeField] private RectTransform _bodyParentContent;
         [SerializeField] private Color _successImageColor = Color.green;
         [SerializeField] private string _successText;
-        [SerializeField] private AudioCue _successSound;
+        [SerializeField] private SO_AudioCue _successSound;
 
         [Header("Failure")]
         [SerializeField] private Color _failedImageColor = Color.red;
@@ -51,7 +51,7 @@ namespace LightHouse.Features.Computer.LEO
         [SerializeField] private RectTransform _missmatchContent;
         [SerializeField] private Color _missMatchColor = Color.red;
         [SerializeField] private string _missmatchText;
-        [SerializeField] private AudioCue _missmatchSound;
+        [SerializeField] private SO_AudioCue _missmatchSound;
 
         public DataStatus CurrentStatus { get; private set; } = DataStatus.None;
         private Coroutine _loadingRoutine;

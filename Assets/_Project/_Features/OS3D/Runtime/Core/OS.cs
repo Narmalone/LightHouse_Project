@@ -47,8 +47,8 @@ namespace LightHouse.Features.Computer.OS
         [SerializeField] private CanvasGroup _desktopGroup;
         [SerializeField] private CanvasGroup _bootGroup;
         [SerializeField] private BootController _bootSystem;
-        [SerializeField] private AudioCue _osLoopSound;
-        [SerializeField] private AudioCue _startOsSound;
+        [SerializeField] private SO_AudioCue _osLoopSound;
+        [SerializeField] private SO_AudioCue _startOsSound;
         /// <summary>
         /// Le parent dans la hiérarchie pour les applications ouvertes.
         /// </summary>
@@ -68,7 +68,7 @@ namespace LightHouse.Features.Computer.OS
 
         public event Action OnLeftComputerCalled;
 
-        [SerializeField] private AudioCue _clickSoundEffect;
+        [SerializeField] private SO_AudioCue _clickSoundEffect;
         public OSInteractionContext CurrentContext { get; private set; } = OSInteractionContext.None;
 
         #endregion

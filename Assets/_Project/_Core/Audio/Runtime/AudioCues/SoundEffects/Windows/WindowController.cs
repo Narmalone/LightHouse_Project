@@ -8,8 +8,8 @@ namespace LightHouse.Core.Audio
     public class WindowController : MonoBehaviour
     {
         [Header("Audio")]
-        public AudioCue creakingWoodCue;       // loop discret continu
-        public AudioCue creakScreamWoodCue;    // one-shot gros craquement
+        public SO_AudioCue creakingWoodCue;       // loop discret continu
+        public SO_AudioCue creakScreamWoodCue;    // one-shot gros craquement
 
         [Header("Window State")]
         [Range(0f, 1f)] public float openness = 0.5f; // 0 = fermée, 1 = ouverte

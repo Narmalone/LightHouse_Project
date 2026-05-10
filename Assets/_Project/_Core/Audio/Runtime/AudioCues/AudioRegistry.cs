@@ -1,19 +1,22 @@
 using AYellowpaper.SerializedCollections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightHouse.Core.Audio
 {
-    [CreateAssetMenu(menuName = "Audio/AudioRegistry")]
+    [CreateAssetMenu(fileName = "SO_Registry_", menuName = GlobalAssetsMenuPaths.AudioAssetsMenuPath + "New Audio Registry")]
+    //[Obsolete("Obsolete for now since most of the sounds are not used by it but it will be later with GUID'S")]
+#pragma warning disable CS0618 // Type or member is obsolete
     public class AudioRegistry : ScriptableObject, IAudioRegistry
     {
-        [SerializeField] private AudioCue[] cues;
+        [SerializeField] private SO_AudioCue[] cues;
 
         // Index principaux
-        public SerializedDictionary<string, AudioCue> _byId;                 // data-driven (string)
-        public SerializedDictionary<int, AudioCue> _byHash;                  // clé compacte (int)
-        public SerializedDictionary<AudioCategory, List<AudioCue>> _byCat;   // navigation/menus
-        public SerializedDictionary<AudioCategory, SerializedDictionary<string, AudioCue>> _byCatAndName; // optionnel
+        public SerializedDictionary<string, SO_AudioCue> _byId;                 // data-driven (string)
+        public SerializedDictionary<int, SO_AudioCue> _byHash;                  // clé compacte (int)
+        public SerializedDictionary<AudioCategory, List<SO_AudioCue>> _byCat;   // navigation/menus
+        public SerializedDictionary<AudioCategory, SerializedDictionary<string, SO_AudioCue>> _byCatAndName; // optionnel
 
         void OnEnable()
         {
@@ -36,20 +39,20 @@ namespace LightHouse.Core.Audio
                 _byHash[h] = c;
 
                 if (!_byCat.TryGetValue(c.Category, out var list))
-                    _byCat[c.Category] = list = new List<AudioCue>();
+                    _byCat[c.Category] = list = new List<SO_AudioCue>();
                 list.Add(c);
 
                 var idLeaf = LastSegment(c.Id); // ex. "Dirt" à partir de "Char/Footstep/Dirt"
                 if (!_byCatAndName.TryGetValue(c.Category, out var dict))
-                    _byCatAndName[c.Category] = dict = new SerializedDictionary<string, AudioCue>();
+                    _byCatAndName[c.Category] = dict = new SerializedDictionary<string, SO_AudioCue>();
                 dict[idLeaf] = c; // lookup rapide Category+NomCourt si tu aimes ce pattern
             }
         }
 
-        public bool TryGet(string id, out AudioCue cue) => _byId.TryGetValue(id, out cue);
-        public bool TryGet(int hash, out AudioCue cue) => _byHash.TryGetValue(hash, out cue);
-        public IReadOnlyList<AudioCue> GetAll(AudioCategory cat) => _byCat.TryGetValue(cat, out var l) ? l : System.Array.Empty<AudioCue>();
-        public bool TryGet(AudioCategory cat, string shortName, out AudioCue cue)
+        public bool TryGet(string id, out SO_AudioCue cue) => _byId.TryGetValue(id, out cue);
+        public bool TryGet(int hash, out SO_AudioCue cue) => _byHash.TryGetValue(hash, out cue);
+        public IReadOnlyList<SO_AudioCue> GetAll(AudioCategory cat) => _byCat.TryGetValue(cat, out var l) ? l : System.Array.Empty<SO_AudioCue>();
+        public bool TryGet(AudioCategory cat, string shortName, out SO_AudioCue cue)
         {
             cue = null;
             return _byCatAndName.TryGetValue(cat, out var d) && d.TryGetValue(shortName, out cue);
@@ -83,10 +86,10 @@ namespace LightHouse.Core.Audio
 
     public interface IAudioRegistry
     {
-        bool TryGet(string id, out AudioCue cue);
-        bool TryGet(int hash, out AudioCue cue);
-        IReadOnlyList<AudioCue> GetAll(AudioCategory cat);
-        bool TryGet(AudioCategory cat, string shortName, out AudioCue cue);
+        bool TryGet(string id, out SO_AudioCue cue);
+        bool TryGet(int hash, out SO_AudioCue cue);
+        IReadOnlyList<SO_AudioCue> GetAll(AudioCategory cat);
+        bool TryGet(AudioCategory cat, string shortName, out SO_AudioCue cue);
     }
 
 }

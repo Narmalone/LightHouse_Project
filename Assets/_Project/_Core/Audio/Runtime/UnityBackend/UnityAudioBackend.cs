@@ -15,7 +15,7 @@ namespace LightHouse.Core.Audio.UnityBackend
             _pool = pool;
         }
 
-        public IAudioHandle Play(AudioCue cue, Vector3 pos, AudioPlayOptions opt)
+        public IAudioHandle Play(SO_AudioCue cue, Vector3 pos, AudioPlayOptions opt)
         {
             // Limites cue-level
             if (cue.MaxSimultaneousVoices > 0)
@@ -45,7 +45,7 @@ namespace LightHouse.Core.Audio.UnityBackend
                 h.Stop();
         }
 
-        private static CueVariant Pick(AudioCue cue)
+        private static CueVariant Pick(SO_AudioCue cue)
         {
             if (cue.Variants == null || cue.Variants.Length == 0) return null;
             float sum = cue.Variants.Sum(x => Mathf.Max(0.0001f, x.Weight));
@@ -58,7 +58,7 @@ namespace LightHouse.Core.Audio.UnityBackend
             return cue.Variants[cue.Variants.Length - 1];
         }
 
-        private void ConfigureSource(AudioSource s, AudioCue cue, CueVariant v, AudioPlayOptions opt)
+        private void ConfigureSource(AudioSource s, SO_AudioCue cue, CueVariant v, AudioPlayOptions opt)
         {
             s.loop = cue.Loop;
             s.clip = v.Clip;

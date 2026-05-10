@@ -1,6 +1,7 @@
 public class GridData
 {
     private readonly CellData[,] grid;
+    public CellData[,] CELLS => grid;
 
     public int Width { get; }
     public int Height { get; }

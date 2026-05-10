@@ -13,13 +13,13 @@ namespace LightHouse.Core.Player.Footsteps
         public class Entry
         {
             public SurfaceType Surface;
-            public AudioCue Cue;   // ta banque de pas pour cette surface
+            public SO_AudioCue Cue;   // ta banque de pas pour cette surface
         }
 
-        public AudioCue DefaultCue;
+        public SO_AudioCue DefaultCue;
         public List<Entry> Entries = new();
 
-        public AudioCue GetCue(SurfaceType s)
+        public SO_AudioCue GetCue(SurfaceType s)
         {
             foreach (var e in Entries) if (e.Surface == s && e.Cue) return e.Cue;
             return DefaultCue;

@@ -27,10 +27,10 @@ namespace LightHouse.Features.Items.Interactable.Doors
         [SerializeField] protected AnimationCurve _closeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         [Header(" --- SOUND EFFECTS --- ")]
-        [SerializeField] private AudioCue _openDoor;
-        [SerializeField] private AudioCue _closeDoor;
-        [SerializeField] private AudioCue _lockedDoor;
-        [SerializeField] private AudioCue _unlockDoor;
+        [SerializeField] private SO_AudioCue _openDoor;
+        [SerializeField] private SO_AudioCue _closeDoor;
+        [SerializeField] private SO_AudioCue _lockedDoor;
+        [SerializeField] private SO_AudioCue _unlockDoor;
 
         [Header("Debug")]
         [SerializeField] protected bool _isUnLocked = false;

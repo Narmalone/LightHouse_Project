@@ -39,8 +39,8 @@ namespace LightHouse.Features.Computer.OS
         [SerializeField] private RectTransform _rectTransform;
 
         [Header("Audio")]
-        [SerializeField] protected AudioCue _onOpenSound;
-        [SerializeField] protected AudioCue _onCloseSound;
+        [SerializeField] protected SO_AudioCue _onOpenSound;
+        [SerializeField] protected SO_AudioCue _onCloseSound;
 
         [field: SerializeField] public string AppName { get; protected set; }
         [field: SerializeField] public AppOpenMode OpenMode { get; private set; } = AppOpenMode.InstantiateNew;

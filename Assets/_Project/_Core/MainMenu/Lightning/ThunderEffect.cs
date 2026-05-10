@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ThunderEffect : MonoBehaviour
 {
-    public AudioCue thunder;
+    public SO_AudioCue thunder;
     public ThunderSpawner spawner;
 
     public float speedOfSound = 343f;

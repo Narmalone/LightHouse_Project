@@ -10,7 +10,7 @@ namespace LightHouse.Core.Player.Inventory.InputsHandler
     public class InventoryPickupHandler
     {
         #region PICKUP 
-        public bool PickupItem(short slotIndex, IInventoryItem item, bool playSound, AudioCue soundToPlay = null)
+        public bool PickupItem(short slotIndex, IInventoryItem item, bool playSound, SO_AudioCue soundToPlay = null)
         {
             if (item == null) return false;
             ItemSlot targetSlot = null;

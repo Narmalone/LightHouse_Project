@@ -87,7 +87,7 @@ namespace LightHouse.Features.Weather.Lightnings
         public float occlusionReverbDb = -10f; // on garde ta réverb indoor fixe
 
         [Header("Thunder SFX (one-shots 3D)")]
-        public AudioCue thunderClips;
+        public SO_AudioCue thunderClips;
         [Range(0.6f, 1.1f)] public float thunderPitchMin = 0.9f;
         [Range(0.6f, 1.1f)] public float thunderPitchMax = 1.05f;
         public Vector2 thunderVolumeDbRange = new Vector2(-18f, 0f); // min..max dB

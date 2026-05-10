@@ -48,9 +48,9 @@ namespace LightHouse.Features.Talkie
         }
 
 
-        private IEnumerator LoadLocalizedCue(LocalizedDialogueAudio dialogue, Action<AudioCue, AsyncOperationHandle<AudioCue>> onLoaded)
+        private IEnumerator LoadLocalizedCue(LocalizedDialogueAudio dialogue, Action<SO_AudioCue, AsyncOperationHandle<SO_AudioCue>> onLoaded)
         {
-            AsyncOperationHandle<AudioCue> handle;
+            AsyncOperationHandle<SO_AudioCue> handle;
 
             try
             {
@@ -88,8 +88,8 @@ namespace LightHouse.Features.Talkie
                 // --- signale qu'on commence ce dialogue ---
                 OnDialogueStarted?.Invoke(dialogue);
 
-                AudioCue loadedCue = null;
-                AsyncOperationHandle<AudioCue> cueHandle = default;
+                SO_AudioCue loadedCue = null;
+                AsyncOperationHandle<SO_AudioCue> cueHandle = default;
                 bool hasHandle = false;
 
                 if (ServiceLocator.Audio != null)
@@ -191,8 +191,8 @@ namespace LightHouse.Features.Talkie
         }
 
         private IAudioHandle _currentBip;
-        public AudioCue _baseBipSound;
-        public void Bip(AudioCue cue = null)
+        public SO_AudioCue _baseBipSound;
+        public void Bip(SO_AudioCue cue = null)
         {
             AudioPlayOptions options = new AudioPlayOptions();
             options.FollowTransform = true;

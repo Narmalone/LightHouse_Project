@@ -43,8 +43,8 @@ namespace LightHouse.Features.Computer.LEO.NightWatch.Sonar
         [SerializeField] private float _pingMaxSize = 500f;
 
         [Header("Son")]
-        [SerializeField] private AudioCue _sonarScanAudio;
-        [SerializeField] private AudioCue _sonarClickAudio;
+        [SerializeField] private SO_AudioCue _sonarScanAudio;
+        [SerializeField] private SO_AudioCue _sonarClickAudio;
 
         #endregion
 

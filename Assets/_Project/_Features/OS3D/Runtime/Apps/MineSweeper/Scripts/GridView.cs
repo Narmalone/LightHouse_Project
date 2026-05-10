@@ -1,13 +1,15 @@
 using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class GridView : MonoBehaviour
 {
+    [SerializeField] private GridLayoutGroup gridLayout;
     [SerializeField] private CellView cellPrefab;
     [SerializeField] private Transform parent;
 
     [SerializeField] private Sprite hidden;
     [SerializeField] private Sprite mine;
+    [SerializeField] private Sprite flag;
     [SerializeField] private Color[] numberColors;
 
     private CellView[,] views;
@@ -16,9 +18,12 @@ public class GridView : MonoBehaviour
     public void Initialize(GridData data)
     {
         grid = data;
+
+        SetGridLayout(data.Width, data.Height);
+
         views = new CellView[data.Width, data.Height];
 
-        for (int x = 0; x < data.Width; x++)
+/*        for (int x = 0; x < data.Width; x++)
             for (int y = 0; y < data.Height; y++)
             {
                 var view = Instantiate(cellPrefab, parent);
@@ -28,7 +33,39 @@ public class GridView : MonoBehaviour
                 view.SetSprite(hidden);
 
                 views[x, y] = view;
+            }*/
+
+        for (int y = 0; y < data.Height; y++)
+        {
+            for (int x = 0; x < data.Width; x++)
+            {
+                var view = Instantiate(cellPrefab, parent);
+                view.X = x;
+                view.Y = y;
+
+                view.SetSprite(hidden);
+
+                views[x, y] = view;
             }
+        }
+    }
+
+    public void SetGridLayout(int columns, int rows)
+    {
+        gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        gridLayout.constraintCount = columns;
+
+        var rect = gridLayout.GetComponent<RectTransform>();
+
+        float availableWidth = rect.rect.width;
+        float availableHeight = rect.rect.height;
+
+        float cellWidth = availableWidth / columns;
+        float cellHeight = availableHeight / rows;
+
+        float size = Mathf.Min(cellWidth, cellHeight);
+
+        gridLayout.cellSize = new Vector2(size, size);
     }
 
     public void Clear()
@@ -46,6 +83,14 @@ public class GridView : MonoBehaviour
     {
         var cell = grid.GetCell(x, y);
         var view = views[x, y];
+
+        if (cell.IsFlagged && !cell.IsRevealed)
+        {
+            view.SetSprite(flag);
+            view.SetBackgroundColor(Color.white);
+            view.SetText("");
+            return;
+        }
 
         if (!cell.IsRevealed)
         {

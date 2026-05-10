@@ -6,10 +6,10 @@ namespace LightHouse.Core.Audio
     public interface IAudioPlayer
     {
         IAudioHandle PlayAt(string cueId, Vector3 position, AudioPlayOptions opt = default);
-        IAudioHandle PlayAt(AudioCue cue, Vector3 position, AudioPlayOptions opt = default);
+        IAudioHandle PlayAt(SO_AudioCue cue, Vector3 position, AudioPlayOptions opt = default);
 
         IAudioHandle PlayOneShot(string cueId, AudioPlayOptions opt = default); // non-spatial UI/2D
-        IAudioHandle PlayOneShot(AudioCue cue, AudioPlayOptions opt = default);
+        IAudioHandle PlayOneShot(SO_AudioCue cue, AudioPlayOptions opt = default);
 
         void Preload(string cueId); // addressables/streaming si besoin
         void StopAllOn(GameObject owner);

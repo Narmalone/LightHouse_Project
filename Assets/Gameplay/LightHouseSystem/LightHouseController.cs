@@ -14,7 +14,7 @@ namespace LightHouse.Features.LightHouse
         [SerializeField] private Light _pointLight;
 
         [Header("Horn")]
-        [SerializeField] private AudioCue _hornCue;
+        [SerializeField] private SO_AudioCue _hornCue;
         [SerializeField, Min(1)] private int _numberOfRepeats = 6;
 
         [Header("Config")]
@@ -147,7 +147,7 @@ namespace LightHouse.Features.LightHouse
         /// Récupère la durée du clip joué si possible.
         /// Adapte cette méthode à ton API audio (AudioCue expose peut-être un clip / une durée).
         /// </summary>
-        private static float EstimateClipDurationSeconds(IAudioHandle handle, AudioCue cueFallback)
+        private static float EstimateClipDurationSeconds(IAudioHandle handle, SO_AudioCue cueFallback)
         {
             // --- À ADAPTER selon ton système audio ---
             // Si ton handle expose un clip / une durée / un pitch, utilise-les ici.

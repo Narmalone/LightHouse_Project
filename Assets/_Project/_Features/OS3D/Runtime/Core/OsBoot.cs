@@ -18,7 +18,7 @@ namespace LightHouse.Features.Computer.OS
         public float Speed = 1.0f;
 
         [Header("Audio")]
-        [SerializeField] private AudioCue _startBoot;
+        [SerializeField] private SO_AudioCue _startBoot;
 
         private float _timer = 0.0f;
         private IAudioHandle _startUpAudioHandle;

@@ -142,7 +142,7 @@ namespace LightHouse.Features.Computer.LEO.NightWatch.Boats
         [SerializeField] private UI_ReportDatasPopup _sendDatasPrefab;
         [SerializeField] private UI_ReportElement _reportElementPrefab;
 
-        [SerializeField] private AudioCue _keyboardCue;
+        [SerializeField] private SO_AudioCue _keyboardCue;
         #endregion
 
         #region Private Fields

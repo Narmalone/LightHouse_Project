@@ -18,8 +18,8 @@ namespace LightHouse.Features.Menu.Radio
         #region ===== Settings =====
 
         [Header("Audio")]
-        [SerializeField] private AudioCue _noiseCue;
-        [SerializeField] private AudioCue _voiceCue;
+        [SerializeField] private SO_AudioCue _noiseCue;
+        [SerializeField] private SO_AudioCue _voiceCue;
 
         [Header("Tuning")]
         [SerializeField] private float _maxDistance = 2f;

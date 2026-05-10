@@ -4,7 +4,7 @@ namespace LightHouse.Core.Audio
 {
     public interface IAudioBackend
     {
-        IAudioHandle Play(AudioCue cue, Vector3 pos, AudioPlayOptions opt);
+        IAudioHandle Play(SO_AudioCue cue, Vector3 pos, AudioPlayOptions opt);
         void StopAllOwned(GameObject owner);
     }
 
@@ -20,7 +20,7 @@ namespace LightHouse.Core.Audio
 
         public GameObject Owner { get; }
 
-        public AudioHandle(AudioSource s, IAudioSourcePool pool, AudioCue cue, IVoiceLimiter limiter, GameObject owner)
+        public AudioHandle(AudioSource s, IAudioSourcePool pool, SO_AudioCue cue, IVoiceLimiter limiter, GameObject owner)
         {
             _src = s; _pool = pool; _limiter = limiter; Owner = owner;
             _cueKey = $"Cue:{cue.Id}";

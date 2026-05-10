@@ -6,7 +6,7 @@ namespace LightHouse.Features.Boats.Nationalities
     [CreateAssetMenu(fileName = "BoatsNationalities_", menuName = "LightHouse/Boats/BoatDabatase")]
     public class BoatsNationalitiesManager : ScriptableObject
     {
-        public BoatsNationalitiesConfig[] PossibleConfigs;
+        public SO_BoatsNationalitiesConfig[] PossibleConfigs;
 
         public List<BoatNationalityDatas> PossibleBoatDatas = new();
         public List<BoatNationalityDatas> CurrentUsedBoatDatas = new();

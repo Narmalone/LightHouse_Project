@@ -33,8 +33,8 @@ namespace LightHouse.Features.Horror
         [SerializeField] private float _delayBetweenDoubleFlicker = 0.05f;
 
         [Header("Audio")]
-        [SerializeField] private AudioCue _flickerSound;
-        [SerializeField] private AudioCue _ambianceLight;
+        [SerializeField] private SO_AudioCue _flickerSound;
+        [SerializeField] private SO_AudioCue _ambianceLight;
 
         #endregion
 

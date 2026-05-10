@@ -25,7 +25,7 @@ namespace LightHouse.Features.Computer.NoteSystem
         [Tooltip("Champ de contenu de la note. Attention : le champ TMP ne supporte pas bien le multiline si une limite de ligne est fixée.")]
         [SerializeField] private TMP_InputField _contentInputField;
 
-        [SerializeField] private AudioCue _keyboardCue;
+        [SerializeField] private SO_AudioCue _keyboardCue;
 
         [Tooltip("Bouton pour sauvegarder la note.")]
         [SerializeField] private Button _saveNoteButton;

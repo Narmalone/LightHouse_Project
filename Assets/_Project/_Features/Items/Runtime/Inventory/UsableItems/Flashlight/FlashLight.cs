@@ -27,8 +27,8 @@ namespace LightHouse.Features.Items.Inventory.Flashlight
         [SerializeField] private Light _light;
 
         [Header("Audio")]
-        [SerializeField] private AudioCue _flashLightOn;
-        [SerializeField] private AudioCue _flashLightOff;
+        [SerializeField] private SO_AudioCue _flashLightOn;
+        [SerializeField] private SO_AudioCue _flashLightOff;
 
         protected override void Awake()
         {

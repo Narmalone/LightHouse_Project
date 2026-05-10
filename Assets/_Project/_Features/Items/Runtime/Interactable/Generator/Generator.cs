@@ -15,9 +15,9 @@ namespace LightHouse.Features.Items.Interactable.Generator
         [SerializeField] private float _fuelDecrementationSpeed = 1.0f;
 
         [Header("Audio")]
-        [SerializeField] private AudioCue _startGeneratorSound;
-        [SerializeField] private AudioCue _runningGeneratorSound;
-        [SerializeField] private AudioCue _stopGeneratorSound;
+        [SerializeField] private SO_AudioCue _startGeneratorSound;
+        [SerializeField] private SO_AudioCue _runningGeneratorSound;
+        [SerializeField] private SO_AudioCue _stopGeneratorSound;
 
         [Header("DEBUG")]
         [SerializeField] private bool _isGeneratorOn;

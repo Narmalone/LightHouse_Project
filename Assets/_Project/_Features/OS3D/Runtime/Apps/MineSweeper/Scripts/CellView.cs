@@ -31,17 +31,20 @@ public class CellView : MonoBehaviour, IPointerClickHandler
 
     public void SetText(string text)
     {
-        adjacentText.text = text;
+        if (string.IsNullOrEmpty(text))
+        {
+            adjacentText.gameObject.SetActive(false);
+        }
+        else
+        {
+            adjacentText.gameObject.SetActive(true);
+            adjacentText.text = text;
+        }
     }
 
     public void SetTextColor(Color color)
     {
         adjacentText.color = color;
-    }
-
-    public void SetFlagged(bool flagged)
-    {
-        // TODO : afficher un drapeau (optionnel)
     }
 
     public void SetBackgroundColor(Color color)

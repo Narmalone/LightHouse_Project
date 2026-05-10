@@ -8,15 +8,21 @@ public class ChronometerController : MonoBehaviour
     private float _currentChronometerValue;
     private bool _isInitialized = false;
 
-    public void Initialize()
+    public void StartChrono()
     {
-        _currentChronometerValue = 0f;
+        if(_currentChronometerValue > 0f)
+        {
+            _currentChronometerValue = 0f;
+            UpdateChronometerText();
+        }
         _isInitialized = true;
     }
 
-    public void Stop()
+    public void StopChrono()
     {
+        _currentChronometerValue = 0f;
         _isInitialized = false;
+        UpdateChronometerText();
     }
 
     private void Update()
@@ -26,12 +32,17 @@ public class ChronometerController : MonoBehaviour
 
     private void UpdateTimer()
     {
-        if (!_isInitialized) return;
-
         _currentChronometerValue += Time.deltaTime;
-        _currentChronometerValue = Mathf.Round(_currentChronometerValue);
+
+        int seconds = Mathf.FloorToInt(_currentChronometerValue);
 
         if (_chronometertext == null) return;
-        _chronometertext.text = _currentChronometerValue.ToString();
+        UpdateChronometerText();
+    }
+
+    private void UpdateChronometerText()
+    {
+        int seconds = Mathf.FloorToInt(_currentChronometerValue);
+        _chronometertext.text = seconds.ToString("000");
     }
 }

@@ -110,7 +110,7 @@ namespace LightHouse.Core.Player.Inventory.InputsHandler
         #endregion
 
         #region Input Handler
-        public void HandleDropInput(bool playSound = true, AudioCue soundToPlay = null)
+        public void HandleDropInput(bool playSound = true, SO_AudioCue soundToPlay = null)
         {
             if (InputManager.Drop.IsPressed())
             {

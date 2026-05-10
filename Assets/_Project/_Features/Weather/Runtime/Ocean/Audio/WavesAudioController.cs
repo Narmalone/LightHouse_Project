@@ -44,10 +44,10 @@ namespace LightHouse.Core.Audio
         public AudioMixer mixer; // expose: Waves_Wash_Light, Waves_Wash_Med, Waves_Wash_Heavy, Waves_Distant
 
         [Header("Loops")]
-        public AudioCue _loopWashLightCue;
-        public AudioCue _loopWashMedCue;
-        public AudioCue _loopWashHeavyCue;
-        public AudioCue _loopWashDistantCue;
+        public SO_AudioCue _loopWashLightCue;
+        public SO_AudioCue _loopWashMedCue;
+        public SO_AudioCue _loopWashHeavyCue;
+        public SO_AudioCue _loopWashDistantCue;
         public IAudioHandle loopWashLight;
         public IAudioHandle loopWashMed;
         public IAudioHandle loopWashHeavy;
@@ -55,8 +55,8 @@ namespace LightHouse.Core.Audio
 
         [Header("One-shots Crash")]
         public AudioSource crashPrefab;
-        public AudioCue rockCrashes;
-        public AudioCue sandCrashes;
+        public SO_AudioCue rockCrashes;
+        public SO_AudioCue sandCrashes;
         public Vector2 crashIntervalRange = new(2.5f, 8f); // à SeaState=1
         public AnimationCurve crashRateFromSea = AnimationCurve.Linear(0, 0, 1, 1);
         public AnimationCurve crashGainByDistance = new AnimationCurve(
@@ -376,7 +376,7 @@ namespace LightHouse.Core.Audio
         static float Linear01ToDb(float v01) => (v01 <= 0.0001f) ? -80f : 20f * Mathf.Log10(Mathf.Clamp01(v01));
         static float ClampHz(float hz) => Mathf.Clamp(hz, 20f, 20000f);
 
-        public void EnsurePlaying(AudioCue lightCue, AudioCue medium, AudioCue heavy, AudioCue distant)
+        public void EnsurePlaying(SO_AudioCue lightCue, SO_AudioCue medium, SO_AudioCue heavy, SO_AudioCue distant)
         {
             if (ServiceLocator.Audio == null) return;
             loopWashLight = ServiceLocator.Audio.PlayAt(lightCue, Vector3.zero);

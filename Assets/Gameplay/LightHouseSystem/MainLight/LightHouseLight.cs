@@ -23,7 +23,7 @@ namespace LightHouse.Features.LightHouse
         [Tooltip("Forme du cycle d'intensité (0-1)")]
         public AnimationCurve _flashCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-        public AudioCue LoopGearCue;
+        public SO_AudioCue LoopGearCue;
 
         [Tooltip("Durée d'un cycle de flash en secondes")]
         public float flashDuration = 2f;

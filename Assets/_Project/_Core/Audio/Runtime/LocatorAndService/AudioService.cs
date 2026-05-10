@@ -32,7 +32,7 @@ namespace LightHouse.Core.Audio
             return _backend.Play(cue, pos, opt);
         }
 
-        public IAudioHandle PlayAt(AudioCue cue, Vector3 position, AudioPlayOptions opt = default)
+        public IAudioHandle PlayAt(SO_AudioCue cue, Vector3 position, AudioPlayOptions opt = default)
         {
             if (!cue) { Debug.LogWarning("Null AudioCue"); return AudioHandle.Null; }
             return _backend.Play(cue, position, opt);
@@ -46,7 +46,7 @@ namespace LightHouse.Core.Audio
             return PlayAt(cueId, Vector3.zero, win);
         }
 
-        public IAudioHandle PlayOneShot(AudioCue cue, AudioPlayOptions opt = default)
+        public IAudioHandle PlayOneShot(SO_AudioCue cue, AudioPlayOptions opt = default)
         {
             return PlayAt(cue, Vector3.zero, opt);
         }

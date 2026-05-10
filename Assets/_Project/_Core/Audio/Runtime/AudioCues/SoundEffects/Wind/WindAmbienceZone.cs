@@ -19,9 +19,9 @@ namespace LightHouse.Core.Audio
         public enum DistanceMode { Virtual2D_PinToListener, Real3D_SyncWithRadii }
 
         [Header("Clips par bande")]
-        [SerializeField] private AudioCue lightWind;
-        [SerializeField] private AudioCue mediumWind;
-        [SerializeField] private AudioCue heavyWind;
+        [SerializeField] private SO_AudioCue lightWind;
+        [SerializeField] private SO_AudioCue mediumWind;
+        [SerializeField] private SO_AudioCue heavyWind;
 
         [Header("Listener & Zone")]
         public Transform Listener; // si null => main camera

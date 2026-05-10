@@ -11,9 +11,9 @@ namespace LightHouse.Features.Menu.Ambiance
     {
         #region ===== Settings =====
 
-        [SerializeField] private AudioCue _ambianceHorror;
-        [SerializeField] private AudioCue _rain;
-        [SerializeField] private AudioCue _wind;
+        [SerializeField] private SO_AudioCue _ambianceHorror;
+        [SerializeField] private SO_AudioCue _rain;
+        [SerializeField] private SO_AudioCue _wind;
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace LightHouse.Features.Menu.Ambiance
             _windHandle?.Stop();
         }
 
-        private IAudioHandle Play(AudioCue cue)
+        private IAudioHandle Play(SO_AudioCue cue)
         {
             if (cue == null) return null;
 

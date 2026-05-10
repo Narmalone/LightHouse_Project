@@ -11,8 +11,8 @@ namespace LightHouse.Core.Interaction.Feedback
     {
         #region ===== Settings =====
 
-        [SerializeField] private AudioCue _hoverSound;
-        [SerializeField] private AudioCue _clickSound;
+        [SerializeField] private SO_AudioCue _hoverSound;
+        [SerializeField] private SO_AudioCue _clickSound;
 
         #endregion
 
@@ -92,7 +92,7 @@ namespace LightHouse.Core.Interaction.Feedback
             return _isEnabled && ServiceLocator.Audio != null;
         }
 
-        private void PlaySound(AudioCue cue)
+        private void PlaySound(SO_AudioCue cue)
         {
             if (cue == null) return;
 

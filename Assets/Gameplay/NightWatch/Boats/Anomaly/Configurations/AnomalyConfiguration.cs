@@ -16,7 +16,7 @@ namespace LightHouse.Features.Boats.Anomalies
         Quarantine
     }
 
-    [CreateAssetMenu(fileName = "AnomalyConfig", menuName = "LightHouse/Boats/Anomaly Configuration")]
+    [CreateAssetMenu(fileName = "SO_Boats_AnomalyConfig_", menuName = GlobalAssetsMenuPaths.BoatsAssetsMenuPath + "New Anomaly Config")]
     public class AnomalyConfiguration : ScriptableObject
     {
         [Header("Configuration météo")]

@@ -10,7 +10,7 @@ namespace LightHouse.Core.Audio
     public class LocalizedDialogueAudio : ScriptableObject
     {
         [Header("Localized References")]
-        [SerializeField] private LocalizedAsset<AudioCue> localizedCue;
+        [SerializeField] private LocalizedAsset<SO_AudioCue> localizedCue;
         [SerializeField] private LocalizedString localizedSubtitle;
 
         [Header("Audio Config")]
@@ -30,7 +30,7 @@ namespace LightHouse.Core.Audio
 
         [Header("Runtime (Debug)")]
         [SerializeField, TextArea] private string currentSubtitleText;
-        [SerializeField] private AudioCue currentAudioCue;
+        [SerializeField] private SO_AudioCue currentAudioCue;
 
         private bool isRegistered;
 
@@ -45,7 +45,7 @@ namespace LightHouse.Core.Audio
         public float CharDelay => charDelay;
 
         public LocalizedString SubtitleRef => localizedSubtitle;
-        public LocalizedAsset<AudioCue> CueRef => localizedCue;
+        public LocalizedAsset<SO_AudioCue> CueRef => localizedCue;
         #endregion
 
         #region Localization events (optional)
@@ -151,7 +151,7 @@ namespace LightHouse.Core.Audio
         /// <summary>
         /// Charge le AudioCue localisé (async). Le handle doit être release par celui qui l'a demandé.
         /// </summary>
-        public AsyncOperationHandle<AudioCue> LoadCueAsync()
+        public AsyncOperationHandle<SO_AudioCue> LoadCueAsync()
         {
             if (localizedCue == null)
                 throw new InvalidOperationException($"{name}: localizedCue is null.");
@@ -162,7 +162,7 @@ namespace LightHouse.Core.Audio
         /// <summary>
         /// Essaie de récupérer un clip "principal" depuis le cue (ex: variante 0).
         /// </summary>
-        public static AudioClip TryGetMainClip(AudioCue cue)
+        public static AudioClip TryGetMainClip(SO_AudioCue cue)
         {
             if (cue == null) return null;
             if (cue.Variants == null || cue.Variants.Length == 0) return null;
@@ -177,7 +177,7 @@ namespace LightHouse.Core.Audio
         /// - si le cue est déjà connu (via AssetChanged ou cache externe) => durée audio
         /// - sinon => fallback basé sur le texte (synchrone) ou durée fixe
         /// </summary>
-        public float GetDisplayDuration(AudioCue cueOverride = null)
+        public float GetDisplayDuration(SO_AudioCue cueOverride = null)
         {
             // 1) audio si dispo
             var cue = cueOverride != null ? cueOverride : currentAudioCue;
@@ -196,7 +196,7 @@ namespace LightHouse.Core.Audio
 
         #region Event handlers + cache
         private void OnSubtitleChanged(string value) => currentSubtitleText = value;
-        private void OnCueChanged(AudioCue value) => currentAudioCue = value;
+        private void OnCueChanged(SO_AudioCue value) => currentAudioCue = value;
 
         private void TryRefreshSubtitleCache()
         {

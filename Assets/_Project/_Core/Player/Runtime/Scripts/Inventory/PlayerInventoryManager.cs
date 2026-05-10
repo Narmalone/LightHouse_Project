@@ -48,8 +48,8 @@ namespace LightHouse.Core.Player.Inventory
         [SerializeField] private CanvasInteraction _interactionUiController;
 
         [Header("AUDIO")]
-        [SerializeField] private AudioCue _basePickupSound;
-        [SerializeField] private AudioCue _baseDropSound;
+        [SerializeField] private SO_AudioCue _basePickupSound;
+        [SerializeField] private SO_AudioCue _baseDropSound;
 
         public RaycastDetector<IInventoryItem> RaycastDetector => _inventoryRaycastDetector;
         public InventoryUIController InventoryUI => _inventoryUiController;
@@ -219,7 +219,7 @@ namespace LightHouse.Core.Player.Inventory
 
         #region ADD / REMOVE ITEM 
 
-        public void AddItemToInventory(short slotIndex, IInventoryItem item, bool playSound = true, AudioCue soundToPlay = null)
+        public void AddItemToInventory(short slotIndex, IInventoryItem item, bool playSound = true, SO_AudioCue soundToPlay = null)
         {
             if (!item.CanBePickedUp) return;
             if (playSound && soundToPlay == null) soundToPlay = _basePickupSound;
@@ -235,7 +235,7 @@ namespace LightHouse.Core.Player.Inventory
             }
         }
 
-        public IInventoryItem GenerateAndAddItemToInventory(short slotIndex, ushort itemID, bool playSound = true, AudioCue soundToPlay = null)
+        public IInventoryItem GenerateAndAddItemToInventory(short slotIndex, ushort itemID, bool playSound = true, SO_AudioCue soundToPlay = null)
         {
             if (playSound && soundToPlay == null) soundToPlay = _basePickupSound;
             var prefab = _itemDatabase.GetPrefab(itemID);

@@ -41,7 +41,7 @@ PrefabInstance:
     - target: {fileID: 1796476966027605941, guid: 6a59d41ff026f804e9580c7e87a7af90,
         type: 3}
       propertyPath: m_Name
-      value: ShortCut_MineSweeper Variant
+      value: ShortCut_MineSweeper
       objectReference: {fileID: 0}
     - target: {fileID: 3892120236403899446, guid: 6a59d41ff026f804e9580c7e87a7af90,
         type: 3}
@@ -232,5 +232,44 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1796476966027605941, guid: 6a59d41ff026f804e9580c7e87a7af90,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -7002274799866166212}
   m_SourcePrefab: {fileID: 100100000, guid: 6a59d41ff026f804e9580c7e87a7af90, type: 3}
+--- !u!114 &706052353323108459 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4806424214065561046, guid: 6a59d41ff026f804e9580c7e87a7af90,
+    type: 3}
+  m_PrefabInstance: {fileID: 5440277450952127933}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021842446293303816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e699f6792d6e434e9075149e872c4c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &6021842446293303816 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1796476966027605941, guid: 6a59d41ff026f804e9580c7e87a7af90,
+    type: 3}
+  m_PrefabInstance: {fileID: 5440277450952127933}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-7002274799866166212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021842446293303816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c86edad8a0ff547408a07a8997150e8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MineSweeperShortcutController
+  _prefab: {fileID: -7781069064470293796, guid: 32ce9f9640ea5ed419055f28260e8eea,
+    type: 3}
+  _allowMultipleInstance: 1
+  _shortCutButton: {fileID: 706052353323108459}
+  _currentInstance: {fileID: 0}

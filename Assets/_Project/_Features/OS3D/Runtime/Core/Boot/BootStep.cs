@@ -22,6 +22,6 @@ public class BootStep
     public float pauseDuration = 0.2f;
 
     [Header("Audio")]
-    public AudioCue typingSound;
-    public AudioCue glitchSound;
+    public SO_AudioCue typingSound;
+    public SO_AudioCue glitchSound;
 }
