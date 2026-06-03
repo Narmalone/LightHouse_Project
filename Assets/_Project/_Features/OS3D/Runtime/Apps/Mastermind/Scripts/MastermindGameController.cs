@@ -60,12 +60,19 @@ namespace LightHouse.Features.Computer.Mastermind
         public MastermindColor[] AvailableColors =>
             _selectedSettings.AvailableColors;
 
+        public InfoPanelMenuController InfoPanel => _infoPanelMenuController;
+
         #endregion
 
         #region Unity Lifecycle
 
         private void Awake()
         {
+            _difficultyMenuController.Initialize();
+
+            _difficultyMenuController.OnDifficultySelected += DifficultyMenuController_OnDifficultySelected;
+            _difficultyMenuController.OnDifficultyHovered += DifficultyMenuController_OnDifficultyHovered;
+            _difficultyMenuController.OnDifficultyMenuClosed += DifficultyMenuController_OnDifficultyMenuClosed;
             _submitButton.onClick
                 .AddListener(
                     SubmitCurrentGuess);
@@ -73,7 +80,32 @@ namespace LightHouse.Features.Computer.Mastermind
             _selectDifficultyMenuButton.onClick.AddListener(OnSelectDifficultyClicked);
             _randomButton.onClick.AddListener(OnRandomClicked);
             _restartButton.onClick.AddListener(OnRestartClicked);
-            _difficultyMenuController.OnDifficultySelected += DifficultyMenuController_OnDifficultySelected;
+        }
+
+        private void DifficultyMenuController_OnDifficultyMenuClosed()
+        {
+            _infoPanelMenuController.Hide();
+        }
+
+        private void DifficultyMenuController_OnDifficultyHovered(int difficultyIndex, string buttonName)
+        {
+            if (difficultyIndex < 0 ||
+                difficultyIndex >= _presetsConfig.Length)
+                return;
+
+            MastermindSettings settings =
+                _presetsConfig[difficultyIndex];
+
+            _infoPanelMenuController.Initialize(
+                new string[]
+                {
+                    $"Attempts : {settings.MaxAttempts}",
+                    $"Code Length : {settings.CodeLength}",
+                    $"Colors : {settings.AvailableColors.Length}",
+                    $"Duplicates : {(settings.AllowDuplicateColors ? "YES" : "NO")}"
+                });
+
+            _infoPanelMenuController.UpdateTitleText($"{buttonName}");
         }
 
         private void DifficultyMenuController_OnDifficultySelected(int selectedDifficulty)
@@ -112,6 +144,8 @@ namespace LightHouse.Features.Computer.Mastermind
             _randomButton.onClick.RemoveListener(OnRandomClicked);
             _restartButton.onClick.RemoveListener(OnRestartClicked);
             _difficultyMenuController.OnDifficultySelected -= DifficultyMenuController_OnDifficultySelected;
+            _difficultyMenuController.OnDifficultyHovered -= DifficultyMenuController_OnDifficultyHovered;
+            _difficultyMenuController.OnDifficultyMenuClosed -= DifficultyMenuController_OnDifficultyMenuClosed;
         }
 
         #endregion
@@ -378,7 +412,7 @@ namespace LightHouse.Features.Computer.Mastermind
 
         private void Reveal()
         {
-            foreach(var color in _gameLogic.GameData.SecretCode)
+            foreach (var color in _gameLogic.GameData.SecretCode)
             {
                 Debug.Log(color.ToString());
 
@@ -386,24 +420,5 @@ namespace LightHouse.Features.Computer.Mastermind
         }
 
         #endregion
-
-        private void ShowExplanationPanel()
-        {
-                _infoPanelMenuController.Initialize(
-                    new string[]
-                    {
-                        "Welcome to Mastermind!",
-                        "The goal of the game is to guess the secret code.",
-                        "The code is made of a sequence of colors.",
-                        "Each turn, you can submit a guess.",
-                        "After each guess, you'll receive hints to help you find the secret code.",
-                        "Good luck!",
-
-                        "Max Attempts: " + _selectedSettings.MaxAttempts,
-                        "Code Length: " + _selectedSettings.CodeLength,
-                        "Number of colors: " + _selectedSettings.AvailableColors.Length,
-                        "Duplicate colors: " + (_selectedSettings.AllowDuplicateColors ? "Yes" : "No"),
-                    });
-        }
     }
 }

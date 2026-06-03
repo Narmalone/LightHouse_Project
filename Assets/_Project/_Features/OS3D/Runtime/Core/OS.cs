@@ -71,6 +71,8 @@ namespace LightHouse.Features.Computer.OS
         [SerializeField] private SO_AudioCue _clickSoundEffect;
         public OSInteractionContext CurrentContext { get; private set; } = OSInteractionContext.None;
 
+        [field: SerializeField] public bool SkipBootSequence { get; set; } = false;
+
         #endregion
 
         public void SetContext(OSInteractionContext context)
@@ -151,11 +153,26 @@ namespace LightHouse.Features.Computer.OS
         {
             this.SetContext(OSInteractionContext.Computer);
             _bootGroup.alpha = 1.0f;
+            PlayerOnComputer = true;
+
             if (ServiceLocator.Audio != null && _startOsSound)
             {
                 _startOsSoundAudio = ServiceLocator.Audio.PlayAt(_startOsSound, this.transform.position);
             }
+
             StartCoroutine(StartOsLoopSound());
+
+            if (SkipBootSequence)
+            {
+                _desktopGroup.alpha = 1.0f;
+                _desktopGroup.interactable = true;
+                _desktopGroup.blocksRaycasts = true;
+
+                _bootGroup.alpha = 0.0f;
+                _bootGroup.interactable = false;
+                _bootGroup.blocksRaycasts = false;
+                return;
+            }
 
             _bootSystem.StartBoot(() =>
             {
@@ -167,15 +184,15 @@ namespace LightHouse.Features.Computer.OS
                 _bootGroup.interactable = false;
                 _bootGroup.blocksRaycasts = false;  
             });
-            PlayerOnComputer = true;
 
         }
 
         private System.Collections.IEnumerator StartOsLoopSound()
         {
             yield return new WaitForSeconds(_startOsSoundAudio.SelectedClip.length);
-            if (_startOsSoundAudio != null)
-                _startOsSoundAudio = null;
+
+            if(_startOsSound != null)
+                _startOsSound = null;
 
             if (ServiceLocator.Audio != null && _osLoopSound)
             {
@@ -186,6 +203,7 @@ namespace LightHouse.Features.Computer.OS
         public void LeaveOS()
         {
             this.SetContext(OSInteractionContext.None);
+            _bootSystem.StopBoot();
             if (_loopOs != null)
             {
                 _loopOs.Stop(1f);

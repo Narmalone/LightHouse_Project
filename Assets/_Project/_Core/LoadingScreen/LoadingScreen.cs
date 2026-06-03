@@ -20,6 +20,8 @@ public class LoadingScreen : PersistentSingleton<LoadingScreen>
     protected override void Awake()
     {
         base.Awake();
+        label.text = "";
+        subLabel.text = "";
         progressBar.type = Image.Type.Filled;
         progressBar.fillMethod = Image.FillMethod.Horizontal;
     }

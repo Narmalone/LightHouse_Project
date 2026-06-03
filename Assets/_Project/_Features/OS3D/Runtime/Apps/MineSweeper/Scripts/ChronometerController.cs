@@ -20,7 +20,6 @@ public class ChronometerController : MonoBehaviour
 
     public void StopChrono()
     {
-        _currentChronometerValue = 0f;
         _isInitialized = false;
         UpdateChronometerText();
     }

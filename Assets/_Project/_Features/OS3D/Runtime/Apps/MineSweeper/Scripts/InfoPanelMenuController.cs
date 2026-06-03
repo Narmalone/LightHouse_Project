@@ -1,45 +1,125 @@
+using System;
 using TMPro;
 using UnityEngine;
 
-public class InfoPanelMenuController : MonoBehaviour
+namespace LightHouse.Features.Computer
 {
-    [SerializeField] private TextMeshProUGUI _difficultyText; //Can be randomn, easy...
-    [SerializeField] private RectTransform _infosContainer; //Container for the info texts
-    [SerializeField] private TextMeshProUGUI _textInfosPrefab; //Prefab
-    [SerializeField] private CanvasGroup _canvasGroup; //Canvas group for fade in/out
-
-    private bool _isVisible = false;
-
-    private void Start()
+    public class InfoPanelMenuController :
+        MonoBehaviour
     {
-        Hide();
-    }
 
-    public void Initialize(string[] configTexts)
-    {
-        foreach (string text in configTexts)
+        public event Action<bool> OnVisibleChanged;
+
+        #region Inspector
+
+        [SerializeField] private TextMeshProUGUI _titleText;
+
+        [SerializeField]
+        private RectTransform
+            _infosContainer;
+
+        [SerializeField]
+        private TextMeshProUGUI
+            _textInfosPrefab;
+
+        [SerializeField]
+        private CanvasGroup
+            _canvasGroup;
+
+        #endregion
+
+        #region Fields
+
+        private bool _isVisible;
+
+        #endregion
+
+        public bool IsVisible => _isVisible;
+
+        #region Unity Lifecycle
+
+        private void Start()
         {
-            TextMeshProUGUI infoText = Instantiate(_textInfosPrefab, _infosContainer);
-            infoText.text = text;
+            Hide();
         }
 
-        if(!_isVisible)
-            Show();
-    }
+        #endregion
 
-    public void Show()
-    {
-        _canvasGroup.alpha = 1f;
-        _canvasGroup.interactable = true;
-        _canvasGroup.blocksRaycasts = true;
-        _isVisible = true;
-    }
+        #region Public API
 
-    public void Hide()
-    {
-        _canvasGroup.alpha = 0f;
-        _canvasGroup.interactable = false;
-        _canvasGroup.blocksRaycasts = false;
-        _isVisible = false;
+        public void UpdateTitleText(string text)
+        {
+            _titleText.text = text;   
+        }
+
+        public void Initialize(
+            string[] configTexts)
+        {
+            ClearInfos();
+
+            for (int i = 0;
+                 i < configTexts.Length;
+                 i++)
+            {
+                TextMeshProUGUI infoText =
+                    Instantiate(
+                        _textInfosPrefab,
+                        _infosContainer);
+
+                infoText.text =
+                    configTexts[i];
+            }
+
+            if(!_isVisible)
+                Show();
+        }
+
+        public void Show()
+        {
+            _canvasGroup.alpha = 1f;
+
+            _canvasGroup.interactable =
+                true;
+
+            _canvasGroup.blocksRaycasts =
+                true;
+
+            OnVisibleChanged?.Invoke(true);
+            _isVisible = true;
+        }
+
+        public void Hide()
+        {
+            _canvasGroup.alpha = 0f;
+
+            _canvasGroup.interactable =
+                false;
+
+            _canvasGroup.blocksRaycasts =
+                false;
+
+            OnVisibleChanged?.Invoke(false);
+            _isVisible = false;
+        }
+
+        #endregion
+
+        #region Internal
+
+        private void ClearInfos()
+        {
+            for (int i =
+                 _infosContainer.childCount - 1;
+                 i >= 0;
+                 i--)
+            {
+                Destroy(
+                    _infosContainer
+                        .GetChild(i)
+                        .gameObject);
+            }
+        }
+
+        #endregion
     }
 }

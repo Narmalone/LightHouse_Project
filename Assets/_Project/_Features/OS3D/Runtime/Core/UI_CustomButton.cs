@@ -28,6 +28,8 @@ namespace LightHouse.Features.UI
         public bool PreventSelection = false;
 
         public event Action<UI_CustomButton> OnClick;
+        public event Action<UI_CustomButton> OnHoverEnter;
+        public event Action<UI_CustomButton> OnHoverExit;
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -41,6 +43,7 @@ namespace LightHouse.Features.UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (!EnableHovering || IsDisabled) return;
+            OnHoverEnter?.Invoke(this);
             IsHover = true;
             ApplyVisual();
         }
@@ -48,6 +51,7 @@ namespace LightHouse.Features.UI
         public void OnPointerExit(PointerEventData eventData)
         {
             if (!EnableHovering || IsDisabled) return;
+            OnHoverExit?.Invoke(this);
             IsHover = false;
             ApplyVisual();
         }

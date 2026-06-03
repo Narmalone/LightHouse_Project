@@ -119,6 +119,16 @@ namespace LightHouse.Features.Computer.OS
             this.RectTransform.anchoredPosition = new Vector2(Random.Range(leftRandom.x, leftRandom.y), Random.Range(rightRandom.x, rightRandom.y));
         }
 
+        public void SetPosition(Vector2 anchoredPosition)
+        {
+            this.RectTransform.anchoredPosition = anchoredPosition;
+        }
+
+        public void AddPosition(Vector2 anchoredPosition)
+        {
+            this.RectTransform.anchoredPosition = anchoredPosition;
+        }
+
         #endregion
 
         #region Abstract Methods

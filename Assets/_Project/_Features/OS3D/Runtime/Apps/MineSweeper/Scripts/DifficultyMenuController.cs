@@ -1,61 +1,139 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DifficultyMenuController : MonoBehaviour
+namespace LightHouse.Features.Computer
 {
-    [SerializeField] private Button easyButton;
-    [SerializeField] private Button mediumButton;
-    [SerializeField] private Button hardButton;
-    [SerializeField] private Button impossibleButton;
-    [SerializeField] private Button closeButton;
-
-    public event Action<int> OnDifficultySelected;
-
-    private void Awake()
+    /// <summary>
+    /// Generic difficulty selection menu.
+    /// Does NOT know anything about gameplay configs.
+    /// </summary>
+    public class DifficultyMenuController :
+        MonoBehaviour
     {
-        easyButton.onClick.AddListener(OnEasyButtonClicked);
-        mediumButton.onClick.AddListener(OnMediumButtonClicked);
-        hardButton.onClick.AddListener(OnHardButtonClicked);
-        impossibleButton.onClick.AddListener(OnImpossibleButtonClicked);
-        closeButton.onClick.AddListener(OnCloseButtonClicked);
-    }
+        #region Events
 
-    private void OnDestroy()
-    {
-        easyButton.onClick.RemoveListener(OnEasyButtonClicked);
-        mediumButton.onClick.RemoveListener(OnMediumButtonClicked);
-        hardButton.onClick.RemoveListener(OnHardButtonClicked);
-        impossibleButton.onClick.RemoveListener(OnImpossibleButtonClicked);
-        closeButton.onClick.RemoveListener(OnCloseButtonClicked);
-    }
+        /// <summary>
+        /// Called when a difficulty button is clicked.
+        /// </summary>
+        public event Action<int>
+            OnDifficultySelected;
 
-    private void OnEasyButtonClicked()
-    {
-        OnDifficultySelected?.Invoke(0);
-        gameObject.SetActive(false);
-    }
+        /// <summary>
+        /// Called when a difficulty button is hovered.
+        /// </summary>
+        public event Action<int, string>
+            OnDifficultyHovered;
 
-    private void OnMediumButtonClicked()
-    {
-        OnDifficultySelected?.Invoke(1);
-        gameObject.SetActive(false);
-    }
+        public event Action OnDifficultyMenuClosed;
 
-    private void OnHardButtonClicked()
-    {
-        OnDifficultySelected?.Invoke(2);
-        gameObject.SetActive(false);
-    }
+        #endregion
 
-    private void OnImpossibleButtonClicked()
-    {
-        OnDifficultySelected?.Invoke(3);
-        gameObject.SetActive(false);
-    }
+        #region Inspector
 
-    private void OnCloseButtonClicked()
-    {
-        gameObject.SetActive(false);
+        [SerializeField] private Button _closeButton;
+
+        [SerializeField]
+        private DifficultyButtonView
+            _buttonPrefab;
+
+        [SerializeField]
+        private Transform
+            _buttonsContainer;
+
+        [SerializeField]
+        private List<string>
+            _difficultyNames =
+                new();
+
+        #endregion
+
+        #region Runtime
+
+        private readonly List<DifficultyButtonView>
+            _runtimeButtons =
+                new();
+
+        #endregion
+
+        #region Public API
+
+        private void Awake()
+        {
+            _closeButton.onClick.AddListener(OnCloseButtonClicked);
+        }
+
+        private void OnDestroy()
+        {
+            _closeButton.onClick.RemoveListener(OnCloseButtonClicked);
+        }
+
+        private void OnCloseButtonClicked()
+        {
+            OnDifficultyMenuClosed?.Invoke();
+            this.gameObject.SetActive(false);
+        }
+
+        public void Initialize()
+        {
+            GenerateButtons();
+            this.gameObject.SetActive(false);
+        }
+
+        #endregion
+
+        #region Generation
+
+        private void GenerateButtons()
+        {
+            ClearButtons();
+
+            for (int i = 0;
+                 i < _difficultyNames.Count;
+                 i++)
+            {
+                int index = i;
+
+                DifficultyButtonView button =
+                    Instantiate(
+                        _buttonPrefab,
+                        _buttonsContainer);
+
+                button.Initialize(
+                    _difficultyNames[i]);
+
+                button.OnClicked += () =>
+                {
+                    OnDifficultySelected?.Invoke(index);
+                };
+
+                button.OnHovered += () =>
+                {
+                    OnDifficultyHovered?.Invoke(index, _difficultyNames[index]);
+                };
+
+                _runtimeButtons.Add(button);
+            }
+        }
+
+        private void ClearButtons()
+        {
+            for (int i = 0;
+                 i < _runtimeButtons.Count;
+                 i++)
+            {
+                if (_runtimeButtons[i] == null)
+                    continue;
+
+                Destroy(
+                    _runtimeButtons[i]
+                        .gameObject);
+            }
+
+            _runtimeButtons.Clear();
+        }
+
+        #endregion
     }
 }

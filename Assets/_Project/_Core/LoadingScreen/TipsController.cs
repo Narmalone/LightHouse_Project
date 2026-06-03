@@ -17,6 +17,7 @@ public class TipsController : MonoBehaviour
     private void Awake()
     {
         _timer = new Timer(_timerTipsDuration);
+        _tipsText.text = "";
         _timer.OnTimerComplete += Timer_OnTimerComplete;
         _timer.StartTimer();
     }

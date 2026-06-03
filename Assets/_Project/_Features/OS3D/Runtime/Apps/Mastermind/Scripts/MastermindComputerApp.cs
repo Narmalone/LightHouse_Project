@@ -26,5 +26,13 @@ public class MastermindComputerApp : ComputerApp
 
         if(_gameController != null)
             _gameController.Initialize();
+
+        _gameController.InfoPanel.OnVisibleChanged += (isVisible) =>
+        {
+            if (isVisible)
+                AddPosition(new Vector2(-200, 0));
+            else
+                SetPosition(new Vector2(0, 0));
+        };
     }
 }

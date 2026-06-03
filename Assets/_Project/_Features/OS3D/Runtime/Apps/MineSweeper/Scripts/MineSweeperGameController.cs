@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using LightHouse.Features.Computer.Mastermind;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace LightHouse.Features.Computer.MineSweeper
@@ -16,6 +17,7 @@ namespace LightHouse.Features.Computer.MineSweeper
         [SerializeField] private ChronometerController chronometer;
         [SerializeField] private RestartController restartController;
         [SerializeField] private MineCountController mineCountController;
+        [SerializeField] private InfoPanelMenuController _infoPanelMenuController;
 
         [Header("Buttons")]
         [SerializeField] private DifficultyMenuController difficultyMenu;
@@ -39,12 +41,54 @@ namespace LightHouse.Features.Computer.MineSweeper
         private MineSweeperGameLogic logic;
         private GridData grid;
 
+        public InfoPanelMenuController InfoPanel => _infoPanelMenuController;
+
         private void Awake()
         {
+            difficultyMenu.Initialize();
+            difficultyMenu.OnDifficultyHovered += DifficultyMenu_OnDifficultyHovered;
+            difficultyMenu.OnDifficultyMenuClosed += DifficultyMenu_OnDifficultyMenuClosed;
             difficultyMenu.OnDifficultySelected += DifficultyMenu_OnDifficultySelected;
             difficultyMenuButton.onClick.AddListener(OnDifficultyMenuButtonClicked);
             randomButton.onClick.AddListener(OnRandomClicked);
             restartButton.onClick.AddListener(RestartGame);
+        }
+
+        private void DifficultyMenu_OnDifficultyMenuClosed()
+        {
+            _infoPanelMenuController.Hide();
+        }
+
+        private void DifficultyMenu_OnDifficultyHovered(int difficultyIndex, string buttonName)
+        {
+            if (difficultyIndex < 0 ||
+                difficultyIndex >= presetsConfig.Length)
+                return;
+
+            MineSweeperConfig settings =
+                presetsConfig[difficultyIndex];
+
+            string rowsCount = settings.EnableRandomRows
+                ? $"ROWS : {settings.MinNumberOfRows}-{settings.MaxNumberOfRows}"
+                : $"ROWS : {settings.NumberOfRows}";
+
+            string columnsCount = settings.EnableRandomColumns
+                ? $"COLUMNS : {settings.MinNumberOfColumns}-{settings.MaxNumberOfColumns}"
+                : $"COLUMNS : {settings.NumberOfColumns}";
+
+            string minesCount = settings.EnableRandomMines
+                ? $"MINES : {settings.MinMinesNumber}-{settings.MaxMinesNumber}"
+                : $"MINES : {settings.Mines}";
+
+            _infoPanelMenuController.Initialize(
+                new string[]
+                {
+                    $"{rowsCount}",
+                    $"{columnsCount}",
+                    $"{minesCount}",
+                });
+
+            _infoPanelMenuController.UpdateTitleText($"{buttonName}");
         }
 
         private void OnRandomClicked()
@@ -74,6 +118,8 @@ namespace LightHouse.Features.Computer.MineSweeper
         private void OnDestroy()
         {
             difficultyMenu.OnDifficultySelected -= DifficultyMenu_OnDifficultySelected;
+            difficultyMenu.OnDifficultyHovered -= DifficultyMenu_OnDifficultyHovered;
+            difficultyMenu.OnDifficultyMenuClosed -= DifficultyMenu_OnDifficultyMenuClosed;
             difficultyMenuButton.onClick.RemoveListener(OnDifficultyMenuButtonClicked);
             randomButton.onClick.RemoveAllListeners();
             restartButton.onClick.RemoveAllListeners();
@@ -245,6 +291,7 @@ namespace LightHouse.Features.Computer.MineSweeper
         private void Logic_OnGameWon()
         {
             Debug.Log("WIN");
+            restartController.SetWin();
             chronometer.StopChrono();
         }
 
