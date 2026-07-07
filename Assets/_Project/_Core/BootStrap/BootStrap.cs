@@ -1,9 +1,9 @@
-﻿using Eflatun.SceneReference;
-using LightHouse.Core.Attributes;
+﻿using LightHouse.Core.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 [Serializable]
 public class AddressableLoadRule
@@ -17,14 +17,9 @@ public class BootStrap : MonoBehaviour
 
     public static event Action OnGameLoaded;
 
-    [Header("Scene Labels")]
-    [AddressableLabelSelector] public string menuSceneLabel;
-    [AddressableLabelSelector] public string gameSceneLabel;
-
-    [Header("Scene Names")]
-    public SceneReference bootstrapScene;
-    public SceneReference menuScene;
-    public SceneReference gameScene;
+    [Header("Addressable Scenes References")]
+    public AssetReference menuScene;
+    public AssetReference gameScene;
 
     [Header("Preload Rules")]
     public List<AddressableLoadRule> initialPreload;
@@ -42,6 +37,10 @@ public class BootStrap : MonoBehaviour
     private LoadingScreen loadingScreen => LoadingScreen.Instance;
     private LoadingRunner _loader;
 
+    private string _runtimeMainMenuSceneName;
+    private string _runtimeGameSceneName;
+    private string _runtimeBootstrapSceneName;
+
     private void Awake()
     {
         Instance = this;
@@ -58,10 +57,6 @@ public class BootStrap : MonoBehaviour
 
     private IEnumerator StartPreload()
     {
-        _sceneLoader.LoadedScenes.Add(
-            gameObject.scene.name,
-            gameObject.scene
-        );
 
         _installer = new BootstrapInstaller();
 
@@ -92,17 +87,14 @@ public class BootStrap : MonoBehaviour
         // ───────────── LOAD MENU ─────────────
         yield return _loader.RunStep(
             "Loading Menu Scene",
-            () => _sceneLoader.LoadByLabel(
-                menuSceneLabel,
-                (assetName, progress) =>
+            () => _sceneLoader.LoadScene(
+                menuScene,
+                (loadedSceneName) =>
                 {
-                    loadingScreen.SetSubLabel(Clean(assetName));
-                    loadingScreen.SetProgress(progress);
+                    _runtimeMainMenuSceneName = loadedSceneName;
                 }
             )
         );
-
-        _sceneLoader.SetActive(menuScene.Name);
 
         // ───────────── MENU PRELOAD ─────────────
         foreach (var rule in menuPreload)
@@ -149,23 +141,20 @@ public class BootStrap : MonoBehaviour
         // ───────────── UNLOAD MENU ─────────────
         yield return _loader.RunStep(
             "Unloading Menu",
-            () => _sceneLoader.Unload(menuScene.Name)
+            () => _sceneLoader.UnloadScene(_runtimeMainMenuSceneName)
         );
 
         // ───────────── LOAD GAME SCENE ─────────────
         yield return _loader.RunStep(
             "Loading Game Scene",
-            () => _sceneLoader.LoadByLabel(
-                gameSceneLabel,
-                (assetName, progress) =>
+            () => _sceneLoader.LoadScene(
+                gameScene,
+                (loadedSceneName) =>
                 {
-                    loadingScreen.SetSubLabel(Clean(assetName));
-                    loadingScreen.SetProgress(progress);
+                    _runtimeGameSceneName = loadedSceneName;
                 }
             )
         );
-
-        _sceneLoader.SetActive(gameScene.Name);
 
         // ───────────── GAME PRELOAD ─────────────
         foreach (var rule in gamePreload)
@@ -193,7 +182,7 @@ public class BootStrap : MonoBehaviour
 
     private IEnumerator SwitchToBootstrap()
     {
-        _sceneLoader.SetActive(bootstrapScene.Name);
+        //_sceneLoader.SetActive("BootStrap");
         yield return null;
     }
 
@@ -217,23 +206,22 @@ public class BootStrap : MonoBehaviour
         // ───────────── UNLOAD GAME ─────────────
         yield return _loader.RunStep(
             "Unloading Game",
-            () => _sceneLoader.Unload(gameScene.Name)
+            () => _sceneLoader.UnloadScene(_runtimeGameSceneName)
         );
 
         // ───────────── LOAD MENU SCENE ─────────────
         yield return _loader.RunStep(
             "Loading Menu Scene",
-            () => _sceneLoader.LoadByLabel(
-                menuSceneLabel,
-                (assetName, progress) =>
+            () => _sceneLoader.LoadScene(
+                menuScene,
+                (loadedSceneName) =>
                 {
-                    loadingScreen.SetSubLabel(Clean(assetName));
-                    loadingScreen.SetProgress(progress);
+                    _runtimeMainMenuSceneName = loadedSceneName;
                 }
             )
         );
 
-        _sceneLoader.SetActive(menuScene.Name);
+        _sceneLoader.SetActive(menuScene.SubObjectName);
 
         // ───────────── MENU PRELOAD ─────────────
         foreach (var rule in menuPreload)

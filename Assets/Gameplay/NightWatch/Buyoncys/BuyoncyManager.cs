@@ -3,13 +3,15 @@ using LightHouse.Features.Signals;
 
 namespace LightHouse.Features.Buyoncies
 {
-    public class BuyoncyManager : MonoBehaviour
+    public class BuyoncyManager : PersistentSingleton<BuyoncyManager>
     {
+        public BuyoncyController[] Buyoncies => _buyoncies;
         [SerializeField] private BuyoncyController[] _buyoncies;
         [SerializeField] private BuyoncyAnomalyDatabase _anomalyDatabase;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             for (int i = 0; i < _buyoncies.Length; i++)
             {
                 var controller = _buyoncies[i];          // capture locale, pas 'i'

@@ -8,76 +8,55 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader
 {
-    private readonly Dictionary<string, Scene> _loadedScenes = new();
+    private readonly Dictionary<string, AsyncOperationHandle<SceneInstance>> _loadedScenesHandlers = new();
 
-    public Dictionary<string, Scene> LoadedScenes => _loadedScenes;
+    public Dictionary<string, AsyncOperationHandle<SceneInstance>> LoadedScenesHandlers => _loadedScenesHandlers;
 
-    public IEnumerator LoadByLabel(string label)
+    public Dictionary<string, Scene> LoadedScenes = new();
+
+    public IEnumerator LoadScene(AssetReference sceneTarget, System.Action<string> onLoad = null, bool activeOnLoaded = true)
     {
-        var locationsHandle = Addressables.LoadResourceLocationsAsync(label, typeof(SceneInstance));
-        yield return locationsHandle;
+        AsyncOperationHandle<SceneInstance> handle =
+            Addressables.LoadSceneAsync(sceneTarget, LoadSceneMode.Additive);
 
-        foreach (var loc in locationsHandle.Result)
+        yield return handle;
+
+        
+
+        if (handle.Status == AsyncOperationStatus.Succeeded)
         {
-            var handle = Addressables.LoadSceneAsync(loc, LoadSceneMode.Additive);
-            yield return handle;
+            SceneInstance sceneInstance = handle.Result;
 
-            if (handle.Status == AsyncOperationStatus.Succeeded)
-            {
-                var scene = handle.Result.Scene;
-                _loadedScenes[scene.name] = scene;
-            }
+            _loadedScenesHandlers.Add(sceneInstance.Scene.name, handle);
+            LoadedScenes.Add(sceneInstance.Scene.name, sceneInstance.Scene);
+
+            if (activeOnLoaded)
+                SceneManager.SetActiveScene(sceneInstance.Scene);
+
+            onLoad?.Invoke(sceneInstance.Scene.name);
+        }
+        else
+        {
+            Debug.LogError($"Failed to load scene {sceneTarget.RuntimeKey}");
         }
     }
 
-    public IEnumerator LoadByLabel(string label, System.Action<string, float> onProgress = null)
+    public IEnumerator UnloadScene(string sceneName)
     {
-        var locationsHandle = Addressables.LoadResourceLocationsAsync(label, typeof(SceneInstance));
-        yield return locationsHandle;
-
-        var locations = locationsHandle.Result;
-        int total = locations.Count;
-        int current = 0;
-
-        foreach (var loc in locations)
+        if (_loadedScenesHandlers.TryGetValue(sceneName, out var handle))
         {
-            var handle = Addressables.LoadSceneAsync(loc, LoadSceneMode.Additive);
+            string unloadedName = handle.Result.Scene.name;
 
-            while (!handle.IsDone)
-            {
-                onProgress?.Invoke(loc.PrimaryKey, handle.PercentComplete);
-                yield return null;
-            }
+            yield return Addressables.UnloadSceneAsync(handle, true);
 
-            if (handle.Status == AsyncOperationStatus.Succeeded)
-            {
-                var scene = handle.Result.Scene;
-                _loadedScenes[scene.name] = scene;
-            }
-
-            current++;
-            onProgress?.Invoke(loc.PrimaryKey, (float)current / total);
+            _loadedScenesHandlers.Remove(sceneName);
+            LoadedScenes.Remove(sceneName);
+            Debug.Log(unloadedName + " unloaded.");
         }
-    }
-
-    public IEnumerator Unload(string sceneName)
-    {
-        if (!_loadedScenes.TryGetValue(sceneName, out var scene))
-            yield break;
-
-        var handle = SceneManager.UnloadSceneAsync(scene);
-        while (!handle.isDone)
-            yield return null;
-
-        _loadedScenes.Remove(sceneName);
     }
 
     public void SetActive(string sceneName)
     {
-        Debug.Log($"Setting active scene: {sceneName}");
-        if (_loadedScenes.TryGetValue(sceneName, out var scene))
-        {
-            SceneManager.SetActiveScene(scene);
-        }
+        SceneManager.SetActiveScene(LoadedScenes[sceneName]);
     }
 }

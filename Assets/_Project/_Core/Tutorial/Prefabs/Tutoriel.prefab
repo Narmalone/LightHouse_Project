@@ -1,0 +1,280 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &866268445763809504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2656151731491251784}
+  - component: {fileID: 7629691537949247339}
+  - component: {fileID: 7604242540584691795}
+  m_Layer: 0
+  m_Name: Tutoriel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2656151731491251784
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866268445763809504}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1962715957026009223}
+  - {fileID: 7009637817192397395}
+  - {fileID: 988504690764079246}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7629691537949247339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866268445763809504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a682a83adcb64824c867bc3860733577, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightHouse.Game.Tutorial.TutorialBootstrap
+  _skipTutorial: 0
+  _talkieRef: {fileID: 11400000, guid: 28ec02c10b621ff4f8f7eda93f509052, type: 2}
+  _flow: {fileID: 7604242540584691795}
+  _playerDefaultIslandPosition: {fileID: 0}
+  _binocular: {fileID: 4309042081163287839}
+  _hammer: {fileID: 8933532349100270693}
+  _lighthouse: {fileID: 0}
+  _rockPoint: {fileID: 1962715957026009223}
+  _nearbyBuoy: {fileID: 0}
+  _pipe: {fileID: 4887127695136233460}
+  _bag: {fileID: 2151230878975365184}
+  _tutoBoat: {fileID: 1219123882343537632}
+  _timeline: {fileID: 11400000, guid: 2915b7fa212d6b541874dff4f43e2477, type: 2}
+--- !u!114 &7604242540584691795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866268445763809504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d180dbdef30e6d349b815bab4923831b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightHouse.Game.Tutorial.TutorialFlow
+  _steps:
+  - {fileID: 11400000, guid: 342d920f37cd200438ae7868ae1bb5de, type: 2}
+  - {fileID: 11400000, guid: d0f7436e521d3f34a90cf4cf736ccf7c, type: 2}
+  - {fileID: 11400000, guid: a3deef51701620b4997d911206947181, type: 2}
+  - {fileID: 11400000, guid: b41df1e4c18c946498e824ff168fdd37, type: 2}
+  - {fileID: 11400000, guid: de75740704bef4e499a9c673c4fde5de, type: 2}
+  - {fileID: 11400000, guid: 760fb5c50e207b042bfb4d2021ba1fc6, type: 2}
+  - {fileID: 11400000, guid: 8d9ea1f2bf03b9943b838a01045ab306, type: 2}
+  - {fileID: 11400000, guid: f92c15d92ea58844881b9876e2ffa259, type: 2}
+--- !u!1 &4318912806464865023
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7009637817192397395}
+  m_Layer: 0
+  m_Name: PlayerIslandSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7009637817192397395
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4318912806464865023}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 51.9, y: 12.18, z: 36.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2656151731491251784}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4615566602178208171
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1962715957026009223}
+  m_Layer: 0
+  m_Name: RockPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1962715957026009223
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4615566602178208171}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 197.5, y: 6.75, z: 101}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2656151731491251784}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1237102764081945124
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2656151731491251784}
+    m_Modifications:
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1044.0852
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 404.77045
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4053705043775166883, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_Name
+      value: Boat_Captain
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 73b633c020ec1104dacbb1d97c6da550, type: 3}
+--- !u!4 &988504690764079246 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237102764081945124}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1219123882343537632 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 126136931372892612, guid: 73b633c020ec1104dacbb1d97c6da550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237102764081945124}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c29f37f0d502d954a82feafc5e337ef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2151230878975365184 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 932710761223916132, guid: 73b633c020ec1104dacbb1d97c6da550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237102764081945124}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4066c854a65fbdc4880f7a4bc26a9149, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BagItem
+--- !u!114 &4309042081163287839 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3091677823441602363, guid: 73b633c020ec1104dacbb1d97c6da550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237102764081945124}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3b68519405d804887916003ecb4d86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4887127695136233460 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5978953836806770128, guid: 73b633c020ec1104dacbb1d97c6da550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237102764081945124}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d5f5a089ac56d346bb29b10d8d9a21a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightHouse.Items.Interactable.IDUseItemHideTracker
+--- !u!114 &8933532349100270693 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7697032461063503425, guid: 73b633c020ec1104dacbb1d97c6da550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237102764081945124}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08b3e5be2dd4aeb4e97563b20d099b32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -47,6 +47,7 @@ namespace LightHouse.Core.Tutorial
 
         private void InitializeTutorial()
         {
+            _nearbyBuoy = BuyoncyManager.Instance.Buyoncies[1];
             var ctx = new TutorialContext
             {
                 Flow = _flow,
