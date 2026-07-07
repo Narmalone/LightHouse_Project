@@ -1,5 +1,4 @@
 using Cinemachine;
-using Eflatun.SceneReference;
 using LightHouse.Core.Interaction;
 using LightHouse.Core.Save;
 using System.Collections;
@@ -20,7 +19,6 @@ namespace LightHouse.Features.Menu.Notebook
         [SerializeField] private CinemachineBrain _brain;
         [SerializeField] private Button _newGameButton;
         [SerializeField] private Button _continueLastGameButton;
-        [SerializeField] private SceneReference _gameScene;
 
         #endregion
 
