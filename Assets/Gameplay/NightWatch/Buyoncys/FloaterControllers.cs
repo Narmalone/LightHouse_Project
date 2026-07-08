@@ -30,12 +30,9 @@ namespace LightHouse.Core.Utilities
         [SerializeField] private bool _excludeSimulation = false;
         [SerializeField] private bool _outputNormal = false;
 
-        private void Start()
+        public void SetWaterSurface(WaterSurface waterSurface)
         {
-            if(_waterSurface == null)
-            {
-                _waterSurface = FindFirstObjectByType<WaterSurface>();
-            }
+            _waterSurface = waterSurface;
         }
 
         private void FixedUpdate()

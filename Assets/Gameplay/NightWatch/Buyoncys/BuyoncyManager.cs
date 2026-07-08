@@ -1,11 +1,15 @@
-using UnityEngine;
+using LightHouse.Features.Nightwatch;
 using LightHouse.Features.Signals;
+using LightHouse.Features.TimeOfDay.TimeCore;
+using LightHouse.Features.Weather.Ocean;
+using UnityEngine;
 
 namespace LightHouse.Features.Buyoncies
 {
-    public class BuyoncyManager : PersistentSingleton<BuyoncyManager>
+    public class BuyoncyManager : NotPersistentSingleton<BuyoncyManager>
     {
         public BuyoncyController[] Buyoncies => _buyoncies;
+        [SerializeField] private SO_NightWatchConfiguration _nightWatchConfig;
         [SerializeField] private BuyoncyController[] _buyoncies;
         [SerializeField] private BuyoncyAnomalyDatabase _anomalyDatabase;
 
@@ -19,6 +23,28 @@ namespace LightHouse.Features.Buyoncies
                 controller.OnBroken += BuyoncyManager_OnBroken;
             }
             _anomalyDatabase.OnAnomalyRemoved += AnomalyDatabase_OnAnomalyRemoved;
+        }
+
+        private void Start()
+        {
+            foreach (BuyoncyController controller in _buyoncies)
+            {
+                if(OceanManager.Instance != null)
+                    controller.Initialize(OceanManager.Instance.WaterSurfaceComponent);
+            }
+        }
+
+        private void Update()
+        {
+            if (TimeUtility.IsTimeInRange(TimeHandlerData.CurrentTime,
+                                          _nightWatchConfig.BuyoncysDecayStartHour,
+                                          _nightWatchConfig.BuyoncysDecayEndHour))
+            {
+                foreach (BuyoncyController controller in _buyoncies) 
+                {
+                    controller.UpdateFromManager();
+                }
+            }
         }
 
         private void AnomalyDatabase_OnAnomalyRemoved(ISignal obj)

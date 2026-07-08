@@ -6,6 +6,7 @@ using LightHouse.Features.TimeOfDay.TimeCore;
 using System;
 using UnityEngine;
 using LightHouse.Core.Utilities;
+using UnityEngine.Rendering.HighDefinition;
 
 
 namespace LightHouse.Features.Buyoncies
@@ -23,6 +24,7 @@ namespace LightHouse.Features.Buyoncies
         [SerializeField] private WeatherConfigDatabase _weatherDatabase;
         [SerializeField] private SO_NightWatchConfiguration _nightWatchConfig;
         [SerializeField] private Light _lifeLight;
+        [SerializeField] private FloaterControllers _floaterController;
 
         [Header("Lifetime Settings")]
         [SerializeField] private float _minInitialLifetime = 60f;
@@ -85,17 +87,11 @@ namespace LightHouse.Features.Buyoncies
             SonarInfo = $"#{BuyoncyID:D2}";
         }
 
-        private void Update()
+        public void UpdateFromManager()
         {
             if (HasBeenRepairedToday) return;
-
-            if (TimeUtility.IsTimeInRange(TimeHandlerData.CurrentTime,
-                                          _nightWatchConfig.BuyoncysDecayStartHour,
-                                          _nightWatchConfig.BuyoncysDecayEndHour))
-            {
-                _timer.Tick(Time.deltaTime, CurrentSpeed);
-                CurrentLifeTime = _timer.GetTimeRemaining();
-            }
+            _timer.Tick(Time.deltaTime, CurrentSpeed);
+            CurrentLifeTime = _timer.GetTimeRemaining();
         }
 
         private void OnDestroy()
@@ -113,6 +109,11 @@ namespace LightHouse.Features.Buyoncies
             _timer = new Timer(GetRandomLifetime());
             CurrentLifeTime = _timer.GetTimeRemaining();
             _timer.OnTimerComplete += OnTimerCompleted;
+        }
+
+        public void Initialize(WaterSurface surface)
+        {
+            _floaterController.SetWaterSurface(surface);
         }
 
         private void RegisterEvents()

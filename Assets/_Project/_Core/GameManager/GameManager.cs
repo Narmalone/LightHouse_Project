@@ -9,11 +9,6 @@ public class GameManager : PersistentSingleton<GameManager>
         InitializePlayerInputs();
     }
 
-    private void OnDestroy()
-    {
-        ReleasePlayerInputs();
-    }
-
     public void InitializePlayerInputs()
     {
         InputManager.Initialize();
@@ -22,5 +17,11 @@ public class GameManager : PersistentSingleton<GameManager>
     public void ReleasePlayerInputs()
     {
         InputManager.DisposePlayerInputActions();
+
+    }
+
+    private void OnApplicationQuit()
+    {
+        ReleasePlayerInputs();
     }
 }

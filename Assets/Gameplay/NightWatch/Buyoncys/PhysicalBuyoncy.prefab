@@ -83,6 +83,7 @@ MonoBehaviour:
   _weatherDatabase: {fileID: 11400000, guid: 29df46f401d07ab4cb9033916768c438, type: 2}
   _nightWatchConfig: {fileID: 11400000, guid: 8eafe6945fed5c74ca472bddc6939963, type: 2}
   _lifeLight: {fileID: 5956566998138514145}
+  _floaterController: {fileID: 6300860336391352167}
   _minInitialLifetime: 60
   _maxInitialLifetime: 350
   _aliveColor: {r: 0.17054713, g: 1, b: 0, a: 1}
@@ -116,6 +117,8 @@ MonoBehaviour:
   _waterDrag: 4
   _waterAngularDrag: 5
   _searchError: 0.01
+  _maxTiltAngle: 30
+  _lockUpright: 1
   _maxIterations: 10
   _includeDeformation: 1
   _excludeSimulation: 0
@@ -148,10 +151,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3290357613753484911}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 25
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -209,14 +212,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4533488607738978717}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 12
   m_Type: 2
   m_Color: {r: 0.10201049, g: 1, b: 0, a: 1}
   m_Intensity: 134217730
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 0
     m_Resolution: -1
@@ -286,6 +289,14 @@ MonoBehaviour:
   m_LuxAtDistance: 1
   m_Intensity: 0
   m_InnerSpotPercent: 0
+  m_ShapeWidth: 0.5
+  m_ShapeHeight: 0.5
+  m_AspectRatio: 1
+  m_Version: 13
+  m_ObsoleteShadowResolutionTier: 1
+  m_ObsoleteUseShadowQualitySettings: 0
+  m_ObsoleteCustomShadowResolution: 512
+  m_ObsoleteContactShadows: 0
   m_SpotIESCutoffPercent: 100
   m_LightDimmer: 1
   m_VolumetricDimmer: 1
@@ -294,9 +305,6 @@ MonoBehaviour:
   m_AffectDiffuse: 1
   m_AffectSpecular: 1
   m_NonLightmappedOnly: 0
-  m_ShapeWidth: 0.5
-  m_ShapeHeight: 0.5
-  m_AspectRatio: 1
   m_ShapeRadius: 0.025
   m_SoftnessScale: 1
   m_UseCustomSpotLightShadowCone: 0
@@ -403,11 +411,6 @@ MonoBehaviour:
   m_AreaLightEmissiveMeshShadowCastingMode: 0
   m_AreaLightEmissiveMeshMotionVectorGenerationMode: 0
   m_AreaLightEmissiveMeshLayer: -1
-  m_Version: 13
-  m_ObsoleteShadowResolutionTier: 1
-  m_ObsoleteUseShadowQualitySettings: 0
-  m_ObsoleteCustomShadowResolution: 512
-  m_ObsoleteContactShadows: 0
 --- !u!1 &5328772227233351318
 GameObject:
   m_ObjectHideFlags: 0

@@ -48,6 +48,7 @@ MonoBehaviour:
   WeatherManager: {fileID: 0}
   SunLight: {fileID: 0}
   Config: {fileID: 11400000, guid: 36fdbdb1fe41ea14aa95de5e51958ae2, type: 2}
+  _waterSurface: {fileID: 8922498527540492722}
 --- !u!114 &8922498527540492722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,59 +67,6 @@ MonoBehaviour:
   largeBand0FadeToggle: 1
   largeBand1FadeToggle: 1
   ripplesFadeToggle: 1
-  surfaceType: 0
-  geometryType: 3
-  meshRenderers: []
-  timeMultiplier: 1
-  scriptInteractions: 1
-  cpuEvaluateRipples: 1
-  customMaterial: {fileID: -876546973899608171, guid: dbb44118872d56741a35b554bbb6b4ed,
-    type: 3}
-  startSmoothness: 0.95
-  endSmoothness: 0.85
-  smoothnessFadeStart: 100
-  smoothnessFadeDistance: 500
-  tessellation: 1
-  maxTessellationFactor: 3
-  tessellationFactorFadeStart: 150
-  tessellationFactorFadeRange: 1850
-  refractionColor: {r: 0.24602018, g: 0.7156454, b: 0.82278585, a: 1}
-  maxRefractionDistance: 2
-  absorptionDistance: 4
-  scatteringColor: {r: 0.0362218, g: 0.1784443, b: 0.39362136, a: 1}
-  ambientScattering: 0.446
-  heightScattering: 0.5
-  displacementScattering: 1
-  directLightTipScattering: 0.6
-  directLightBodyScattering: 0.5
-  maximumHeightOverride: 5
-  caustics: 1
-  causticsIntensity: 1
-  causticsPlaneBlendDistance: 3
-  causticsResolution: 1024
-  causticsBand: 2
-  virtualPlaneDistance: 4
-  causticsTilingFactor: 1
-  causticsDirectionalShadow: 0
-  causticsDirectionalShadowDimmer: 0.25
-  renderingLayerMask: 257
-  debugMode: 0
-  waterMaskDebugMode: 0
-  waterCurrentDebugMode: 0
-  currentDebugMultiplier: 1
-  waterFoamDebugMode: 1
-  underWater: 1
-  volumeBounds: {fileID: 0}
-  volumeDepth: 50
-  volumeHeight: 5
-  volumePrority: 0
-  absorptionDistanceMultiplier: 2
-  underWaterAmbientProbeContribution: 1
-  underWaterScatteringColorMode: 0
-  underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
-  underWaterRefraction: 0
-  decalRegionSize: {x: 2000, y: 2000}
-  decalRegionAnchor: {fileID: 5060471476600764085}
   supportLargeCurrent: 1
   largeCurrentRes: 512
   largeCurrentSpeedValue: 0
@@ -206,3 +154,56 @@ MonoBehaviour:
   waterMaskRemap: {x: 0, y: 1}
   waterMaskExtent: {x: 400, y: 400}
   waterMaskOffset: {x: 0, y: 0}
+  surfaceType: 0
+  geometryType: 3
+  meshRenderers: []
+  timeMultiplier: 1
+  scriptInteractions: 1
+  cpuEvaluateRipples: 1
+  customMaterial: {fileID: -876546973899608171, guid: dbb44118872d56741a35b554bbb6b4ed,
+    type: 3}
+  startSmoothness: 0.95
+  endSmoothness: 0.85
+  smoothnessFadeStart: 100
+  smoothnessFadeDistance: 500
+  tessellation: 1
+  maxTessellationFactor: 3
+  tessellationFactorFadeStart: 150
+  tessellationFactorFadeRange: 1850
+  refractionColor: {r: 0.24602018, g: 0.7156454, b: 0.82278585, a: 1}
+  maxRefractionDistance: 2
+  absorptionDistance: 4
+  scatteringColor: {r: 0.0362218, g: 0.1784443, b: 0.39362136, a: 1}
+  ambientScattering: 0.446
+  heightScattering: 0.5
+  displacementScattering: 1
+  directLightTipScattering: 0.6
+  directLightBodyScattering: 0.5
+  maximumHeightOverride: 5
+  caustics: 1
+  causticsIntensity: 1
+  causticsPlaneBlendDistance: 3
+  causticsResolution: 1024
+  causticsBand: 2
+  virtualPlaneDistance: 4
+  causticsTilingFactor: 1
+  causticsDirectionalShadow: 0
+  causticsDirectionalShadowDimmer: 0.25
+  renderingLayerMask: 257
+  debugMode: 0
+  waterMaskDebugMode: 0
+  waterCurrentDebugMode: 0
+  currentDebugMultiplier: 1
+  waterFoamDebugMode: 1
+  underWater: 1
+  volumeBounds: {fileID: 0}
+  volumeDepth: 50
+  volumeHeight: 5
+  volumePrority: 0
+  absorptionDistanceMultiplier: 2
+  underWaterAmbientProbeContribution: 1
+  underWaterScatteringColorMode: 0
+  underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
+  underWaterRefraction: 0
+  decalRegionSize: {x: 2000, y: 2000}
+  decalRegionAnchor: {fileID: 5060471476600764085}

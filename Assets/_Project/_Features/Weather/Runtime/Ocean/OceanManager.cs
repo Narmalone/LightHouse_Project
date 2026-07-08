@@ -10,22 +10,24 @@ namespace LightHouse.Features.Weather.Ocean
     /// situé dans le WeatherHandlerData
     /// </summary>
     [RequireComponent(typeof(WaterSurface))]
-    public class OceanManager : MonoBehaviour
+    public class OceanManager : NotPersistentSingleton<OceanManager>
     {
         public WeatherManager WeatherManager;
         public Light SunLight;
         public OceanConfiguration Config;
 
-        private WaterSurface water;
+        [SerializeField] private WaterSurface _waterSurface;
+        public WaterSurface WaterSurfaceComponent => _waterSurface;
 
         private Vector3 previousWindDir;
         private float previousLargeChaos;
         private float chaosVelocity;
         private float smoothTime = 0.5f;
 
-        private void Awake()
+        protected override void Awake()
         {
-            water = GetComponent<WaterSurface>();
+            base.Awake();
+            Debug.Log(Instance);
         }
 
         private void Update()
@@ -50,11 +52,11 @@ namespace LightHouse.Features.Weather.Ocean
 
             float targetChaos = Mathf.Clamp01(Config.chaosBase + tWind * Config.chaosWindFactor + (1f - tPressure) * Config.chaosPressureFactor);
 
-            water.largeBand0Multiplier = Mathf.Lerp(Config.band0Range.x, Config.band0Range.y, tWind);
-            water.largeBand1Multiplier = Mathf.Lerp(Config.band1Range.x, Config.band1Range.y, tHumidity);
+            _waterSurface.largeBand0Multiplier = Mathf.Lerp(Config.band0Range.x, Config.band0Range.y, tWind);
+            _waterSurface.largeBand1Multiplier = Mathf.Lerp(Config.band1Range.x, Config.band1Range.y, tHumidity);
 
-            water.ripplesFadeStart = Mathf.Lerp(Config.fadeStartRange.x, Config.fadeStartRange.y, tTemp);
-            water.ripplesFadeDistance = Mathf.Lerp(Config.fadeDistanceRange.x, Config.fadeDistanceRange.y, tTemp);
+            _waterSurface.ripplesFadeStart = Mathf.Lerp(Config.fadeStartRange.x, Config.fadeStartRange.y, tTemp);
+            _waterSurface.ripplesFadeDistance = Mathf.Lerp(Config.fadeDistanceRange.x, Config.fadeDistanceRange.y, tTemp);
 
             Color scatteringColor = Color.Lerp(Config.scatteringDark, Config.scatteringLight, tTime * sunIntensity01);
             scatteringColor = Color.Lerp(scatteringColor, Config.scatteringHazy, tHumidity * 0.7f);
@@ -66,32 +68,32 @@ namespace LightHouse.Features.Weather.Ocean
 
             float absorption = Mathf.Lerp(Config.absorptionRange.x, Config.absorptionRange.y, tTemp);
 
-            water.ambientScattering = Mathf.Lerp(Config.ambientScatteringRange.x, Config.ambientScatteringRange.y, tHumidity + (1f - tPressure));
-            water.heightScattering = Mathf.Lerp(Config.heightScatteringRange.x, Config.heightScatteringRange.y, tWind + tHumidity * 0.5f);
-            water.displacementScattering = Mathf.Lerp(Config.displacementScatteringRange.x, Config.displacementScatteringRange.y, tWind + (1f - tPressure));
+            _waterSurface.ambientScattering = Mathf.Lerp(Config.ambientScatteringRange.x, Config.ambientScatteringRange.y, tHumidity + (1f - tPressure));
+            _waterSurface.heightScattering = Mathf.Lerp(Config.heightScatteringRange.x, Config.heightScatteringRange.y, tWind + tHumidity * 0.5f);
+            _waterSurface.displacementScattering = Mathf.Lerp(Config.displacementScatteringRange.x, Config.displacementScatteringRange.y, tWind + (1f - tPressure));
 
 
             //TU AS OUBLIE
             float largeChaos = Mathf.SmoothDamp(previousLargeChaos, targetChaos, ref chaosVelocity, smoothTime);
             previousLargeChaos = largeChaos;
 
-            water.largeWindSpeed = weather.WindSpeed;
-            water.largeOrientationValue = weather.WindOrientation;
-            water.largeChaos = largeChaos;
+            _waterSurface.largeWindSpeed = weather.WindSpeed;
+            _waterSurface.largeOrientationValue = weather.WindOrientation;
+            _waterSurface.largeChaos = largeChaos;
 
-            water.ripplesWindSpeed = Mathf.Clamp(weather.WindSpeed * 0.5f, 0f, Config.maxRipplesWind);
-            water.ripplesOrientationValue = windAngle;
-            water.ripplesChaos = Mathf.Clamp01(
+            _waterSurface.ripplesWindSpeed = Mathf.Clamp(weather.WindSpeed * 0.5f, 0f, Config.maxRipplesWind);
+            _waterSurface.ripplesOrientationValue = windAngle;
+            _waterSurface.ripplesChaos = Mathf.Clamp01(
                 Config.ripplesChaosBase + tWind * Config.ripplesChaosWindFactor + tHumidity * Config.ripplesChaosHumidityFactor
             );
-            water.ripplesFadeStart = Mathf.Lerp(Config.fadeStartRange.x, Config.fadeStartRange.y, tTemp);
-            water.ripplesFadeDistance = Mathf.Lerp(Config.fadeDistanceRange.x, Config.fadeDistanceRange.y, tTemp);
+            _waterSurface.ripplesFadeStart = Mathf.Lerp(Config.fadeStartRange.x, Config.fadeStartRange.y, tTemp);
+            _waterSurface.ripplesFadeDistance = Mathf.Lerp(Config.fadeDistanceRange.x, Config.fadeDistanceRange.y, tTemp);
 
             // ✅ Application finale
-            water.scatteringColor = scatteringColor;
-            water.refractionColor = refractionColor;
-            water.foamColor = foamColor;
-            water.absorptionDistance = absorption;
+            _waterSurface.scatteringColor = scatteringColor;
+            _waterSurface.refractionColor = refractionColor;
+            _waterSurface.foamColor = foamColor;
+            _waterSurface.absorptionDistance = absorption;
         }
     }
 
