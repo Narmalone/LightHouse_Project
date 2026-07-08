@@ -26,15 +26,18 @@ namespace LightHouse.Features.Items.Interactable
         {
             base.Awake();
             LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
-            InputManager.OnInitialized += InputManager_OnInputManagerInitialized;
             InitializeLocalization();
+        }
+
+        private void Start()
+        {
+            //UpdateInteractionText();
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
-            InputManager.OnInitialized -= InputManager_OnInputManagerInitialized;
         }
         #endregion
 
@@ -80,13 +83,6 @@ namespace LightHouse.Features.Items.Interactable
                 InvokeInteractionDescriptionUpdated();
         }
 
-        #endregion
-
-        #region INPUT MANAGER CALLBACKS
-        private void InputManager_OnInputManagerInitialized()
-        {
-            //UpdateInteractionText();
-        }
         #endregion
 
         #region INTERACTIONS METHODS

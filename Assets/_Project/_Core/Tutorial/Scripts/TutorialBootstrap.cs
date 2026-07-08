@@ -64,6 +64,9 @@ namespace LightHouse.Core.Tutorial
                 Timeline = _timeline,
                 ViewTransform = PlayerHandlerData.MainPlayer?.PlayerCamera?.transform
             };
+
+            _tutoBoat.InitializeBoat();
+            _tutoBoat.SpawnPlayerOnBoatPos();
             _flow.Init(ctx);
         }
 

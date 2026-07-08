@@ -1,8 +1,8 @@
-﻿using LightHouse.Core.Utilities;
+﻿using LightHouse.Core.Inputs;
+using LightHouse.Core.Utilities;
 using LightHouse.Localization;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Localization;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class TipsController : MonoBehaviour
@@ -20,6 +20,14 @@ public class TipsController : MonoBehaviour
         _tipsText.text = "";
         _timer.OnTimerComplete += Timer_OnTimerComplete;
         _timer.StartTimer();
+
+        InputManager.UI.Click.performed += Click_performed;
+    }
+
+    private void Click_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        if(!gameObject.activeInHierarchy) return;
+        ShowNextTip();
     }
 
     private void Update()
@@ -27,17 +35,14 @@ public class TipsController : MonoBehaviour
         if (!gameObject.activeInHierarchy) return;
 
         _timer?.Tick(Time.deltaTime);
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            ShowNextTip();
-        }
     }
 
     private void OnDestroy()
     {
         if (_timer != null)
             _timer.OnTimerComplete -= Timer_OnTimerComplete;
+
+        InputManager.UI.Click.performed -= Click_performed;
     }
 
     private void Timer_OnTimerComplete()

@@ -32,7 +32,6 @@ public class SceneLoader
 
             if (activeOnLoaded)
                 SceneManager.SetActiveScene(sceneInstance.Scene);
-
             onLoad?.Invoke(sceneInstance.Scene.name);
         }
         else

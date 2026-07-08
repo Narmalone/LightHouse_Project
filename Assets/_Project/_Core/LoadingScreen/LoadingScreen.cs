@@ -40,6 +40,4 @@ public class LoadingScreen : PersistentSingleton<LoadingScreen>
     {
         subLabel.text = text;
     }
-
-    
 }

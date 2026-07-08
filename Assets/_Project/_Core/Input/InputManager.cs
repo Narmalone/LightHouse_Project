@@ -6,7 +6,6 @@ namespace LightHouse.Core.Inputs
 {
     public static class InputManager
     {
-        public static event Action OnInitialized;
         public static bool IsInitialized { get; private set; } = false; 
         public static event Action OnInputManagerWillClear;
         private static PlayerInputActions _player_Input_Actions;
@@ -19,7 +18,6 @@ namespace LightHouse.Core.Inputs
                     Debug.LogWarning("PlayerInputActions n'est pas défini dans InputManager ! Création automatique...");
                     _player_Input_Actions = new PlayerInputActions();
                     _player_Input_Actions.Enable();
-                    InputManagerInitialized();
                     return _player_Input_Actions;
                 }
                 return _player_Input_Actions;
@@ -70,9 +68,10 @@ namespace LightHouse.Core.Inputs
             Move_Bind_Name = GetBindingName(pia.Player.Move);
         }
 
-        public static void InputManagerInitialized()
+        public static void Initialize()
         {
-            OnInitialized?.Invoke();
+            _player_Input_Actions = new PlayerInputActions();
+            _player_Input_Actions.Enable();
             IsInitialized = true;
         }
 

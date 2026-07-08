@@ -47,8 +47,6 @@ public class BootstrapInstaller
 
                 var instance = handle.Result;
 
-                //UnityEngine.Object.DontDestroyOnLoad(instance);
-
                 _instances.Add(instance);
 
                 Debug.Log($"[Bootstrap] Instantiated: {loc.PrimaryKey}");

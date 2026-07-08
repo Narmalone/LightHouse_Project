@@ -79,11 +79,10 @@ namespace LightHouse.Features.Items.Interactable.Grabable
             PlayerGrabableItems.OnPlayerGrabableInitialized += PlayerGrabableItems_OnPlayerGrabableInitialized;
             PlayerHandlerData.OnHandlerInitialized += PlayerHandlerData_OnHandlerInitialized;
             LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
-            InputManager.OnInitialized += InputManager_OnInputManagerInitialized;
 
         }
 
-        private void InputManager_OnInputManagerInitialized()
+        private void Start()
         {
             UpdateInteractionText();
         }
@@ -122,7 +121,6 @@ namespace LightHouse.Features.Items.Interactable.Grabable
             PlayerGrabableItems.OnPlayerGrabableInitialized -= PlayerGrabableItems_OnPlayerGrabableInitialized;
             PlayerHandlerData.OnHandlerInitialized -= PlayerHandlerData_OnHandlerInitialized;
             LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
-            InputManager.OnInitialized -= InputManager_OnInputManagerInitialized;
         }
         #endregion
 

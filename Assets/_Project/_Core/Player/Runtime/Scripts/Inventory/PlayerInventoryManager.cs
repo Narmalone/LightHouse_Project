@@ -179,40 +179,33 @@ namespace LightHouse.Core.Player.Inventory
         #region REGISTER / UNREGISTER INPUTS CALLBACKS
         public void RegisterInputs()
         {
-            InputManager.OnInitialized += InputManager_OnInputManagerInitialized;
-            InputManager.OnInputManagerWillClear += InputManager_OnInputManagerWillClear;
             InventoryHandlerData.OnItemDropped += InventoryHandlerData_OnItemDropped;
+            InputManager.Select.performed += Select_performed;
+            InputManager.Scroll.performed += Scroll_performed;
+            InputManager.InteractInInventory.started += InteractInInventory_started;
+            InputManager.InteractInInventory.canceled += InteractInInventory_canceled;
         }
 
         public void UnregisterInputs()
         {
-            InputManager.OnInputManagerWillClear -= InputManager_OnInputManagerWillClear;
-            InputManager.OnInitialized -= InputManager_OnInputManagerInitialized;
             InventoryHandlerData.OnItemDropped -= InventoryHandlerData_OnItemDropped;
-        }
 
-        private void InputManager_OnInputManagerInitialized()
-        {
-            InputManager.Select.performed += Select_performed;
-            InputManager.Scroll.performed += Scroll_performed;
-            InputManager.InteractInInventory.started += InteractInInventory_started;
-            InputManager.InteractInInventory.canceled += InteractInInventory_canceled; ;
-        }
-
-        private void InputManager_OnInputManagerWillClear() 
-        {
-            if(InputManager.Select != null)
+            if (InputManager.Select != null)
                 InputManager.Select.performed -= Select_performed;
 
-            if(InputManager.Scroll != null)
+            if (InputManager.Scroll != null)
                 InputManager.Scroll.performed -= Scroll_performed;
 
-            if(InputManager.InteractInInventory != null)
+            if (InputManager.InteractInInventory != null)
             {
                 InputManager.InteractInInventory.started -= InteractInInventory_started;
                 InputManager.InteractInInventory.canceled -= InteractInInventory_canceled;
             }
-                
+        }
+
+        private void InputManager_OnInputManagerInitialized()
+        {
+            
         }
 
         #endregion

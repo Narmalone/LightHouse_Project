@@ -91,29 +91,28 @@ namespace LightHouse.Features.Items.Inventory.Binoculars
         {
             base.Awake();
             SlotManager.OnSlotSelectedChanged += SlotManager_OnSlotSelectedChanged;
-            InputManager.OnInputManagerWillClear += InputManager_OnInputManagerWillClear;
-            _baseHoldTime = UseHoldTime;
-        }
-
-        protected override void InputManager_OnInitialized()
-        {
-            base.InputManager_OnInitialized();
-            BuildUpBinocularInteractionText();
             InputManager.Player.Scroll.performed += Scroll_performed;
+
+            _baseHoldTime = UseHoldTime;
         }
 
         private void Start()
         {
             // Démarre en FOV large (zoom faible)
             _binocularCurrentFov = _binocularMinFov;
+            BuildUpBinocularInteractionText();
+
             UpdateZoom01FromFov();
             DisableBinoculars();
+
         }
+
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             SlotManager.OnSlotSelectedChanged -= SlotManager_OnSlotSelectedChanged;
+            InputManager.Player.Scroll.performed -= Scroll_performed;
         }
         #endregion
 
@@ -128,12 +127,6 @@ namespace LightHouse.Features.Items.Inventory.Binoculars
                 key,
                 _holdToAction
             );
-        }
-        private void InputManager_OnInputManagerWillClear()
-        {
-            // Débranche proprement avant reset des actions
-            InputManager.OnInputManagerWillClear -= InputManager_OnInputManagerWillClear;
-            InputManager.Player.Scroll.performed -= Scroll_performed;
         }
 
         private void Scroll_performed(UnityEngine.InputSystem.InputAction.CallbackContext ctx)

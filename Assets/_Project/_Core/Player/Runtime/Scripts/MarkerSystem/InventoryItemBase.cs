@@ -63,7 +63,6 @@ namespace LightHouse.Features.Items.Inventory
         protected virtual void Awake()
         {
             LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
-            InputManager.OnInitialized += InputManager_OnInitialized;
         }
 
         private void Start()
@@ -81,16 +80,6 @@ namespace LightHouse.Features.Items.Inventory
         protected virtual void OnDestroy()
         {
             LocalizationSettings.SelectedLocaleChanged -= LocalizationSettings_SelectedLocaleChanged;
-            InputManager.OnInitialized -= InputManager_OnInitialized;
-        }
-        #endregion
-
-        #region INPUT MANAGER CALLBACKS
-
-        protected virtual void InputManager_OnInitialized()
-        {
-            UpdateNameText();
-            SetPickupTextToDefault();
         }
         #endregion
 

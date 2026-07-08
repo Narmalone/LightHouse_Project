@@ -42,9 +42,8 @@ namespace LightHouse.Features.Items.Inventory.Scrapper
             await UpdateUseKey();
         }
 
-        protected async override void InputManager_OnInitialized()
+        private async void Start()
         {
-            base.InputManager_OnInitialized();
             await UpdateUseKey();
         }
 

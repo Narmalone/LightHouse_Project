@@ -60,14 +60,12 @@ namespace LightHouse.Features.UI
         {
             IsSelected = true;
             ApplyVisual();
-            Debug.Log("Selected " + gameObject.name);
         }
 
         public void Unselect()
         {
             IsSelected = false;
             ApplyVisual();
-            Debug.Log("UnSelected " + gameObject.name);
         }
 
         public void Disable()

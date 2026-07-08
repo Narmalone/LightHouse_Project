@@ -77,7 +77,7 @@ public class BootStrap : MonoBehaviour
                     rule.label,
                     (assetName, progress) =>
                     {
-                        loadingScreen.SetSubLabel(Clean(assetName)); // 👈 IMPORTANT
+                        loadingScreen.SetSubLabel(Clean(assetName));
                         loadingScreen.SetProgress(progress);
                     }
                 )
@@ -111,8 +111,6 @@ public class BootStrap : MonoBehaviour
                 )
             );
         }
-
-        loadingScreen.Hide();
     }
     private string Clean(string raw)
     {
@@ -175,9 +173,6 @@ public class BootStrap : MonoBehaviour
 
         // ───────────── DONE ─────────────
         OnGameLoaded?.Invoke();
-
-        yield return new WaitForSeconds(0.2f);
-        loadingScreen.Hide();
     }
 
     private IEnumerator SwitchToBootstrap()
