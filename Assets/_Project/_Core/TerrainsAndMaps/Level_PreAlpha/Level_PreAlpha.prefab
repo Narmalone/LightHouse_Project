@@ -224,6 +224,11 @@ MonoBehaviour:
   m_ShapeWidth: -1
   m_ShapeHeight: -1
   m_AspectRatio: 1
+  m_Version: 14
+  m_ObsoleteShadowResolutionTier: 1
+  m_ObsoleteUseShadowQualitySettings: 0
+  m_ObsoleteCustomShadowResolution: 512
+  m_ObsoleteContactShadows: 0
   m_SpotIESCutoffPercent: 100
   m_LightDimmer: 1
   m_VolumetricDimmer: 1
@@ -338,11 +343,6 @@ MonoBehaviour:
   m_AreaLightEmissiveMeshShadowCastingMode: 0
   m_AreaLightEmissiveMeshMotionVectorGenerationMode: 0
   m_AreaLightEmissiveMeshLayer: -1
-  m_Version: 14
-  m_ObsoleteShadowResolutionTier: 1
-  m_ObsoleteUseShadowQualitySettings: 0
-  m_ObsoleteCustomShadowResolution: 512
-  m_ObsoleteContactShadows: 0
 --- !u!114 &7541633144007828926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -508,6 +508,11 @@ MonoBehaviour:
   m_ShapeWidth: -1
   m_ShapeHeight: -1
   m_AspectRatio: 1
+  m_Version: 14
+  m_ObsoleteShadowResolutionTier: 1
+  m_ObsoleteUseShadowQualitySettings: 0
+  m_ObsoleteCustomShadowResolution: 512
+  m_ObsoleteContactShadows: 0
   m_SpotIESCutoffPercent: 100
   m_LightDimmer: 1
   m_VolumetricDimmer: 1
@@ -622,11 +627,6 @@ MonoBehaviour:
   m_AreaLightEmissiveMeshShadowCastingMode: 0
   m_AreaLightEmissiveMeshMotionVectorGenerationMode: 0
   m_AreaLightEmissiveMeshLayer: -1
-  m_Version: 14
-  m_ObsoleteShadowResolutionTier: 1
-  m_ObsoleteUseShadowQualitySettings: 0
-  m_ObsoleteCustomShadowResolution: 512
-  m_ObsoleteContactShadows: 0
 --- !u!1 &5515994506601000945
 GameObject:
   m_ObjectHideFlags: 0
@@ -836,6 +836,7 @@ GameObject:
   - component: {fileID: 4322987455598984927}
   - component: {fileID: 7580112146688708962}
   - component: {fileID: 6667423957410081546}
+  - component: {fileID: 4846726585528412906}
   m_Layer: 0
   m_Name: Level_PreAlpha
   m_TagString: Untagged
@@ -851,8 +852,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7848016129463488309}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -398.36, y: -72.69, z: -456.77}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -448.055, y: -66.5, z: -421.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -901,6 +902,7 @@ Terrain:
   m_AllowAutoConnect: 1
   m_EnableHeightmapRayTracing: 1
   m_EnableTreesAndDetailsRayTracing: 0
+  m_EnableHeightmapLODFrustumCulling: 1
   m_TreeMotionVectorModeOverride: 3
 --- !u!154 &6667423957410081546
 TerrainCollider:
@@ -922,6 +924,20 @@ TerrainCollider:
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 78130ac185898024a83d9b440e153059, type: 2}
   m_EnableTreeColliders: 1
+--- !u!114 &4846726585528412906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7848016129463488309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 252d226a7cd3d804c9c162e63180d521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PreAlphaLevel
+  LightHouse: {fileID: 1236820167154639369}
+  IslandCenterPoint: {fileID: 3908731283601503650}
 --- !u!1 &8329972722157707627
 GameObject:
   m_ObjectHideFlags: 0
@@ -3963,7 +3979,7 @@ PrefabInstance:
     - target: {fileID: 176657262381181488, guid: f46e055003964224c8eddde5a624db20,
         type: 3}
       propertyPath: m_Name
-      value: WinowSound
+      value: WidowSound
       objectReference: {fileID: 0}
     - target: {fileID: 5831817121495009152, guid: f46e055003964224c8eddde5a624db20,
         type: 3}

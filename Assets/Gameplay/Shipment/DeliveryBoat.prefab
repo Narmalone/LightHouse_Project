@@ -71,8 +71,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4646029266628827071}
-  - component: {fileID: 7491951684166804172}
   - component: {fileID: 5284016400226085201}
+  - component: {fileID: 7491951684166804172}
   m_Layer: 0
   m_Name: DeliveryBoat
   m_TagString: Untagged
@@ -96,6 +96,52 @@ Transform:
   - {fileID: 2898995220469789308}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5284016400226085201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1985295491294119091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 155140ac46f03f1489cd1d15a2199c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rb: {fileID: 6288914196383142979}
+  _buoyancys:
+  - {fileID: 837548266897885808}
+  - {fileID: 7602909185317241939}
+  - {fileID: 6127779585935460597}
+  - {fileID: 1138906170322867296}
+  _floaterController: {fileID: 7491951684166804172}
+  _ease:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _lookAheadMeters: 8
+  _yawSmoothTime: 0.35
+  _maxYawDegPerSec: 120
 --- !u!114 &7491951684166804172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,51 +172,6 @@ MonoBehaviour:
   _includeDeformation: 1
   _excludeSimulation: 0
   _outputNormal: 1
---- !u!114 &5284016400226085201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1985295491294119091}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 155140ac46f03f1489cd1d15a2199c35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rb: {fileID: 6288914196383142979}
-  _buoyancys:
-  - {fileID: 837548266897885808}
-  - {fileID: 7602909185317241939}
-  - {fileID: 6127779585935460597}
-  - {fileID: 1138906170322867296}
-  _ease:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 1
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _lookAheadMeters: 8
-  _yawSmoothTime: 0.35
-  _maxYawDegPerSec: 120
 --- !u!1 &2166115173863519630
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,6 +440,11 @@ MonoBehaviour:
   m_ShapeWidth: -1
   m_ShapeHeight: -1
   m_AspectRatio: 1
+  m_Version: 14
+  m_ObsoleteShadowResolutionTier: 1
+  m_ObsoleteUseShadowQualitySettings: 0
+  m_ObsoleteCustomShadowResolution: 512
+  m_ObsoleteContactShadows: 0
   m_SpotIESCutoffPercent: 100
   m_LightDimmer: 1
   m_VolumetricDimmer: 1
@@ -553,11 +559,6 @@ MonoBehaviour:
   m_AreaLightEmissiveMeshShadowCastingMode: 0
   m_AreaLightEmissiveMeshMotionVectorGenerationMode: 0
   m_AreaLightEmissiveMeshLayer: -1
-  m_Version: 14
-  m_ObsoleteShadowResolutionTier: 1
-  m_ObsoleteUseShadowQualitySettings: 0
-  m_ObsoleteCustomShadowResolution: 512
-  m_ObsoleteContactShadows: 0
 --- !u!1 &5347425054430412232
 GameObject:
   m_ObjectHideFlags: 0

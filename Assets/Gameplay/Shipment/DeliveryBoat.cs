@@ -1,7 +1,9 @@
-﻿using LightHouse.Features.Boats;
+﻿using LightHouse.Core.Utilities;
+using LightHouse.Features.Boats;
 using LightHouse.Features.Computer.LEO.Supplies;
 using LightHouse.Features.Sonar.Core;
 using LightHouse.Features.TimeOfDay.TimeCore;
+using LightHouse.Features.Weather.Ocean;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -31,6 +33,7 @@ namespace LightHouse.Features.Shipment.Delivery
         [Header(" --- COMPONENTS --- ")]
         [SerializeField] private Rigidbody _rb;
         [SerializeField] private GameObject[] _buoyancys;
+        [SerializeField] private FloaterControllers _floaterController;
 
         [Header(" --- TIMING (DRIVEN BY GAME CLOCK) --- ")]
         [SerializeField] private AnimationCurve _ease = AnimationCurve.Linear(0, 0, 1, 1);
@@ -64,6 +67,11 @@ namespace LightHouse.Features.Shipment.Delivery
             yield return new WaitForFixedUpdate();
             _rb.isKinematic = false;
             foreach (var b in _buoyancys) b.SetActive(true);
+        }
+
+        private void Start()
+        {
+            _floaterController.SetWaterSurface(OceanManager.Instance.WaterSurfaceComponent);
         }
 
         private void FixedUpdate()

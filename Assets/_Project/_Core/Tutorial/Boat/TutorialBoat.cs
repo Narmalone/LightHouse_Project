@@ -23,8 +23,25 @@ namespace LightHouse.Core.Tutorial.Boat
 
         public void SpawnPlayerOnBoatPos()
         {
-            PlayerHandlerData.MainPlayer.Character.SetPosition(_playerSpawnTutorial.position);
-            PlayerHandlerData.MainPlayer.Character.SetRotation(_playerSpawnTutorial.rotation);
+            if (PlayerHandlerData.MainPlayer != null)
+            {
+                PlayerHandlerData.MainPlayer.Inventory.Disable();
+                PlayerHandlerData.MainPlayer.Interactions.Disable();
+                PlayerHandlerData.MainPlayer.EnableAllCharacterInputs = false;
+                PlayerHandlerData.MainPlayer.EnableCameraRotationInput = false;
+            }
+
+            PlayerHandlerData.MainPlayer.Character.ForceCutVelocity();
+            PlayerHandlerData.MainPlayer.Character.ForceLookRotation(_playerSpawnPoint.rotation);
+
+            PlayerHandlerData.MainPlayer.Character.SetPositionAndRotation(
+            _playerSpawnTutorial.position,
+            _playerSpawnTutorial.rotation,
+            true);
+
+            PlayerHandlerData.MainPlayer.PlayerCamera.SetRotation(
+                _playerSpawnTutorial.rotation);
+
         }
 
     }

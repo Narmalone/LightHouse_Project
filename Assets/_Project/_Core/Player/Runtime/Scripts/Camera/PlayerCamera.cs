@@ -162,5 +162,18 @@ namespace LightHouse.Core.Player
             // --- 5. Position snap sur la tête ---
             Transform.position = FollowTransform.position;
         }
+
+        public void SetRotation(Quaternion rotation)
+        {
+            Transform.rotation = rotation;
+
+            Vector3 forward = rotation * Vector3.forward;
+            forward.y = 0f;
+
+            if (forward.sqrMagnitude > 0.001f)
+                PlanarDirection = forward.normalized;
+
+            _targetVerticalAngle = rotation.eulerAngles.x;
+        }
     }
 }

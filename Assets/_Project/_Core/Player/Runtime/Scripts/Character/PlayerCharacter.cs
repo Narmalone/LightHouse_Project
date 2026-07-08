@@ -157,6 +157,12 @@ namespace LightHouse.Core.Player
         public void SetRotation(Quaternion rot)
         {
             Motor.SetRotation(rot);
+            
+        }
+
+        public void SetPositionAndRotation(Vector3 pos, Quaternion rot, bool byPassInterpolation = true)
+        {
+            Motor.SetPositionAndRotation(pos, rot, byPassInterpolation);
         }
 
         public void Initialize()
@@ -305,6 +311,12 @@ namespace LightHouse.Core.Player
                     1f - Mathf.Exp(-_crouchHeightResponse * deltaTime)
                 );
             }
+        }
+
+        public void ForceLookRotation(Quaternion rotation)
+        {
+            _lookInputVector = rotation * Vector3.forward;
+            Motor.SetRotation(rotation);
         }
 
         #region ICharacterController Callbacks

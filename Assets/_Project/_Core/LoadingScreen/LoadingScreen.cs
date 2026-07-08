@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class LoadingScreen : PersistentSingleton<LoadingScreen>
+public class LoadingScreen : NotPersistentSingleton<LoadingScreen>
 {
     [SerializeField] private GameObject root;
     [SerializeField] private TipsController tipController;
