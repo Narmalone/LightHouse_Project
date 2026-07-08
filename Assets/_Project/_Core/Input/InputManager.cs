@@ -46,13 +46,6 @@ namespace LightHouse.Core.Inputs
         public static string Jump_Bind_Name;
         public static string Move_Bind_Name;
 
-        public static void SetPlayerInputActions(PlayerInputActions pia)
-        {
-            if (_player_Input_Actions != null) DisposePlayerInputActions();
-            _player_Input_Actions = pia;
-            UpdateAllBindNames(pia);
-        }
-
         public static void UpdateAllBindNames(PlayerInputActions pia)
         {
             Interact_Bind_Name = GetBindingName(pia.Player.Interact);
@@ -71,6 +64,7 @@ namespace LightHouse.Core.Inputs
             _player_Input_Actions = new PlayerInputActions();
             _player_Input_Actions.Enable();
             IsInitialized = true;
+            UpdateAllBindNames(_player_Input_Actions);
         }
 
         public static void DisposePlayerInputActions()

@@ -70,6 +70,16 @@ namespace LightHouse.Core.Player.Inventory
         #region MONO CALLBACKS
         private void Awake() => Initialize();
 
+        private void OnEnable()
+        {
+            RegisterInputs();
+        }
+
+        private void OnDisable()
+        {
+            UnregisterInputs();
+        }
+
         private void Start()
         {
             _inventoryRaycastDetector = _raycastSystem.InventoryDetector;
@@ -121,7 +131,6 @@ namespace LightHouse.Core.Player.Inventory
 
         private void OnDestroy()
         {
-            UnregisterInputs();
             _inventoryRaycastDetector.OnDetected -= HandleItemDetected;
             _inventoryRaycastDetector.OnItemLost -= ResetSeenObject;
             SlotManager.Clear();
@@ -135,7 +144,6 @@ namespace LightHouse.Core.Player.Inventory
         private void Initialize()
         {
             InventoryHandlerData.SetInventoryTarget(_inventoryTarget);
-            RegisterInputs();
             SlotManager.Initialize();
             _inventoryUiController.GenerateItemSlot(_inventoryCapacity, _itemDatabase);
             InitializeControllers();

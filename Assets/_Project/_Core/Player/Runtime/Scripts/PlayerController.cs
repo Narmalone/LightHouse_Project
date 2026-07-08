@@ -91,24 +91,11 @@ namespace LightHouse.Core.Player
             Cursor.visible = false;
 
             ForceChangePlayerState += PlayerChangeState;
-
-/*            if (!InputManager.IsInitialized)
-            {
-                _inputActions = new PlayerInputActions();
-                _inputActions.Enable();
-                InputManager.SetPlayerInputActions(_inputActions);
-            }*/
             _playerCharacter.Initialize();
 
             PlayerHandlerData.InitializeHandlerData(this);
                 
             _isInitialized = true;
-        }
-
-        private void Start()
-        {
-            //InputManager.InputManagerInitialized();
-
         }
 
         private void FixedUpdate()
@@ -146,7 +133,6 @@ namespace LightHouse.Core.Player
 
         private void OnDestroy()
         {
-            InputManager.DisposePlayerInputActions();
             PlayerHandlerData.Dispose();
             ForceChangePlayerState -= PlayerChangeState;
         }

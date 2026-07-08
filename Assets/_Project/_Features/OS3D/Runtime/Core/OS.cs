@@ -109,28 +109,28 @@ namespace LightHouse.Features.Computer.OS
             }
         }
 
+        private void OnEnable()
+        {
+            InputManager.UI.Click.performed += Click_performed;
+        }
+
+        private void OnDisable()
+        {
+            InputManager.UI.Click.performed -= Click_performed;
+        }
+
         private void Start()
         {
             _desktopGroup.alpha = 0.0f;
             _desktopGroup.interactable = false;
             _desktopGroup.blocksRaycasts = false;
-
-            InputManager.UI.Click.performed += Click_performed;
-            InputManager.OnInputManagerWillClear += OnInputManagerCleared;
         }
 
         private void OnDestroy()
         {
             _eventDatabase.ClearRuntimeEvents();
-            InputManager.UI.Click.performed -= Click_performed;
-            InputManager.OnInputManagerWillClear -= OnInputManagerCleared;
             SettingsMenuController.OnSettingsMenuOpened -= SettingsMenuController_OnSettingsMenuOpened;
             SettingsMenuController.OnSettingsMenuClosed -= SettingsMenuController_OnSettingsMenuClosed;
-        }
-
-        private void OnInputManagerCleared()
-        {
-            InputManager.UI.Click.performed -= Click_performed;
         }
 
         private void Click_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)

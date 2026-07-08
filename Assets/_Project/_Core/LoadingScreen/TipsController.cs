@@ -21,7 +21,16 @@ public class TipsController : MonoBehaviour
         _timer.OnTimerComplete += Timer_OnTimerComplete;
         _timer.StartTimer();
 
+    }
+
+    private void OnEnable()
+    {
         InputManager.UI.Click.performed += Click_performed;
+    }
+
+    private void OnDisable()
+    {
+        InputManager.UI.Click.performed -= Click_performed;
     }
 
     private void Click_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
@@ -41,8 +50,6 @@ public class TipsController : MonoBehaviour
     {
         if (_timer != null)
             _timer.OnTimerComplete -= Timer_OnTimerComplete;
-
-        InputManager.UI.Click.performed -= Click_performed;
     }
 
     private void Timer_OnTimerComplete()
