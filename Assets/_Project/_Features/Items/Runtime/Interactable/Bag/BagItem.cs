@@ -20,7 +20,6 @@ namespace LightHouse.Features.Items.Interactable.Bag
             InvokeObjectInteracted();
             //this.gameObject.SetActive(false);
 
-            OnDestroyed?.Invoke();
             Destroy(this.gameObject);
         }
 
@@ -28,7 +27,6 @@ namespace LightHouse.Features.Items.Interactable.Bag
         {
             if (PlayerHandlerData.MainPlayer != null && InventoryHandlerData.IsInitialized)
             {
-                Debug.Log("on equiped");
                 InventoryUIController inventoryUI = PlayerHandlerData.MainPlayer.Inventory.InventoryUI;
                 inventoryUI.AddItemToSlots(_additionalSlots, PlayerHandlerData.MainPlayer.Inventory.ItemDatabase);
             }
@@ -42,6 +40,13 @@ namespace LightHouse.Features.Items.Interactable.Bag
                 InteractionText = "PickUpBag";
         }
         public void OnRaycastEnd() { }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            OnDestroyed?.Invoke();
+
+        }
     }
 }
 

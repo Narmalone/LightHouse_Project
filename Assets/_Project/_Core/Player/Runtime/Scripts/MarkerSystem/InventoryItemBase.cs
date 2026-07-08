@@ -65,11 +65,11 @@ namespace LightHouse.Features.Items.Inventory
             LocalizationSettings.SelectedLocaleChanged += LocalizationSettings_SelectedLocaleChanged;
         }
 
-        private void Start()
+        protected virtual void Start()
         {
             if (EnableAutomaticSetName)
             {
-                UpdateNameText();
+                SetNameTextToDefault();
             }
             if (EnableAutomaticSetPickupText)
             {
@@ -95,11 +95,11 @@ namespace LightHouse.Features.Items.Inventory
 
         protected virtual void LocalizationSettings_SelectedLocaleChanged(Locale obj)
         {
-            UpdateNameText();
+            SetNameTextToDefault();
             SetPickupTextToDefault();
         }
 
-        public async virtual void UpdateNameText()
+        public async virtual void SetNameTextToDefault()
         {
             LocalizedString targetString = _itemNameString;
             AsyncOperationHandle<string> actionTextOp = targetString.GetLocalizedStringAsync();

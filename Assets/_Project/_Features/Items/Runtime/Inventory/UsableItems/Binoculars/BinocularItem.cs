@@ -96,8 +96,9 @@ namespace LightHouse.Features.Items.Inventory.Binoculars
             _baseHoldTime = UseHoldTime;
         }
 
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
             // Démarre en FOV large (zoom faible)
             _binocularCurrentFov = _binocularMinFov;
             BuildUpBinocularInteractionText();
