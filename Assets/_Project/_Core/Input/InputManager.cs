@@ -13,12 +13,10 @@ namespace LightHouse.Core.Inputs
         {
             get
             {
-                if(_player_Input_Actions == null)
+                if (!InputManager.IsInitialized && _player_Input_Actions == null)
                 {
                     Debug.LogWarning("PlayerInputActions n'est pas défini dans InputManager ! Création automatique...");
-                    _player_Input_Actions = new PlayerInputActions();
-                    _player_Input_Actions.Enable();
-                    return _player_Input_Actions;
+                    Initialize();
                 }
                 return _player_Input_Actions;
             }
