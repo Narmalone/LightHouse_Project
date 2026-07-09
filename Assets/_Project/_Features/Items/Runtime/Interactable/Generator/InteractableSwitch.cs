@@ -73,7 +73,7 @@ namespace LightHouse.Features.Items.Interactable
             string input = InputManager.Interact_Bind_Name;
             LocalizedString actionString = _isSwitchOn ? _offText : _onText;
 
-            InteractionText = await InteractionTextBuilder.Build(
+            InteractionText = await InteractionTextBuilder.Build_Hold_To_Action(
                 actionString,
                 input,
                 _pressToAction

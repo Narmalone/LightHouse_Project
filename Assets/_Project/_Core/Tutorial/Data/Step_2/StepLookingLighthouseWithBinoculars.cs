@@ -1,5 +1,8 @@
 using LightHouse.Core.Audio;
+using LightHouse.Core.Inputs;
+using System;
 using UnityEngine;
+using UnityEngine.Localization;
 
 namespace LightHouse.Core.Tutorial.Steps
 {
@@ -8,6 +11,8 @@ namespace LightHouse.Core.Tutorial.Steps
     {
         [SerializeField] private LocalizedDialogueAudio _tutorial3;
         [SerializeField] private LocalizedDialogueAudio _tutorial4;
+        [SerializeField] private LocalizedString _objectiveTakeBinocular;
+        [SerializeField] private LocalizedString _objectiveLookLighthouseWithBinoculars;
 
         [SerializeField, Range(0.75f, 0.999f)]
         private float _lookDotThreshold = 0.93f;
@@ -27,11 +32,24 @@ namespace LightHouse.Core.Tutorial.Steps
             _ctx.Binocular.InvokeOnPickupTextUpdated();
             _tutorial3.Register();
             _tutorial4.Register();
+            ObjectiveManager.Instance.SetObjective(_objectiveTakeBinocular);
         }
 
-        private void Binocular_ItemAddedToInventory()
+        private async void Binocular_ItemAddedToInventory()
         {
             _ctx.Talkie?.Enqueue(_tutorial3);
+            ObjectiveManager.Instance.CompleteObjective(() =>
+            {
+                ObjectiveManager.Instance.SetObjective(
+                    _objectiveLookLighthouseWithBinoculars,
+                        new
+                        {
+                            key = InputManager.InteractInInventory_Bind_Name
+                        }
+                );
+            });
+
+
             _ctx.Binocular.ItemAddedToInventory -= Binocular_ItemAddedToInventory;
         }
 

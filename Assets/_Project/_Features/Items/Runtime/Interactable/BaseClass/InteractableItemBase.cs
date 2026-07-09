@@ -66,7 +66,7 @@ namespace LightHouse.Features.Items.Interactable
         public async virtual Task<string> GetDefaultInteractionText()
         {
             string input = InputManager.Interact_Bind_Name;
-            var interactionName = await InteractionTextBuilder.Build(
+            var interactionName = await InteractionTextBuilder.Build_Hold_To_Action(
                 _interactText,
                 input,
                 _pressToAction
@@ -76,6 +76,7 @@ namespace LightHouse.Features.Items.Interactable
 
         public async virtual Task<string> GetDefaultNameText()
         {
+            if (_interactableItemName == null ||_interactableItemName.TableReference == null) return string.Empty;
             AsyncOperationHandle<string> actionTextOp = _interactableItemName.GetLocalizedStringAsync();
             await actionTextOp.Task;
             _name = actionTextOp.Result;

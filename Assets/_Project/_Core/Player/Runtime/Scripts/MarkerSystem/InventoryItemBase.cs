@@ -112,7 +112,7 @@ namespace LightHouse.Features.Items.Inventory
         public async virtual void SetPickupTextToDefault()
         {
             string input = InputManager.Pickup_Bind_Name;
-            _currentPickupText = await InteractionTextBuilder.Build(
+            _currentPickupText = await InteractionTextBuilder.Build_Hold_To_Action(
                 _pickupText,
                 input,
                 _pressToAction

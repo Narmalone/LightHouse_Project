@@ -47,13 +47,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: 
+  _interactableItemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:017d10ec823be454082f9cc2c984dbe4
+    m_TableEntryReference:
+      m_KeyId: 2590932977459200
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   _detectionCollider: {fileID: 5184746460937484856}
+  _interactionTextsDB: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
+    type: 2}
   <CanBeRaycasted>k__BackingField: 1
   <CanBeInteracted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
+  <InteractionText>k__BackingField: 
   _itemNeeded: 7
-  _interactionTextsDB: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
-    type: 2}
   _itemNeededName:
     m_TableReference:
       m_TableCollectionName: GUID:017d10ec823be454082f9cc2c984dbe4
@@ -64,10 +74,10 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   _currentItemNeededName: 
-  _currentInteractionText: 
   _hasKeyInInventory: 0
   _hasKeyOnHands: 0
-  UnsubscribeToItemOnUse: 0
+  AutoSubscribeOnSeen: 1
+  AutoUnsubscribeOnItemUsed: 1
   references:
     version: 2
     RefIds: []

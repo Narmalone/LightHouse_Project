@@ -151,7 +151,7 @@ namespace LightHouse.Features.Items.Interactable.Grabable
             var actionText = _isGrabbed ? _releaseText : _grabText;
 
             // Utilisation du builder pour construire le texte final
-            InteractionText = await InteractionTextBuilder.Build(
+            InteractionText = await InteractionTextBuilder.Build_Hold_To_Action(
                 actionText,
                 input,
                 _pressToAction

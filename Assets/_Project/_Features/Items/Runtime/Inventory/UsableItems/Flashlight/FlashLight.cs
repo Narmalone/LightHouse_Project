@@ -53,7 +53,7 @@ namespace LightHouse.Features.Items.Inventory.Flashlight
             var action = _isLightOn ? _lightOff : _lightOn;
             var key = InputManager.InteractInInventory_Bind_Name;
 
-            _currentUseInInventoryText = await InteractionTextBuilder.Build(
+            _currentUseInInventoryText = await InteractionTextBuilder.Build_Hold_To_Action(
                 action,
                 key,
                 _holdToAction

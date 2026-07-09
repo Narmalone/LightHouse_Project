@@ -21,9 +21,9 @@ namespace LightHouse.Core.Settings.Video.Graphism.Quality
         {
             if (!globalVolume)
                 Debug.LogWarning("[HDRP Preset] Global Volume non assigné.");
-            if (GraphismHandlerData.CurrentPreset != null) Apply(GraphismHandlerData.CurrentTier);
+            /*if (GraphismHandlerData.CurrentPreset != null) Apply(GraphismHandlerData.CurrentTier);
 
-            GraphismHandlerData.OnPresetApplied += GraphismHandlerData_OnPresetChanged;
+            GraphismHandlerData.OnPresetApplied += GraphismHandlerData_OnPresetChanged;*/
         }
 
         private void OnDestroy()

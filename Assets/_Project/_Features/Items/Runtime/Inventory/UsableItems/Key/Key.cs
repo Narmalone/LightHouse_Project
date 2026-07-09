@@ -52,7 +52,7 @@ namespace LightHouse.Features.Items.Inventory
 
         protected async virtual Task UpdateUseKey()
         {
-            _currentUseText = await InteractionTextBuilder.Build(
+            _currentUseText = await InteractionTextBuilder.Build_Hold_To_Action(
                 _use,
                 InputManager.InteractInInventory_Bind_Name,
                 _holdToAction

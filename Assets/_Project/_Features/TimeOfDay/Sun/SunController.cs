@@ -48,6 +48,7 @@ namespace LightHouse.Features.TimeOfDay.Sun
 
         public void OnTimeChanged(float timeOfDay)
         {
+            return;
             timeOfDay = Normalize24(timeOfDay);
 
             // 1) Découpe jour/nuit (supporte aussi le cas lever > coucher si besoin)

@@ -142,7 +142,7 @@ namespace LightHouse.Features.Items.Interactable.Doors
                 wrapper = _pressToAction;
             }
 
-            InteractionText = await InteractionTextBuilder.Build(
+            InteractionText = await InteractionTextBuilder.Build_Hold_To_Action(
                 targetString,
                 bind,
                 wrapper

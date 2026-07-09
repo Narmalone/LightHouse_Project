@@ -220,9 +220,15 @@ namespace LightHouse.Features.TimeOfDay.Lighting
         #endregion
 
         #region Time Cycle
+        private int _lastFrame = -1;
 
         public void OnTimeChanged(float timeOfDay)
         {
+            if (_lastFrame == Time.frameCount)
+                Debug.LogWarning($"Deux appels la même frame ! time={timeOfDay}");
+
+            _lastFrame = Time.frameCount;
+            Debug.Log(timeOfDay);
             // 1) Résoudre profil “intra-météo” pour météo active
             var a = EvaluateResolved(_activeWeather, timeOfDay);
 
@@ -263,6 +269,7 @@ namespace LightHouse.Features.TimeOfDay.Lighting
             GetBlendSegments(time, out var fromSeg, out var toSeg, out float t);
             var from = arr[(int)fromSeg] ?? arr[(int)TimeOfDaySegment.Midday];
             var to = arr[(int)toSeg] ?? arr[(int)TimeOfDaySegment.Midday];
+
             //Debug.Log($"weather target: {to.name}");
             return ResolveInterpolated(from, to, t);
         }
@@ -367,6 +374,7 @@ namespace LightHouse.Features.TimeOfDay.Lighting
             // Fog
             r.FogTint = Color.Lerp(a.Tint, b.Tint, t);
             r.BaseHeight = Mathf.Lerp(a.BaseHeight, b.BaseHeight, t);
+            Debug.Log(a.name + " " + b.name);
             r.MaxHeight = Mathf.Lerp(a.MaximumHeight, b.MaximumHeight, t);
             r.MeanFreePath = Mathf.Lerp(a.FogAttenuationDistance, b.FogAttenuationDistance, t);
             r.MaxFogDistance = Mathf.Lerp(a.MaxFogDistance, b.MaxFogDistance, t);

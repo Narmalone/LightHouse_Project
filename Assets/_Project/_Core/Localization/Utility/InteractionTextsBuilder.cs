@@ -5,7 +5,7 @@ namespace LightHouse.Core.Localization
 {
     public static class InteractionTextBuilder
     {
-        public static async Task<string> Build(
+        public static async Task<string> Build_Hold_To_Action(
             LocalizedString actionText,
             string bindKey = null,
             LocalizedString prefixSentence = null)

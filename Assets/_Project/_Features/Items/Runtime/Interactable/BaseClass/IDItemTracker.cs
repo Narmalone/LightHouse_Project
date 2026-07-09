@@ -96,7 +96,7 @@ namespace LightHouse.Features.Items.Interactable
 
         private async void ResolveWithWrapper(LocalizedString wrapper, LocalizedString actionText, string input)
         {
-            var finalText = await InteractionTextBuilder.Build(
+            var finalText = await InteractionTextBuilder.Build_Hold_To_Action(
                 actionText: actionText,
                 bindKey: input,
                 prefixSentence: wrapper

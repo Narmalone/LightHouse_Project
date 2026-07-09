@@ -123,7 +123,7 @@ namespace LightHouse.Features.Items.Inventory.Binoculars
         {
             var action = _inventoryTextsDB.Binoculars_On;
             var key = InputManager.InteractInInventory_Bind_Name;
-            _useInInventoryText = await InteractionTextBuilder.Build(
+            _useInInventoryText = await InteractionTextBuilder.Build_Hold_To_Action(
                 action,
                 key,
                 _holdToAction

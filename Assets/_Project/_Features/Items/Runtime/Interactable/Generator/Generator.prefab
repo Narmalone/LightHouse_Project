@@ -99,13 +99,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: 
+  _interactableItemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:017d10ec823be454082f9cc2c984dbe4
+    m_TableEntryReference:
+      m_KeyId: 773655596507136
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   _detectionCollider: {fileID: 1146315330893860358}
+  _interactionTextsDB: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
+    type: 2}
   <CanBeRaycasted>k__BackingField: 1
   <CanBeInteracted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
+  <InteractionText>k__BackingField: 
   _itemNeeded: 0
-  _interactionTextsDB: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
-    type: 2}
   _itemNeededName:
     m_TableReference:
       m_TableCollectionName: GUID:017d10ec823be454082f9cc2c984dbe4
@@ -116,7 +126,6 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   _currentItemNeededName: 
-  _currentInteractionText: 
   _hasKeyInInventory: 0
   _hasKeyOnHands: 0
   AutoSubscribeOnSeen: 1
@@ -453,10 +462,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: 
+  _interactableItemName:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   _detectionCollider: {fileID: 3697610427762746457}
+  _interactionTextsDB: {fileID: 0}
   <CanBeRaycasted>k__BackingField: 1
   <CanBeInteracted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
+  <InteractionText>k__BackingField: 
   _interactionsTextsDb: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
     type: 2}
   _interactionObjectsType: 2
@@ -465,6 +485,9 @@ MonoBehaviour:
   _rotationDuration: 0.2
   _autoComebackAfterDelay: 1
   _comebackDelay: 60
+  references:
+    version: 2
+    RefIds: []
 --- !u!135 &3697610427762746457
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -559,10 +582,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: 
+  _interactableItemName:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   _detectionCollider: {fileID: 7263093370348075059}
+  _interactionTextsDB: {fileID: 0}
   <CanBeRaycasted>k__BackingField: 1
   <CanBeInteracted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
+  <InteractionText>k__BackingField: 
   _interactionsTextsDb: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
     type: 2}
   _interactionObjectsType: 1
@@ -606,6 +640,9 @@ MonoBehaviour:
   _enabledColor: {r: 0, g: 1, b: 0, a: 1}
   rend: {fileID: 6159476304771949146}
   _enableBlink: 1
+  references:
+    version: 2
+    RefIds: []
 --- !u!23 &6159476304771949146 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 336266058331613444, guid: 4e30ff6ed26ec26418e34e282dc1f092,
