@@ -60,7 +60,7 @@ namespace LightHouse.Features.Weather.Clouds
 
             if(!SunLight)
             {
-                SunLight = FindFirstObjectByType<LightingProfileManager>().SunController.SunLight;
+                //SunLight = FindFirstObjectByType<LightingProfileManager>().SunController.SunLight;
             }
 
             if(!WeatherManager)

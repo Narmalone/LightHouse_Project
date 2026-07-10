@@ -35,19 +35,37 @@ namespace LightHouse.Features.TimeOfDay.TimeCore
         {
             float deltaHours = (Time.deltaTime / TimeConfig.RealSecondsPerGameHour) * TimeSpeed;
             CurrentTime += deltaHours;
-            CurrentTime = Mathf.Clamp(CurrentTime, 0f, 24f);
 
+            // NOTE: on ne clamp plus AVANT de tester le dépassement de minuit.
+            // Bug précédent : Mathf.Clamp(CurrentTime, 0f, 24f) était appliqué avant le "if (>= 24f)",
+            // donc CurrentTime était tronqué pile à 24.0 puis remis à 0 via %=24f, ce qui faisait
+            // perdre la fraction d'heure qui dépassait minuit à chaque frame de rollover (petit
+            // micro-saut/gel du cycle jour-nuit une fois par jour de jeu). On gère maintenant le
+            // dépassement en préservant le reste, et de façon robuste même si TimeSpeed/deltaTime
+            // fait sauter plusieurs jours d'un coup (rare, mais ne casse plus rien).
             if (CurrentTime >= 24f)
             {
-                CurrentTime %= 24f;
-                CurentDay++;
-                TimeHandlerData.CurrentDay = CurentDay;
-                TimeHandlerData.OnDayChanged?.Invoke(CurentDay);
+                int daysToAdd = Mathf.FloorToInt(CurrentTime / 24f);
+                CurrentTime -= daysToAdd * 24f;
 
-                if (CurentDay >= TimeConfig.TotalDays)
+                for (int i = 0; i < daysToAdd; i++)
                 {
-                    TimeHandlerData.OnTimeReachesEnd?.Invoke();
+                    CurentDay++;
+                    TimeHandlerData.CurrentDay = CurentDay;
+                    TimeHandlerData.OnDayChanged?.Invoke(CurentDay);
+
+                    if (CurentDay >= TimeConfig.TotalDays)
+                    {
+                        TimeHandlerData.OnTimeReachesEnd?.Invoke();
+                        break;
+                    }
                 }
+            }
+            else if (CurrentTime < 0f)
+            {
+                // Garde-fou : ne devrait pas arriver (TimeSpeed négatif non prévu), mais on
+                // évite de faire planter la logique de segments si jamais.
+                CurrentTime = 0f;
             }
 
             TimeHandlerData.CurrentTime = CurrentTime;

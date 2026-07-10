@@ -77,13 +77,13 @@ namespace LightHouse.Features.Weather
 
         private void Timeline_OnTimelineChanged()
         {
-            if(Timeline.CurrentIndex == _currentIndex)
+            if (Timeline.CurrentIndex == _currentIndex)
             {
                 _from = Timeline.Weathers[_currentIndex];
                 _to = Timeline.Weathers[_currentIndex + 1];
                 _segmentStart = _from.StartTimeInSeconds;
                 _segmentEnd = _segmentStart + _from.DurationInSeconds;
-            } 
+            }
         }
 
         private void Update()
