@@ -1,12 +1,10 @@
 ﻿using LightHouse.Core.Utilities;
-
+using LightHouse.Features.TimeOfDay.Lighting;
+using LightHouse.Features.TimeOfDay.TimeCore;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
-using System.Collections.Generic;
-
 using CloudSettings = LightHouse.Features.Weather.Clouds.Settings.CloudSettings;
-using LightHouse.Features.TimeOfDay.TimeCore;
-using LightHouse.Features.TimeOfDay.Lighting;
 
 namespace LightHouse.Features.Weather.Clouds
 {

@@ -6,13 +6,16 @@ using LightHouse.Features.TimeOfDay.TimeCore;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
-using System.Collections.Generic;
-
+using System;
 
 namespace LightHouse.Features.TimeOfDay.Lighting
 {
-    // Un "snapshot" numérique pour faire les lerps sans toucher à l'engine à chaque étape
-    struct ResolvedLighting
+    /// <summary>
+    /// Snapshot numérique interpolable, indépendant du moteur de rendu.
+    /// Toute la logique de lerp/moteur passe par cette struct : le reste du
+    /// manager ne touche jamais directement un Volume component pendant les calculs.
+    /// </summary>
+    internal struct ResolvedLighting
     {
         // Sun
         public Color SunColor; public float SunIntensity; public float SunTemperature;
@@ -34,8 +37,89 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         // Color Adjustments
         public float PostExposure; public float Contrast; public float Saturation;
+
+        public static ResolvedLighting FromProfile(LightingProfile p)
+        {
+            return new ResolvedLighting
+            {
+                SunColor = p.sunColor,
+                SunIntensity = p.sunIntensity,
+                SunTemperature = p.temperature,
+                FlareIntensity = p.FlareIntensity,
+                FlareScale = p.FlareScale,
+
+                Exposure = p.Exposure,
+                Compensation = p.Compensation,
+
+                FogTint = p.Tint,
+                BaseHeight = p.BaseHeight,
+                MaxHeight = p.MaximumHeight,
+                MeanFreePath = p.FogAttenuationDistance,
+                MaxFogDistance = p.MaxFogDistance,
+                Albedo = p.Albedo,
+                VolumetricFog = p.VolumetricFog,
+                DenoisingMode = p.DenoisingMode,
+                GIDimmer = p.GIDimmer,
+
+                GroundTint = p.GroundTint,
+                HorizonTint = p.HorizonTint,
+                ZenithTint = p.ZenithTint,
+                HorizonZenithShift = p.HorizonZenithShift,
+                AerosolDensity = p.AerosolDensity,
+                AerosolTint = p.AerosolTint,
+                AerosolMaxAltitude = p.AerosolMaximumAltitude,
+
+                PostExposure = p.PostExposure,
+                Contrast = p.Contrasts,
+                Saturation = p.Saturation
+            };
+        }
+
+        /// <summary>
+        /// Unique fonction de lerp pour toute la struct (remplace les deux
+        /// fonctions dupliquées ResolveInterpolated / LerpResolved du script d'origine).
+        /// </summary>
+        public static ResolvedLighting Lerp(ResolvedLighting a, ResolvedLighting b, float t)
+        {
+            return new ResolvedLighting
+            {
+                SunColor = Color.Lerp(a.SunColor, b.SunColor, t),
+                SunIntensity = Mathf.Lerp(a.SunIntensity, b.SunIntensity, t),
+                SunTemperature = Mathf.Lerp(a.SunTemperature, b.SunTemperature, t),
+                FlareIntensity = Mathf.Lerp(a.FlareIntensity, b.FlareIntensity, t),
+                FlareScale = Mathf.Lerp(a.FlareScale, b.FlareScale, t),
+
+                Exposure = Mathf.Lerp(a.Exposure, b.Exposure, t),
+                Compensation = Mathf.Lerp(a.Compensation, b.Compensation, t),
+
+                FogTint = Color.Lerp(a.FogTint, b.FogTint, t),
+                BaseHeight = Mathf.Lerp(a.BaseHeight, b.BaseHeight, t),
+                MaxHeight = Mathf.Lerp(a.MaxHeight, b.MaxHeight, t),
+                MeanFreePath = Mathf.Lerp(a.MeanFreePath, b.MeanFreePath, t),
+                MaxFogDistance = Mathf.Lerp(a.MaxFogDistance, b.MaxFogDistance, t),
+                Albedo = Color.Lerp(a.Albedo, b.Albedo, t),
+                VolumetricFog = t < 0.5f ? a.VolumetricFog : b.VolumetricFog,
+                DenoisingMode = t < 0.5f ? a.DenoisingMode : b.DenoisingMode,
+                GIDimmer = Mathf.Lerp(a.GIDimmer, b.GIDimmer, t),
+
+                GroundTint = Color.Lerp(a.GroundTint, b.GroundTint, t),
+                HorizonTint = Color.Lerp(a.HorizonTint, b.HorizonTint, t),
+                ZenithTint = Color.Lerp(a.ZenithTint, b.ZenithTint, t),
+                HorizonZenithShift = Mathf.Lerp(a.HorizonZenithShift, b.HorizonZenithShift, t),
+                AerosolDensity = Mathf.Lerp(a.AerosolDensity, b.AerosolDensity, t),
+                AerosolTint = Color.Lerp(a.AerosolTint, b.AerosolTint, t),
+                AerosolMaxAltitude = Mathf.Lerp(a.AerosolMaxAltitude, b.AerosolMaxAltitude, t),
+
+                PostExposure = Mathf.Lerp(a.PostExposure, b.PostExposure, t),
+                Contrast = Mathf.Lerp(a.Contrast, b.Contrast, t),
+                Saturation = Mathf.Lerp(a.Saturation, b.Saturation, t)
+            };
+        }
     }
 
+    /// <summary>
+    /// 4 profils de lighting pour une météo donnée (un par segment de journée).
+    /// </summary>
     [System.Serializable]
     public class WeatherProfileSet
     {
@@ -44,6 +128,13 @@ namespace LightHouse.Features.TimeOfDay.Lighting
         public LightingProfile Midday;
         public LightingProfile Evening;
 
+        /// <summary>
+        /// Unique point de vérité pour la correspondance segment -> profil.
+        /// IMPORTANT : ne jamais indexer par (int)TimeOfDaySegment. L'ordre de
+        /// déclaration de l'enum n'est pas garanti stable dans le temps ; un simple
+        /// réordonnancement casserait silencieusement tous les blends (pas de crash,
+        /// juste le mauvais profil appliqué). Le switch explicite est robuste à ça.
+        /// </summary>
         public LightingProfile Get(TimeOfDaySegment seg) => seg switch
         {
             TimeOfDaySegment.Night => Night,
@@ -53,7 +144,27 @@ namespace LightHouse.Features.TimeOfDay.Lighting
             _ => Midday
         };
 
-        public LightingProfile[] AsArray() => new[] { Night, Morning, Midday, Evening };
+        public bool IsComplete => Night != null && Morning != null && Midday != null && Evening != null;
+    }
+
+    /// <summary>
+    /// Fenêtre de transition entre deux segments de la journée
+    /// (ex: Night -> Morning entre 5h et 7h). En dehors de toutes les fenêtres,
+    /// on est sur un "plateau" (le segment "To" de la dernière transition passée).
+    /// </summary>
+    [System.Serializable]
+    public struct SegmentTransition
+    {
+        public TimeOfDaySegment From;
+        public TimeOfDaySegment To;
+
+        [Tooltip("Heure de début / fin de la fenêtre de transition (0..24)")]
+        public Vector2 Window;
+
+        public AnimationCurve Curve;
+
+        public readonly float Start => Window.x;
+        public readonly float End => Window.y;
     }
 
     public class LightingProfileManager : MonoBehaviour, ITimeCycleObserver
@@ -70,44 +181,52 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         #endregion
 
-        #region Profiles (Météo → 4 profils temps de jour)
+        #region Profiles (Météo -> 4 profils temps de jour)
 
+        [Header("Profiles per weather")]
         public AYellowpaper.SerializedCollections.SerializedDictionary<WeatherType, WeatherProfileSet> WeatherProfiles;
-
-        // Cache: Weather → array indexable par (int)TimeOfDaySegment
-        private readonly Dictionary<WeatherType, LightingProfile[]> _cache = new();
 
         #endregion
 
-        #region Day segment timings
+        #region Time-of-day transitions
 
-        [Header("Blend Windows (24h)")]
-        [SerializeField] private Vector2 _nightToMorning = new Vector2(6f, 9f);
-        [SerializeField] private Vector2 _morningToMidday = new Vector2(9f, 12f);
-        [SerializeField] private Vector2 _middayToEvening = new Vector2(15f, 18f);
-        [SerializeField] private Vector2 _eveningToNight = new Vector2(21f, 23f);
+        [Header("Transitions Jour/Nuit (dans l'ordre chronologique)")]
+        [SerializeField]
+        private SegmentTransition[] _transitions = new SegmentTransition[]
+        {
+            new SegmentTransition
+            {
+                From = TimeOfDaySegment.Night, To = TimeOfDaySegment.Morning,
+                Window = new Vector2(5f, 7f),
+                Curve = AnimationCurve.EaseInOut(0, 0, 1, 1)
+            },
+            new SegmentTransition
+            {
+                From = TimeOfDaySegment.Morning, To = TimeOfDaySegment.Midday,
+                Window = new Vector2(9f, 12f),
+                Curve = AnimationCurve.EaseInOut(0, 0, 1, 1)
+            },
+            new SegmentTransition
+            {
+                From = TimeOfDaySegment.Midday, To = TimeOfDaySegment.Evening,
+                Window = new Vector2(15f, 18f),
+                Curve = AnimationCurve.EaseInOut(0, 0, 1, 1)
+            },
+            new SegmentTransition
+            {
+                From = TimeOfDaySegment.Evening, To = TimeOfDaySegment.Night,
+                Window = new Vector2(21f, 23f),
+                Curve = AnimationCurve.EaseInOut(0, 0, 1, 1)
+            },
+        };
 
         [Header("External Overrides")]
         [Range(-5f, 8f)][SerializeField] private float _additionalExposure = 0f;
         public float AdditionalExposure => _additionalExposure;
 
-        public void SetAdditionalExposure(float ev)
-        {
-            _additionalExposure = Mathf.Clamp(ev, -5f, 8f);
-        }
-
-        public void AddToAdditionalExposure(float delta)
-        {
-            SetAdditionalExposure(_additionalExposure + delta);
-        }
-
+        public void SetAdditionalExposure(float ev) => _additionalExposure = Mathf.Clamp(ev, -5f, 8f);
+        public void AddToAdditionalExposure(float delta) => SetAdditionalExposure(_additionalExposure + delta);
         public void ClearAdditionalExposure() => _additionalExposure = 0f;
-
-        [Header("Transition Shapes")]
-        [SerializeField] private AnimationCurve _tNightToMorning = AnimationCurve.EaseInOut(0, 0, 1, 1);
-        [SerializeField] private AnimationCurve _tMorningToMidday = AnimationCurve.EaseInOut(0, 0, 1, 1);
-        [SerializeField] private AnimationCurve _tMiddayToEvening = AnimationCurve.EaseInOut(0, 0, 1, 1);
-        [SerializeField] private AnimationCurve _tEveningToNight = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         #endregion
 
@@ -121,21 +240,27 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         #endregion
 
-        #region Weather blend
+        #region Weather smoothing (continu, sans state machine à 2 météos)
 
-        [Header("Weather Blend")]
-        [SerializeField] private float _weatherBlendDuration = 2f;
-        private WeatherType _activeWeather;
-        private WeatherType _targetWeather;
-        private float _weatherBlend = -1f; // <0 = pas de blend en cours
+        [Header("Weather Smoothing")]
+        [Tooltip("Temps caractéristique (s) du lissage. 0 = application instantanée, sans transition.")]
+        [SerializeField] private float _weatherSmoothTime = 2f;
+
+        /// <summary>Météo forcée manuellement (debug / narratif). Prioritaire sur la météo réelle si définie.</summary>
+        private WeatherType? _weatherOverride;
+
+        private ResolvedLighting _smoothed;
+        private bool _hasSmoothed;
 
         #endregion
 
         #region Volume Components & Privates
 
-        private TimeManager _timeManager;
         private Fog _fog; private Exposure _exposure; private PhysicallyBasedSky _pbSky;
         private ColorAdjustments _colorAdjustments;
+
+        private ResolvedLighting _instantTarget;
+        private bool _hasInstantTarget;
 
         #endregion
 
@@ -145,15 +270,6 @@ namespace LightHouse.Features.TimeOfDay.Lighting
         {
             _sunController.OnSunLightToggled += Sun_OnSunLightToggled;
             TimeHandlerData.OnTimeChanged += OnTimeChanged;
-
-            RebuildCache();
-
-            // Choisis une météo par défaut si besoin
-            if (WeatherProfiles.Count > 0)
-            {
-                foreach (var kv in WeatherProfiles) { _activeWeather = kv.Key; break; }
-                _targetWeather = _activeWeather;
-            }
         }
 
         private void Start()
@@ -166,16 +282,21 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         private void Update()
         {
-            // Avance le blend météo si en cours
-            if (_weatherBlend >= 0f && _weatherBlendDuration > 0f)
+            if (!_hasInstantTarget) return;
+
+            if (!_hasSmoothed || _weatherSmoothTime <= 0f)
             {
-                _weatherBlend += Time.deltaTime / _weatherBlendDuration;
-                if (_weatherBlend >= 1f)
-                {
-                    _activeWeather = _targetWeather;
-                    _weatherBlend = -1f;
-                }
+                _smoothed = _instantTarget;
+                _hasSmoothed = true;
             }
+            else
+            {
+                // Lissage exponentiel indépendant du framerate (critically-damped-like).
+                float rate = 1f - Mathf.Exp(-Time.deltaTime / _weatherSmoothTime);
+                _smoothed = ResolvedLighting.Lerp(_smoothed, _instantTarget, rate);
+            }
+
+            ApplyResolved(_smoothed);
         }
 
         private void OnDestroy()
@@ -184,29 +305,28 @@ namespace LightHouse.Features.TimeOfDay.Lighting
             TimeHandlerData.OnTimeChanged -= OnTimeChanged;
         }
 
-        private void OnValidate() => RebuildCache();
-
-        private void RebuildCache()
+        private void OnValidate()
         {
-            _cache.Clear();
             if (WeatherProfiles == null) return;
             foreach (var kv in WeatherProfiles)
-                _cache[kv.Key] = kv.Value?.AsArray();
+            {
+                if (kv.Value == null || !kv.Value.IsComplete)
+                    Debug.LogWarning($"[LightingProfileManager] La météo '{kv.Key}' n'a pas ses 4 profils (Night/Morning/Midday/Evening) renseignés.");
+            }
         }
 
         #endregion
 
         #region Public API
 
-        // À appeler depuis ton système météo
-        public void SetWeather(WeatherType newWeather)
-        {
-            if (newWeather.Equals(_activeWeather)) return;
-            if (!_cache.ContainsKey(newWeather)) { Debug.LogWarning($"No profiles for weather: {newWeather}"); return; }
+        /// <summary>
+        /// Force une météo pour le lighting, indépendamment de la météo réelle du monde
+        /// (debug, script narratif, etc.). Le lissage continu s'occupe de la transition.
+        /// </summary>
+        public void OverrideWeather(WeatherType weather) => _weatherOverride = weather;
 
-            _targetWeather = newWeather;
-            _weatherBlend = 0f; // démarre le crossfade météo
-        }
+        /// <summary>Annule le forçage et revient à la météo réelle du monde.</summary>
+        public void ClearWeatherOverride() => _weatherOverride = null;
 
         #endregion
 
@@ -220,37 +340,24 @@ namespace LightHouse.Features.TimeOfDay.Lighting
         #endregion
 
         #region Time Cycle
-        private int _lastFrame = -1;
 
         public void OnTimeChanged(float timeOfDay)
         {
-            if (_lastFrame == Time.frameCount)
-                Debug.LogWarning($"Deux appels la même frame ! time={timeOfDay}");
+            // La météo utilisée est soit un override manuel, soit la météo réelle courante
+            // du monde (WeatherManager la met à jour en continu, cf WeatherHandlerData).
+            WeatherType currentWeather = _weatherOverride ?? (WeatherHandlerData.CurrentWeather?.WeatherType ?? default);
 
-            _lastFrame = Time.frameCount;
-            Debug.Log(timeOfDay);
-            // 1) Résoudre profil “intra-météo” pour météo active
-            var a = EvaluateResolved(_activeWeather, timeOfDay);
+            var resolved = EvaluateResolved(currentWeather, timeOfDay);
 
-            // 2) Si cross-weather en cours, résoudre aussi la cible et faire un 2e lerp
-            ResolvedLighting final = a;
-            if (_weatherBlend >= 0f && _targetWeather.Equals(_activeWeather) == false)
-            {
-                var b = EvaluateResolved(_targetWeather, timeOfDay);
-                float wt = Mathf.Clamp01(_weatherBlendDuration <= 0f ? 1f : _weatherBlend);
-                final = LerpResolved(a, b, wt);
-            }
-
-            // 3) Sun fade manuel si dans la fenêtre
             bool useManualSunFade = timeOfDay >= _sunFadeStart && timeOfDay <= _sunFadeEnd;
             if (useManualSunFade)
             {
                 float fadeT = Mathf.InverseLerp(_sunFadeStart, _sunFadeEnd, timeOfDay);
-                ApplySunFadeOut(ref final, fadeT);
+                ApplySunFadeOut(ref resolved, fadeT);
             }
 
-            // 4) Appliquer au rendu
-            ApplyResolved(final);
+            _instantTarget = resolved;
+            _hasInstantTarget = true;
         }
 
         #endregion
@@ -259,187 +366,85 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         private ResolvedLighting EvaluateResolved(WeatherType weather, float time)
         {
-            var arr = _cache.TryGetValue(weather, out var val) ? val : null;
-            if (arr == null)
+            if (WeatherProfiles == null || !WeatherProfiles.TryGetValue(weather, out var profileSet) || profileSet == null)
             {
-                Debug.LogWarning($"Weather '{weather}' has no cached profiles.");
-                return default;
+                Debug.LogWarning($"[LightingProfileManager] Aucun profil pour la météo '{weather}'.");
+                return _hasInstantTarget ? _instantTarget : default;
             }
 
             GetBlendSegments(time, out var fromSeg, out var toSeg, out float t);
-            var from = arr[(int)fromSeg] ?? arr[(int)TimeOfDaySegment.Midday];
-            var to = arr[(int)toSeg] ?? arr[(int)TimeOfDaySegment.Midday];
 
-            //Debug.Log($"weather target: {to.name}");
-            return ResolveInterpolated(from, to, t);
+            var from = profileSet.Get(fromSeg) ?? profileSet.Midday;
+            var to = profileSet.Get(toSeg) ?? profileSet.Midday;
+
+            if (from == null || to == null)
+            {
+                Debug.LogWarning($"[LightingProfileManager] Profils manquants pour la météo '{weather}' (segments {fromSeg}/{toSeg}).");
+                return _hasInstantTarget ? _instantTarget : default;
+            }
+
+            return ResolvedLighting.Lerp(ResolvedLighting.FromProfile(from), ResolvedLighting.FromProfile(to), t);
         }
-
 
         private static float Normalize24(float h)
         {
             h %= 24f; if (h < 0f) h += 24f; return h; // [0,24)
         }
 
-        private static bool InRangeNoWrap(float t, float start, float end) // [start, end)
-        {
-            return t >= start && t < end;
-        }
-
-
-        private void GetBlendSegments(float time,
-      out TimeOfDaySegment from, out TimeOfDaySegment to, out float t)
+        /// <summary>
+        /// Détermine dans quelle transition (ou plateau) se trouve l'heure donnée,
+        /// en se basant sur la liste ordonnée de <see cref="_transitions"/>.
+        /// Ajouter/modifier une fenêtre se fait uniquement dans l'inspecteur.
+        /// </summary>
+        private void GetBlendSegments(float time, out TimeOfDaySegment from, out TimeOfDaySegment to, out float t)
         {
             time = Normalize24(time);
 
-            // 1) Night → Morning : 06–09
-            if (InRangeNoWrap(time, _nightToMorning.x, _nightToMorning.y))
+            if (_transitions == null || _transitions.Length == 0)
             {
-                from = TimeOfDaySegment.Night; to = TimeOfDaySegment.Morning;
-                t = Mathf.InverseLerp(_nightToMorning.x, _nightToMorning.y, time);
-                t = _tNightToMorning.Evaluate(t);
-                return;
+                from = to = TimeOfDaySegment.Midday; t = 0f; return;
             }
 
-            // 2) Morning → Midday : 09–12
-            if (InRangeNoWrap(time, _morningToMidday.x, _morningToMidday.y))
+            // 1) Est-on dans une fenêtre de transition ?
+            for (int i = 0; i < _transitions.Length; i++)
             {
-                from = TimeOfDaySegment.Morning; to = TimeOfDaySegment.Midday;
-                t = Mathf.InverseLerp(_morningToMidday.x, _morningToMidday.y, time);
-                t = _tMorningToMidday.Evaluate(t);
-                return;
+                var tr = _transitions[i];
+                if (InRangeNoWrap(time, tr.Start, tr.End))
+                {
+                    from = tr.From; to = tr.To;
+                    float raw = Mathf.InverseLerp(tr.Start, tr.End, time);
+                    t = tr.Curve != null ? tr.Curve.Evaluate(raw) : raw;
+                    return;
+                }
             }
 
-            // 3) Midday → Evening : 15–18
-            if (InRangeNoWrap(time, _middayToEvening.x, _middayToEvening.y))
+            // 2) Sinon, plateau = segment "To" de la dernière transition dont on a
+            // dépassé la fin, en cherchant dans l'ordre chronologique (avec wrap minuit).
+            for (int i = 0; i < _transitions.Length; i++)
             {
-                from = TimeOfDaySegment.Midday; to = TimeOfDaySegment.Evening;
-                t = Mathf.InverseLerp(_middayToEvening.x, _middayToEvening.y, time);
-                t = _tMiddayToEvening.Evaluate(t);
-                return;
+                var current = _transitions[i];
+                var next = _transitions[(i + 1) % _transitions.Length];
+
+                if (InRangeWrap(time, current.End, next.Start))
+                {
+                    from = to = current.To;
+                    t = 0f;
+                    return;
+                }
             }
 
-            // 4) Evening → Night : 21–23
-            if (InRangeNoWrap(time, _eveningToNight.x, _eveningToNight.y))
-            {
-                from = TimeOfDaySegment.Evening; to = TimeOfDaySegment.Night;
-                t = Mathf.InverseLerp(_eveningToNight.x, _eveningToNight.y, time);
-                t = _tEveningToNight.Evaluate(t);
-                return;
-            }
-
-            // --- PLATEAUX ---
-            // Night plateau: [23–24) ∪ [0–6)
-            if (time >= _eveningToNight.y || time < _nightToMorning.x)
-            {
-                from = TimeOfDaySegment.Night; to = TimeOfDaySegment.Night; t = 0f; return;
-            }
-
-            // Morning plateau: [9–9) n'existe pas (fenêtre comblée), mais si tu changes les fenêtres :
-            if (time >= _nightToMorning.y && time < _morningToMidday.x)
-            {
-                from = TimeOfDaySegment.Morning; to = TimeOfDaySegment.Morning; t = 0f; return;
-            }
-
-            // Midday plateau: [12–15)
-            if (time >= _morningToMidday.y && time < _middayToEvening.x)
-            {
-                from = TimeOfDaySegment.Midday; to = TimeOfDaySegment.Midday; t = 0f; return;
-            }
-
-            // Evening plateau: [18–21)
-            if (time >= _middayToEvening.y && time < _eveningToNight.x)
-            {
-                from = TimeOfDaySegment.Evening; to = TimeOfDaySegment.Evening; t = 0f; return;
-            }
-
-            // fallback (ne devrait pas arriver)
-            from = TimeOfDaySegment.Midday; to = TimeOfDaySegment.Midday; t = 0f;
+            // Fallback (ne devrait pas arriver si les fenêtres couvrent tout le cycle)
+            from = to = TimeOfDaySegment.Midday; t = 0f;
         }
 
-        private static ResolvedLighting ResolveInterpolated(LightingProfile a, LightingProfile b, float t)
+        private static bool InRangeNoWrap(float t, float start, float end) => t >= start && t < end;
+
+        private static bool InRangeWrap(float t, float start, float end) // [start, end) modulo 24
         {
-            ResolvedLighting r;
-
-            // Sun
-            r.SunColor = Color.Lerp(a.sunColor, b.sunColor, t);
-            r.SunIntensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, t);
-            r.SunTemperature = Mathf.Lerp(a.temperature, b.temperature, t);
-            r.FlareIntensity = Mathf.Lerp(a.FlareIntensity, b.FlareIntensity, t);
-            r.FlareScale = Mathf.Lerp(a.FlareScale, b.FlareScale, t);
-
-            // Exposure
-            r.Exposure = Mathf.Lerp(a.Exposure, b.Exposure, t);
-            r.Compensation = Mathf.Lerp(a.Compensation, b.Compensation, t);
-
-            // Fog
-            r.FogTint = Color.Lerp(a.Tint, b.Tint, t);
-            r.BaseHeight = Mathf.Lerp(a.BaseHeight, b.BaseHeight, t);
-            Debug.Log(a.name + " " + b.name);
-            r.MaxHeight = Mathf.Lerp(a.MaximumHeight, b.MaximumHeight, t);
-            r.MeanFreePath = Mathf.Lerp(a.FogAttenuationDistance, b.FogAttenuationDistance, t);
-            r.MaxFogDistance = Mathf.Lerp(a.MaxFogDistance, b.MaxFogDistance, t);
-            r.Albedo = Color.Lerp(a.Albedo, b.Albedo, t);
-            r.VolumetricFog = (t < 0.5f ? a.VolumetricFog : b.VolumetricFog);
-            r.DenoisingMode = (t < 0.5f ? a.DenoisingMode : b.DenoisingMode);
-            r.GIDimmer = Mathf.Lerp(a.GIDimmer, b.GIDimmer, t);
-
-            // Sky
-            r.GroundTint = Color.Lerp(a.GroundTint, b.GroundTint, t);
-            r.HorizonTint = Color.Lerp(a.HorizonTint, b.HorizonTint, t);
-            r.ZenithTint = Color.Lerp(a.ZenithTint, b.ZenithTint, t);
-            r.HorizonZenithShift = Mathf.Lerp(a.HorizonZenithShift, b.HorizonZenithShift, t);
-            r.AerosolDensity = Mathf.Lerp(a.AerosolDensity, b.AerosolDensity, t);
-            r.AerosolTint = Color.Lerp(a.AerosolTint, b.AerosolTint, t);
-            r.AerosolMaxAltitude = Mathf.Lerp(a.AerosolMaximumAltitude, b.AerosolMaximumAltitude, t);
-
-            // Color Adjustments
-            r.PostExposure = Mathf.Lerp(a.PostExposure, b.PostExposure, t);
-            r.Contrast = Mathf.Lerp(a.Contrasts, b.Contrasts, t);
-            r.Saturation = Mathf.Lerp(a.Saturation, b.Saturation, t);
-
-            return r;
-        }
-
-        private static ResolvedLighting LerpResolved(ResolvedLighting x, ResolvedLighting y, float t)
-        {
-            ResolvedLighting r;
-            // Sun
-            r.SunColor = Color.Lerp(x.SunColor, y.SunColor, t);
-            r.SunIntensity = Mathf.Lerp(x.SunIntensity, y.SunIntensity, t);
-            r.SunTemperature = Mathf.Lerp(x.SunTemperature, y.SunTemperature, t);
-            r.FlareIntensity = Mathf.Lerp(x.FlareIntensity, y.FlareIntensity, t);
-            r.FlareScale = Mathf.Lerp(x.FlareScale, y.FlareScale, t);
-
-            // Exposure
-            r.Exposure = Mathf.Lerp(x.Exposure, y.Exposure, t);
-            r.Compensation = Mathf.Lerp(x.Compensation, y.Compensation, t);
-
-            // Fog
-            r.FogTint = Color.Lerp(x.FogTint, y.FogTint, t);
-            r.BaseHeight = Mathf.Lerp(x.BaseHeight, y.BaseHeight, t);
-            r.MaxHeight = Mathf.Lerp(x.MaxHeight, y.MaxHeight, t);
-            r.MeanFreePath = Mathf.Lerp(x.MeanFreePath, y.MeanFreePath, t);
-            r.MaxFogDistance = Mathf.Lerp(x.MaxFogDistance, y.MaxFogDistance, t);
-            r.Albedo = Color.Lerp(x.Albedo, y.Albedo, t);
-            r.VolumetricFog = (t < 0.5f ? x.VolumetricFog : y.VolumetricFog);
-            r.DenoisingMode = (t < 0.5f ? x.DenoisingMode : y.DenoisingMode);
-            r.GIDimmer = Mathf.Lerp(x.GIDimmer, y.GIDimmer, t);
-
-            // Sky
-            r.GroundTint = Color.Lerp(x.GroundTint, y.GroundTint, t);
-            r.HorizonTint = Color.Lerp(x.HorizonTint, y.HorizonTint, t);
-            r.ZenithTint = Color.Lerp(x.ZenithTint, y.ZenithTint, t);
-            r.HorizonZenithShift = Mathf.Lerp(x.HorizonZenithShift, y.HorizonZenithShift, t);
-            r.AerosolDensity = Mathf.Lerp(x.AerosolDensity, y.AerosolDensity, t);
-            r.AerosolTint = Color.Lerp(x.AerosolTint, y.AerosolTint, t);
-            r.AerosolMaxAltitude = Mathf.Lerp(x.AerosolMaxAltitude, y.AerosolMaxAltitude, t);
-
-            // Color Adjustments
-            r.PostExposure = Mathf.Lerp(x.PostExposure, y.PostExposure, t);
-            r.Contrast = Mathf.Lerp(x.Contrast, y.Contrast, t);
-            r.Saturation = Mathf.Lerp(x.Saturation, y.Saturation, t);
-
-            return r;
+            start = Normalize24(start); end = Normalize24(end); t = Normalize24(t);
+            if (Mathf.Approximately(start, end)) return false;
+            if (start < end) return t >= start && t < end;
+            return t >= start || t < end; // wrap autour de minuit
         }
 
         private void ApplySunFadeOut(ref ResolvedLighting r, float t)
