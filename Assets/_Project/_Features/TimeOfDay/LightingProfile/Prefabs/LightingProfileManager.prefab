@@ -137,6 +137,7 @@ MonoBehaviour:
         Morning: {fileID: 11400000, guid: d6cf8abd73e6acb4880990d1c0e32e49, type: 2}
         Midday: {fileID: 11400000, guid: 137b9c574b0b5724489832cf3512311b, type: 2}
         Evening: {fileID: 11400000, guid: 5e8344958dae94a4ebbdf8c23e2d09a6, type: 2}
+  _fallbackWeather: 0
   _transitions:
   - From: 0
     To: 1
@@ -247,11 +248,15 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   _additionalExposure: 0
+  _weatherCrossfadeDuration: 4
   _sunFadeStart: 20.6
   _sunFadeEnd: 21
   _sunFadeColor: {r: 0, g: 0, b: 0, a: 1}
   _sunFadeIntensityTarget: 0
-  _weatherSmoothTime: 2
+  _debugCurrentWeather: 0
+  _debugSetFound: 0
+  _debugSetComplete: 0
+  _debugCrossfadeT: 0
 --- !u!1001 &1717171330904113388
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -314,6 +319,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MoonController
+      objectReference: {fileID: 0}
+    - target: {fileID: 6770729880298419830, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.45972982
+      objectReference: {fileID: 0}
+    - target: {fileID: 6770729880298419830, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.12318425
+      objectReference: {fileID: 0}
+    - target: {fileID: 6770729880298419830, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.84950644
+      objectReference: {fileID: 0}
+    - target: {fileID: 6770729880298419830, guid: 250f251a50005164ebc11aef8be00e84,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.22762458
       objectReference: {fileID: 0}
     - target: {fileID: 6770729880298419830, guid: 250f251a50005164ebc11aef8be00e84,
         type: 3}

@@ -35,7 +35,7 @@ namespace LightHouse.Core.Tutorial.Steps
             ObjectiveManager.Instance.SetObjective(_objectiveTakeBinocular);
         }
 
-        private async void Binocular_ItemAddedToInventory()
+        private void Binocular_ItemAddedToInventory()
         {
             _ctx.Talkie?.Enqueue(_tutorial3);
             ObjectiveManager.Instance.CompleteObjective(() =>

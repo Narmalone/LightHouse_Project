@@ -19,14 +19,18 @@ namespace LightHouse.Core.Audio
         [Range(0f, 1f)][SerializeField] private float spatialBlend = 0f;
 
         [Header("Text Config")]
-        [Tooltip("Durée estimée si aucun clip n'est disponible (ou pas encore chargé).")]
+        [Tooltip("Durï¿½e estimï¿½e si aucun clip n'est disponible (ou pas encore chargï¿½).")]
         [SerializeField] private bool enableAutoFallbackDuration = false;
 
         [Min(0f)][SerializeField] private float fallbackDuration = 3f;
         [Min(0f)][SerializeField] private float additionalDurationOnceLetterAppeared = 1f;
         [Range(0f, 0.2f)]
-        [SerializeField, Tooltip("Mettre à 0 pour afficher le texte instantanément.")]
+        [SerializeField, Tooltip("Mettre ï¿½ 0 pour afficher le texte instantanï¿½ment.")]
         private float charDelay = 0.04f;
+
+        [Header("Choix (optionnel)")]
+        [Tooltip("Si non vide, Ã  la fin de ce dialogue le joueur doit sÃ©lectionner un de ces choix avant que la conversation continue. Laisser vide pour un dialogue linÃ©aire classique.")]
+        [SerializeField] private TalkieChoice[] choices;
 
         [Header("Runtime (Debug)")]
         [SerializeField, TextArea] private string currentSubtitleText;
@@ -46,13 +50,32 @@ namespace LightHouse.Core.Audio
 
         public LocalizedString SubtitleRef => localizedSubtitle;
         public LocalizedAsset<SO_AudioCue> CueRef => localizedCue;
+
+        public TalkieChoice[] Choices
+        {
+            get
+            {
+                // Assigne l'index de chaque choix Ã  la volÃ©e (position dans le
+                // tableau), pour que TalkieChoice.Index soit toujours fiable
+                // sans dÃ©pendre d'un OnValidate Ã©diteur uniquement.
+                if (choices != null)
+                {
+                    for (int i = 0; i < choices.Length; i++)
+                        choices[i]?.SetIndex(i);
+                }
+
+                return choices;
+            }
+        }
+
+        public bool HasChoices => choices != null && choices.Length > 0;
         #endregion
 
         #region Localization events (optional)
         /// <summary>
-        /// Appelle ça si tu veux que l’asset garde un cache debug à jour
+        /// Appelle ï¿½a si tu veux que lï¿½asset garde un cache debug ï¿½ jour
         /// quand la locale change ou quand les assets finissent de charger.
-        /// (Sinon tu peux complètement t’en passer.)
+        /// (Sinon tu peux complï¿½tement tï¿½en passer.)
         /// </summary>
         public void Register()
         {
@@ -65,8 +88,8 @@ namespace LightHouse.Core.Audio
             if (localizedSubtitle != null)
                 localizedSubtitle.StringChanged += OnSubtitleChanged;
 
-            // Optionnel : forcer une première mise à jour du texte
-            // (GetLocalizedString déclenche en général le StringChanged aussi selon config)
+            // Optionnel : forcer une premiï¿½re mise ï¿½ jour du texte
+            // (GetLocalizedString dï¿½clenche en gï¿½nï¿½ral le StringChanged aussi selon config)
             TryRefreshSubtitleCache();
         }
 
@@ -100,7 +123,7 @@ namespace LightHouse.Core.Audio
             if (localizedSubtitle == null)
                 return default;
 
-            // Si Table/Entry vide, on évite l'exception "Empty Table Reference"
+            // Si Table/Entry vide, on ï¿½vite l'exception "Empty Table Reference"
             if (localizedSubtitle.TableReference.ReferenceType == TableReference.Type.Empty ||
                 localizedSubtitle.TableEntryReference.ReferenceType == TableEntryReference.Type.Empty)
                 return default;
@@ -133,7 +156,7 @@ namespace LightHouse.Core.Audio
 
 
         /// <summary>
-        /// Durée basée sur le texte (typewriter), sans nécessiter que le cache debug soit à jour.
+        /// Durï¿½e basï¿½e sur le texte (typewriter), sans nï¿½cessiter que le cache debug soit ï¿½ jour.
         /// </summary>
         public float EstimateSubtitleDuration(string subtitle)
         {
@@ -149,7 +172,7 @@ namespace LightHouse.Core.Audio
 
         #region Audio
         /// <summary>
-        /// Charge le AudioCue localisé (async). Le handle doit être release par celui qui l'a demandé.
+        /// Charge le AudioCue localisï¿½ (async). Le handle doit ï¿½tre release par celui qui l'a demandï¿½.
         /// </summary>
         public AsyncOperationHandle<SO_AudioCue> LoadCueAsync()
         {
@@ -160,7 +183,7 @@ namespace LightHouse.Core.Audio
         }
 
         /// <summary>
-        /// Essaie de récupérer un clip "principal" depuis le cue (ex: variante 0).
+        /// Essaie de rï¿½cupï¿½rer un clip "principal" depuis le cue (ex: variante 0).
         /// </summary>
         public static AudioClip TryGetMainClip(SO_AudioCue cue)
         {
@@ -173,9 +196,9 @@ namespace LightHouse.Core.Audio
 
         #region Duration
         /// <summary>
-        /// Calcule une durée d'affichage robuste :
-        /// - si le cue est déjà connu (via AssetChanged ou cache externe) => durée audio
-        /// - sinon => fallback basé sur le texte (synchrone) ou durée fixe
+        /// Calcule une durï¿½e d'affichage robuste :
+        /// - si le cue est dï¿½jï¿½ connu (via AssetChanged ou cache externe) => durï¿½e audio
+        /// - sinon => fallback basï¿½ sur le texte (synchrone) ou durï¿½e fixe
         /// </summary>
         public float GetDisplayDuration(SO_AudioCue cueOverride = null)
         {
@@ -185,11 +208,11 @@ namespace LightHouse.Core.Audio
             if (clip != null)
                 return clip.length + additionalDurationOnceLetterAppeared;
 
-            // 2) fallback basé sur le texte (synchrone)
+            // 2) fallback basï¿½ sur le texte (synchrone)
             var subtitle = GetSubtitles();
             var estimated = EstimateSubtitleDuration(subtitle);
 
-            // 3) si estimé trop petit, fallbackDuration
+            // 3) si estimï¿½ trop petit, fallbackDuration
             return (estimated > 0f ? estimated : fallbackDuration) + additionalDurationOnceLetterAppeared;
         }
         #endregion
@@ -200,7 +223,7 @@ namespace LightHouse.Core.Audio
 
         private void TryRefreshSubtitleCache()
         {
-            // Best-effort : rempli currentSubtitleText même sans events.
+            // Best-effort : rempli currentSubtitleText mï¿½me sans events.
             try { currentSubtitleText = GetSubtitles(); }
             catch { /* ignore */ }
         }
