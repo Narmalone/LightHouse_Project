@@ -23,8 +23,8 @@ namespace LightHouse.Core.Player
 
         public static void InitializeHandlerData(PlayerController player)
         {
-            IsInitialized = true;
             MainPlayer = player;
+            IsInitialized = true;
             OnHandlerInitialized?.Invoke();
         }
 
