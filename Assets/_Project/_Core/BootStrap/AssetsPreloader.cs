@@ -15,7 +15,7 @@ public class AssetPreloader
 
     private class InstantiatedObject
     {
-        public AsyncOperationHandle<GameObject> Handle;
+        public AsyncOperationHandle Handle;
         public GameObject Instance;
     }
 
@@ -121,9 +121,22 @@ public class AssetPreloader
                     Asset = handle.Result
                 });
 
-                if (instantiateOnLoad && handle.Result is GameObject)
+                if (instantiateOnLoad && handle.Result is GameObject prefab)
                 {
-                    yield return Instantiate(location.PrimaryKey, dontDestroyOnLoad);
+                    GameObject instance = UnityEngine.Object.Instantiate(prefab);
+
+                    if (dontDestroyOnLoad)
+                    {
+                        UnityEngine.Object.DontDestroyOnLoad(instance);
+                    }
+
+                    _instantiated.Add(new InstantiatedObject
+                    {
+                        Handle = handle,
+                        Instance = instance
+                    });
+
+                    Debug.Log($"[AssetPreloader] Instantiated : {instance.name}");
                 }
             }
 
@@ -164,7 +177,14 @@ public class AssetPreloader
             Instance = go
         });
 
-        Debug.Log($"[AssetPreloader] Instantiated : {go.name}");
+        if (go != null)
+        {
+            Debug.Log($"[AssetPreloader] Instantiated : {go.name}");
+        }
+        else
+        {
+            Debug.LogWarning($"[AssetPreloader] Instance détruite immédiatement : {address}");
+        }
     }
 
     #endregion

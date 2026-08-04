@@ -108,6 +108,7 @@ public class BootStrap : MonoBehaviour
                         loadingScreen.SetSubLabel(Clean(assetName));
                         loadingScreen.SetProgress(progress);
                     }
+                    ,true
                 )
             );
         }
@@ -230,6 +231,7 @@ public class BootStrap : MonoBehaviour
                         loadingScreen.SetSubLabel(Clean(assetName));
                         loadingScreen.SetProgress(progress);
                     }
+                    , true
                 )
             );
         }
