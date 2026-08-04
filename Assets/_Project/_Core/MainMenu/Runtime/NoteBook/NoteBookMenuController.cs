@@ -61,6 +61,7 @@ namespace LightHouse.Features.Menu.Notebook
         {
             _notebookCamera.Priority = -1;
             SetCanvasVisible(false);
+            _brain = FindFirstObjectByType<CinemachineBrain>();
         }
 
         #endregion

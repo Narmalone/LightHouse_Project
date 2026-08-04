@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7539613701124886806
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2354210140785011291}
+  - component: {fileID: 1797876646408084065}
+  - component: {fileID: 3884108670164687508}
+  m_Layer: 0
+  m_Name: Ambiance
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2354210140785011291
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7539613701124886806}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.03912, y: 1.30687, z: 11.20876}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1797876646408084065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7539613701124886806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cbf1c2c8224ebd4084029a48a4d7dc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AmbianceMenuController
+  _ambianceHorror: {fileID: 11400000, guid: f192ed0a3684ff741b4c6a8684482353, type: 2}
+  _rain: {fileID: 11400000, guid: 8e640e5f14905d1449fd458dcb879348, type: 2}
+  _wind: {fileID: 11400000, guid: 7bea491999bc234408e0200b01cc8252, type: 2}
+--- !u!114 &3884108670164687508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7539613701124886806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8f3d3bc5027c0d4f9c1f904d4aad543, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioEnvironmentController
+  UnparentOnAwake: 1
+  mixer: {fileID: 24100000, guid: a0427fdc99acb7040a6f5710eeaa5e9c, type: 2}
+  occlusionLowpassParam: Occlusion_Lowpass
+  indoorLowpass: 1800
+  outdoorLowpass: 5000
+  globalExposure: 0
+  exposureSpeed: 2
+  CurrentEnvironmentState: 0

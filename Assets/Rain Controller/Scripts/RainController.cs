@@ -27,6 +27,10 @@ public class RainController : MonoBehaviour
     public float currentRainSpawnRate; // current rain particle spawn rate based on humidity
     [Range(0, 1)] public float RainIntensity = 0f; // based on humidity
 
+    [Header("Audio Variation")]
+    [Range(0f, 0.5f)] public float volumeVariation = 0.1f;
+    public float variationSpeed = 0.3f; // variation speed for audio volume changes
+
     /// <summary>
     /// Les dernières valeurs de vent, d'humidité, de turbulence et de direction du vent pour détecter les changements et mettre à jour l'orientation du vent en conséquence.
     /// </summary>
@@ -44,11 +48,6 @@ public class RainController : MonoBehaviour
     private IAudioHandle lightHandle;
     private IAudioHandle mediumHandle;
     private IAudioHandle heavyHandle;
-
-    //test
-    [Range(0, 1)] public float lightVolume = 0.5f;
-    [Range(0, 1)] public float mediumVolume = 0.5f;
-    [Range(0, 1)] public float heavyVolume = 0.5f;
 
     #endregion
 
@@ -138,8 +137,6 @@ public class RainController : MonoBehaviour
                 lastTurbulence = turbulence;
             }
 
-
-            //test
             UpdateRainAudio();
         }
 
@@ -161,7 +158,6 @@ public class RainController : MonoBehaviour
 
     #region PUBLIC METHODS
 
-    //test audio
     public void StartRainAudio()
     {
         if (lightHandle == null || !lightHandle.IsValid)
@@ -184,6 +180,8 @@ public class RainController : MonoBehaviour
             return;
 
         float t = RainIntensity;
+        float turbulence = WeatherHandlerData.CurrentWeather.WindSpeed / rainConfiguration.maxWindSpeed;
+        float time = Time.time * variationSpeed;
 
         float lightVolume; // fade in 0% to 20%, full volume 20% to 40%, fade out 40% to 60%, off 60% to 100%
         if (t < 0.2f)
@@ -195,7 +193,9 @@ public class RainController : MonoBehaviour
         else
             lightVolume = 0f;
 
-        lightHandle.SetVolume(lightVolume);
+        float lightVariation = 1f + ((Mathf.PerlinNoise(1, time) - 0.5f) * 2f) * volumeVariation * (1 + turbulence);
+
+        lightHandle.SetVolume(Mathf.Clamp01(lightVolume * lightVariation));
 
         float mediumVolume; // fade in 0% to 40%, full volume 40% to 60%, fade out 60% to 80%, off 80% to 100%
         if (t < 0.4f)
@@ -207,7 +207,9 @@ public class RainController : MonoBehaviour
         else
             mediumVolume = 1f - Mathf.InverseLerp(0.8f, 1f, t);
 
-        mediumHandle?.SetVolume(mediumVolume);
+        float mediumVariation = 1f + ((Mathf.PerlinNoise(1, time) - 0.5f) * 2f) * volumeVariation * (1 + turbulence);
+
+        mediumHandle.SetVolume(Mathf.Clamp01(mediumVolume * mediumVariation));
 
         float heavyVolume; // fade in 60% to 80%, full volume 80% to 100%
         if (t < 0.6f)
@@ -217,7 +219,9 @@ public class RainController : MonoBehaviour
         else
             heavyVolume = 1f;
 
-        heavyHandle?.SetVolume(heavyVolume);
+        float heavyVariation = 1f + ((Mathf.PerlinNoise(1, time) - 0.5f) * 2f) * volumeVariation * (1 + turbulence);
+
+        heavyHandle.SetVolume(Mathf.Clamp01(heavyVolume * heavyVariation));
     }
 
     public void StopRainAudio()

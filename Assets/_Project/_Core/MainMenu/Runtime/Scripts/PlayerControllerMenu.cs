@@ -65,7 +65,13 @@ namespace LightHouse.Core.Interaction
 
         private void Initialize()
         {
-            _camera = Camera.main;
+            //_camera = Camera.main;
+            _camera = FindFirstObjectByType<Camera>();
+
+            if (_camera == null)
+            {
+                Debug.LogError("[PlayerControllerMenu] No camera found.");
+            }
         }
 
         #endregion
