@@ -1,3 +1,4 @@
+using Cinemachine;
 using LightHouse.Core.Tutorial.Boat;
 using LightHouse.Features.Buyoncies;
 using LightHouse.Features.Items.Interactable;
@@ -6,6 +7,7 @@ using LightHouse.Features.Items.Inventory.Binoculars;
 using LightHouse.Features.Items.Inventory.Hammer;
 using LightHouse.Features.Talkie;
 using LightHouse.Features.Weather;
+using TMPro;
 using UnityEngine;
 
 namespace LightHouse.Core.Tutorial
@@ -19,6 +21,10 @@ namespace LightHouse.Core.Tutorial
         public TutorialFlow Flow;
         public ITalkieService Talkie;
         public TalkieManager TalkieManager;
+
+        //new
+        public CinemachineVirtualCamera WakeUpCam;
+        public TextMeshProUGUI KeyToGetUpText;
 
         public BinocularItem Binocular;
         public Hammer Hammer;

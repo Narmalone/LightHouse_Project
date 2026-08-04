@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using System.Collections;
 using UnityEngine;
 
@@ -8,6 +9,10 @@ namespace LightHouse.Features.Tutorial
     {
         [Header("Black Overlay")]
         [SerializeField] private CanvasGroup _black; // noir plein écran (alpha 0..1)
+
+        [Header("TextMeshPro")]
+        [SerializeField] private TextMeshProUGUI _wakeUpText;
+        [SerializeField] private CanvasGroup _wakeUpCanvasGroup;
 
         private Coroutine _routine;
 
