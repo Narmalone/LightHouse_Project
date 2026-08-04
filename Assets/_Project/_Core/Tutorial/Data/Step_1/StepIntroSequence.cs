@@ -6,6 +6,7 @@ using LightHouse.Features.Items.Other;
 
 using System.Collections;
 using UnityEngine;
+using LightHouse.Features.Tutorial;
 
 namespace LightHouse.Core.Tutorial.Steps
 {
