@@ -13,7 +13,7 @@ public class ObjectiveManager : NotPersistentSingleton<ObjectiveManager>
         _uiController.Hide();
     }
 
-    public void CompleteObjective(System.Action onEnd)
+    public void CompleteObjective(System.Action onEnd = null)
     {
         _uiController.CompleteObjective(onEnd);
     }

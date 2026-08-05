@@ -48,10 +48,17 @@ namespace LightHouse.Core.Utilities
             OnTimerStop?.Invoke();
         }
 
-        public void ResetTimer()
+        public void ResetTimer(bool autoRun = false)
         {
+            if (!autoRun) 
+            {
+                _isRunning = false;
+            }
+            else
+            {
+                _isRunning = true;
+            }
             _timerDuration = 0f;
-            _isRunning = false;
             OnTimerReset?.Invoke();
         }
 

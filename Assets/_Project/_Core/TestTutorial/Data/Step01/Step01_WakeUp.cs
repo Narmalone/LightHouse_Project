@@ -1,14 +1,16 @@
-using UnityEngine;
-using System.Collections;
-using LightHouse.Features.Tutorial;
-using LightHouse.Core.Tutorial;
-using System;
-using LightHouse.Core.Inputs;
 using Cinemachine;
 using LightHouse.Core.Audio;
-using LightHouse.Features.Talkie;
-using UnityEngine.Localization;
+using LightHouse.Core.Inputs;
 using LightHouse.Core.Localization;
+using LightHouse.Core.Player;
+using LightHouse.Core.Tutorial;
+using LightHouse.Core.Utilities;
+using LightHouse.Features.Talkie;
+using LightHouse.Features.Tutorial;
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.Localization;
 
 [CreateAssetMenu(fileName = "Step01_WakeUp", menuName = GlobalAssetsMenuPaths.TutorialAssetsMenuPath + "Step01_WakeUp")]
 public class Step01_WakeUp : TutorialStep
@@ -18,13 +20,18 @@ public class Step01_WakeUp : TutorialStep
     private CinemachineVirtualCamera _wakeUpCam;
     private TalkieManager _talkieManager;
     private string _wakeUpInteractionText;
+    private Timer _timerWhenPlayerNotMoving;
+    private bool _isPlayerHasToMove = false;
+    [SerializeField] private float _timeWhenPlayerNotMoving = 10f;
     [SerializeField] private LocalizedString _wakeUpText;
     [SerializeField] private LocalizedString _pressToAction;
     [SerializeField] private LocalizedDialogueAudio _captainInitialDialogue;
+    [SerializeField] private LocalizedDialogueAudio _captainReminderToMoveDialogue;
     [SerializeField] private float _delayBeforePlayerCanInputDuration = 5f;
 
     public async override void Enter(TutorialContext context)
     {
+        base.Enter(context);
         _talkieManager = context.TalkieManager;
         _routineBehaviour = context.Flow;
         _delayPlayerWakeAfterPagerBip = new WaitForSeconds(_delayBeforePlayerCanInputDuration);
@@ -34,32 +41,64 @@ public class Step01_WakeUp : TutorialStep
         _wakeUpCam = context.WakeUpCam;
         _wakeUpCam.Priority = 1000;
 
-        //play sound of waves
+        _isPlayerHasToMove = false;
+        _timerWhenPlayerNotMoving = new Timer(_timeWhenPlayerNotMoving);
 
-        //wait qlq 4 secondes
+        _talkieManager.OnDialogueFinished += TalkieManager_OnDialogueFinished;
 
         _routineBehaviour.StartCoroutine(WaitForPlayerInputRoutine(new WaitForSeconds(4f), () =>
         {
             _talkieManager.Bip();
             _routineBehaviour.StartCoroutine(WaitForPlayerInputRoutine(_delayPlayerWakeAfterPagerBip, OnFirstDelayEnded));
         }));
+    }
 
+    public override void Tick(TutorialContext context, float dt)
+    {
+        if (!_isPlayerHasToMove) return;
 
-        //play sound of walkie
+        _timerWhenPlayerNotMoving.Tick(dt);
+    }
 
-        //wait qlq 5 secondes
-        
+    private void TalkieManager_OnDialogueFinished(LocalizedDialogueAudio obj)
+    {
+        if (obj == _captainInitialDialogue)
+        {
+            UnlockPlayerInputs();
+            ObjectiveManager.Current.SetObjective("Move with ZQSD");
+            _isPlayerHasToMove = true;
+            _timerWhenPlayerNotMoving.StartTimer();
+            _timerWhenPlayerNotMoving.OnTimerComplete += TimerWhenPlayerNotMoving_OnTimerComplete;
+            InputManager.Player.Move.performed += MovePerformed;
+        }
+        else if(obj == _captainReminderToMoveDialogue)
+        {
+            _timerWhenPlayerNotMoving.StartTimer();
+        }
+    }
 
-        //captain dialogue
+    private void TimerWhenPlayerNotMoving_OnTimerComplete()
+    {
+        _talkieManager.Enqueue(_captainReminderToMoveDialogue);
+        _timerWhenPlayerNotMoving.ResetTimer();
+    }
 
-        //wait
+    private void MovePerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {
+        InputManager.Player.Move.performed -= MovePerformed;
+        ObjectiveManager.Current.CompleteObjective();
+        IsComplete = true;
+    }
 
-        //tutorial: space bar to get up
-
-        //open eyes & wake up camera priority
-        //camera transition to player
-
-        //next step
+    private void UnlockPlayerInputs()
+    {
+        if (PlayerHandlerData.MainPlayer != null)
+        {
+            PlayerHandlerData.MainPlayer.Inventory.Enable();
+            PlayerHandlerData.MainPlayer.Interactions.Enable();
+            PlayerHandlerData.MainPlayer.EnableAllCharacterInputs = true;
+            PlayerHandlerData.MainPlayer.EnableCameraRotationInput = true;
+        }
     }
 
     private async void OnFirstDelayEnded()
@@ -74,17 +113,21 @@ public class Step01_WakeUp : TutorialStep
 
     private async void JumpPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
-        Debug.Log("Player Performed");
         BlackScreenController.Current.StartFade(0f, 3f);
         BlackScreenController.Current.FadeWakeUpText(0f, 0.5f);
         _wakeUpCam.Priority = -1;
         _talkieManager.StopBip();
+        _talkieManager.Enqueue(_captainInitialDialogue);
         InputManager.Jump.performed -= JumpPerformed;
     }
 
     public override void Exit(TutorialContext context)
     {
-
+        _talkieManager.OnDialogueFinished -= TalkieManager_OnDialogueFinished;
+        if (_timerWhenPlayerNotMoving != null)
+        {
+            _timerWhenPlayerNotMoving.OnTimerComplete -= TimerWhenPlayerNotMoving_OnTimerComplete;
+        }
     }
 
     private IEnumerator WaitForPlayerInputRoutine(WaitForSeconds delay, Action onEnd)

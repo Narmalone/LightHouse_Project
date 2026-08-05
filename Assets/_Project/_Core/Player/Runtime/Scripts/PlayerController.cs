@@ -125,7 +125,6 @@ namespace LightHouse.Core.Player
         private void LateUpdate()
         {
             if (!_isInitialized) return;
-            if (!_enableAllCharacterInputs) return;
 
             HandleCameraInput();
         }

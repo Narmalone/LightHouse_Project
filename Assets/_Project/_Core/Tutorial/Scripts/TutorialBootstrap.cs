@@ -23,6 +23,7 @@ namespace LightHouse.Core.Tutorial
         [Header("Refs")]
         [SerializeField] private CinemachineVirtualCamera _wakeUpCamera;
         [SerializeField] private TutorialBoat _tutoBoat;
+        [SerializeField] private BinocularItem _binocularItem;
 
         [SerializeField] private WeatherTimeline _timeline;
 
@@ -44,13 +45,14 @@ namespace LightHouse.Core.Tutorial
         {
             var ctx = new TutorialContext
             {
+                Binocular = _binocularItem,
                 Flow = _flow,
                 Talkie = _talkieRef.Current,
                 TalkieManager = _talkieRef.Current as TalkieManager,
                 WakeUpCam = _wakeUpCamera,
                 TutoBoat = _tutoBoat,
                 Timeline = _timeline,
-                ViewTransform = PlayerHandlerData.MainPlayer?.PlayerCamera?.transform
+                ViewTransform = PlayerHandlerData.MainPlayer?.PlayerCamera?.transform,
             };
 
             _tutoBoat.InitializeBoat();

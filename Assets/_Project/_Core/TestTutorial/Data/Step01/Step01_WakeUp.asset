@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f57dd228b530e344485d22e06594e243, type: 3}
   m_Name: Step01_WakeUp
   m_EditorClassIdentifier: Assembly-CSharp::Step01_WakeUp
+  _timeWhenPlayerNotMoving: 10
   _wakeUpText:
     m_TableReference:
       m_TableCollectionName: GUID:2429ee7206ff2564db7cb1d2a864cc4a
@@ -30,7 +31,10 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  _captainInitialDialogue: {fileID: 0}
+  _captainInitialDialogue: {fileID: 11400000, guid: e8e4612272aeafc43a97fec07586394a,
+    type: 2}
+  _captainReminderToMoveDialogue: {fileID: 11400000, guid: a9233732009934f42900b3301a078a66,
+    type: 2}
   _delayBeforePlayerCanInputDuration: 2
   references:
     version: 2
