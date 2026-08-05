@@ -68,6 +68,23 @@ namespace LightHouse.Core.Audio
             }
         }
 
+        #region Choix events
+        /// <summary>
+        /// Levé quand un choix appartenant à ce dialogue a été sélectionné par le joueur.
+        /// Ne se déclenche jamais si ce dialogue n'a pas de choix (HasChoices == false).
+        /// </summary>
+        public event Action<TalkieChoice> OnChoiceSelected;
+
+        /// <summary>
+        /// Appelé par TalkieManager une fois le choix tranché. Ne pas appeler soi-même
+        /// depuis l'extérieur sauf cas de test.
+        /// </summary>
+        internal void NotifyChoiceSelected(TalkieChoice choice)
+        {
+            OnChoiceSelected?.Invoke(choice);
+        }
+        #endregion
+
         public bool HasChoices => choices != null && choices.Length > 0;
         #endregion
 

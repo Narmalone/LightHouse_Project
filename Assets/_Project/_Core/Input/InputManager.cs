@@ -1,9 +1,18 @@
+using LightHouse.Core.Localization;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace LightHouse.Core.Inputs
 {
+    public  enum InputNameEnum
+    {
+        Jump,
+        Move,
+        Pickup,
+        InteractInInventory
+    }
+
     public static class InputManager
     {
         public static bool IsInitialized { get; private set; } = false; 
@@ -89,6 +98,28 @@ namespace LightHouse.Core.Inputs
 
             //Get the display name == "E" for example -> binding path == "<Keyboard>/e"
             return control != null ? control.displayName : binding.path;
+        }
+
+        public static string GetBindingName(InputNameEnum inputName)
+        {
+            switch (inputName)
+            {
+                case InputNameEnum.Jump:
+                    //return LocalizationManager.Current.GetStringRoutine();
+                case InputNameEnum.Move:
+                    return Move_Bind_Name;
+                case InputNameEnum.Pickup:
+                    return Pickup_Bind_Name;
+                case InputNameEnum.InteractInInventory:
+                    return InteractInInventory_Bind_Name;
+                default:
+                    return "Unknown"; 
+            }
+        }
+
+        public static void GetBindInputName()
+        {
+
         }
 
 

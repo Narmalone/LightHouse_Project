@@ -176,7 +176,7 @@ namespace LightHouse.Features.Talkie
 
             if (dialogue.HasChoices)
             {
-                yield return PresentChoicesAndContinue(dialogue.Choices, onChoiceSelected);
+                yield return PresentChoicesAndContinue(dialogue, dialogue.Choices, onChoiceSelected);
             }
         }
 
@@ -184,7 +184,7 @@ namespace LightHouse.Features.Talkie
         /// Affiche les choix via _choicePresenter, attend une sélection, déclenche
         /// le UnityEvent du choix, puis rejoue récursivement les dialogues suivants.
         /// </summary>
-        private IEnumerator PresentChoicesAndContinue(TalkieChoice[] choices, Action<TalkieChoice> onChoiceSelected)
+        private IEnumerator PresentChoicesAndContinue(LocalizedDialogueAudio dialogue, TalkieChoice[] choices, Action<TalkieChoice> onChoiceSelected)
         {
             if (_choicePresenter == null)
             {
@@ -202,11 +202,9 @@ namespace LightHouse.Features.Talkie
             _choicePresenter.Hide();
             OnChoiceSelected?.Invoke(selected);        // event global (observabilité, debug, UI...)
             selected.OnChosen?.Invoke();               // callback data-driven configuré sur le choix (Inspector)
-            onChoiceSelected?.Invoke(selected);         // callback fourni à Enqueue(...) pour ce dialogue précis
+            onChoiceSelected?.Invoke(selected);        // callback fourni à Enqueue(...) pour ce dialogue précis
+            dialogue.NotifyChoiceSelected(selected);   // event porté par le LocalizedDialogueAudio lui-même
 
-            // Le texte était resté affiché pendant que le joueur choisissait
-            // (voir PlayNode / DisplayRadioText autoHide=false) : maintenant
-            // que le choix est tranché, on le referme proprement.
             yield return FadeOutRadioText();
 
             if (selected.NextDialogues != null)

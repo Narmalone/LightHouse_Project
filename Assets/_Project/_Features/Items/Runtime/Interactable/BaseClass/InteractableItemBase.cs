@@ -10,7 +10,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace LightHouse.Features.Items.Interactable
 {
-    public abstract class   InteractableItemBase : MonoBehaviour, IInteractable
+    public abstract class InteractableItemBase : MonoBehaviour, IInteractable
     {
         [Header("Interactable Item Base")]
         [SerializeField] protected string _name;
