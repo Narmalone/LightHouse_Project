@@ -17,16 +17,17 @@ public class Step03_GiveDirection : TutorialStep
     {
         base.Enter(context);
 
-        context.TalkieManager.OnChoiceSelected += OnChoiceSelected;
+        context.TalkieManager.Enqueue(_captainBadWayGuide);
+        _captainBadWayGuide.OnChoiceSelected += CaptainBadWayGuide_OnChoiceSelected;
     }
 
-    private void OnChoiceSelected(TalkieChoice choice)
+    private void CaptainBadWayGuide_OnChoiceSelected(TalkieChoice obj)
     {
-
+        Debug.Log("choix réalisé "+obj.Index);
     }
 
     public override void Exit(TutorialContext context)
     {
-        context.TalkieManager.OnChoiceSelected -= OnChoiceSelected;
+        _captainBadWayGuide.OnChoiceSelected -= CaptainBadWayGuide_OnChoiceSelected;
     }
 }

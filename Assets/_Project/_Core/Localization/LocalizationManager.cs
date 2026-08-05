@@ -31,7 +31,7 @@ namespace LightHouse.Core.Localization
 
         private void LateUpdate()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha0))
+            /*if (Input.GetKeyDown(KeyCode.Alpha0))
             {
                 LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[0];
             }
@@ -39,7 +39,7 @@ namespace LightHouse.Core.Localization
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[1];
-            }
+            }*/
         }
 
 
