@@ -1,3 +1,4 @@
+using Cinemachine;
 using LightHouse.Core.Player;
 using LightHouse.Core.Tutorial.Boat;
 using LightHouse.Core.World;
@@ -20,13 +21,7 @@ namespace LightHouse.Core.Tutorial
         [SerializeField] private Transform _playerDefaultIslandPosition;
 
         [Header("Refs")]
-        [SerializeField] private BinocularItem _binocular;
-        [SerializeField] private Hammer _hammer;
-        [SerializeField] private Transform _lighthouse;
-        [SerializeField] private Transform _rockPoint;
-        [SerializeField] private BuyoncyController _nearbyBuoy;
-        [SerializeField] private IDUseItemTracker _pipe;
-        [SerializeField] private BagItem _bag;
+        [SerializeField] private CinemachineVirtualCamera _wakeUpCamera;
         [SerializeField] private TutorialBoat _tutoBoat;
 
         [SerializeField] private WeatherTimeline _timeline;
@@ -47,20 +42,12 @@ namespace LightHouse.Core.Tutorial
 
         private void InitializeTutorial()
         {
-            _nearbyBuoy = BuyoncyManager.Instance.Buyoncies[1];
-            _lighthouse = PreAlphaLevel.Instance.LightHouse.transform;
             var ctx = new TutorialContext
             {
                 Flow = _flow,
                 Talkie = _talkieRef.Current,
                 TalkieManager = _talkieRef.Current as TalkieManager,
-                Binocular = _binocular,
-                Hammer = _hammer,
-                Lighthouse = _lighthouse,
-                Rock = _rockPoint,
-                Pipe = _pipe,
-                NearbyBuoy = _nearbyBuoy,
-                Bag = _bag,
+                WakeUpCam = _wakeUpCamera,
                 TutoBoat = _tutoBoat,
                 Timeline = _timeline,
                 ViewTransform = PlayerHandlerData.MainPlayer?.PlayerCamera?.transform

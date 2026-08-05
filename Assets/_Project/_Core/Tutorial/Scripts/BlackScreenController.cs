@@ -14,7 +14,8 @@ namespace LightHouse.Features.Tutorial
         [SerializeField] private TextMeshProUGUI _wakeUpText;
         [SerializeField] private CanvasGroup _wakeUpCanvasGroup;
 
-        private Coroutine _routine;
+        private Coroutine _blackscreenRoutine;
+        private Coroutine _wakeUpRoutine;
 
         /// <summary>
         /// Démarre un fade vers targetAlpha en duration secondes.
@@ -23,7 +24,21 @@ namespace LightHouse.Features.Tutorial
         public void StartFade(float targetAlpha, float duration, AnimationCurve curve = null, Action onComplete = null)
         {
             StopFade();
-            _routine = StartCoroutine(FadeBlackTo(targetAlpha, duration, curve, onComplete));
+            _blackscreenRoutine = StartCoroutine(FadeBlackTo(targetAlpha, duration, curve, onComplete, _black));
+        }
+
+        public void FadeWakeUpText(float targetAlpha, float duration, AnimationCurve curve = null, Action onComplete = null)
+        {
+            StopFadeWakeUpText();
+            _wakeUpRoutine = StartCoroutine(FadeBlackTo(targetAlpha, duration, curve, onComplete, _wakeUpCanvasGroup));
+        }
+
+        public void SetWakeUpText(string text)
+        {
+            if (_wakeUpText != null)
+            {
+                _wakeUpText.text = text;
+            }
         }
 
         /// <summary>
@@ -31,24 +46,32 @@ namespace LightHouse.Features.Tutorial
         /// </summary>
         public void StopFade()
         {
-            if (_routine != null)
+            if (_blackscreenRoutine != null)
             {
-                StopCoroutine(_routine);
-                _routine = null;
+                StopCoroutine(_blackscreenRoutine);
+                _blackscreenRoutine = null;
+            }
+        }
+        public void StopFadeWakeUpText()
+        {
+            if (_wakeUpRoutine != null)
+            {
+                StopCoroutine(_wakeUpRoutine);
+                _wakeUpRoutine = null;
             }
         }
 
-        private IEnumerator FadeBlackTo(float targetAlpha, float duration, AnimationCurve curve, Action onComplete)
+        private IEnumerator FadeBlackTo(float targetAlpha, float duration, AnimationCurve curve, Action onComplete, CanvasGroup canvasGroup)
         {
-            if (_black == null)
+            if (canvasGroup == null)
                 yield break;
 
-            float startAlpha = _black.alpha;
+            float startAlpha = canvasGroup.alpha;
 
             if (duration <= 0f)
             {
-                SetAlpha(_black, targetAlpha);
-                _routine = null;
+                SetAlpha(canvasGroup, targetAlpha);
+                _blackscreenRoutine = null;
                 onComplete?.Invoke();
                 yield break;
             }
@@ -59,12 +82,12 @@ namespace LightHouse.Features.Tutorial
                 time += Time.deltaTime;
                 float n = Mathf.Clamp01(time / duration);
                 float f = curve != null ? curve.Evaluate(n) : n;
-                SetAlpha(_black, Mathf.Lerp(startAlpha, targetAlpha, f));
+                SetAlpha(canvasGroup, Mathf.Lerp(startAlpha, targetAlpha, f));
                 yield return null;
             }
 
-            SetAlpha(_black, targetAlpha);
-            _routine = null;
+            SetAlpha(canvasGroup, targetAlpha);
+            _blackscreenRoutine = null;
             onComplete?.Invoke();
         }
 

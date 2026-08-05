@@ -9,6 +9,7 @@ public static class GlobalAssetsMenuPaths
     public const string AudioAssetsMenuPath = GlobalAssetsMenuPath + "Audio/";
     public const string WeatherAssetsMenuPath = GlobalAssetsMenuPath + "Weather/";
     public const string BoatsAssetsMenuPath = GlobalAssetsMenuPath + "Boats/";
+    public const string TutorialAssetsMenuPath = GlobalAssetsMenuPath + "Tutorial/";
 
     #region UTILITIES
     public const string UtilitiesAssetsMenuPath = GlobalAssetsMenuPath + "Utilities/";
