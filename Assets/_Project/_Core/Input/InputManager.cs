@@ -22,6 +22,7 @@ namespace LightHouse.Core.Inputs
         {
             get
             {
+                if (!Application.isPlaying) return null;
                 if (!InputManager.IsInitialized && _player_Input_Actions == null)
                 {
                     Debug.LogWarning("PlayerInputActions n'est pas défini dans InputManager ! Création automatique...");

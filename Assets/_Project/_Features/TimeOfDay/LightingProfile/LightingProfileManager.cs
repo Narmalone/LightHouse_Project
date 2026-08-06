@@ -7,114 +7,11 @@ using LightHouse.Features.TimeOfDay.TimeCore;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
-using System;
 
 namespace LightHouse.Features.TimeOfDay.Lighting
 {
     /// <summary>
-    /// Snapshot numérique interpolable, indépendant du moteur de rendu. Toute la logique de lerp
-    /// passe par cette struct : le reste du manager ne touche un Volume/Light QUE dans ApplyResolved.
-    /// </summary>
-    internal struct ResolvedLighting
-    {
-        // Sun
-        public Color SunColor; public float SunIntensity; public float SunTemperature;
-        public float FlareIntensity; public float FlareScale;
-
-        // Exposure
-        public float Exposure; public float Compensation;
-
-        // Fog
-        public Color FogTint; public float BaseHeight; public float MaxHeight;
-        public float MeanFreePath; public float MaxFogDistance; public Color Albedo;
-        public bool VolumetricFog; public FogDenoisingMode DenoisingMode;
-        public float GIDimmer;
-
-        // Sky
-        public Color GroundTint; public Color HorizonTint; public Color ZenithTint;
-        public float HorizonZenithShift; public float AerosolDensity;
-        public Color AerosolTint; public float AerosolMaxAltitude;
-
-        // Color Adjustments
-        public float PostExposure; public float Contrast; public float Saturation;
-
-        public static ResolvedLighting FromProfile(LightingProfile p)
-        {
-            return new ResolvedLighting
-            {
-                SunColor = p.sunColor,
-                SunIntensity = p.sunIntensity,
-                SunTemperature = p.temperature,
-                FlareIntensity = p.FlareIntensity,
-                FlareScale = p.FlareScale,
-
-                Exposure = p.Exposure,
-                Compensation = p.Compensation,
-
-                FogTint = p.Tint,
-                BaseHeight = p.BaseHeight,
-                MaxHeight = p.MaximumHeight,
-                MeanFreePath = p.FogAttenuationDistance,
-                MaxFogDistance = p.MaxFogDistance,
-                Albedo = p.Albedo,
-                VolumetricFog = p.VolumetricFog,
-                DenoisingMode = p.DenoisingMode,
-                GIDimmer = p.GIDimmer,
-
-                GroundTint = p.GroundTint,
-                HorizonTint = p.HorizonTint,
-                ZenithTint = p.ZenithTint,
-                HorizonZenithShift = p.HorizonZenithShift,
-                AerosolDensity = p.AerosolDensity,
-                AerosolTint = p.AerosolTint,
-                AerosolMaxAltitude = p.AerosolMaximumAltitude,
-
-                PostExposure = p.PostExposure,
-                Contrast = p.Contrasts,
-                Saturation = p.Saturation
-            };
-        }
-
-        public static ResolvedLighting Lerp(ResolvedLighting a, ResolvedLighting b, float t)
-        {
-            return new ResolvedLighting
-            {
-                SunColor = Color.Lerp(a.SunColor, b.SunColor, t),
-                SunIntensity = Mathf.Lerp(a.SunIntensity, b.SunIntensity, t),
-                SunTemperature = Mathf.Lerp(a.SunTemperature, b.SunTemperature, t),
-                FlareIntensity = Mathf.Lerp(a.FlareIntensity, b.FlareIntensity, t),
-                FlareScale = Mathf.Lerp(a.FlareScale, b.FlareScale, t),
-
-                Exposure = Mathf.Lerp(a.Exposure, b.Exposure, t),
-                Compensation = Mathf.Lerp(a.Compensation, b.Compensation, t),
-
-                FogTint = Color.Lerp(a.FogTint, b.FogTint, t),
-                BaseHeight = Mathf.Lerp(a.BaseHeight, b.BaseHeight, t),
-                MaxHeight = Mathf.Lerp(a.MaxHeight, b.MaxHeight, t),
-                MeanFreePath = Mathf.Lerp(a.MeanFreePath, b.MeanFreePath, t),
-                MaxFogDistance = Mathf.Lerp(a.MaxFogDistance, b.MaxFogDistance, t),
-                Albedo = Color.Lerp(a.Albedo, b.Albedo, t),
-                VolumetricFog = t < 0.5f ? a.VolumetricFog : b.VolumetricFog,
-                DenoisingMode = t < 0.5f ? a.DenoisingMode : b.DenoisingMode,
-                GIDimmer = Mathf.Lerp(a.GIDimmer, b.GIDimmer, t),
-
-                GroundTint = Color.Lerp(a.GroundTint, b.GroundTint, t),
-                HorizonTint = Color.Lerp(a.HorizonTint, b.HorizonTint, t),
-                ZenithTint = Color.Lerp(a.ZenithTint, b.ZenithTint, t),
-                HorizonZenithShift = Mathf.Lerp(a.HorizonZenithShift, b.HorizonZenithShift, t),
-                AerosolDensity = Mathf.Lerp(a.AerosolDensity, b.AerosolDensity, t),
-                AerosolTint = Color.Lerp(a.AerosolTint, b.AerosolTint, t),
-                AerosolMaxAltitude = Mathf.Lerp(a.AerosolMaxAltitude, b.AerosolMaxAltitude, t),
-
-                PostExposure = Mathf.Lerp(a.PostExposure, b.PostExposure, t),
-                Contrast = Mathf.Lerp(a.Contrast, b.Contrast, t),
-                Saturation = Mathf.Lerp(a.Saturation, b.Saturation, t)
-            };
-        }
-    }
-
-    /// <summary>
-    /// 4 profils de lighting pour une météo donnée (un par segment de journée).
+    /// 4 presets (Night/Morning/Midday/Evening) pour une météo donnée.
     /// </summary>
     [System.Serializable]
     public class WeatherProfileSet
@@ -126,8 +23,7 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         /// <summary>
         /// Unique point de vérité pour la correspondance segment -> profil. Ne jamais indexer par
-        /// (int)TimeOfDaySegment : l'ordre de déclaration de l'enum n'est pas garanti stable, un simple
-        /// réordonnancement casserait silencieusement tous les blends sans crash.
+        /// (int)TimeOfDaySegment : l'ordre de déclaration de l'enum n'est pas garanti stable.
         /// </summary>
         public LightingProfile Get(TimeOfDaySegment seg) => seg switch
         {
@@ -142,39 +38,16 @@ namespace LightHouse.Features.TimeOfDay.Lighting
     }
 
     /// <summary>
-    /// Fenêtre de transition entre deux segments de la journée (ex: Night -> Morning entre 5h et 7h).
-    /// En dehors de toutes les fenêtres, on est sur un "plateau" (le segment "To" de la dernière
-    /// transition passée).
-    /// </summary>
-    [System.Serializable]
-    public struct SegmentTransition
-    {
-        public TimeOfDaySegment From;
-        public TimeOfDaySegment To;
-
-        [Tooltip("Heure de début / fin de la fenêtre de transition (0..24)")]
-        public Vector2 Window;
-
-        public AnimationCurve Curve;
-
-        public readonly float Start => Window.x;
-        public readonly float End => Window.y;
-    }
-
-    /// <summary>
-    /// REPART DE ZÉRO — étape 2 : les lerps.
+    /// v4 : on garde le principe simple de v3 (un seul Lerp continu du Volume/Light vers un preset
+    /// cible, pas de timer, pas de machine à états) et on ajoute juste le choix du BON preset parmi
+    /// les 4 (Night/Morning/Midday/Evening) de la météo courante, selon l'heure.
     ///
-    /// Deux axes, jamais mélangés dans une seule formule :
-    ///
-    ///  1) HEURE DE LA JOURNÉE (toujours actif) : blend continu entre 2 des 4 profils du
-    ///     <see cref="CurrentSet"/> sélectionné (cf étape 1), piloté par <see cref="_transitions"/>.
-    ///     C'est un pur Lerp(a, b, t) où t vient de GetBlendSegments : déterministe, pas de timer,
-    ///     pas d'état à maintenir entre les frames.
-    ///
-    ///  2) MÉTÉO (seulement quand elle change) : PAS de blend analytique entre deux météos en
-    ///     parallèle. Un seul crossfade linéaire à la fois (timer 0->1 sur _weatherCrossfadeDuration),
-    ///     depuis la dernière valeur réellement affichée vers la nouvelle cible (qui elle-même suit
-    ///     l'heure en continu via l'axe 1). Une transition à la fois, faite pour être simple à suivre.
+    /// Pas de fenêtres de transition avec courbes ni de blend explicite entre 2 segments : on
+    /// sélectionne un segment (fonction pure de l'heure, sans état), et c'est le Lerp continu de
+    /// LerpTowardPreset qui, à chaque frame, rapproche le lighting affiché du preset du segment
+    /// courant. Quand l'heure fait basculer le segment, la cible change d'un coup mais le lighting
+    /// affiché continue de la suivre en douceur (même mécanisme que pour la météo) : pas besoin d'un
+    /// deuxième système de blend séparé.
     /// </summary>
     public class LightingProfileManager : MonoBehaviour
     {
@@ -187,50 +60,31 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         #endregion
 
-        #region Profiles (Météo -> 4 profils temps de jour)
+        #region Presets (4 par météo)
 
-        [Header("Profiles per weather")]
-        public AYellowpaper.SerializedCollections.SerializedDictionary<WeatherType, WeatherProfileSet> WeatherProfiles;
+        [Header("4 presets (Night/Morning/Midday/Evening) par météo")]
+        [SerializeField] private AYellowpaper.SerializedCollections.SerializedDictionary<WeatherType, WeatherProfileSet> _weatherPresets;
 
-        [Tooltip("Météo utilisée quand WeatherProfiles n'a pas d'entrée (ou un set incomplet) pour la météo demandée.")]
+        [Tooltip("Set utilisé quand _weatherPresets n'a pas d'entrée (ou un set incomplet) pour la météo demandée.")]
         [SerializeField] private WeatherType _fallbackWeather = WeatherType.Sunny;
-
-        /// <summary>Le set actuellement sélectionné pour la météo courante. Null si rien trouvé (cas rare, cf fallback).</summary>
-        public WeatherProfileSet CurrentSet { get; private set; }
 
         #endregion
 
-        #region Time-of-day transitions (axe 1)
+        #region Segments horaires (fonction pure heure -> segment, aucun état)
 
-        [Header("Transitions Jour/Nuit (dans l'ordre chronologique)")]
-        [SerializeField]
-        private SegmentTransition[] _transitions = new SegmentTransition[]
-        {
-            new SegmentTransition
-            {
-                From = TimeOfDaySegment.Night, To = TimeOfDaySegment.Morning,
-                Window = new Vector2(5f, 7f),
-                Curve = AnimationCurve.EaseInOut(0, 0, 1, 1)
-            },
-            new SegmentTransition
-            {
-                From = TimeOfDaySegment.Morning, To = TimeOfDaySegment.Midday,
-                Window = new Vector2(9f, 12f),
-                Curve = AnimationCurve.EaseInOut(0, 0, 1, 1)
-            },
-            new SegmentTransition
-            {
-                From = TimeOfDaySegment.Midday, To = TimeOfDaySegment.Evening,
-                Window = new Vector2(15f, 18f),
-                Curve = AnimationCurve.EaseInOut(0, 0, 1, 1)
-            },
-            new SegmentTransition
-            {
-                From = TimeOfDaySegment.Evening, To = TimeOfDaySegment.Night,
-                Window = new Vector2(21f, 23f),
-                Curve = AnimationCurve.EaseInOut(0, 0, 1, 1)
-            },
-        };
+        [Header("Heures de début de chaque segment (0..24)")]
+        [SerializeField] private float _morningStart = 5f;
+        [SerializeField] private float _middayStart = 9f;
+        [SerializeField] private float _eveningStart = 18f;
+        [SerializeField] private float _nightStart = 21f;
+
+        #endregion
+
+        #region Lerp speed
+
+        [Header("Lerp")]
+        [Tooltip("Vitesse du lerp vers le preset courant (par seconde).")]
+        [SerializeField] private float _lerpSpeed = 1.5f;
 
         #endregion
 
@@ -246,41 +100,24 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         #endregion
 
-        #region Weather crossfade (axe 2)
+        #region Météo courante
 
-        [Header("Weather Crossfade")]
-        [Tooltip("Durée (s) du fondu quand la météo affichée change. 0 = instantané (utile pour débug).")]
-        [SerializeField] private float _weatherCrossfadeDuration = 4f;
-
-        /// <summary>Météo forcée manuellement (debug / narratif). Prioritaire sur la météo réelle si définie.</summary>
         private WeatherType? _weatherOverride;
+        private WeatherType _currentWeather;
+        private bool _hasWeather;
+        private bool _hasAppliedOnce;
 
-        private bool _hasActiveWeather;
-
-        private ResolvedLighting _fromState;
-        private ResolvedLighting _toState;
-        private float _crossfadeT = 1f;
-        private ResolvedLighting _lastApplied;
-
-        #endregion
-
-        #region Sun fade
-
-        [Header("Sun Fade Override")]
-        [SerializeField] private float _sunFadeStart = 19f;
-        [SerializeField] private float _sunFadeEnd = 20f;
-        [SerializeField] private Color _sunFadeColor = Color.black;
-        [SerializeField] private float _sunFadeIntensityTarget = 0f;
+        private float _currentTimeOfDay;
+        private bool _hasTime;
 
         #endregion
 
         #region Debug
 
-        [Header("Debug (lecture seule, à observer en Play mode)")]
+        [Header("Debug (lecture seule)")]
         [SerializeField, ReadOnly] private WeatherType _debugCurrentWeather;
-        [SerializeField, ReadOnly] private bool _debugSetFound;
-        [SerializeField, ReadOnly] private bool _debugSetComplete;
-        [SerializeField, ReadOnly] private float _debugCrossfadeT;
+        [SerializeField, ReadOnly] private bool _debugPresetFound;
+        [SerializeField, ReadOnly] private TimeOfDaySegment _debugCurrentSegment;
 
         #endregion
 
@@ -312,24 +149,28 @@ namespace LightHouse.Features.TimeOfDay.Lighting
                 _globalVolume.profile.TryGet(out _colorAdjustments);
             }
 
-            // WeatherManager a déjà tourné son Awake avant notre Start (Unity garantit tous les Awake
-            // avant tous les Start), donc WeatherHandlerData.CurrentWeather est déjà valide ici.
-            WeatherType initial = _weatherOverride ?? (WeatherHandlerData.CurrentWeather?.WeatherType ?? _fallbackWeather);
-            SelectWeatherSet(initial);
+            _currentWeather = _weatherOverride ?? (WeatherHandlerData.CurrentWeather?.WeatherType ?? _fallbackWeather);
+            _hasWeather = true;
         }
 
         private void Update()
         {
-            if (!_hasActiveWeather) return;
+            if (!_hasWeather || !_hasTime) return;
 
-            _crossfadeT = _weatherCrossfadeDuration <= 0f
-                ? 1f
-                : Mathf.Min(1f, _crossfadeT + Time.deltaTime / _weatherCrossfadeDuration);
+            var segment = GetSegment(_currentTimeOfDay);
+            var preset = SelectPreset(_currentWeather, segment, out bool found);
+            _debugCurrentWeather = _currentWeather;
+            _debugPresetFound = found;
+            _debugCurrentSegment = segment;
 
-            _debugCrossfadeT = _crossfadeT;
+            if (preset == null) return;
 
-            _lastApplied = ResolvedLighting.Lerp(_fromState, _toState, _crossfadeT);
-            ApplyResolved(_lastApplied);
+            // Premier frame utile : on saute directement sur le preset au lieu de lerper depuis
+            // quoi que ce soit d'incohérent qui traînait dans l'asset de Volume (c'est ce qui
+            // provoquait l'écran noir de quelques secondes au lancement).
+            float t = _hasAppliedOnce ? Mathf.Clamp01(_lerpSpeed * Time.deltaTime) : 1f;
+            LerpTowardPreset(preset, t);
+            _hasAppliedOnce = true;
         }
 
         private void OnDestroy()
@@ -341,16 +182,6 @@ namespace LightHouse.Features.TimeOfDay.Lighting
                 _sunController.OnShadowOwnershipChanged -= Sun_OnShadowOwnershipChanged;
         }
 
-        private void OnValidate()
-        {
-            if (WeatherProfiles == null) return;
-            foreach (var kv in WeatherProfiles)
-            {
-                if (kv.Value == null || !kv.Value.IsComplete)
-                    Debug.LogWarning($"[LightingProfileManager] La météo '{kv.Key}' n'a pas ses 4 profils (Night/Morning/Midday/Evening) renseignés.");
-            }
-        }
-
         #endregion
 
         #region Public API
@@ -358,29 +189,36 @@ namespace LightHouse.Features.TimeOfDay.Lighting
         public void OverrideWeather(WeatherType weather)
         {
             _weatherOverride = weather;
-            SelectWeatherSet(weather); // déclenche le crossfade tout de suite, pas d'attente du prochain vrai changement météo
+            _currentWeather = weather;
+            _hasWeather = true;
         }
 
         public void ClearWeatherOverride()
         {
             _weatherOverride = null;
-            SelectWeatherSet(WeatherHandlerData.CurrentWeather?.WeatherType ?? _fallbackWeather);
+            _currentWeather = WeatherHandlerData.CurrentWeather?.WeatherType ?? _fallbackWeather;
+            _hasWeather = true;
         }
 
         #endregion
 
-        #region Weather selection (étape 1, inchangé dans son principe)
+        #region Events
 
         private void OnWeatherTypeChanged(WeatherType newWeather)
         {
-            if (_weatherOverride.HasValue) return; // override manuel prioritaire, on ignore la météo réelle
-            SelectWeatherSet(newWeather);
+            if (_weatherOverride.HasValue) return; // override manuel prioritaire
+            _currentWeather = newWeather;
+            _hasWeather = true;
+        }
+
+        private void OnTimeChanged(float timeOfDay)
+        {
+            _currentTimeOfDay = timeOfDay;
+            _hasTime = true;
         }
 
         /// <summary>
-        /// Le soleil vient de prendre/perdre les ombres (cf SunController.OnShadowOwnershipChanged).
-        /// La lune reçoit exactement l'inverse via sa propre méthode (qui a son propre filtre anti-
-        /// réécriture) : jamais les deux actifs en même temps, par construction du signal partagé.
+        /// Le soleil vient de prendre/perdre les ombres. La lune reçoit l'inverse.
         /// </summary>
         private void Sun_OnShadowOwnershipChanged(bool sunOwnsShadows)
         {
@@ -388,42 +226,50 @@ namespace LightHouse.Features.TimeOfDay.Lighting
                 _moonController.SetShadowActive(!sunOwnsShadows);
         }
 
+        #endregion
+
+        #region Preset selection
+
         /// <summary>
-        /// Change la météo "active" pour le crossfade. Ne calcule PAS encore le lighting résolu :
-        /// ça, c'est le rôle d'OnTimeChanged (axe 1), qui tourne de toute façon chaque frame.
-        /// On se contente ici de mémoriser que la météo a changé, pour qu'OnTimeChanged sache qu'il
-        /// doit démarrer un nouveau crossfade au prochain calcul.
+        /// Fonction pure heure -> segment. Pas d'état, pas de fenêtres de transition : un simple
+        /// enchaînement de seuils. Le lerp continu de Update() se charge de lisser visuellement le
+        /// changement de cible quand l'heure fait basculer d'un segment à l'autre.
         /// </summary>
-        private void SelectWeatherSet(WeatherType weather)
+        private TimeOfDaySegment GetSegment(float time)
         {
-            CurrentSet = SelectProfileSet(weather, out bool found);
+            time %= 24f;
+            if (time < 0f) time += 24f;
 
-            _debugCurrentWeather = weather;
-            _debugSetFound = found;
-            _debugSetComplete = found && CurrentSet.IsComplete;
+            if (time >= _nightStart || time < _morningStart) return TimeOfDaySegment.Night;
+            if (time < _middayStart) return TimeOfDaySegment.Morning;
+            if (time < _eveningStart) return TimeOfDaySegment.Midday;
+            return TimeOfDaySegment.Evening;
+        }
 
-            if (!found)
-                Debug.LogWarning($"[LightingProfileManager] Aucune entrée dans WeatherProfiles pour la météo '{weather}'.");
-            else if (!CurrentSet.IsComplete)
-                Debug.LogWarning($"[LightingProfileManager] Le set pour '{weather}' existe mais n'a pas ses 4 profils renseignés.");
+        private LightingProfile SelectPreset(WeatherType weather, TimeOfDaySegment segment, out bool found)
+        {
+            var set = SelectProfileSet(weather, out found);
+            if (set == null) return null;
 
-            // On force un nouveau crossfade au prochain OnTimeChanged en repartant de _lastApplied.
-            _hasActiveWeather = false;
+            var profile = set.Get(segment);
+            if (profile == null)
+            {
+                Debug.LogWarning($"[LightingProfileManager] Le segment '{segment}' est vide pour la météo '{weather}' malgré IsComplete == true.");
+                found = false;
+            }
+            return profile;
         }
 
         private WeatherProfileSet SelectProfileSet(WeatherType weather, out bool found)
         {
-            found = WeatherProfiles != null && WeatherProfiles.TryGetValue(weather, out var set) && set != null && set.IsComplete;
-            if (found) return WeatherProfiles[weather];
+            found = _weatherPresets != null && _weatherPresets.TryGetValue(weather, out var set) && set != null && set.IsComplete;
+            if (found) return _weatherPresets[weather];
 
-            // Fallback : si la météo demandée n'a pas ses 4 profils, on retombe sur _fallbackWeather
-            // (une seule fois, pas de récursion infinie si le fallback lui-même est mal configuré).
             if (weather != _fallbackWeather
-                && WeatherProfiles != null
-                && WeatherProfiles.TryGetValue(_fallbackWeather, out var fallbackSet)
+                && _weatherPresets != null
+                && _weatherPresets.TryGetValue(_fallbackWeather, out var fallbackSet)
                 && fallbackSet != null && fallbackSet.IsComplete)
             {
-                Debug.LogWarning($"[LightingProfileManager] Fallback sur '{_fallbackWeather}' pour la météo '{weather}'.");
                 found = true;
                 return fallbackSet;
             }
@@ -433,181 +279,87 @@ namespace LightHouse.Features.TimeOfDay.Lighting
 
         #endregion
 
-        #region Time Cycle (axe 1) + déclenchement du crossfade météo (axe 2)
+        #region Lerp (écrit directement sur le moteur, aucune struct intermédiaire)
 
-        public void OnTimeChanged(float timeOfDay)
+        private void LerpTowardPreset(LightingProfile p, float t)
         {
-            if (CurrentSet == null) return; // rien à résoudre tant qu'aucune météo n'a de set valide
-
-            var target = ResolveTimeOnly(CurrentSet, timeOfDay);
-
-            bool useManualSunFade = timeOfDay >= _sunFadeStart && timeOfDay <= _sunFadeEnd;
-            if (useManualSunFade)
-            {
-                float fadeT = Mathf.InverseLerp(_sunFadeStart, _sunFadeEnd, timeOfDay);
-                ApplySunFadeOut(ref target, fadeT);
-            }
-
-            if (!_hasActiveWeather)
-            {
-                // Nouvelle météo (ou tout premier frame) : démarre UN crossfade depuis ce qui est
-                // réellement affiché à l'écran (rien à afficher au tout premier frame -> on part
-                // directement de la cible, pas de fondu depuis du vide).
-                _fromState = _hasEverApplied ? _lastApplied : target;
-                _hasActiveWeather = true;
-                _crossfadeT = 0f;
-            }
-
-            // Que ce soit un nouveau crossfade ou la continuation du précédent, la cible suit l'heure
-            // de la journée en continu (axe 1, toujours actif).
-            _toState = target;
-        }
-
-        private bool _hasEverApplied;
-
-        #endregion
-
-        #region Resolve (axe 1 uniquement : heure de la journée, pour un set déjà sélectionné)
-
-        private ResolvedLighting ResolveTimeOnly(WeatherProfileSet set, float time)
-        {
-            GetBlendSegments(time, out var fromSeg, out var toSeg, out float t);
-
-            var from = set.Get(fromSeg) ?? set.Midday;
-            var to = set.Get(toSeg) ?? set.Midday;
-
-            if (from == null || to == null)
-            {
-                Debug.LogWarning("[LightingProfileManager] Profil manquant dans le set courant malgré IsComplete == true. Vérifie les assets.");
-                return _hasEverApplied ? _lastApplied : default;
-            }
-
-            return ResolvedLighting.Lerp(ResolvedLighting.FromProfile(from), ResolvedLighting.FromProfile(to), t);
-        }
-
-        private static float Normalize24(float h)
-        {
-            h %= 24f; if (h < 0f) h += 24f; return h; // [0,24)
-        }
-
-        private void GetBlendSegments(float time, out TimeOfDaySegment from, out TimeOfDaySegment to, out float t)
-        {
-            time = Normalize24(time);
-
-            if (_transitions == null || _transitions.Length == 0)
-            {
-                from = to = TimeOfDaySegment.Midday; t = 0f; return;
-            }
-
-            // 1) Est-on dans une fenêtre de transition ?
-            for (int i = 0; i < _transitions.Length; i++)
-            {
-                var tr = _transitions[i];
-                if (InRangeNoWrap(time, tr.Start, tr.End))
-                {
-                    from = tr.From; to = tr.To;
-                    float raw = Mathf.InverseLerp(tr.Start, tr.End, time);
-                    t = tr.Curve != null ? tr.Curve.Evaluate(raw) : raw;
-                    return;
-                }
-            }
-
-            // 2) Sinon, plateau = segment "To" de la dernière transition dont on a dépassé la fin.
-            for (int i = 0; i < _transitions.Length; i++)
-            {
-                var current = _transitions[i];
-                var next = _transitions[(i + 1) % _transitions.Length];
-
-                if (InRangeWrap(time, current.End, next.Start))
-                {
-                    from = to = current.To;
-                    t = 0f;
-                    return;
-                }
-            }
-
-            from = to = TimeOfDaySegment.Midday; t = 0f;
-        }
-
-        private static bool InRangeNoWrap(float t, float start, float end) => t >= start && t < end;
-
-        private static bool InRangeWrap(float t, float start, float end)
-        {
-            start = Normalize24(start); end = Normalize24(end); t = Normalize24(t);
-            if (Mathf.Approximately(start, end)) return false;
-            if (start < end) return t >= start && t < end;
-            return t >= start || t < end;
-        }
-
-        private void ApplySunFadeOut(ref ResolvedLighting r, float t)
-        {
-            r.SunColor = Color.Lerp(r.SunColor, _sunFadeColor, t);
-            r.SunIntensity = Mathf.Lerp(r.SunIntensity, _sunFadeIntensityTarget, t);
-            r.FlareIntensity = Mathf.Lerp(r.FlareIntensity, 0f, t);
-            r.FlareScale = Mathf.Lerp(r.FlareScale, 0f, t);
-        }
-
-        #endregion
-
-        #region Apply (écrit sur le moteur — la seule région qui touche Light/Volume)
-
-        private void ApplyResolved(ResolvedLighting r)
-        {
-            _hasEverApplied = true;
-
-            // --- Sun --- (couleur/intensité/flare uniquement : rotation, enabled, shadows restent
-            // gérés par SunController lui-même, cf le fix anti-flicker)
+            // --- Sun ---
             if (_sunController != null && _sunController.SunLight != null)
             {
-                _sunController.SunLight.color = r.SunColor;
-                _sunController.SunLight.intensity = r.SunIntensity;
-                _sunController.SunLight.colorTemperature = r.SunTemperature;
+                var light = _sunController.SunLight;
+                light.color = Color.Lerp(light.color, p.sunColor, t);
+                light.intensity = Mathf.Lerp(light.intensity, p.sunIntensity, t);
+                light.colorTemperature = Mathf.Lerp(light.colorTemperature, p.temperature, t);
             }
             if (_sunController != null && _sunController.SunLens != null)
             {
-                _sunController.SunLens.intensity = r.FlareIntensity;
-                _sunController.SunLens.scale = r.FlareScale;
+                _sunController.SunLens.intensity = Mathf.Lerp(_sunController.SunLens.intensity, p.FlareIntensity, t);
+                _sunController.SunLens.scale = Mathf.Lerp(_sunController.SunLens.scale, p.FlareScale, t);
             }
 
             // --- Exposure ---
             if (_exposure != null)
             {
-                _exposure.fixedExposure.value = r.Exposure + _additionalExposure;
-                _exposure.compensation.value = r.Compensation;
+                _exposure.fixedExposure.value = Mathf.Lerp(_exposure.fixedExposure.value, p.Exposure + _additionalExposure, t);
+                _exposure.compensation.value = Mathf.Lerp(_exposure.compensation.value, p.Compensation, t);
+                _exposure.fixedExposure.overrideState = true;
+                _exposure.compensation.overrideState = true;
             }
 
             // --- Fog ---
             if (_fog != null)
             {
-                _fog.tint.value = r.FogTint;
-                _fog.baseHeight.value = r.BaseHeight;
-                _fog.maximumHeight.value = r.MaxHeight;
-                _fog.meanFreePath.value = r.MeanFreePath;
-                _fog.maxFogDistance.value = r.MaxFogDistance;
-                _fog.albedo.value = r.Albedo;
-                _fog.enableVolumetricFog.value = r.VolumetricFog;
-                _fog.denoisingMode.value = r.DenoisingMode;
-                _fog.globalLightProbeDimmer.value = r.GIDimmer;
+                _fog.tint.value = Color.Lerp(_fog.tint.value, p.Tint, t);
+                _fog.baseHeight.value = Mathf.Lerp(_fog.baseHeight.value, p.BaseHeight, t);
+                _fog.maximumHeight.value = Mathf.Lerp(_fog.maximumHeight.value, p.MaximumHeight, t);
+                _fog.meanFreePath.value = Mathf.Lerp(_fog.meanFreePath.value, p.FogAttenuationDistance, t);
+                _fog.maxFogDistance.value = Mathf.Lerp(_fog.maxFogDistance.value, p.MaxFogDistance, t);
+                _fog.albedo.value = Color.Lerp(_fog.albedo.value, p.Albedo, t);
+                _fog.enableVolumetricFog.value = p.VolumetricFog; // booléen : pas de lerp qui tienne, on applique direct
+                _fog.denoisingMode.value = p.DenoisingMode;       // idem, enum
+                _fog.globalLightProbeDimmer.value = Mathf.Lerp(_fog.globalLightProbeDimmer.value, p.GIDimmer, t);
+
+                _fog.tint.overrideState = true;
+                _fog.baseHeight.overrideState = true;
+                _fog.maximumHeight.overrideState = true;
+                _fog.meanFreePath.overrideState = true;
+                _fog.maxFogDistance.overrideState = true;
+                _fog.albedo.overrideState = true;
+                _fog.enableVolumetricFog.overrideState = true;
+                _fog.denoisingMode.overrideState = true;
+                _fog.globalLightProbeDimmer.overrideState = true;
             }
 
             // --- Sky ---
             if (_pbSky != null)
             {
-                _pbSky.groundTint.value = r.GroundTint;
-                _pbSky.horizonTint.value = r.HorizonTint;
-                _pbSky.zenithTint.value = r.ZenithTint;
-                _pbSky.horizonZenithShift.value = r.HorizonZenithShift;
-                _pbSky.aerosolDensity.value = r.AerosolDensity;
-                _pbSky.aerosolTint.value = r.AerosolTint;
-                _pbSky.aerosolMaximumAltitude.value = r.AerosolMaxAltitude;
+                _pbSky.groundTint.value = Color.Lerp(_pbSky.groundTint.value, p.GroundTint, t);
+                _pbSky.horizonTint.value = Color.Lerp(_pbSky.horizonTint.value, p.HorizonTint, t);
+                _pbSky.zenithTint.value = Color.Lerp(_pbSky.zenithTint.value, p.ZenithTint, t);
+                _pbSky.horizonZenithShift.value = Mathf.Lerp(_pbSky.horizonZenithShift.value, p.HorizonZenithShift, t);
+                _pbSky.aerosolDensity.value = Mathf.Lerp(_pbSky.aerosolDensity.value, p.AerosolDensity, t);
+                _pbSky.aerosolTint.value = Color.Lerp(_pbSky.aerosolTint.value, p.AerosolTint, t);
+                _pbSky.aerosolMaximumAltitude.value = Mathf.Lerp(_pbSky.aerosolMaximumAltitude.value, p.AerosolMaximumAltitude, t);
+
+                _pbSky.groundTint.overrideState = true;
+                _pbSky.horizonTint.overrideState = true;
+                _pbSky.zenithTint.overrideState = true;
+                _pbSky.horizonZenithShift.overrideState = true;
+                _pbSky.aerosolDensity.overrideState = true;
+                _pbSky.aerosolTint.overrideState = true;
+                _pbSky.aerosolMaximumAltitude.overrideState = true;
             }
 
             // --- Color Adjustments ---
             if (_colorAdjustments != null)
             {
-                _colorAdjustments.postExposure.value = r.PostExposure;
-                _colorAdjustments.contrast.value = r.Contrast;
-                _colorAdjustments.saturation.value = r.Saturation;
+                _colorAdjustments.postExposure.value = Mathf.Lerp(_colorAdjustments.postExposure.value, p.PostExposure, t);
+                _colorAdjustments.contrast.value = Mathf.Lerp(_colorAdjustments.contrast.value, p.Contrasts, t);
+                _colorAdjustments.saturation.value = Mathf.Lerp(_colorAdjustments.saturation.value, p.Saturation, t);
+
+                _colorAdjustments.postExposure.overrideState = true;
+                _colorAdjustments.contrast.overrideState = true;
+                _colorAdjustments.saturation.overrideState = true;
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using LightHouse.Features.TimeOfDay.TimeCore;
+﻿using LightHouse.Features.TimeOfDay.Sun;
+using LightHouse.Features.TimeOfDay.TimeCore;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
@@ -12,8 +13,6 @@ namespace LightHouse.Features.Weather.Ocean
     [RequireComponent(typeof(WaterSurface))]
     public class OceanManager : NotPersistentSingleton<OceanManager>
     {
-        public WeatherManager WeatherManager;
-        public Light SunLight;
         public OceanConfiguration Config;
 
         [SerializeField] private WaterSurface _waterSurface;
@@ -24,17 +23,11 @@ namespace LightHouse.Features.Weather.Ocean
         private float chaosVelocity;
         private float smoothTime = 0.5f;
 
-        protected override void Awake()
-        {
-            base.Awake();
-            Debug.Log(Instance);
-        }
-
         private void Update()
         {
-            if (WeatherManager == null || WeatherManager.CurrentWeather == null || SunLight == null) return;
+            if (WeatherHandlerData.CurrentWeather == null) return;
 
-            var weather = WeatherManager.CurrentWeather;
+            var weather = WeatherHandlerData.CurrentWeather;
 
             // 🔄 Normalisation
             float tWind = Mathf.InverseLerp(Config.windMin, Config.windMax, weather.WindSpeed);
@@ -42,7 +35,11 @@ namespace LightHouse.Features.Weather.Ocean
             float tTemp = Mathf.InverseLerp(Config.temperatureMin, Config.temperatureMax, weather.WaterTemperature);
             float tPressure = Mathf.InverseLerp(Config.pressureMin, Config.pressureMax, weather.AtmosphericPressure);
             float tTime = Mathf.InverseLerp(Config.timeMin, Config.timeMax, TimeHandlerData.CurrentTime);
-            float sunIntensity01 = Mathf.Clamp01(SunLight.intensity / Config.sunIntensityMax);
+
+            float sunIntensity01 = 0f;
+
+            if(SunController.instance != null && SunController.instance.SunLight != null)
+                sunIntensity01 = Mathf.Clamp01(SunController.instance.SunLight.intensity / Config.sunIntensityMax);
 
             // 💨 Direction du vent
             Vector3 windDir = Quaternion.Euler(0, weather.WindOrientation, 0) * Vector3.forward;
