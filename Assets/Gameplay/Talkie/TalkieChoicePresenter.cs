@@ -129,6 +129,32 @@ namespace LightHouse.Features.Talkie
             }
         }
 
+        /// <summary>
+        /// Force la sélection d'un choix par le code, comme si le joueur avait
+        /// pressé la touche correspondante. Utile pour un skip, un cheat, un
+        /// tutoriel automatisé, ou des tests. Ne fait rien si aucun choix n'est
+        /// actuellement en attente (_currentChoices == null) ou si l'index est
+        /// invalide.
+        /// </summary>
+        public void ForceSelect(int index)
+        {
+            if (_currentChoices == null)
+            {
+                Debug.LogWarning("[TalkieChoicePresenter] ForceSelect appelé sans choix en attente.");
+                return;
+            }
+
+            if (index < 0 || index >= _currentChoices.Length)
+            {
+                Debug.LogWarning($"[TalkieChoicePresenter] ForceSelect: index {index} hors limites (0-{_currentChoices.Length - 1}).");
+                return;
+            }
+
+            TalkieChoice choice = _currentChoices[index];
+            if (choice != null)
+                Select(choice);
+        }
+
         #region Sélection clavier (touches 1-4, action "Select" existante)
         private void StartListeningToSelect()
         {

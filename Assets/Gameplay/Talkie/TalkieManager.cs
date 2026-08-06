@@ -217,6 +217,24 @@ namespace LightHouse.Features.Talkie
             }
         }
 
+        /// <summary>
+        /// Force la sélection du choix à l'index donné pour le dialogue en cours,
+        /// comme si le joueur avait pressé la touche correspondante.
+        /// Retourne false si aucun choix n'est en attente ou si aucun presenter
+        /// n'est assigné.
+        /// </summary>
+        public bool ForceChoice(int index)
+        {
+            if (_choicePresenter == null)
+            {
+                Debug.LogWarning("[Talkie] ForceChoice appelé mais aucun ITalkieChoicePresenter assigné.");
+                return false;
+            }
+
+            _choicePresenter.ForceSelect(index);
+            return true;
+        }
+
         /// <param name="autoHide">
         /// Si false, le texte reste affiché indéfiniment une fois le typewriter
         /// terminé (pas d'attente, pas de fade-out) : utilisé pour les dialogues

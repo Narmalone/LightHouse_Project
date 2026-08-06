@@ -18,6 +18,8 @@ namespace LightHouse.Features.Talkie
         /// </summary>
         void Present(TalkieChoice[] choices, Action<TalkieChoice> onSelected);
 
+        void ForceSelect(int index);
+
         /// <summary>
         /// Cache l'UI de choix (fin de sélection ou annulation).
         /// </summary>
