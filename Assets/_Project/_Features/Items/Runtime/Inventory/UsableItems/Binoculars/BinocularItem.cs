@@ -91,7 +91,7 @@ namespace LightHouse.Features.Items.Inventory.Binoculars
         {
             base.Awake();
             SlotManager.OnSlotSelectedChanged += SlotManager_OnSlotSelectedChanged;
-            InputManager.Player.Scroll.performed += Scroll_performed;
+            InputManager.PIA.Player.Scroll.performed += Scroll_performed;
 
             _baseHoldTime = UseHoldTime;
         }
@@ -113,7 +113,7 @@ namespace LightHouse.Features.Items.Inventory.Binoculars
         {
             base.OnDestroy();
             SlotManager.OnSlotSelectedChanged -= SlotManager_OnSlotSelectedChanged;
-            InputManager.Player.Scroll.performed -= Scroll_performed;
+            InputManager.PIA.Player.Scroll.performed -= Scroll_performed;   
         }
         #endregion
 

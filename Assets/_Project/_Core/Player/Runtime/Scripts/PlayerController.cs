@@ -57,7 +57,7 @@ namespace LightHouse.Core.Player
         [SerializeField] private bool _enableCrouchInput = true;
 
         private bool _isInitialized = false;
-        private PlayerInputActions _inputActions => InputManager.PLAYER_INPUTS_ACTIONS;
+        private PlayerInputActions _inputActions => InputManager.PIA;
 
         public PlayerCharacter Character => _playerCharacter;
         public PlayerCamera PlayerCamera => _playerCamera;

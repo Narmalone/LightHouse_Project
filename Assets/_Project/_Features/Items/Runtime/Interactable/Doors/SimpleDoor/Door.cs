@@ -75,8 +75,8 @@ namespace LightHouse.Features.Items.Interactable.Doors
         #region IInteractable
         public virtual string GetInteractionName()
         {
-            return _isOpen ? $"Press {InputManager.GetBindingName(InputManager.Interact)} to Close"
-                           : $"Press {InputManager.GetBindingName(InputManager.Interact)} to Open";
+            return _isOpen ? $"Press {InputManager.GetBindingName(InputManager.PIA.Player.Interact)} to Close"
+                           : $"Press {InputManager.GetBindingName(InputManager.PIA.Player.Interact)} to Open";
         }
 
         public virtual string GetName()

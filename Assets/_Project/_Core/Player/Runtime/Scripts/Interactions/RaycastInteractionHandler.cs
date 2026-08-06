@@ -37,7 +37,7 @@ namespace LightHouse.Features.Interactions
         public void Update()
         {
             if (_currentInteractable != null && _currentInteractable.CanBeInteracted && _currentInteractable.CanBeRaycasted &&
-                InputManager.Interact.WasPerformedThisFrame())
+                InputManager.PIA.Player.Interact.WasPerformedThisFrame())
             {
                 _currentInteractable.Interact();
             }

@@ -44,6 +44,7 @@ public class Step02_PickUpBinnoculars : TutorialStep
         if (audio == _captainPickUpBinnocularsDialogue)
         {
             ObjectiveManager.Current.SetObjective("Pick up the binoculars");
+            _context.Binocular.SetPickable(true);
         }
 
         else if (audio == _captainLeadWayDialogue)

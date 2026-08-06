@@ -25,6 +25,7 @@ namespace LightHouse.Core.Tutorial
         [SerializeField] private CinemachineVirtualCamera _wakeUpCamera;
         [SerializeField] private TutorialChoiceBoat _tutoBoat;
         [SerializeField] private BinocularItem _binocularItem;
+        [SerializeField] private Hammer _hammer;
 
         [SerializeField] private WeatherTimeline _timeline;
 
@@ -51,6 +52,7 @@ namespace LightHouse.Core.Tutorial
                 Talkie = _talkieRef.Current,
                 TalkieManager = _talkieRef.Current as TalkieManager,
                 WakeUpCam = _wakeUpCamera,
+                Hammer = _hammer,
                 TutoBoat = _tutoBoat,
                 Timeline = _timeline,
                 ViewTransform = PlayerHandlerData.MainPlayer?.PlayerCamera?.transform,

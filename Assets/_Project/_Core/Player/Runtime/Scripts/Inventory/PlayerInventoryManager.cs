@@ -90,7 +90,7 @@ namespace LightHouse.Core.Player.Inventory
         private void Update()
         {
             if (!_isInitialized) return;
-            if (InputManager.PickUp.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
+            if (InputManager.PIA.Player.Pickup.WasPerformedThisFrame() && _lastInventoryItemSeen != null)
                 AddItemToInventory(CurrentSlotIndex, _lastInventoryItemSeen, soundToPlay: _basePickupSound);
 
             if (InventoryHandlerData.IsGrabbingObjectOrIndexInvalid())
@@ -188,32 +188,27 @@ namespace LightHouse.Core.Player.Inventory
         public void RegisterInputs()
         {
             InventoryHandlerData.OnItemDropped += InventoryHandlerData_OnItemDropped;
-            InputManager.Select.performed += Select_performed;
-            InputManager.Scroll.performed += Scroll_performed;
-            InputManager.InteractInInventory.started += InteractInInventory_started;
-            InputManager.InteractInInventory.canceled += InteractInInventory_canceled;
+            InputManager.PIA.Player.Select.performed += Select_performed;
+            InputManager.PIA.Player.Scroll.performed += Scroll_performed;
+            InputManager.PIA.Player.InteractInInventory.started += InteractInInventory_started;
+            InputManager.PIA.Player.InteractInInventory.canceled += InteractInInventory_canceled;
         }
 
         public void UnregisterInputs()
         {
             InventoryHandlerData.OnItemDropped -= InventoryHandlerData_OnItemDropped;
 
-            if (InputManager.Select != null)
-                InputManager.Select.performed -= Select_performed;
+            if (InputManager.PIA.Player.Select != null)
+                InputManager.PIA.Player.Select.performed -= Select_performed;
 
-            if (InputManager.Scroll != null)
-                InputManager.Scroll.performed -= Scroll_performed;
+            if (InputManager.PIA.Player.Scroll != null)
+                InputManager.PIA.Player.Scroll.performed -= Scroll_performed;
 
-            if (InputManager.InteractInInventory != null)
+            if (InputManager.PIA.Player.InteractInInventory != null)
             {
-                InputManager.InteractInInventory.started -= InteractInInventory_started;
-                InputManager.InteractInInventory.canceled -= InteractInInventory_canceled;
+                InputManager.PIA.Player.InteractInInventory.started -= InteractInInventory_started;
+                InputManager.PIA.Player.InteractInInventory.canceled -= InteractInInventory_canceled;
             }
-        }
-
-        private void InputManager_OnInputManagerInitialized()
-        {
-            
         }
 
         #endregion

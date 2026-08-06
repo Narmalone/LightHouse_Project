@@ -66,8 +66,8 @@ namespace LightHouse.Features.Computer.LEO.Cameras
         {
             if (!IsEnabled) return;
 
-            Vector2 moveInput = InputManager.PLAYER_INPUTS_ACTIONS.Computer.CameraControl_Move.ReadValue<Vector2>();
-            float scrollInput = InputManager.PLAYER_INPUTS_ACTIONS.Computer.CameraControl_Zoom.ReadValue<Vector2>().y;
+            Vector2 moveInput = InputManager.PIA.Computer.CameraControl_Move.ReadValue<Vector2>();
+            float scrollInput = InputManager.PIA.Computer.CameraControl_Zoom.ReadValue<Vector2>().y;
 
             UpdateCameraRotationFromKeys(moveInput);
 

@@ -1,27 +1,33 @@
-using LightHouse.Core.Audio;
 using LightHouse.Core.Inputs;
-using UnityEngine;
 
 public class GameManager : PersistentSingleton<GameManager>
 {
+    public static bool IsQuitting { get; private set; }
+
+    protected override void Awake()
+    {
+        base.Awake();
+        IsQuitting = false;
+    }
+
     private void Start()
     {
-        InitializePlayerInputs();
+        //InitializePlayerInputs();
     }
 
     public void InitializePlayerInputs()
     {
-        InputManager.Initialize();
+        //InputManager.Initialize();
     }
 
     public void ReleasePlayerInputs()
     {
         InputManager.DisposePlayerInputActions();
-
     }
 
     private void OnApplicationQuit()
     {
+        IsQuitting = true;
         ReleasePlayerInputs();
     }
 }

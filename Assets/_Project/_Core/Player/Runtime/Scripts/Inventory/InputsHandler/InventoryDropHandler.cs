@@ -112,7 +112,7 @@ namespace LightHouse.Core.Player.Inventory.InputsHandler
         #region Input Handler
         public void HandleDropInput(bool playSound = true, SO_AudioCue soundToPlay = null)
         {
-            if (InputManager.Drop.IsPressed())
+            if (InputManager.PIA.Player.Drop.IsPressed())
             {
                 if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex) || SlotManager.CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count <= 0)
                     return;
@@ -123,7 +123,7 @@ namespace LightHouse.Core.Player.Inventory.InputsHandler
                 _dropPower = curveValue * _maxDropPower;
                 _inventoryUIController.FillDropHoldedImage(curveValue);
             }
-            else if (_isChargingDrop && InputManager.Drop.WasReleasedThisFrame())
+            else if (_isChargingDrop && InputManager.PIA.Player.Drop.WasReleasedThisFrame())
             {
                 if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex) || SlotManager.CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count <= 0)
                     return;
@@ -145,7 +145,7 @@ namespace LightHouse.Core.Player.Inventory.InputsHandler
                     ServiceLocator.Audio.PlayAt(soundToPlay, _inventoryTarget.position);
                 _inventoryUIController.FillDropHoldedImage(0f);
             }
-            else if (InputManager.Drop.WasPerformedThisFrame())
+            else if (InputManager.PIA.Player.Drop.WasPerformedThisFrame())
             {
                 if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex) || SlotManager.CurrentSelectedSlot.SlotDatas.ItemSpecificIds.Count <= 0)
                     return;

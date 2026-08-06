@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 namespace LightHouse.Core.Inputs
 {
-    public  enum InputNameEnum
+    public enum InputNameEnum
     {
         Jump,
         Move,
@@ -15,36 +15,36 @@ namespace LightHouse.Core.Inputs
 
     public static class InputManager
     {
-        public static bool IsInitialized { get; private set; } = false; 
+        public static bool IsInitialized { get; private set; } = false;
+
+        /// <summary>
+        /// Vrai dès que Dispose a été appelé, jusqu'à la prochaine Initialize.
+        /// Bloque explicitement toute recréation automatique via le getter PIA pendant ce laps de temps.
+        /// </summary>
+        public static bool IsShuttingDown { get; private set; } = false;
+
         public static event Action OnInputManagerWillClear;
         private static PlayerInputActions _player_Input_Actions;
-        public static PlayerInputActions PLAYER_INPUTS_ACTIONS
+
+        public static PlayerInputActions PIA
         {
             get
             {
                 if (!Application.isPlaying) return null;
-                if (!InputManager.IsInitialized && _player_Input_Actions == null)
+
+                // Garde explicite : si on est en train de disposer/déjà disposé,
+                // on ne tente JAMAIS de recréer, quel que soit l'état de _player_Input_Actions.
+                if (IsShuttingDown) return _player_Input_Actions;
+
+                if (!IsInitialized && _player_Input_Actions == null)
                 {
                     Debug.LogWarning("PlayerInputActions n'est pas défini dans InputManager ! Création automatique...");
                     Initialize();
                 }
+
                 return _player_Input_Actions;
             }
         }
-
-        //Fast references to direct acces ton InputActions / Maps
-        public static PlayerInputActions.PlayerActions Player => PLAYER_INPUTS_ACTIONS.Player;
-        public static PlayerInputActions.UIActions UI => PLAYER_INPUTS_ACTIONS.UI;
-
-        public static InputAction Interact => Player.Interact;
-        public static InputAction Select => Player.Select;
-        public static InputAction InteractInInventory => Player.InteractInInventory;
-        public static InputAction Move => Player.Move;
-        public static InputAction Jump => Player.Jump;
-        public static InputAction Crouch => Player.Crouch;
-        public static InputAction PickUp => Player.Pickup;
-        public static InputAction Drop => Player.Drop;
-        public static InputAction Scroll => Player.Scroll;
 
         public static string Interact_Bind_Name;
         public static string Pickup_Bind_Name;
@@ -71,18 +71,22 @@ namespace LightHouse.Core.Inputs
 
         public static void Initialize()
         {
+            _player_Input_Actions?.Disable();
+            _player_Input_Actions?.Dispose();
+
             _player_Input_Actions = new PlayerInputActions();
             _player_Input_Actions.Enable();
             IsInitialized = true;
+            IsShuttingDown = false;
             UpdateAllBindNames(_player_Input_Actions);
         }
-
         public static void DisposePlayerInputActions()
         {
+            IsShuttingDown = true;
             OnInputManagerWillClear?.Invoke();
             IsInitialized = false;
+            _player_Input_Actions?.Disable();
             _player_Input_Actions?.Dispose();
-            _player_Input_Actions = null;
         }
 
         public static string GetBindingName(InputAction action, int bindingIndex = 0)
@@ -93,11 +97,9 @@ namespace LightHouse.Core.Inputs
                 return "Unknown";
             }
 
-            //Take inputs datas and values to have the bind Name
             InputBinding binding = action.bindings[bindingIndex];
             InputControl control = action.controls.Count > 0 ? action.controls[0] : null;
 
-            //Get the display name == "E" for example -> binding path == "<Keyboard>/e"
             return control != null ? control.displayName : binding.path;
         }
 
@@ -106,7 +108,7 @@ namespace LightHouse.Core.Inputs
             switch (inputName)
             {
                 case InputNameEnum.Jump:
-                    //return LocalizationManager.Current.GetStringRoutine();
+                //return LocalizationManager.Current.GetStringRoutine();
                 case InputNameEnum.Move:
                     return Move_Bind_Name;
                 case InputNameEnum.Pickup:
@@ -114,16 +116,12 @@ namespace LightHouse.Core.Inputs
                 case InputNameEnum.InteractInInventory:
                     return InteractInInventory_Bind_Name;
                 default:
-                    return "Unknown"; 
+                    return "Unknown";
             }
         }
 
         public static void GetBindInputName()
         {
-
         }
-
-
     }
-
 }

@@ -158,13 +158,13 @@ namespace LightHouse.Features.Talkie
         #region Sélection clavier (touches 1-4, action "Select" existante)
         private void StartListeningToSelect()
         {
-            InputManager.Select.performed += OnSelectPerformed;
+            InputManager.PIA.Player.Select.performed += OnSelectPerformed;
         }
 
         private void StopListeningToSelect()
         {
-            if (InputManager.Select != null)
-                InputManager.Select.performed -= OnSelectPerformed;
+            if (InputManager.PIA.Player.Select != null)
+                InputManager.PIA.Player.Select.performed -= OnSelectPerformed;
         }
 
         private void OnSelectPerformed(InputAction.CallbackContext ctx)

@@ -25,12 +25,12 @@ public class TipsController : MonoBehaviour
 
     private void OnEnable()
     {
-        InputManager.UI.Click.performed += Click_performed;
+        InputManager.PIA.UI.Click.performed += Click_performed;
     }
 
     private void OnDisable()
     {
-        InputManager.UI.Click.performed -= Click_performed;
+        InputManager.PIA.UI.Click.performed -= Click_performed;
     }
 
     private void Click_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)

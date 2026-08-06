@@ -32,7 +32,7 @@ namespace LightHouse.Features.Items.Inventory.Jerrican
         }
         public string UseTextSlot()
         {
-            return $"Press {InputManager.GetBindingName(InputManager.InteractInInventory)} to use.";
+            return $"Press {InputManager.GetBindingName(InputManager.PIA.Player.InteractInInventory)} to use.";
         }
     }
 

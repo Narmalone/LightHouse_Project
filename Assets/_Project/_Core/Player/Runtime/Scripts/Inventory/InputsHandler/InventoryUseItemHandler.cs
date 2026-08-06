@@ -92,7 +92,7 @@ namespace LightHouse.Core.Player.Inventory.InputsHandler
         {
             if (_usableItem == null) return;
             if (_hasBeenPerformed) return;
-            if (InputManager.InteractInInventory.IsPressed())
+            if (InputManager.PIA.Player.InteractInInventory.IsPressed())
             {
                 _isHolding = true;
                 UpdateHoldValue();
@@ -105,7 +105,7 @@ namespace LightHouse.Core.Player.Inventory.InputsHandler
                 else
                     _inventoryUIController.FillInteractHoldedImage(0.0f);
             }
-            else if (InputManager.InteractInInventory.WasReleasedThisFrame())
+            else if (InputManager.PIA.Player.InteractInInventory.WasReleasedThisFrame())
             {
                 if (SlotManager.IsIndexInvalid(SlotManager.CurrentSlotIndex))
                     return;

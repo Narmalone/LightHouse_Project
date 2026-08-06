@@ -52,6 +52,8 @@ public class Step01_WakeUp : TutorialStep
         }));
 
         context.TutoBoat.Pause();
+        context.Binocular.SetUnpickable();
+        context.Hammer.SetUnpickable();
     }
 
     public override void Tick(TutorialContext context, float dt)
@@ -70,7 +72,7 @@ public class Step01_WakeUp : TutorialStep
             _isPlayerHasToMove = true;
             _timerWhenPlayerNotMoving.StartTimer();
             _timerWhenPlayerNotMoving.OnTimerComplete += TimerWhenPlayerNotMoving_OnTimerComplete;
-            InputManager.Player.Move.performed += MovePerformed;
+            InputManager.PIA.Player.Move.performed += MovePerformed;
         }
         else if(obj == _captainReminderToMoveDialogue)
         {
@@ -86,7 +88,7 @@ public class Step01_WakeUp : TutorialStep
 
     private void MovePerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
-        InputManager.Player.Move.performed -= MovePerformed;
+        InputManager.PIA.Player.Move.performed -= MovePerformed;
         ObjectiveManager.Current.CompleteObjective();
         IsComplete = true;
     }
@@ -108,7 +110,7 @@ public class Step01_WakeUp : TutorialStep
         _wakeUpInteractionText = await InteractionTextBuilder.Build_Hold_To_Action(_wakeUpText, inputName, _pressToAction);
         BlackScreenController.Current.SetWakeUpText(_wakeUpInteractionText);
 
-        InputManager.Jump.performed += JumpPerformed;
+        InputManager.PIA.Player.Jump.performed += JumpPerformed;
         BlackScreenController.Current.FadeWakeUpText(1f, 2f, null, null);
     }
 
@@ -121,7 +123,7 @@ public class Step01_WakeUp : TutorialStep
         _context.TalkieManager.Enqueue(_captainInitialDialogue);
 
         _context.TutoBoat.Resume();
-        InputManager.Jump.performed -= JumpPerformed;
+        InputManager.PIA.Player.Jump.performed -= JumpPerformed;
     }
 
     public override void Exit(TutorialContext context)

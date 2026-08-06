@@ -111,12 +111,12 @@ namespace LightHouse.Features.Computer.OS
 
         private void OnEnable()
         {
-            InputManager.UI.Click.performed += Click_performed;
+            InputManager.PIA.UI.Click.performed += Click_performed;
         }
 
         private void OnDisable()
         {
-            InputManager.UI.Click.performed -= Click_performed;
+            InputManager.PIA.UI.Click.performed -= Click_performed;
         }
 
         private void Start()
