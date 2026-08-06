@@ -116,6 +116,13 @@ namespace LightHouse.Features.Boats
         private bool _pathCompletedInvoked;
         private bool _choiceRequiredInvoked;
 
+        // Dernier état 100% valide connu : sert de filet de sécurité si un NaN/Infinity
+        // apparaît (ex: floater qui renvoie une hauteur d'eau invalide un instant).
+        private Vector3 _lastValidPos;
+        private Quaternion _lastValidRot;
+        private float _lastValidSeaHeight;
+        private bool _corruptionWarningLogged;
+
         #endregion
 
         #region Spawn Joueur
@@ -202,6 +209,12 @@ namespace LightHouse.Features.Boats
             _rollDeg = 0f;
             _currentSeaHeight = _currentPos.y;
             _velocity = Vector3.zero;
+
+            // Le point de départ sert de première référence "valide".
+            _lastValidPos = _currentPos;
+            _lastValidRot = _currentRot;
+            _lastValidSeaHeight = _currentSeaHeight;
+            _corruptionWarningLogged = false;
 
             _mover.SetPositionAndRotation(_currentPos, _currentRot);
 
@@ -383,31 +396,53 @@ namespace LightHouse.Features.Boats
         {
             if (_floater != null)
             {
-                float targetSeaHeight = _floater.AverageWaterHeight + _waterHeightOffset;
+                float waterHeight = _floater.AverageWaterHeight;
+                Vector3 waterNormal = _floater.AverageWaterNormal;
 
-                _currentSeaHeight = Mathf.Lerp(
-                    _currentSeaHeight,
-                    targetSeaHeight,
-                    1f - Mathf.Exp(-_waterHeightLerp * deltaTime)
-                );
+                if (!IsFinite(waterHeight) || !IsFinite(waterNormal))
+                {
+                    // Le floater a renvoyé une valeur non-finie (ex: aucun point d'eau
+                    // échantillonné ce frame -> division par zéro côté FloaterGetterController).
+                    // On ignore ce frame plutôt que d'empoisonner _currentSeaHeight pour toujours :
+                    // Mathf.Lerp avec un NaN en entrée reste NaN indéfiniment.
+                    if (!_corruptionWarningLogged)
+                    {
+                        _corruptionWarningLogged = true;
+                        Debug.LogWarning($"{name}: FloaterGetterController a renvoyé une valeur non-finie " +
+                            $"(hauteur={waterHeight}, normale={waterNormal}). Effets de mer ignorés ce frame. " +
+                            $"Vérifier la config/les points d'échantillonnage du floater.");
+                    }
+                }
+                else
+                {
+                    _corruptionWarningLogged = false;
 
-                Vector3 seaUp = (_floater.AverageWaterNormal.sqrMagnitude > 0.001f)
-                    ? _floater.AverageWaterNormal.normalized
-                    : Vector3.up;
+                    float targetSeaHeight = waterHeight + _waterHeightOffset;
 
-                Vector3 fwd = Quaternion.Euler(0f, _currentYawDeg, 0f) * Vector3.forward;
-                Vector3 fwdOnPlane = Vector3.ProjectOnPlane(fwd, seaUp).normalized;
-                if (fwdOnPlane.sqrMagnitude < 1e-4f)
-                    fwdOnPlane = Vector3.forward;
+                    _currentSeaHeight = Mathf.Lerp(
+                        _currentSeaHeight,
+                        targetSeaHeight,
+                        1f - Mathf.Exp(-_waterHeightLerp * deltaTime)
+                    );
 
-                Quaternion waterAlignRot = Quaternion.LookRotation(fwdOnPlane, seaUp);
-                Vector3 waterEul = waterAlignRot.eulerAngles;
+                    Vector3 seaUp = (waterNormal.sqrMagnitude > 0.001f)
+                        ? waterNormal.normalized
+                        : Vector3.up;
 
-                float targetPitch = Normalize180(waterEul.x);
-                float targetRoll = Normalize180(waterEul.z);
+                    Vector3 fwd = Quaternion.Euler(0f, _currentYawDeg, 0f) * Vector3.forward;
+                    Vector3 fwdOnPlane = Vector3.ProjectOnPlane(fwd, seaUp).normalized;
+                    if (fwdOnPlane.sqrMagnitude < 1e-4f)
+                        fwdOnPlane = Vector3.forward;
 
-                _pitchDeg = Mathf.Lerp(_pitchDeg, targetPitch, 1f - Mathf.Exp(-_waterTiltLerp * deltaTime));
-                _rollDeg = Mathf.Lerp(_rollDeg, targetRoll, 1f - Mathf.Exp(-_waterTiltLerp * deltaTime));
+                    Quaternion waterAlignRot = Quaternion.LookRotation(fwdOnPlane, seaUp);
+                    Vector3 waterEul = waterAlignRot.eulerAngles;
+
+                    float targetPitch = Normalize180(waterEul.x);
+                    float targetRoll = Normalize180(waterEul.z);
+
+                    _pitchDeg = Mathf.Lerp(_pitchDeg, targetPitch, 1f - Mathf.Exp(-_waterTiltLerp * deltaTime));
+                    _rollDeg = Mathf.Lerp(_rollDeg, targetRoll, 1f - Mathf.Exp(-_waterTiltLerp * deltaTime));
+                }
             }
             else
             {
@@ -421,7 +456,39 @@ namespace LightHouse.Features.Boats
         {
             _currentRot = Quaternion.Euler(_pitchDeg, _currentYawDeg, _rollDeg);
             _currentPos.y = _currentSeaHeight;
+
+            // Filet de sécurité final : si malgré tout un NaN/Infinity s'est glissé
+            // quelque part (path corrompu, floater externe, etc.), on restaure le
+            // dernier état valide plutôt que de contaminer le Rigidbody/PhysicsMover
+            // pour le reste de la partie.
+            if (IsFinite(_currentPos) && IsFinite(_currentRot) && IsFinite(_currentSeaHeight))
+            {
+                _lastValidPos = _currentPos;
+                _lastValidRot = _currentRot;
+                _lastValidSeaHeight = _currentSeaHeight;
+            }
+            else
+            {
+                Debug.LogError($"{name}: position/rotation non-finie détectée " +
+                    $"(pos={_currentPos}, rot={_currentRot.eulerAngles}, seaHeight={_currentSeaHeight}). " +
+                    $"Restauration du dernier état valide.");
+
+                _currentPos = _lastValidPos;
+                _currentRot = _lastValidRot;
+                _currentSeaHeight = _lastValidSeaHeight;
+                _pitchDeg = 0f;
+                _rollDeg = 0f;
+                _velocity = Vector3.zero;
+            }
         }
+
+        private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
+        private static bool IsFinite(Vector3 value) =>
+            IsFinite(value.x) && IsFinite(value.y) && IsFinite(value.z);
+
+        private static bool IsFinite(Quaternion value) =>
+            IsFinite(value.x) && IsFinite(value.y) && IsFinite(value.z) && IsFinite(value.w);
 
         #endregion
 
