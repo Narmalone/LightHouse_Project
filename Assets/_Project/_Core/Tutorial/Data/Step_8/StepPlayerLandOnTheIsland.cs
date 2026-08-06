@@ -17,7 +17,7 @@ namespace LightHouse.Core.Tutorial.Steps
         {
             base.Enter(ctx);
             _ctx = ctx;
-            _tutorialBoat = ctx.TutoBoat;
+            //_tutorialBoat = ctx.TutoBoat;
             _tutorial11.Register();
             _tutorialBoat.BoatPathMover.OnPathCompleted += BoatMover_OnPathCompleted;
         }

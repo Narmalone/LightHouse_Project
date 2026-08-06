@@ -1,5 +1,6 @@
 using Cinemachine;
 using LightHouse.Core.Tutorial.Boat;
+using LightHouse.Features.Boats;
 using LightHouse.Features.Buyoncies;
 using LightHouse.Features.Items.Interactable;
 using LightHouse.Features.Items.Interactable.Bag;
@@ -34,7 +35,7 @@ namespace LightHouse.Core.Tutorial
         public BuyoncyController NearbyBuoy;
         public IDUseItemTracker Pipe;
         public BagItem Bag;
-        public TutorialBoat TutoBoat;
+        public TutorialChoiceBoat TutoBoat;
 
         public WeatherTimeline Timeline;
 

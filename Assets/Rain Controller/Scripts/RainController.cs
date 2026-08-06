@@ -252,8 +252,6 @@ public class RainController : MonoBehaviour
         }
         
         rainTransformLocator.transform.rotation = Quaternion.Euler(CalculateWindRotation(), NormalizeAngle180(WeatherHandlerData.CurrentWeather.WindOrientation), 0f);
-
-        Debug.Log($"Wind Orientation: {GetWindOrientation()}");
     }
 
     public WeatherDataSO.WindOrientationType GetWindOrientation() // Returns the wind orientation as an enum value based on the current wind orientation in degrees

@@ -13,7 +13,7 @@ public class StepSkipForBoat : TutorialStep
     }
     public void StartSkipBoat(TutorialContext ctx)
     {
-        pathMover = ctx.TutoBoat.BoatPathMover;
+        //pathMover = ctx.TutoBoat.BoatPathMover;
         pathMover.OnPathCompleted += PathMover_OnPathCompleted;
         pathMover.Speed = _boatSpeedDuringSkip;
     }
@@ -26,7 +26,7 @@ public class StepSkipForBoat : TutorialStep
 
     public override void Exit(TutorialContext ctx)
     {
-        pathMover = ctx.TutoBoat.BoatPathMover;
+        //pathMover = ctx.TutoBoat.BoatPathMover;
         pathMover.OnPathCompleted -= PathMover_OnPathCompleted;
     }
 }

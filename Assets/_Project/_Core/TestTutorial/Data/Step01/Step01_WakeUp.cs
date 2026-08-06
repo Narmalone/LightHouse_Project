@@ -17,8 +17,8 @@ public class Step01_WakeUp : TutorialStep
 {
     private MonoBehaviour _routineBehaviour;
     private WaitForSeconds _delayPlayerWakeAfterPagerBip;
-    private CinemachineVirtualCamera _wakeUpCam;
-    private TalkieManager _talkieManager;
+
+    private TutorialContext _context;
     private string _wakeUpInteractionText;
     private Timer _timerWhenPlayerNotMoving;
     private bool _isPlayerHasToMove = false;
@@ -29,28 +29,29 @@ public class Step01_WakeUp : TutorialStep
     [SerializeField] private LocalizedDialogueAudio _captainReminderToMoveDialogue;
     [SerializeField] private float _delayBeforePlayerCanInputDuration = 5f;
 
-    public async override void Enter(TutorialContext context)
+    public override void Enter(TutorialContext context)
     {
         base.Enter(context);
-        _talkieManager = context.TalkieManager;
+        _context = context;
         _routineBehaviour = context.Flow;
         _delayPlayerWakeAfterPagerBip = new WaitForSeconds(_delayBeforePlayerCanInputDuration);
 
         //black screen & wake up camera priority
         BlackScreenController.Current.StartFade(1f, -1f);
-        _wakeUpCam = context.WakeUpCam;
-        _wakeUpCam.Priority = 1000;
+        context.WakeUpCam.Priority = 1000;
 
         _isPlayerHasToMove = false;
         _timerWhenPlayerNotMoving = new Timer(_timeWhenPlayerNotMoving);
 
-        _talkieManager.OnDialogueFinished += TalkieManager_OnDialogueFinished;
+        context.TalkieManager.OnDialogueFinished += TalkieManager_OnDialogueFinished;
 
         _routineBehaviour.StartCoroutine(WaitForPlayerInputRoutine(new WaitForSeconds(4f), () =>
         {
-            _talkieManager.Bip();
+            context.TalkieManager.Bip();
             _routineBehaviour.StartCoroutine(WaitForPlayerInputRoutine(_delayPlayerWakeAfterPagerBip, OnFirstDelayEnded));
         }));
+
+        context.TutoBoat.Pause();
     }
 
     public override void Tick(TutorialContext context, float dt)
@@ -79,7 +80,7 @@ public class Step01_WakeUp : TutorialStep
 
     private void TimerWhenPlayerNotMoving_OnTimerComplete()
     {
-        _talkieManager.Enqueue(_captainReminderToMoveDialogue);
+        _context.TalkieManager.Enqueue(_captainReminderToMoveDialogue);
         _timerWhenPlayerNotMoving.ResetTimer();
     }
 
@@ -111,19 +112,21 @@ public class Step01_WakeUp : TutorialStep
         BlackScreenController.Current.FadeWakeUpText(1f, 2f, null, null);
     }
 
-    private async void JumpPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    private void JumpPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         BlackScreenController.Current.StartFade(0f, 3f);
         BlackScreenController.Current.FadeWakeUpText(0f, 0.5f);
-        _wakeUpCam.Priority = -1;
-        _talkieManager.StopBip();
-        _talkieManager.Enqueue(_captainInitialDialogue);
+        _context.WakeUpCam.Priority = -1;
+        _context.TalkieManager.StopBip();
+        _context.TalkieManager.Enqueue(_captainInitialDialogue);
+
+        _context.TutoBoat.Resume();
         InputManager.Jump.performed -= JumpPerformed;
     }
 
     public override void Exit(TutorialContext context)
     {
-        _talkieManager.OnDialogueFinished -= TalkieManager_OnDialogueFinished;
+        context.TalkieManager.OnDialogueFinished -= TalkieManager_OnDialogueFinished;
         if (_timerWhenPlayerNotMoving != null)
         {
             _timerWhenPlayerNotMoving.OnTimerComplete -= TimerWhenPlayerNotMoving_OnTimerComplete;

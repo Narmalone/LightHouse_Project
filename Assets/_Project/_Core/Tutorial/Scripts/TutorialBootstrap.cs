@@ -2,6 +2,7 @@ using Cinemachine;
 using LightHouse.Core.Player;
 using LightHouse.Core.Tutorial.Boat;
 using LightHouse.Core.World;
+using LightHouse.Features.Boats;
 using LightHouse.Features.Buyoncies;
 using LightHouse.Features.Items.Interactable;
 using LightHouse.Features.Items.Interactable.Bag;
@@ -22,7 +23,7 @@ namespace LightHouse.Core.Tutorial
 
         [Header("Refs")]
         [SerializeField] private CinemachineVirtualCamera _wakeUpCamera;
-        [SerializeField] private TutorialBoat _tutoBoat;
+        [SerializeField] private TutorialChoiceBoat _tutoBoat;
         [SerializeField] private BinocularItem _binocularItem;
 
         [SerializeField] private WeatherTimeline _timeline;
@@ -55,8 +56,7 @@ namespace LightHouse.Core.Tutorial
                 ViewTransform = PlayerHandlerData.MainPlayer?.PlayerCamera?.transform,
             };
 
-            _tutoBoat.InitializeBoat();
-            _tutoBoat.SpawnPlayerOnBoatPos();
+            _tutoBoat.InitializeOnPath();
             _flow.Init(ctx);
         }
 
