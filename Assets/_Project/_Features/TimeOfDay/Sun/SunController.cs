@@ -6,7 +6,7 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace LightHouse.Features.TimeOfDay.Sun
 {
-    public class SunController : MonoBehaviour, ITimeCycleObserver
+    public class SunController : NotPersistentSingleton<SunController>, ITimeCycleObserver
     {
         [Header("References")]
         [SerializeField] private Light _sunLight;
