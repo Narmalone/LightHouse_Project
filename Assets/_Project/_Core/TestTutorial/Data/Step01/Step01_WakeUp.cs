@@ -3,6 +3,7 @@ using LightHouse.Core.Inputs;
 using LightHouse.Core.Localization;
 using LightHouse.Core.Player;
 using LightHouse.Core.Utilities;
+using LightHouse.Features.TimeOfDay.TimeCore;
 using LightHouse.Features.Tutorial;
 using System;
 using System.Collections;
@@ -69,6 +70,8 @@ namespace LightHouse.Core.Tutorial
 
             _context = context;
             _routineBehaviour = context.Flow;
+
+            TimeHandlerData.TimeSpeed = 0.0f;
 
             /*
              * The wake-up step is composed of several independent systems:

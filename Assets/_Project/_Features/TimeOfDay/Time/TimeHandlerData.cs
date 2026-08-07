@@ -21,6 +21,11 @@ namespace LightHouse.Features.TimeOfDay.TimeCore
         public static byte CurrentDay { get; set; }
 
         /// <summary>
+        /// Vitesse à laquelle se déroule le temps dans le jeu (1.0 = temps réel, 2.0 = deux fois plus rapide, etc.).
+        /// </summary>
+        public static float TimeSpeed { get; set; } = 1.0f;
+
+        /// <summary>
         /// Segment de la journée actuel (matin, midi, soir, nuit, etc.).
         /// </summary>
         public static TimeOfDaySegment TimeOfDay { get; set; }
