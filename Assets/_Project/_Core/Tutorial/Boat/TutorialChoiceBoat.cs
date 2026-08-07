@@ -39,6 +39,9 @@ namespace LightHouse.Features.Boats
         /// <summary>Levé quand le bateau a atteint la destination finale.</summary>
         public event Action OnPathCompleted;
 
+        /// <summary>Levé quand le bateau a terminé les directions à choix et entame le chemin final.</summary>
+        public event Action OnFinalPath;
+
         #endregion
 
         #region Serialized Fields
@@ -413,6 +416,7 @@ namespace LightHouse.Features.Boats
             }
 
             _currentWaypoints = _finalWaypoints;
+            OnFinalPath?.Invoke();
         }
 
         private void AdvanceAlongPath(float deltaTime)
