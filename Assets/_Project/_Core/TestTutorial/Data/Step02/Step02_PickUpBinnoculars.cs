@@ -1,5 +1,4 @@
 using LightHouse.Core.Audio;
-using LightHouse.Core.Player;
 using UnityEngine;
 
 namespace LightHouse.Core.Tutorial
