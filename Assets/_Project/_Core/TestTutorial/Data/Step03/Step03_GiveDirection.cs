@@ -193,28 +193,24 @@ namespace LightHouse.Core.Tutorial
 
                 IsComplete = true;
             }
-            else if (dialogue == _captainBadWay)
+            else if (dialogue == _captainBadWay || dialogue == _captainBadWayHalfFalse)
             {
                 ObjectiveManager.Current.CompleteObjective();
 
                 _context.TalkieManager.Enqueue(_captainBadWayRepairEngine);
-
                 _context.TalkieManager.Enqueue(_captainBadWayEndSubTutorial);
 
-                // TODO:
-                // Make the hammer available for the engine repair.
+                _context.Hammer.SetPickable();
             }
-            else if (dialogue == _captainBadWayHalfFalse)
+            /*else if ()
             {
                 ObjectiveManager.Current.CompleteObjective();
 
                 _context.TalkieManager.Enqueue(_captainBadWayRepairEngine);
-
                 _context.TalkieManager.Enqueue(_captainBadWayEndSubTutorial);
 
-                // TODO:
-                // Make the hammer available for the engine repair.
-            }
+                _context.Hammer.SetPickable();
+            }*/
         }
 
         #endregion
