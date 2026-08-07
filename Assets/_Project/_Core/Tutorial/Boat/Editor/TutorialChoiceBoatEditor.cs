@@ -1,4 +1,8 @@
+using AYellowpaper.SerializedCollections;
 using LightHouse.Features.Boats;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,73 +11,113 @@ namespace LightHouse.Core.CustomEditors
     [CustomEditor(typeof(TutorialChoiceBoat))]
     public class TutorialChoiceBoatEditor : Editor
     {
-        private SerializedProperty _commonWaypointsProp;
-        private SerializedProperty _directionPathsProp;
-        private SerializedProperty _playerSpawnProp;
+        private const BindingFlags PrivateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
+
+        private FieldInfo _commonWaypointsField;
+        private FieldInfo _directionPathsField;
+        private FieldInfo _finalWaypointsField;
+        private FieldInfo _playerSpawnField;
+
+        private TutorialChoiceBoat Boat => (TutorialChoiceBoat)target;
 
         private void OnEnable()
         {
-            _commonWaypointsProp = serializedObject.FindProperty("_commonWaypoints");
-            _directionPathsProp = serializedObject.FindProperty("_directionPaths");
-            _playerSpawnProp = serializedObject.FindProperty("_playerSpawnTutorial");
+            Type type = typeof(TutorialChoiceBoat);
+
+            _commonWaypointsField = type.GetField("_commonWaypoints", PrivateInstance);
+            _directionPathsField = type.GetField("_directionPaths", PrivateInstance);
+            _finalWaypointsField = type.GetField("_finalWaypoints", PrivateInstance);
+            _playerSpawnField = type.GetField("_playerSpawnTutorial", PrivateInstance);
+
+            if (_commonWaypointsField == null || _directionPathsField == null ||
+                _finalWaypointsField == null || _playerSpawnField == null)
+            {
+                Debug.LogError("TutorialChoiceBoatEditor: un ou plusieurs champs attendus " +
+                    "n'ont pas été trouvés par réflexion. Le nom des champs a-t-il changé dans TutorialChoiceBoat ?");
+            }
         }
+
+        #region Accès direct aux champs (réflexion)
+
+        // On passe par les champs C# réels plutôt que par SerializedProperty pour
+        // _directionPaths : c'est un SerializedDictionary imbriqué (package tiers
+        // AYellowpaper), dont la représentation sérialisée interne peut varier selon
+        // la version installée. En lisant/écrivant directement l'objet vivant, on
+        // n'a pas besoin de connaître cette structure interne.
+
+        private Vector3[] GetCommonWaypoints() => (Vector3[])_commonWaypointsField.GetValue(Boat);
+        private void SetCommonWaypoints(Vector3[] value) => _commonWaypointsField.SetValue(Boat, value);
+
+        private Vector3[] GetFinalWaypoints() => (Vector3[])_finalWaypointsField.GetValue(Boat);
+        private void SetFinalWaypoints(Vector3[] value) => _finalWaypointsField.SetValue(Boat, value);
+
+        private SerializedDictionary<int, SerializedDictionary<BoatDirection, Vector3[]>> GetDirectionPaths() =>
+            (SerializedDictionary<int, SerializedDictionary<BoatDirection, Vector3[]>>)_directionPathsField.GetValue(Boat);
+
+        private Transform GetPlayerSpawn() => (Transform)_playerSpawnField.GetValue(Boat);
+
+        #endregion
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
-
+            // AYellowpaper fournit son propre drawer pour le SerializedDictionary imbriqué
+            // (ajout/suppression d'étapes et de directions) : DrawDefaultInspector() suffit
+            // pour ça, pas besoin de boutons custom sur _directionPaths.
             DrawDefaultInspector();
 
-            GUILayout.Space(10);
-            EditorGUILayout.LabelField("Path Tools - Tronc commun", EditorStyles.boldLabel);
-            DrawArrayTools(_commonWaypointsProp);
+            if (_commonWaypointsField == null) return;
 
             GUILayout.Space(10);
-            EditorGUILayout.LabelField("Path Tools - Branches", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Path Tools", EditorStyles.boldLabel);
 
-            for (int i = 0; i < _directionPathsProp.arraySize; i++)
-            {
-                SerializedProperty entryProp = _directionPathsProp.GetArrayElementAtIndex(i);
-                SerializedProperty directionProp = entryProp.FindPropertyRelative("Direction");
-                SerializedProperty waypointsProp = entryProp.FindPropertyRelative("Waypoints");
+            EditorGUILayout.LabelField("Tronc commun", EditorStyles.miniBoldLabel);
+            DrawArrayTools(GetCommonWaypoints(), SetCommonWaypoints);
 
-                EditorGUILayout.LabelField(((BoatDirection)directionProp.enumValueIndex).ToString(), EditorStyles.miniBoldLabel);
-                DrawArrayTools(waypointsProp);
-            }
-
-            serializedObject.ApplyModifiedProperties();
+            GUILayout.Space(6);
+            EditorGUILayout.LabelField("Tronc final", EditorStyles.miniBoldLabel);
+            DrawArrayTools(GetFinalWaypoints(), SetFinalWaypoints);
         }
 
         /// <summary>
-        /// Boutons Add/Remove/Clear pour un tableau de Vector3, dans le style de
-        /// VectorPathVisualizerEditor, mais via SerializedProperty (champ privé).
+        /// Boutons Add/Remove/Clear pour un tableau de Vector3, en manipulant directement
+        /// l'objet (les tableaux sont immuables en taille : on doit réassigner le champ).
         /// </summary>
-        private void DrawArrayTools(SerializedProperty arrayProp)
+        private void DrawArrayTools(Vector3[] current, Action<Vector3[]> apply)
         {
             EditorGUILayout.BeginHorizontal();
 
             if (GUILayout.Button("Add Point"))
             {
-                int index = arrayProp.arraySize;
-                arrayProp.InsertArrayElementAtIndex(index);
+                Undo.RecordObject(target, "Add Point");
 
-                Vector3 newPoint = index > 0
-                    ? arrayProp.GetArrayElementAtIndex(index - 1).vector3Value + Vector3.forward * 5f
-                    : ((TutorialChoiceBoat)target).transform.position;
+                var list = new List<Vector3>(current ?? Array.Empty<Vector3>());
+                Vector3 newPoint = list.Count > 0
+                    ? list[list.Count - 1] + Vector3.forward * 5f
+                    : Boat.transform.position;
+                list.Add(newPoint);
 
-                arrayProp.GetArrayElementAtIndex(index).vector3Value = newPoint;
+                apply(list.ToArray());
+                EditorUtility.SetDirty(target);
             }
 
-            if (GUILayout.Button("Remove Last") && arrayProp.arraySize > 0)
+            if (GUILayout.Button("Remove Last") && current != null && current.Length > 0)
             {
-                arrayProp.DeleteArrayElementAtIndex(arrayProp.arraySize - 1);
+                Undo.RecordObject(target, "Remove Last Point");
+
+                var list = new List<Vector3>(current);
+                list.RemoveAt(list.Count - 1);
+
+                apply(list.ToArray());
+                EditorUtility.SetDirty(target);
             }
 
-            if (GUILayout.Button("Clear") && arrayProp.arraySize > 0)
+            if (GUILayout.Button("Clear") && current != null && current.Length > 0)
             {
                 if (EditorUtility.DisplayDialog("Clear Points", "Are you sure?", "Yes", "Cancel"))
                 {
-                    arrayProp.ClearArray();
+                    Undo.RecordObject(target, "Clear Points");
+                    apply(Array.Empty<Vector3>());
+                    EditorUtility.SetDirty(target);
                 }
             }
 
@@ -82,65 +126,69 @@ namespace LightHouse.Core.CustomEditors
 
         private void OnSceneGUI()
         {
-            serializedObject.Update();
+            if (_commonWaypointsField == null) return;
 
-            DrawWaypointHandles(_commonWaypointsProp, Color.cyan, "Common");
+            DrawWaypointHandles(GetCommonWaypoints(), Color.cyan, "Common");
 
-            for (int i = 0; i < _directionPathsProp.arraySize; i++)
+            var directionPaths = GetDirectionPaths();
+            if (directionPaths != null)
             {
-                SerializedProperty entryProp = _directionPathsProp.GetArrayElementAtIndex(i);
-                SerializedProperty directionProp = entryProp.FindPropertyRelative("Direction");
-                SerializedProperty waypointsProp = entryProp.FindPropertyRelative("Waypoints");
+                foreach (var stepEntry in directionPaths)
+                {
+                    SerializedDictionary<BoatDirection, Vector3[]> stepOptions = stepEntry.Value;
+                    if (stepOptions == null) continue;
 
-                BoatDirection direction = (BoatDirection)directionProp.enumValueIndex;
-                DrawWaypointHandles(waypointsProp, GetDirectionColor(direction), direction.ToString());
+                    foreach (var branchEntry in stepOptions)
+                    {
+                        string label = $"Step{stepEntry.Key}-{branchEntry.Key}";
+                        DrawWaypointHandles(branchEntry.Value, GetDirectionColor(branchEntry.Key), label);
+                    }
+                }
             }
 
-            DrawPlayerSpawnHandle();
+            DrawWaypointHandles(GetFinalWaypoints(), new Color(1f, 0.55f, 0f), "Final");
 
-            serializedObject.ApplyModifiedProperties();
+            DrawPlayerSpawnHandle();
         }
 
         /// <summary>
-        /// Handle de déplacement pour chaque waypoint d'un tableau Vector3.
-        /// Pas de conversion local/monde : les waypoints sont déjà en coordonnées
-        /// monde, exactement comme le runtime les consomme dans TutorialChoiceBoat.
+        /// Handle de déplacement pour chaque waypoint d'un tableau Vector3, en mutant
+        /// directement les éléments du tableau (référence partagée avec le champ du
+        /// composant : pas besoin de réassigner, seule la taille du tableau nécessite ça).
+        /// Pas de conversion local/monde : les waypoints sont déjà en coordonnées monde,
+        /// exactement comme le runtime les consomme dans TutorialChoiceBoat.
         /// </summary>
-        private void DrawWaypointHandles(SerializedProperty arrayProp, Color color, string label)
+        private void DrawWaypointHandles(Vector3[] waypoints, Color color, string label)
         {
-            if (arrayProp == null || arrayProp.arraySize == 0) return;
+            if (waypoints == null || waypoints.Length == 0) return;
 
             Handles.color = color;
 
-            for (int i = 0; i < arrayProp.arraySize; i++)
+            for (int i = 0; i < waypoints.Length; i++)
             {
-                SerializedProperty pointProp = arrayProp.GetArrayElementAtIndex(i);
-                Vector3 pos = pointProp.vector3Value;
+                Vector3 pos = waypoints[i];
 
                 EditorGUI.BeginChangeCheck();
                 Vector3 newPos = Handles.PositionHandle(pos, Quaternion.identity);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(target, "Move Waypoint");
-                    pointProp.vector3Value = newPos;
+                    waypoints[i] = newPos;
                     pos = newPos;
+                    EditorUtility.SetDirty(target);
                 }
 
                 Handles.Label(pos + Vector3.up * 0.5f, $"{label} {i}");
 
-                if (i < arrayProp.arraySize - 1)
-                {
-                    Vector3 next = arrayProp.GetArrayElementAtIndex(i + 1).vector3Value;
-                    Handles.DrawLine(pos, next);
-                }
+                if (i < waypoints.Length - 1)
+                    Handles.DrawLine(pos, waypoints[i + 1]);
             }
         }
 
         private void DrawPlayerSpawnHandle()
         {
-            if (_playerSpawnProp == null || _playerSpawnProp.objectReferenceValue == null) return;
-
-            Transform spawn = (Transform)_playerSpawnProp.objectReferenceValue;
+            Transform spawn = GetPlayerSpawn();
+            if (spawn == null) return;
 
             Handles.color = Color.white;
             Handles.Label(spawn.position + Vector3.up * 0.6f, "Player Spawn");

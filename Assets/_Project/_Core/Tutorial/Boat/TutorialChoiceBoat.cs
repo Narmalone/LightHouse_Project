@@ -2,8 +2,8 @@ using KinematicCharacterController;
 using LightHouse.Core.Player;
 using LightHouse.Core.Utilities;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using AYellowpaper.SerializedCollections;
 
 namespace LightHouse.Features.Boats
 {
@@ -15,32 +15,28 @@ namespace LightHouse.Features.Boats
     }
 
     /// <summary>
-    /// Association direction -> liste de waypoints (Vector3), configurable dans l'inspecteur.
-    /// Sert de version "sérialisable" d'un Dictionary&lt;BoatDirection, Vector3[]&gt;.
-    /// </summary>
-    [Serializable]
-    public class BoatDirectionWaypoints
-    {
-        public BoatDirection Direction;
-        public Vector3[] Waypoints;
-    }
-
-    /// <summary>
-    /// Variante tutoriel de BoatPathMover : le bateau suit un tronc commun de waypoints,
-    /// s'arrête au bout en attendant le choix du joueur (gauche/milieu/droite), puis reprend sur
-    /// la branche correspondante. Le bateau continue de tanguer avec la mer pendant l'attente.
+    /// Bateau tutoriel à choix multiples et successifs :
+    /// 1) suit un tronc commun (_commonWaypoints)
+    /// 2) s'arrête et attend le choix du joueur pour l'étape 0
+    /// 3) suit la branche correspondant à la direction choisie
+    /// 4) s'arrête et attend le choix du joueur pour l'étape 1 (si configurée)
+    /// 5) ... autant d'étapes que défini dans _directionPaths
+    /// 6) une fois toutes les étapes de choix passées (ou s'il n'y en a aucune),
+    ///    suit le tronc final commun (_finalWaypoints) jusqu'à destination.
+    /// Le bateau continue de tanguer avec la mer pendant les arrêts.
     /// </summary>
     public class TutorialChoiceBoat : MonoBehaviour, IMoverController
     {
         #region Events
 
-        /// <summary>Levé quand le bateau atteint le point de choix et attend une décision.</summary>
+        /// <summary>Levé quand le bateau s'arrête et attend une décision du joueur.
+        /// Utiliser CurrentChoiceStepIndex pour savoir à quelle étape on en est.</summary>
         public event Action OnChoiceRequired;
 
-        /// <summary>Levé quand le joueur a choisi une direction.</summary>
+        /// <summary>Levé quand le joueur a choisi une direction pour l'étape courante.</summary>
         public event Action<BoatDirection> OnDirectionChosen;
 
-        /// <summary>Levé quand la branche choisie est terminée.</summary>
+        /// <summary>Levé quand le bateau a atteint la destination finale.</summary>
         public event Action OnPathCompleted;
 
         #endregion
@@ -50,11 +46,14 @@ namespace LightHouse.Features.Boats
         [Header("KCC Mover")]
         [SerializeField] private PhysicsMover _mover;
 
-        [Header("Tronc commun (avant le choix)")]
+        [Header("Tronc commun (avant le premier choix)")]
         [SerializeField] private Vector3[] _commonWaypoints;
 
-        [Header("Branches (après le choix du joueur)")]
-        [SerializeField] private List<BoatDirectionWaypoints> _directionPaths = new();
+        [Header("Étapes de choix : index d'étape -> direction -> waypoints")]
+        [SerializeField] private SerializedDictionary<int, SerializedDictionary<BoatDirection, Vector3[]>> _directionPaths = new();
+
+        [Header("Tronc final commun (après le dernier choix, vers la destination)")]
+        [SerializeField] private Vector3[] _finalWaypoints;
 
         [Tooltip("Distance pour considérer un waypoint atteint")]
         [SerializeField] private float _waypointReachDistance = 5f;
@@ -94,13 +93,34 @@ namespace LightHouse.Features.Boats
         public bool IsPaused { get; private set; }
         public bool IsWaitingForChoice { get; private set; }
         public bool IsPathCompleted { get; private set; }
+
+        /// <summary>Dernière direction choisie par le joueur (toutes étapes confondues).</summary>
         public BoatDirection? ChosenDirection { get; private set; }
+
+        /// <summary>Index de l'étape de choix en cours (ou en attente).</summary>
+        public int CurrentChoiceStepIndex => _currentChoiceStepIndex;
 
         #endregion
 
         #region Private State
 
-        private Dictionary<BoatDirection, Vector3[]> _branchLookup;
+        private enum BoatSegment
+        {
+            CommonTrunk,
+            Branch,
+            Final
+        }
+
+        private BoatSegment _currentSegment;
+        private int _currentChoiceStepIndex;
+
+        /// <summary>
+        /// Empêche de re-déclencher la transition de fin de segment (choix suivant /
+        /// passage au segment final / complétion) plusieurs fois tant qu'on reste
+        /// à l'arrêt en attente d'une décision.
+        /// </summary>
+        private bool _segmentEndHandled;
+
         private Vector3[] _currentWaypoints;
         private int _currentIndex;
 
@@ -114,7 +134,6 @@ namespace LightHouse.Features.Boats
         private float _currentYawDeg;
         private bool _initialized;
         private bool _pathCompletedInvoked;
-        private bool _choiceRequiredInvoked;
 
         // Dernier état 100% valide connu : sert de filet de sécurité si un NaN/Infinity
         // apparaît (ex: floater qui renvoie une hauteur d'eau invalide un instant).
@@ -160,27 +179,11 @@ namespace LightHouse.Features.Boats
 
             if (_mover != null)
                 _mover.MoverController = this;
-
-            BuildBranchLookup();
         }
 
         #endregion
 
         #region Initialization
-
-        private void BuildBranchLookup()
-        {
-            _branchLookup = new Dictionary<BoatDirection, Vector3[]>();
-            foreach (var entry in _directionPaths)
-            {
-                if (entry.Waypoints == null || entry.Waypoints.Length == 0)
-                {
-                    Debug.LogWarning($"{name}: branche {entry.Direction} sans waypoints, ignorée.");
-                    continue;
-                }
-                _branchLookup[entry.Direction] = entry.Waypoints;
-            }
-        }
 
         public void InitializeOnPath()
         {
@@ -192,6 +195,11 @@ namespace LightHouse.Features.Boats
             }
 
             _moveSpeed = _baseMoveSpeed;
+
+            _currentSegment = BoatSegment.CommonTrunk;
+            _currentChoiceStepIndex = 0;
+            _segmentEndHandled = false;
+            ChosenDirection = null;
 
             _currentWaypoints = _commonWaypoints;
             _currentIndex = Mathf.Min(1, _currentWaypoints.Length - 1);
@@ -223,8 +231,6 @@ namespace LightHouse.Features.Boats
             IsPaused = false;
             IsWaitingForChoice = false;
             _pathCompletedInvoked = false;
-            _choiceRequiredInvoked = false;
-            ChosenDirection = null;
 
             SpawnPlayerOnBoatPos();
         }
@@ -234,7 +240,8 @@ namespace LightHouse.Features.Boats
         #region Choix du joueur
 
         /// <summary>
-        /// À appeler depuis l'UI ou l'input du tutoriel quand le joueur choisit une direction.
+        /// À appeler depuis l'UI ou l'input du tutoriel quand le joueur choisit une direction
+        /// pour l'étape de choix en cours (CurrentChoiceStepIndex).
         /// Ne fait rien si aucun choix n'est actuellement attendu.
         /// </summary>
         public void ChooseDirection(BoatDirection direction)
@@ -245,20 +252,44 @@ namespace LightHouse.Features.Boats
                 return;
             }
 
-            if (!_branchLookup.TryGetValue(direction, out var waypoints))
+            if (!TryGetBranchWaypoints(_currentChoiceStepIndex, direction, out var waypoints))
             {
-                Debug.LogError($"{name}: aucune branche configurée pour la direction {direction}.");
+                Debug.LogError($"{name}: aucune branche configurée pour l'étape {_currentChoiceStepIndex} / direction {direction}.");
                 return;
             }
 
             ChosenDirection = direction;
+
+            _currentSegment = BoatSegment.Branch;
             _currentWaypoints = waypoints;
             _currentIndex = 0;
+            _segmentEndHandled = false;
 
             IsWaitingForChoice = false;
             IsPaused = false;
 
             OnDirectionChosen?.Invoke(direction);
+        }
+
+        private bool TryGetBranchWaypoints(int stepIndex, BoatDirection direction, out Vector3[] waypoints)
+        {
+            waypoints = null;
+
+            if (_directionPaths == null || !_directionPaths.TryGetValue(stepIndex, out var stepOptions))
+                return false;
+
+            if (stepOptions == null || !stepOptions.TryGetValue(direction, out waypoints))
+                return false;
+
+            return waypoints != null && waypoints.Length > 0;
+        }
+
+        private bool HasChoiceStep(int stepIndex)
+        {
+            return _directionPaths != null
+                && _directionPaths.TryGetValue(stepIndex, out var stepOptions)
+                && stepOptions != null
+                && stepOptions.Count > 0;
         }
 
         #endregion
@@ -289,7 +320,7 @@ namespace LightHouse.Features.Boats
             if (!_initialized || _currentWaypoints == null || _currentWaypoints.Length == 0)
                 return;
 
-            // Chemin (branche) terminé : plus d'avancée, mais le bateau continue de tanguer.
+            // Chemin terminé : plus d'avancée, mais le bateau continue de tanguer.
             if (IsPathCompleted)
             {
                 _velocity = Vector3.zero;
@@ -303,21 +334,10 @@ namespace LightHouse.Features.Boats
             // Fin du tableau de waypoints courant atteinte.
             if (_currentIndex >= _currentWaypoints.Length)
             {
-                if (ChosenDirection == null)
+                if (!_segmentEndHandled)
                 {
-                    // Fin du tronc commun : on attend le choix du joueur.
-                    if (!_choiceRequiredInvoked)
-                    {
-                        _choiceRequiredInvoked = true;
-                        IsWaitingForChoice = true;
-                        IsPaused = true;
-                        OnChoiceRequired?.Invoke();
-                    }
-                }
-                else
-                {
-                    // Fin de la branche choisie.
-                    CompletePathNow();
+                    _segmentEndHandled = true;
+                    HandleSegmentEndReached();
                 }
 
                 _velocity = Vector3.zero;
@@ -340,6 +360,61 @@ namespace LightHouse.Features.Boats
             goalRotation = _currentRot;
         }
 
+        /// <summary>
+        /// Décide de la suite quand un segment (tronc commun ou branche) se termine :
+        /// demande le choix suivant s'il existe une étape configurée pour cet index,
+        /// sinon bascule sur le tronc final commun.
+        /// </summary>
+        private void HandleSegmentEndReached()
+        {
+            switch (_currentSegment)
+            {
+                case BoatSegment.CommonTrunk:
+                    RequestChoiceOrMoveToFinal(stepIndex: 0);
+                    break;
+
+                case BoatSegment.Branch:
+                    RequestChoiceOrMoveToFinal(stepIndex: _currentChoiceStepIndex + 1);
+                    break;
+
+                case BoatSegment.Final:
+                    CompletePathNow();
+                    break;
+            }
+        }
+
+        private void RequestChoiceOrMoveToFinal(int stepIndex)
+        {
+            _currentChoiceStepIndex = stepIndex;
+
+            if (HasChoiceStep(stepIndex))
+            {
+                IsWaitingForChoice = true;
+                IsPaused = true;
+                OnChoiceRequired?.Invoke();
+            }
+            else
+            {
+                MoveToFinalSegment();
+            }
+        }
+
+        private void MoveToFinalSegment()
+        {
+            _currentSegment = BoatSegment.Final;
+            _currentIndex = 0;
+            _segmentEndHandled = false;
+
+            if (_finalWaypoints == null || _finalWaypoints.Length == 0)
+            {
+                // Rien à parcourir après le dernier choix : destination atteinte directement.
+                CompletePathNow();
+                return;
+            }
+
+            _currentWaypoints = _finalWaypoints;
+        }
+
         private void AdvanceAlongPath(float deltaTime)
         {
             Vector3 targetWp = _currentWaypoints[_currentIndex];
@@ -356,7 +431,7 @@ namespace LightHouse.Features.Boats
                 if (_currentIndex >= _currentWaypoints.Length)
                 {
                     _velocity = Vector3.zero;
-                    return; // Sera géré au prochain appel : choix ou fin de branche.
+                    return; // Sera géré au prochain appel : choix suivant, final, ou complétion.
                 }
             }
             else
@@ -507,7 +582,9 @@ namespace LightHouse.Features.Boats
         {
             if (IsPathCompleted) return;
 
+            _currentSegment = BoatSegment.Final;
             IsPathCompleted = true;
+
             if (!_pathCompletedInvoked)
             {
                 _pathCompletedInvoked = true;
@@ -525,12 +602,19 @@ namespace LightHouse.Features.Boats
 
             if (_directionPaths != null)
             {
-                foreach (var entry in _directionPaths)
+                foreach (var stepEntry in _directionPaths)
                 {
-                    Color c = GetDirectionColor(entry.Direction);
-                    DrawWaypointsGizmo(entry.Waypoints, c);
+                    var stepOptions = stepEntry.Value;
+                    if (stepOptions == null) continue;
+
+                    foreach (var branchEntry in stepOptions)
+                    {
+                        DrawWaypointsGizmo(branchEntry.Value, GetDirectionColor(branchEntry.Key));
+                    }
                 }
             }
+
+            DrawWaypointsGizmo(_finalWaypoints, new Color(1f, 0.55f, 0f)); // orange : tronc final
 
             if (_playerSpawnTutorial != null)
             {
