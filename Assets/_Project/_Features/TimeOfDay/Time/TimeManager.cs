@@ -17,7 +17,6 @@ namespace LightHouse.Features.TimeOfDay.TimeCore
         [Range(0f, 24f)]
         public float CurrentTime = 6f; // Heure initiale
         public byte CurentDay = 1;
-        public float TimeSpeed = 1.0f;
 
         [field: SerializeField] public TimeOfDaySegment CurrentSegment { get; private set; }
         private TimeOfDaySegment _lastSegment;
@@ -29,11 +28,12 @@ namespace LightHouse.Features.TimeOfDay.TimeCore
             //currentDay = 1;
             TimeHandlerData.CurrentDay = CurentDay;
             TimeHandlerData.CurrentTime = CurrentTime;
+            TimeHandlerData.TimeSpeed = 1.0f; // Vitesse du temps par défaut
         }
 
         private void Update()
         {
-            float deltaHours = (Time.deltaTime / TimeConfig.RealSecondsPerGameHour) * TimeSpeed;
+            float deltaHours = (Time.deltaTime / TimeConfig.RealSecondsPerGameHour) * TimeHandlerData.TimeSpeed;
             CurrentTime += deltaHours;
 
             // NOTE: on ne clamp plus AVANT de tester le dépassement de minuit.
