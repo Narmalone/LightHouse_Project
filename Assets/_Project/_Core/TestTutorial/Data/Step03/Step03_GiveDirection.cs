@@ -132,13 +132,13 @@ namespace LightHouse.Core.Tutorial
                 CompleteTutorial();
 
             }
-            else if (dialogue == _captainBadWay || dialogue == _captainBadWayHalfFalse)
+            else if (dialogue == _captainBadWayHalfFalse && _wrongChoice == true)
             {
                 HandleWrongChoice();
             }
             else if (dialogue == _captainBadWayEndSubTutorial)
             {
-                IsComplete = true;
+                CompleteTutorial();
             }
         }
 
@@ -151,9 +151,7 @@ namespace LightHouse.Core.Tutorial
 
         private void HandleWrongChoice()
         {
-            ObjectiveManager.Current.CompleteObjective();
-
-            _wrongChoice = true;
+            WaitForTimer(new WaitForSeconds(22f));
 
             _context.TalkieManager.Enqueue(_captainBadWayRepairEngine);
             _context.TalkieManager.Enqueue(_captainBadWayEndSubTutorial);
@@ -195,7 +193,6 @@ namespace LightHouse.Core.Tutorial
         {
             if (_context.TutoBoat.ChosenDirection == BoatDirection.Right)
             {
-
                 _context.TalkieManager.Enqueue(_captainGoodWayGuide);
 
                 _captainGoodWayGuide.OnChoiceSelected += OnSecondGoodChoiceSelected;
@@ -262,6 +259,7 @@ namespace LightHouse.Core.Tutorial
 
             if (choice.Index == 1)
             {
+                WaitForTimer(new WaitForSeconds(15f));
                 _context.TalkieManager.Enqueue(_captainBadWayHalfFalse);
             }
             else

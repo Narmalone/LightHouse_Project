@@ -1,4 +1,5 @@
 using LightHouse.Core.Audio;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 namespace LightHouse.Core.Tutorial
@@ -236,21 +237,11 @@ namespace LightHouse.Core.Tutorial
              * We don't directly set the next objective here because the
              * dialogue should play first. The objective will be updated by
              * HandleLeadWayDialogueFinished() once that dialogue has ended.
-             *
-             * The progression is therefore:
-             *
-             *     Pick up binoculars
-             *            ↓
-             *     Complete objective
-             *            ↓
-             *     Play captain dialogue
-             *            ↓
-             *     Set next objective
              */
 
-            _context.TalkieManager.Enqueue(_captainLeadWayDialogue);
-
             ObjectiveManager.Current.CompleteObjective();
+
+            _context.TalkieManager.Enqueue(_captainLeadWayDialogue);
         }
 
 
@@ -268,6 +259,8 @@ namespace LightHouse.Core.Tutorial
              * completed, which signals to the Tutorial system that this step
              * can now be exited.
              */
+
+            _context.TutoBoat.Resume();
 
             ObjectiveManager.Current.CompleteObjective();
 

@@ -329,9 +329,6 @@ namespace LightHouse.Core.Tutorial
             // Start the captain's introduction.
             _context.TalkieManager.Enqueue(_captainInitialDialogue);
 
-            // Resume gameplay.
-            _context.TutoBoat.Resume();
-
             // The wake-up input is only required once.
             InputManager.PIA.Player.Jump.performed -= JumpPerformed;
         }
