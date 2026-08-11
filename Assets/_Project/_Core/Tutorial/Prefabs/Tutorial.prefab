@@ -53,6 +53,8 @@ MonoBehaviour:
   _talkieRef: {fileID: 11400000, guid: 28ec02c10b621ff4f8f7eda93f509052, type: 2}
   _flow: {fileID: 7604242540584691795}
   _playerDefaultIslandPosition: {fileID: 0}
+  _rightMiddleBoatCollider: {fileID: 2052077766858943033}
+  _onDockCollider: {fileID: 0}
   _wakeUpCamera: {fileID: 8173065277416767698}
   _tutoBoat: {fileID: 471149140284589386}
   _binocularItem: {fileID: 4309042081163287839}
@@ -75,6 +77,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 55da86fefab8a3943a5fbc104e5533cc, type: 2}
   - {fileID: 11400000, guid: d061af80999befa42a985f81eb2bfd6f, type: 2}
   - {fileID: 11400000, guid: 4a6244717c3c89843b538acf65fff670, type: 2}
+  - {fileID: 11400000, guid: 48aa60d92f70e8c4b8c64cbd94fd594c, type: 2}
 --- !u!1 &4318912806464865023
 GameObject:
   m_ObjectHideFlags: 0
@@ -145,15 +148,20 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2656151731491251784}
     m_Modifications:
+    - target: {fileID: 959657818654814237, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1703145492565122926, guid: 73b633c020ec1104dacbb1d97c6da550,
         type: 3}
       propertyPath: _moveSpeed
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1703145492565122926, guid: 73b633c020ec1104dacbb1d97c6da550,
         type: 3}
       propertyPath: _baseMoveSpeed
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
         type: 3}
@@ -213,7 +221,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 371939533353950296, guid: 73b633c020ec1104dacbb1d97c6da550,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9016321151810605990}
   m_SourcePrefab: {fileID: 100100000, guid: 73b633c020ec1104dacbb1d97c6da550, type: 3}
 --- !u!114 &471149140284589386 stripped
 MonoBehaviour:
@@ -230,6 +242,30 @@ MonoBehaviour:
 --- !u!4 &988504690764079246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2061748883952695978, guid: 73b633c020ec1104dacbb1d97c6da550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237102764081945124}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1441846085461902972 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 371939533353950296, guid: 73b633c020ec1104dacbb1d97c6da550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1237102764081945124}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9016321151810605990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1441846085461902972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 991fa4eda4a8c6046a9d9e36c5285b22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Trigger
+--- !u!65 &2052077766858943033 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 959657818654814237, guid: 73b633c020ec1104dacbb1d97c6da550,
     type: 3}
   m_PrefabInstance: {fileID: 1237102764081945124}
   m_PrefabAsset: {fileID: 0}

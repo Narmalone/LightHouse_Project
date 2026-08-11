@@ -30,6 +30,7 @@ namespace LightHouse.Core.Tutorial
         public BinocularItem Binocular;
         public Hammer Hammer;
 
+        public Collider RightMiddleBoatCollider;
         public Transform Lighthouse;
         public Transform Rock;
         public BuyoncyController NearbyBuoy;

@@ -11,7 +11,6 @@ namespace LightHouse.Core.Tutorial
         #region REFERENCES
 
         private TutorialContext _context;
-        private MonoBehaviour _routineBehaviour;
 
         #endregion
 
@@ -70,7 +69,6 @@ namespace LightHouse.Core.Tutorial
             base.Enter(context);
 
             _context = context;
-            _routineBehaviour = context.Flow;
 
             InitializeRuntime();
 

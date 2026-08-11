@@ -1,11 +1,6 @@
 using Cinemachine;
 using LightHouse.Core.Player;
-using LightHouse.Core.Tutorial.Boat;
-using LightHouse.Core.World;
 using LightHouse.Features.Boats;
-using LightHouse.Features.Buyoncies;
-using LightHouse.Features.Items.Interactable;
-using LightHouse.Features.Items.Interactable.Bag;
 using LightHouse.Features.Items.Inventory.Binoculars;
 using LightHouse.Features.Items.Inventory.Hammer;
 using LightHouse.Features.Talkie;
@@ -22,6 +17,8 @@ namespace LightHouse.Core.Tutorial
         [SerializeField] private Transform _playerDefaultIslandPosition;
 
         [Header("Refs")]
+        [SerializeField] private Collider _rightMiddleBoatCollider;
+        [SerializeField] private Collider _onDockCollider;
         [SerializeField] private CinemachineVirtualCamera _wakeUpCamera;
         [SerializeField] private TutorialChoiceBoat _tutoBoat;
         [SerializeField] private BinocularItem _binocularItem;
@@ -52,6 +49,7 @@ namespace LightHouse.Core.Tutorial
                 Talkie = _talkieRef.Current,
                 TalkieManager = _talkieRef.Current as TalkieManager,
                 WakeUpCam = _wakeUpCamera,
+                RightMiddleBoatCollider = _rightMiddleBoatCollider,
                 Hammer = _hammer,
                 TutoBoat = _tutoBoat,
                 Timeline = _timeline,
