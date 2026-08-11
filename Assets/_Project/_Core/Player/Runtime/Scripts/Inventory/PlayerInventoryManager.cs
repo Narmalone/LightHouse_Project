@@ -223,6 +223,7 @@ namespace LightHouse.Core.Player.Inventory
             {
                 item.ForceDropItemFromInventory += IInventoryItem_ForceDropItemFromInventory;
                 InventoryHandlerData.NotifyAddedToInventory(item);
+                item.InvokeOnItemPickedUp();
             }
             else
             {

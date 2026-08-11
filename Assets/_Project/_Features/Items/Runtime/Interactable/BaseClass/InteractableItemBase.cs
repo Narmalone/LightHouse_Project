@@ -49,7 +49,7 @@ namespace LightHouse.Features.Items.Interactable
 
         protected virtual async void Start()
         {
-            InteractionText = GetDefaultInteractionText().Result;
+            InteractionText = await GetDefaultInteractionText();
             await GetDefaultNameText();
         }
 

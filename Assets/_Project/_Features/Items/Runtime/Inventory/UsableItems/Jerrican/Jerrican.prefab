@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: Jerrican
+  EnableAutomaticSetName: 1
   _inventorySprite: {fileID: 21300000, guid: 06c54b1c04f8fa047a68cc53d788949d, type: 3}
   _detectionCollider: {fileID: 4451318235637385297}
   _rb: {fileID: 2103225682614033984}
@@ -65,8 +66,10 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
+  EnableAutomaticSetPickupText: 1
   <GlobalItemID>k__BackingField: 0
   <ItemSpecificID>k__BackingField: 1
+  <CanBePickedUp>k__BackingField: 1
   _essenceAmount: 100
   <CanBeUsedFromInventory>k__BackingField: 0
   <UseHoldTime>k__BackingField: 0.5
@@ -80,10 +83,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6769232627727625379}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

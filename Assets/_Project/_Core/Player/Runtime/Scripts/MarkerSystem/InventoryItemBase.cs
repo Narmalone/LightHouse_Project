@@ -47,6 +47,8 @@ namespace LightHouse.Features.Items.Inventory
 #pragma warning disable
         public event Action<string> OnPickupTextUpdated;
 
+        public event Action OnItemPickedUp;
+
         #endregion
 
         #region GET METHODS
@@ -149,6 +151,11 @@ namespace LightHouse.Features.Items.Inventory
             SetPickupTextToDefault();
             if (useCallback)
                 InvokeOnPickupTextUpdated();
+        }
+
+        public void InvokeOnItemPickedUp()
+        {
+            OnItemPickedUp?.Invoke();
         }
     }
 

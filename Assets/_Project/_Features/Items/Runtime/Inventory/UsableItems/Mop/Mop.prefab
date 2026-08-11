@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: 
+  EnableAutomaticSetName: 1
   _inventorySprite: {fileID: 0}
   _detectionCollider: {fileID: 5345570565710495459}
   _rb: {fileID: 7675161113487407054}
@@ -65,8 +66,10 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
+  EnableAutomaticSetPickupText: 1
   <GlobalItemID>k__BackingField: 11
   <ItemSpecificID>k__BackingField: 0
+  <CanBePickedUp>k__BackingField: 1
   _destroyOnUsed: 0
   _dropItemOnUsed: 0
   <CanBeUsedFromInventory>k__BackingField: 0
@@ -83,10 +86,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4822830045722021256}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

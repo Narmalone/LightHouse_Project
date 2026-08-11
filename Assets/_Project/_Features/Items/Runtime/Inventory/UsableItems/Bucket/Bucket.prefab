@@ -1474,13 +1474,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: 
+  _interactableItemName:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   _detectionCollider: {fileID: 6114646341576917928}
+  _interactionTextsDB: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
+    type: 2}
   <CanBeRaycasted>k__BackingField: 1
   <CanBeInteracted>k__BackingField: 1
   <IsItemRaycasted>k__BackingField: 0
+  <InteractionText>k__BackingField: 
   _itemNeeded: 11
-  _interactionTextsDB: {fileID: 11400000, guid: 6d9f01b7058b86143a308fcff9d65153,
-    type: 2}
   _itemNeededName:
     m_TableReference:
       m_TableCollectionName: GUID:017d10ec823be454082f9cc2c984dbe4
@@ -1491,7 +1501,6 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   _currentItemNeededName: 
-  _currentInteractionText: 
   _hasKeyInInventory: 0
   _hasKeyOnHands: 0
   AutoSubscribeOnSeen: 1
@@ -1887,6 +1896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: Bucket
+  EnableAutomaticSetName: 1
   _inventorySprite: {fileID: 0}
   _detectionCollider: {fileID: 1093943657070261984}
   _rb: {fileID: 1098852156151104289}
@@ -1905,8 +1915,10 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
+  EnableAutomaticSetPickupText: 1
   <GlobalItemID>k__BackingField: 10
   <ItemSpecificID>k__BackingField: 0
+  <CanBePickedUp>k__BackingField: 1
   _destroyOnUsed: 0
   _dropItemOnUsed: 0
   <CanBeUsedFromInventory>k__BackingField: 0
@@ -1924,10 +1936,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8389306771688507654}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

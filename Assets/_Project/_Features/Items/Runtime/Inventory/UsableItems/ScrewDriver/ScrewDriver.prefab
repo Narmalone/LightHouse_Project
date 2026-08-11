@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: ScrewDriver
+  EnableAutomaticSetName: 1
   _inventorySprite: {fileID: 21300000, guid: cbf1ca4f7103ddb47a26e5322da3e8c4, type: 3}
   _detectionCollider: {fileID: 2136831629529097879}
   _rb: {fileID: 4576256475950762182}
@@ -169,8 +170,10 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
+  EnableAutomaticSetPickupText: 1
   <GlobalItemID>k__BackingField: 13
   <ItemSpecificID>k__BackingField: 0
+  <CanBePickedUp>k__BackingField: 1
   _screwTag: 
   _interactableItemsMasks:
     serializedVersion: 2
@@ -190,10 +193,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6301942487169022356}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

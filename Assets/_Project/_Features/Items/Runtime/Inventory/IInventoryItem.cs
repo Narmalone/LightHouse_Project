@@ -25,6 +25,8 @@ namespace LightHouse.Features.Items.Inventory
         /// </summary>
         public event Action<ushort, ushort, Vector3, float, bool> ForceDropItemFromInventory;
 
+        public event Action OnItemPickedUp;
+
         /// <summary>
         /// A boolean to pickup or not the item. it's checked by the PlayerInventoryManayer
         /// </summary>
@@ -76,5 +78,7 @@ namespace LightHouse.Features.Items.Inventory
         /// Force to Invoke the event <see cref="ForceDropItemFromInventory"/>.
         /// </summary>
         void InvokeForceDropItemFromInventory(Vector3 pos, float force, bool enablePhysics);
+
+        void InvokeOnItemPickedUp();
     }
 }

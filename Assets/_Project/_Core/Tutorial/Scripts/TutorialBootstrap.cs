@@ -14,7 +14,6 @@ namespace LightHouse.Core.Tutorial
         [SerializeField] private bool _skipTutorial = false;
         [SerializeField] private TalkieServiceReference _talkieRef;
         [SerializeField] private TutorialFlow _flow;
-        [SerializeField] private Transform _playerDefaultIslandPosition;
 
         [Header("Refs")]
         [SerializeField] private Collider _rightMiddleBoatCollider;
@@ -62,11 +61,31 @@ namespace LightHouse.Core.Tutorial
 
         private void SkipTutorial()
         {
-            if(_playerDefaultIslandPosition != null && PlayerHandlerData.MainPlayer != null)
+            DisableAll();
+
+            if (PreAlphaLevel.Current.TutorialSkipPos != null && PlayerHandlerData.MainPlayer != null)
             {
-                PlayerHandlerData.MainPlayer.Character.SetPosition(_playerDefaultIslandPosition.position);
-                PlayerHandlerData.MainPlayer.Character.SetRotation(_playerDefaultIslandPosition.rotation);
+                Debug.Log("Skipping");
+                PlayerHandlerData.MainPlayer.Character.ForceLookRotation(PreAlphaLevel.Current.TutorialSkipPos.rotation);
+
+                PlayerHandlerData.MainPlayer.Character.SetPositionAndRotation(
+                    PreAlphaLevel.Current.TutorialSkipPos.position,
+                    PreAlphaLevel.Current.TutorialSkipPos.rotation,
+                    true);
+
+                PlayerHandlerData.MainPlayer.PlayerCamera.SetRotation(
+                    PreAlphaLevel.Current.TutorialSkipPos.rotation);
             }
+        }
+
+        private void DisableAll()
+        {
+            _wakeUpCamera.Priority = -1;
+
+            _tutoBoat.gameObject.SetActive(false);
+            _tutoBoat.enabled = false;
+            _binocularItem.gameObject.SetActive(false);
+            _hammer.gameObject.SetActive(false);
         }
     }
 }

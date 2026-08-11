@@ -31,8 +31,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1962715957026009223}
-  - {fileID: 7009637817192397395}
   - {fileID: 988504690764079246}
   - {fileID: 8121681588607539639}
   m_Father: {fileID: 0}
@@ -49,10 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a682a83adcb64824c867bc3860733577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightHouse.Game.Tutorial.TutorialBootstrap
-  _skipTutorial: 0
+  _skipTutorial: 1
   _talkieRef: {fileID: 11400000, guid: 28ec02c10b621ff4f8f7eda93f509052, type: 2}
   _flow: {fileID: 7604242540584691795}
-  _playerDefaultIslandPosition: {fileID: 0}
   _rightMiddleBoatCollider: {fileID: 2052077766858943033}
   _onDockCollider: {fileID: 0}
   _wakeUpCamera: {fileID: 8173065277416767698}
@@ -78,68 +75,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d061af80999befa42a985f81eb2bfd6f, type: 2}
   - {fileID: 11400000, guid: 4a6244717c3c89843b538acf65fff670, type: 2}
   - {fileID: 11400000, guid: 48aa60d92f70e8c4b8c64cbd94fd594c, type: 2}
---- !u!1 &4318912806464865023
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7009637817192397395}
-  m_Layer: 0
-  m_Name: PlayerIslandSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7009637817192397395
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4318912806464865023}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 51.9, y: 12.18, z: 36.9}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2656151731491251784}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4615566602178208171
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1962715957026009223}
-  m_Layer: 0
-  m_Name: RockPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1962715957026009223
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4615566602178208171}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 197.5, y: 6.75, z: 101}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2656151731491251784}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1237102764081945124
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -17,5 +17,7 @@ namespace LightHouse.Core.Inventory
         Scotch = 12,
         ScrewDriver = 13,
         Screw = 14,
+        Binocular = 15,
+        Fuze = 16,
     }
 }

@@ -4,4 +4,5 @@ public class PreAlphaLevel : NotPersistentSingleton<PreAlphaLevel>
 {
     public GameObject LightHouse;
     public GameObject IslandCenterPoint;
+    public Transform TutorialSkipPos;
 }

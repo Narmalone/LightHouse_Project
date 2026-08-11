@@ -41,10 +41,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4905756430918689070}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -74,6 +74,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: Rope
+  EnableAutomaticSetName: 1
   _inventorySprite: {fileID: 0}
   _detectionCollider: {fileID: 4823877376674663922}
   _rb: {fileID: 5183138022251650733}
@@ -92,8 +93,10 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
+  EnableAutomaticSetPickupText: 1
   <GlobalItemID>k__BackingField: 2
   <ItemSpecificID>k__BackingField: 0
+  <CanBePickedUp>k__BackingField: 1
   _destroyOnUsed: 1
   _dropItemOnUsed: 0
   <CanBeUsedFromInventory>k__BackingField: 0
