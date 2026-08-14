@@ -1,7 +1,4 @@
 using LightHouse.Core.Audio;
-using LightHouse.Features.TerrainSurface;
-using System;
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 namespace LightHouse.Core.Tutorial
@@ -9,12 +6,14 @@ namespace LightHouse.Core.Tutorial
     [CreateAssetMenu(fileName = "Step05_GetOnTheDeck", menuName = GlobalAssetsMenuPaths.TutorialAssetsMenuPath + "Step05_GetOnTheDeck")]
     public class Step05_GetOnTheDeck : TutorialStep
     {
+        [Header("Dialogues")]
         [SerializeField] private LocalizedDialogueAudio _arrivingSoon;
         [SerializeField] private LocalizedDialogueAudio _onDock;
         [SerializeField] private LocalizedDialogueAudio _onDepart;
 
-        private Trigger _trigger;
         private TutorialContext _context;
+        private Collider _boatCollider;
+        private Trigger _trigger;
 
         public override void Enter(TutorialContext context)
         {
@@ -22,9 +21,20 @@ namespace LightHouse.Core.Tutorial
 
             _context = context;
 
-            _context.TalkieManager.Enqueue(_arrivingSoon);
-
             SubscribeEvents();
+
+            _context.TalkieManager.Enqueue(_arrivingSoon);
+        }
+
+        public override void Exit(TutorialContext context)
+        {
+            UnsubscribeEvents();
+            UnsubscribeTrigger();
+
+            _context = null;
+            _boatCollider = null;
+
+            base.Exit(context);
         }
 
         private void TutoBoat_OnPathCompleted()
@@ -33,40 +43,85 @@ namespace LightHouse.Core.Tutorial
 
             _context.TalkieManager.Enqueue(_onDock);
 
-            Collider collider = _context.RightMiddleBoatCollider;
+            SetupDockTrigger();
+        }
 
-            collider.isTrigger = true;
+        private void SetupDockTrigger()
+        {
+            _boatCollider = _context.RightMiddleBoatCollider;
 
-            _trigger = collider.GetComponent<Trigger>();
+            if (_boatCollider == null)
+            {
+                Debug.LogError("[Step05_GetOnTheDeck] RightMiddleBoatCollider is null.");
+                return;
+            }
+
+            _trigger = _boatCollider.GetComponent<Trigger>();
+
+            if (_trigger == null)
+            {
+                Debug.LogError("[Step05_GetOnTheDeck] No Trigger component found on RightMiddleBoatCollider.");
+                return;
+            }
+
+            _boatCollider.isTrigger = true;
+
+            _trigger.OnEntered -= OnPlayerEntered;
             _trigger.OnEntered += OnPlayerEntered;
         }
 
-        private void OnPlayerEntered(Collider collider)
+        private void OnPlayerEntered(Collider other)
         {
-            if (!collider.CompareTag("Player"))
+            if (!other.CompareTag("Player"))
                 return;
 
             ObjectiveManager.Current.CompleteObjective();
 
             _context.TalkieManager.Enqueue(_onDepart);
 
-            _trigger.OnEntered -= OnPlayerEntered;
-            IsComplete = true;
+            UnsubscribeTrigger();
+
+            if (_boatCollider != null)
+            {
+                _boatCollider.isTrigger = false;
+                _boatCollider.enabled = false;
+            }
+        }
+        private void TalkieManager_OnDialogueFinished(LocalizedDialogueAudio obj)
+        {
+            if (obj == _onDepart)
+            {
+                IsComplete = true;
+            }
         }
 
-        public override void Exit(TutorialContext context)
-        {
-            UnsubscribeEvents();
-        }
         private void SubscribeEvents()
         {
+            if (_context?.TutoBoat == null)
+                return;
+
+            _context.TutoBoat.OnPathCompleted -= TutoBoat_OnPathCompleted;
             _context.TutoBoat.OnPathCompleted += TutoBoat_OnPathCompleted;
+            _context.TalkieManager.OnDialogueFinished += TalkieManager_OnDialogueFinished;
         }
+
 
         private void UnsubscribeEvents()
         {
+            if (_context?.TutoBoat == null)
+                return;
+
             _context.TutoBoat.OnPathCompleted -= TutoBoat_OnPathCompleted;
+            _context.TalkieManager.OnDialogueFinished -= TalkieManager_OnDialogueFinished;
         }
 
+        private void UnsubscribeTrigger()
+        {
+            if (_trigger == null)
+                return;
+
+            _trigger.OnEntered -= OnPlayerEntered;
+            _trigger = null;
+        }
     }
 }

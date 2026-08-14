@@ -33,6 +33,7 @@ Transform:
   m_Children:
   - {fileID: 988504690764079246}
   - {fileID: 8121681588607539639}
+  - {fileID: 6770257137144156279}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7629691537949247339
@@ -47,11 +48,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a682a83adcb64824c867bc3860733577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightHouse.Game.Tutorial.TutorialBootstrap
-  _skipTutorial: 1
+  _skipTutorial: 0
   _talkieRef: {fileID: 11400000, guid: 28ec02c10b621ff4f8f7eda93f509052, type: 2}
   _flow: {fileID: 7604242540584691795}
   _rightMiddleBoatCollider: {fileID: 2052077766858943033}
-  _onDockCollider: {fileID: 0}
+  _step6TriggerEvent: {fileID: 3124983561687594010}
   _wakeUpCamera: {fileID: 8173065277416767698}
   _tutoBoat: {fileID: 471149140284589386}
   _binocularItem: {fileID: 4309042081163287839}
@@ -75,6 +76,82 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d061af80999befa42a985f81eb2bfd6f, type: 2}
   - {fileID: 11400000, guid: 4a6244717c3c89843b538acf65fff670, type: 2}
   - {fileID: 11400000, guid: 48aa60d92f70e8c4b8c64cbd94fd594c, type: 2}
+  - {fileID: 11400000, guid: e623db89b16908840ba4e723c0d9a46d, type: 2}
+--- !u!1 &6191689044329072431
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6770257137144156279}
+  - component: {fileID: 8119874585519498941}
+  - component: {fileID: 3124983561687594010}
+  m_Layer: 0
+  m_Name: Step6ColliderTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6770257137144156279
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6191689044329072431}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 350.3, y: 68.58, z: 391.25}
+  m_LocalScale: {x: 5.6165, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2656151731491251784}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8119874585519498941
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6191689044329072431}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3124983561687594010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6191689044329072431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d62504bbf4dbbc4dbf0e1cddcd66474, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightHouse.Core.Utilities.TriggerEvent
+  _useTriggerEnter: 1
+  _useTriggerStay: 0
+  _useTriggerExit: 1
+  _needMaskAndLayerToEvent: 0
+  _targetsMasks:
+    serializedVersion: 2
+    m_Bits: 8
+  _targetTag: Player
+  Collider: {fileID: 8119874585519498941}
 --- !u!1001 &1237102764081945124
 PrefabInstance:
   m_ObjectHideFlags: 0

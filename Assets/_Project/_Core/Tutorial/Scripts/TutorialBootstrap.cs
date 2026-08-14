@@ -1,5 +1,6 @@
 using Cinemachine;
 using LightHouse.Core.Player;
+using LightHouse.Core.Utilities;
 using LightHouse.Features.Boats;
 using LightHouse.Features.Items.Inventory.Binoculars;
 using LightHouse.Features.Items.Inventory.Hammer;
@@ -17,7 +18,7 @@ namespace LightHouse.Core.Tutorial
 
         [Header("Refs")]
         [SerializeField] private Collider _rightMiddleBoatCollider;
-        [SerializeField] private Collider _onDockCollider;
+        [SerializeField] private TriggerEvent _step6TriggerEvent;
         [SerializeField] private CinemachineVirtualCamera _wakeUpCamera;
         [SerializeField] private TutorialChoiceBoat _tutoBoat;
         [SerializeField] private BinocularItem _binocularItem;
@@ -49,6 +50,7 @@ namespace LightHouse.Core.Tutorial
                 TalkieManager = _talkieRef.Current as TalkieManager,
                 WakeUpCam = _wakeUpCamera,
                 RightMiddleBoatCollider = _rightMiddleBoatCollider,
+                Step6TriggerEvent = _step6TriggerEvent,
                 Hammer = _hammer,
                 TutoBoat = _tutoBoat,
                 Timeline = _timeline,

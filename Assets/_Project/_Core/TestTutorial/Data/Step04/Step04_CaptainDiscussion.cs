@@ -1,24 +1,17 @@
 using LightHouse.Core.Audio;
 using LightHouse.Core.Utilities;
-using System;
 using UnityEngine;
 
 namespace LightHouse.Core.Tutorial
 {
-    [CreateAssetMenu(fileName = "Step04_CaptainDiscussion", menuName = GlobalAssetsMenuPaths.TutorialAssetsMenuPath + "Step04_CaptainDiscussion")]
+    [CreateAssetMenu(
+        fileName = "Step04_CaptainDiscussion",
+        menuName = GlobalAssetsMenuPaths.TutorialAssetsMenuPath + "Step04_CaptainDiscussion")]
     public class Step04_CaptainDiscussion : TutorialStep
     {
-        #region REFERENCES
-
-        private TutorialContext _context;
-
-        #endregion
-
-
         #region CONFIGURATION
 
         [Header("Captain Dialogues")]
-
         [SerializeField] private LocalizedDialogueAudio _captainTalking_1;
         [SerializeField] private LocalizedDialogueAudio _captainTalking_2;
         [SerializeField] private LocalizedDialogueAudio _captainTalking_3;
@@ -31,24 +24,20 @@ namespace LightHouse.Core.Tutorial
         [SerializeField] private LocalizedDialogueAudio _askNextQuestions;
 
         [SerializeField] private LocalizedDialogueAudio _endQuestionsDialogue;
-        [SerializeField] private LocalizedDialogueAudio _Warning;
+        [SerializeField] private LocalizedDialogueAudio _warning;
         [SerializeField] private LocalizedDialogueAudio _forcedDialogueStop;
 
-
-
         [Header("Question Timer")]
-
         [SerializeField] private float _timeToAsk = 10f;
-
-
-        [Header("Dialogue Delays")]
-
-        [SerializeField] private float _delayBetweenDialogues = 2f;
 
         #endregion
 
 
         #region RUNTIME
+
+        private TutorialContext _context;
+
+        private Timer _questionTimer;
 
         private bool _tickActivated;
         private bool _questionStop;
@@ -56,8 +45,6 @@ namespace LightHouse.Core.Tutorial
         private int _question1Count;
         private int _question2Count;
         private int _question3Count;
-
-        private Timer _questionTimer;
 
         #endregion
 
@@ -71,25 +58,25 @@ namespace LightHouse.Core.Tutorial
             _context = context;
 
             InitializeRuntime();
-
             SubscribeEvents();
 
-            StartDialogueSequence();
+            _context.TalkieManager.Enqueue(_captainTalking_1);
         }
-
 
         public override void Tick(TutorialContext context, float dt)
         {
-            if (!_tickActivated)
-                return;
-
-            _questionTimer.Tick(dt);
+            if (_tickActivated)
+                _questionTimer.Tick(dt);
         }
-
 
         public override void Exit(TutorialContext context)
         {
+            StopQuestionTimer();
             UnsubscribeEvents();
+
+            _context = null;
+
+            base.Exit(context);
         }
 
         #endregion
@@ -100,10 +87,6 @@ namespace LightHouse.Core.Tutorial
         private void InitializeRuntime()
         {
             _tickActivated = false;
-
-            _questionTimer = new Timer(_timeToAsk);
-
-            _tickActivated = false;
             _questionStop = false;
 
             _question1Count = 0;
@@ -111,12 +94,6 @@ namespace LightHouse.Core.Tutorial
             _question3Count = 0;
 
             _questionTimer = new Timer(_timeToAsk);
-        }
-
-
-        private void StartDialogueSequence()
-        {
-            _context.TalkieManager.Enqueue(_captainTalking_1);
         }
 
         #endregion
@@ -131,19 +108,21 @@ namespace LightHouse.Core.Tutorial
             _questionTimer.OnTimerComplete += OnQuestionTimerFinished;
 
             _askQuestions.OnChoiceSelected += OnChoiceSelected;
-
             _askNextQuestions.OnChoiceSelected += OnChoiceSelected;
         }
 
         private void UnsubscribeEvents()
         {
+            if (_context == null)
+                return;
+
             _context.TalkieManager.OnDialogueFinished -= OnDialogueFinished;
 
-            _questionTimer.OnTimerComplete -= OnQuestionTimerFinished;
+            if (_questionTimer != null)
+                _questionTimer.OnTimerComplete -= OnQuestionTimerFinished;
 
-            _askQuestions.OnChoiceSelected += OnChoiceSelected;
-
-            _askNextQuestions.OnChoiceSelected += OnChoiceSelected;
+            _askQuestions.OnChoiceSelected -= OnChoiceSelected;
+            _askNextQuestions.OnChoiceSelected -= OnChoiceSelected;
         }
 
         #endregion
@@ -156,130 +135,132 @@ namespace LightHouse.Core.Tutorial
             if (dialogue == _captainTalking_1)
             {
                 _context.TalkieManager.Enqueue(_captainTalking_2);
+                return;
             }
-            else if (dialogue == _captainTalking_2)
+
+            if (dialogue == _captainTalking_2)
             {
                 _context.TalkieManager.Enqueue(_captainTalking_3);
+                return;
             }
-            else if (dialogue == _captainTalking_3)
+
+            if (dialogue == _captainTalking_3)
             {
-                StartDelayedQuestionSequence();
+                StartQuestions();
+                return;
             }
-            else if (dialogue == _endQuestionsDialogue)
-            {
-                IsComplete = true;
-            }
-            else if (dialogue == _forcedDialogueStop)
+
+            if (dialogue == _endQuestionsDialogue ||
+                dialogue == _forcedDialogueStop)
             {
                 IsComplete = true;
             }
         }
 
-
-        private void StartDelayedQuestionSequence()
+        private void StartQuestions()
         {
             _context.TalkieManager.Enqueue(_askQuestions);
             StartQuestionTimer();
         }
 
-
         private void OnChoiceSelected(TalkieChoice choice)
         {
-            StopQuestionTimer();
-
             if (_questionStop)
                 return;
+
+            StopQuestionTimer();
 
             switch (choice.Index)
             {
                 case 0:
-                    HandleQuestion(ref _question1Count, _captainQuestion_1
-                    );
+                    HandleQuestion(
+                        ref _question1Count,
+                        _captainQuestion_1);
                     break;
 
                 case 1:
-                    HandleQuestion(ref _question2Count, _captainQuestion_2
-                    );
+                    HandleQuestion(
+                        ref _question2Count,
+                        _captainQuestion_2);
                     break;
 
                 case 2:
-                    HandleQuestion(ref _question3Count, _captainQuestion_3
-                    );
+                    HandleQuestion(
+                        ref _question3Count,
+                        _captainQuestion_3);
                     break;
 
                 case 3:
-                    EndQuestions();
+                    EndQuestions(_endQuestionsDialogue);
                     break;
             }
         }
 
-        #endregion
-
-        private void HandleQuestion(ref int questionCount, LocalizedDialogueAudio questionDialogue)
+        private void HandleQuestion(
+            ref int questionCount,
+            LocalizedDialogueAudio questionDialogue)
         {
             questionCount++;
 
-            // Première fois
-            if (questionCount == 1)
+            switch (questionCount)
             {
-                _context.TalkieManager.Enqueue(questionDialogue);
-                _context.TalkieManager.Enqueue(_askNextQuestions);
+                case 1:
+                    _context.TalkieManager.Enqueue(questionDialogue);
+                    QueueNextQuestions();
+                    break;
 
-                StartQuestionTimer();
-                return;
+                case 2:
+                    _context.TalkieManager.Enqueue(_warning);
+                    QueueNextQuestions();
+                    break;
+
+                default:
+                    EndQuestions(_forcedDialogueStop);
+                    break;
             }
-
-            // Deuxième fois
-            if (questionCount == 2)
-            {
-                _context.TalkieManager.Enqueue(_Warning);
-                _context.TalkieManager.Enqueue(_askNextQuestions);
-
-                StartQuestionTimer();
-                return;
-            }
-
-            // Troisième fois
-            ForceEndQuestions();
         }
 
-        private void ForceEndQuestions()
+        private void QueueNextQuestions()
         {
+            _context.TalkieManager.Enqueue(_askNextQuestions);
+            StartQuestionTimer();
+        }
+
+        private void EndQuestions(LocalizedDialogueAudio endDialogue)
+        {
+            if (_questionStop)
+                return;
+
             _questionStop = true;
 
             StopQuestionTimer();
 
-            _context.TalkieManager.Enqueue(_forcedDialogueStop);
+            _context.TalkieManager.Enqueue(endDialogue);
         }
 
-        private void EndQuestions()
-        {
-            _questionStop = true;
-
-            StopQuestionTimer();
-
-            _context.TalkieManager.Enqueue(_endQuestionsDialogue);
-        }
-
-        private void StopQuestionTimer()
-        {
-            _tickActivated = false;
-
-            _questionTimer.ResetTimer(false);
-            _questionTimer.StopTimer();
-        }
+        #endregion
 
 
         #region QUESTION TIMER
 
         private void StartQuestionTimer()
         {
-            _tickActivated = true;
-
             _questionTimer.ResetTimer(false);
             _questionTimer.StartTimer();
+
+            _tickActivated = true;
         }
 
+        private void StopQuestionTimer()
+        {
+            _tickActivated = false;
+
+            if (_questionTimer == null)
+                return;
+
+            _questionTimer.ResetTimer(false);
+            _questionTimer.StopTimer();
+        }
 
         private void OnQuestionTimerFinished()
         {

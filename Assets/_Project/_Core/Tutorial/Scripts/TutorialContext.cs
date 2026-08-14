@@ -1,5 +1,6 @@
 using Cinemachine;
 using LightHouse.Core.Tutorial.Boat;
+using LightHouse.Core.Utilities;
 using LightHouse.Features.Boats;
 using LightHouse.Features.Buyoncies;
 using LightHouse.Features.Items.Interactable;
@@ -31,6 +32,7 @@ namespace LightHouse.Core.Tutorial
         public Hammer Hammer;
 
         public Collider RightMiddleBoatCollider;
+        public TriggerEvent Step6TriggerEvent;
         public Transform Lighthouse;
         public Transform Rock;
         public BuyoncyController NearbyBuoy;

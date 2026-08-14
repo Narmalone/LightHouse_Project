@@ -1,5 +1,4 @@
 using LightHouse.Core.Audio;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 namespace LightHouse.Core.Tutorial
