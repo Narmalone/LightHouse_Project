@@ -13,8 +13,9 @@ namespace LightHouse.Features.Items.Inventory.Bucket
         [SerializeField] private ItemColliderMarker _itemColliderMarker;
         public bool IsFilledWithWater = false;
         private bool _isInitialized = false;
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
             if (!_isInitialized)
             {
                 IgnoreMopColliderCollision();

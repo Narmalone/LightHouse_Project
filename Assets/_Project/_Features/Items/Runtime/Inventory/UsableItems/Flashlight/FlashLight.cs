@@ -37,8 +37,9 @@ namespace LightHouse.Features.Items.Inventory.Flashlight
             _light.gameObject.SetActive(false);
         }
 
-        private void Start()
+        protected override void Start()
         {
+            base.Start();   
             UpdateUsableText();
         }
 

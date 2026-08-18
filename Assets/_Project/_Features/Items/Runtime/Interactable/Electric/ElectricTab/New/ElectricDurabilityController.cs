@@ -3,10 +3,11 @@ using UnityEngine;
 
 public class ElectricDurabilityController : MonoBehaviour
 {
+    public event Action OnDurabilityEnded;
+
     public float MaxDurabilityItem { get; private set; }
     public float CurrentDurability { get; private set; }
     private bool isDurabilityActive = true;
-    public event Action OnDurabilityEnded;
 
     [SerializeField] private MeshRenderer _electricItemRenderer;
     [SerializeField] private float _maxDurability = 60f;

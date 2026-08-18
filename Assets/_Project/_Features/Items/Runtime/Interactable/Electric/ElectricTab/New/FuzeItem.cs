@@ -18,6 +18,8 @@ public class FuzeItem : InventoryItemBase, IInventoryItemUsable
 
     public event Action OnItemUsed;
     public event Action<ushort, ushort> CanBeUsedFromInventoryChanged;
+
+#pragma warning disable
     public event Action<string> UseTextSlotChanged;
 
     protected override void Start()

@@ -42,8 +42,9 @@ namespace LightHouse.Features.Items.Interactable
             this._detectionCollider.enabled = false;
         }
 
-        private void Start()
+        protected override void Start()
         {
+            base.Start();
             ElectricItemRegistry.Register(this);
         }
 

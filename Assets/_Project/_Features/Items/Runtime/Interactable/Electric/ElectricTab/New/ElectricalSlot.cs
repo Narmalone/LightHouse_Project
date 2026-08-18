@@ -1,18 +1,21 @@
+using LightHouse.Features.Electricity;
 using System;
 using UnityEngine;
 
 public class ElectricalSlot : MonoBehaviour
 {
+    [SerializeField] private ElectricityZones _zone;
     [SerializeField] private Transform _fuzePanelPivot;
     [SerializeField] private ElectricDurabilityController _durabilityController;
     [SerializeField] private FuzeButtonController _fuzeButtonController;
     [SerializeField] private FuzeSwitchController _fuzeSwitchController;
     [SerializeField] private FuzeItemNeeded _fuzeItemNeeded;
 
+    public ElectricityZones Zone => _zone;
+
     private void Awake()
     {
         _durabilityController.OnDurabilityEnded += HandleDurabilityEnded;
-        _fuzeButtonController.OnFuzeButtonPressed += HandleFuzeButtonPressed;
         _fuzeItemNeeded.OnFuzeSet += HandleFuzeSet;
         _fuzeItemNeeded.OnFuzeRemoved += HandleFuzeRemoved;
         _fuzeSwitchController.OnSwitchPressedEvent += FuzeSwitchController_OnSwitchPressedEvent;
@@ -22,7 +25,6 @@ public class ElectricalSlot : MonoBehaviour
     private void OnDestroy()
     {
         _durabilityController.OnDurabilityEnded -= HandleDurabilityEnded;
-        _fuzeButtonController.OnFuzeButtonPressed -= HandleFuzeButtonPressed;
         _fuzeItemNeeded.OnFuzeSet -= HandleFuzeSet;
         _fuzeItemNeeded.OnFuzeRemoved -= HandleFuzeRemoved;
         _fuzeSwitchController.OnSwitchPressedEvent -= FuzeSwitchController_OnSwitchPressedEvent;
@@ -51,11 +53,6 @@ public class ElectricalSlot : MonoBehaviour
     {
         _fuzeSwitchController.SetOff();
         _durabilityController.SetActiveDurability(false);
-    }
-
-    private void HandleFuzeButtonPressed()
-    {
-        
     }
 
     private void HandleDurabilityEnded()
