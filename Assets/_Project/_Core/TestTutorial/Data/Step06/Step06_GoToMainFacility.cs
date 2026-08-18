@@ -16,13 +16,15 @@ namespace LightHouse.Core.Tutorial
         private Trigger _trigger;
         private TutorialContext _context;
 
+        private bool isPressed = false;
+
         public override void Enter(TutorialContext context)
         {
             base.Enter(context);
 
             _context = context;
 
-            ObjectiveManager.Current.SetObjective("Walk trought the forest and find the Main Facility");
+            ObjectiveManager.Current.SetObjective("Walk trought the forest and find the Main Facility.");
 
             _context.TalkieManager.Enqueue(_startWalk);
 
@@ -42,29 +44,22 @@ namespace LightHouse.Core.Tutorial
             _context.Step6TriggerEvent.OnEntered -= OnTriggerEntered;
         }
 
-        
-
-        private void SubscribeEvents()
-        {
-            _context.TalkieManager.OnDialogueFinished += TalkieManager_OnDialogueFinished;
-        }
-
         private void TalkieManager_OnDialogueFinished(LocalizedDialogueAudio obj)
         {
-
+            if (obj == _findMainFacility)
+            {
+                ObjectiveManager.Current.SetObjective("Find a way to enter the Main Facility.");
+            }
         }
 
-        private void UnsubscribeEvents()
-        {
-
-        }
 
         public override void Tick(TutorialContext ctx, float dt)
         {
             base.Tick(ctx, dt);
 
-            if (Input.GetKeyDown(KeyCode.V))
+            if (Input.GetKeyDown(KeyCode.V) && !isPressed)
             {
+                isPressed = true;
                 PlayEnd();
             }
         }
@@ -74,10 +69,19 @@ namespace LightHouse.Core.Tutorial
             _context.TalkieManager.Enqueue(_findMainFacility);
         }
 
+        private void SubscribeEvents()
+        {
+            _context.TalkieManager.OnDialogueFinished += TalkieManager_OnDialogueFinished;
+        }
+
+        private void UnsubscribeEvents()
+        {
+            _context.TalkieManager.OnDialogueFinished -= TalkieManager_OnDialogueFinished;
+        }
+
         public override void Exit(TutorialContext context)
         {
             UnsubscribeEvents();
         }
-
     }
 }

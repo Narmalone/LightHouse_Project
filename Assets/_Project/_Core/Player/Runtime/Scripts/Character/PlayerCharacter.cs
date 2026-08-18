@@ -73,7 +73,7 @@ namespace LightHouse.Core.Player
         [Header("Crouching")]
         [SerializeField] private float _crouchSpeed = 5.0f;
         [SerializeField] private float _crouchSharpness = 25f;
-        [SerializeField] private float _standHeight = 2.0f;
+        [SerializeField] private float _standHeight = 1.8f;
         [SerializeField] private float _crouchHeight = 1.0f;
         [SerializeField, Range(0, 1f)] private float _crouchDiminutionMultiplier = 0.5f;
 
