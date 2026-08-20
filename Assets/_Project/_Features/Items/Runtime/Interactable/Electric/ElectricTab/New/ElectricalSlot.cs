@@ -11,6 +11,8 @@ public class ElectricalSlot : MonoBehaviour
     [SerializeField] private FuzeSwitchController _fuzeSwitchController;
     [SerializeField] private FuzeItemNeeded _fuzeItemNeeded;
 
+    [SerializeField] private IElectricItem[] _electricalItems;
+
     public ElectricityZones Zone => _zone;
 
     private void Awake()
@@ -47,12 +49,14 @@ public class ElectricalSlot : MonoBehaviour
     private void HandleFuzeSet(float durability, float maxDurability)
     {
         _durabilityController.SetDurability(durability, maxDurability);
+        _fuzeSwitchController.OnFuzeSet();
     }
 
     private void HandleFuzeRemoved()
     {
         _fuzeSwitchController.SetOff();
         _durabilityController.SetActiveDurability(false);
+        _fuzeSwitchController.OnFuzeRemoved();
     }
 
     private void HandleDurabilityEnded()

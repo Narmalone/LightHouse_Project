@@ -7,7 +7,7 @@ public class ElectricDurabilityController : MonoBehaviour
 
     public float MaxDurabilityItem { get; private set; }
     public float CurrentDurability { get; private set; }
-    private bool isDurabilityActive = true;
+    private bool _isDurabilityActive = false;
 
     [SerializeField] private MeshRenderer _electricItemRenderer;
     [SerializeField] private float _maxDurability = 60f;
@@ -21,8 +21,7 @@ public class ElectricDurabilityController : MonoBehaviour
 
     private void Awake()
     {
-        MaxDurabilityItem = _maxDurability;
-        CurrentDurability = _maxDurability;
+        _isDurabilityActive = false;
 
         // Instancie le material pour ne pas modifier l'asset partagé
         _materialInstance = _electricItemRenderer.material;
@@ -33,13 +32,13 @@ public class ElectricDurabilityController : MonoBehaviour
 
     private void Update()
     {
-        if (!isDurabilityActive) return;
+        if (!_isDurabilityActive) return;
 
         CurrentDurability -= Time.deltaTime;
         if (CurrentDurability <= 0)
         {
             CurrentDurability = 0;
-            isDurabilityActive = false;
+            _isDurabilityActive = false;
             OnDurabilityEnded?.Invoke();
             // Handle durability reaching zero (e.g., disable the electric item)
         }
@@ -49,7 +48,7 @@ public class ElectricDurabilityController : MonoBehaviour
 
     public void SetActiveDurability(bool value)
     {
-        isDurabilityActive = value;
+        _isDurabilityActive = value;
 
         if (!value)
         {
