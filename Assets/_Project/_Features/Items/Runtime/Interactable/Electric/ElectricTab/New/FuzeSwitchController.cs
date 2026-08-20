@@ -1,11 +1,12 @@
 using LightHouse.Core.Inputs;
+using LightHouse.Core.Interaction;
 using LightHouse.Core.Localization;
 using LightHouse.Features.Items.Interactable;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class FuzeSwitchController : InteractableItemBase
+public class FuzeSwitchController : InteractableItemBase, IRaycastEnter
 {
     public event Action OnSwitchPressedEvent;
 
@@ -19,10 +20,22 @@ public class FuzeSwitchController : InteractableItemBase
 
     public bool IsOn => _isOn;
 
+    public bool HasFuze { get; set; } = false;
+
     protected override void Start()
     {
         base.Start();
         SetOff();
+    }
+
+    public void OnFuzeSet()
+    {
+        HasFuze = true;
+    }
+
+    public void OnFuzeRemoved()
+    {
+        HasFuze = false;
     }
 
     public void OnFuzeShutdown()
@@ -60,7 +73,6 @@ public class FuzeSwitchController : InteractableItemBase
     {
         if (_isFuzeBroke) return;
         _isOn = !_isOn;
-
         if(_isOn)
         {
             SetOn();
@@ -90,5 +102,13 @@ public class FuzeSwitchController : InteractableItemBase
     public override void Interact()
     {
         InvokeObjectInteracted();
+    }
+
+    public void OnRaycastEnter()
+    {
+        if (!HasFuze)
+        {
+
+        }
     }
 }
