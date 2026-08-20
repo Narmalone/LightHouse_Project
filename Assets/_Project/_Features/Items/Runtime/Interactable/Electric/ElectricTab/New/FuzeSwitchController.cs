@@ -5,6 +5,7 @@ using LightHouse.Features.Items.Interactable;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class FuzeSwitchController : InteractableItemBase, IRaycastEnter
 {
@@ -14,6 +15,11 @@ public class FuzeSwitchController : InteractableItemBase, IRaycastEnter
     [SerializeField] private Transform _fuzeOffTransform;
     [SerializeField] private Vector3 _eulerTargetOn;
     [SerializeField] private Vector3 _eulerTargetOff;
+
+    public LocalizedString _setOn;
+    public LocalizedString _setOff;
+    public LocalizedString _replaceFuzeFirst;
+    public LocalizedString _generatorIsNotActive;
 
     private bool _isOn = false;
     private bool _isFuzeBroke = false;
@@ -49,12 +55,13 @@ public class FuzeSwitchController : InteractableItemBase, IRaycastEnter
         _isOn = false;
     }
 
-    public async Task<string> GetOnInteractionText()
+    public async Task<string> GetCurrentInteractionText()
     {
         string input = InputManager.Interact_Bind_Name;
         if (_isOn)
         {
             //Take the on text localized string
+            
         }
         else
         {

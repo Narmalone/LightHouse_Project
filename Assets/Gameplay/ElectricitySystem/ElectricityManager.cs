@@ -1,5 +1,4 @@
 ﻿using LightHouse.Features.Items.Interactable.Generator;
-using LightHouse.Features.Items.Interactable;
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -41,7 +40,7 @@ namespace LightHouse.Features.Electricity
             foreach (IElectricItem item in Items)
             {
                 CurrentPowerUsed += item.ElectricityCost;
-                Debug.Log(item.ToString() + " "+ item.ElectricityCost + " " + CurrentPowerUsed);
+                Debug.Log(item.ToString() + " " + item.ElectricityCost + " " + CurrentPowerUsed);
             }
             return CurrentPowerUsed;
         }
@@ -52,7 +51,7 @@ namespace LightHouse.Features.Electricity
             return CurrentPowerUsed;
         }
 
-        public float AddPower(float addSomePower) 
+        public float AddPower(float addSomePower)
         {
             CurrentPowerUsed += addSomePower;
             return CurrentPowerUsed;
@@ -65,7 +64,7 @@ namespace LightHouse.Features.Electricity
     {
         #region Serialized Fields
         [SerializeField] private Generator _generator;
-        [SerializeField] private ElectricalPannel _electricalPannel;
+        [SerializeField] private ElectricTab _electricalTab;
         [SerializeField] private ElectricityZoneSettings _zoneSettings;
 
         private Dictionary<ElectricityZones, ElectricZoneData> _electricZonesData = new();
@@ -100,7 +99,7 @@ namespace LightHouse.Features.Electricity
         private void RegisterCallbacks()
         {
             _generator.OnGeneratorSwitchChanged += Generator_OnGeneratorSwitchChanged;
-            _electricalPannel.OnSwitchElectricityChanged += ElectricalPannel_OnSwitchElectricityChanged;
+            _electricalTab.OnSwitchElectricityChanged += ElectricalTab_OnSwitchElectricityChanged;
             ElectricItemRegistry.OnElectricItemRegister += ElectricItemRegistry_OnElectricItemRegister;
             ElectricItemRegistry.OnElectricItemUnregister += ElectricItemRegistry_OnElectricItemUnregister;
         }
@@ -108,7 +107,7 @@ namespace LightHouse.Features.Electricity
         private void UnregisterCallbacks()
         {
             _generator.OnGeneratorSwitchChanged -= Generator_OnGeneratorSwitchChanged;
-            _electricalPannel.OnSwitchElectricityChanged -= ElectricalPannel_OnSwitchElectricityChanged;
+            _electricalTab.OnSwitchElectricityChanged -= ElectricalTab_OnSwitchElectricityChanged;
             ElectricItemRegistry.OnElectricItemRegister -= ElectricItemRegistry_OnElectricItemRegister;
             ElectricItemRegistry.OnElectricItemUnregister -= ElectricItemRegistry_OnElectricItemUnregister;
         }
@@ -118,14 +117,14 @@ namespace LightHouse.Features.Electricity
         private void Generator_OnGeneratorSwitchChanged(bool isOn)
         {
             if (isOn)
-                _electricalPannel.OnEnablePannelInteractibility();
+                _electricalTab.OnEnablePannelInteractibility();
             else
-                _electricalPannel.OnDisablePannelInteractibility();
+                _electricalTab.OnDisablePannelInteractibility();
         }
         #endregion
 
-        #region Panel Events
-        private void ElectricalPannel_OnSwitchElectricityChanged(bool state, ElectricityZones zoneKey, ElectricZoneData datas)
+        #region Tab Events
+        private void ElectricalTab_OnSwitchElectricityChanged(bool state, ElectricityZones zoneKey)
         {
             if (!_electricZonesData.TryGetValue(zoneKey, out var zone))
                 return;
@@ -216,17 +215,17 @@ namespace LightHouse.Features.Electricity
         #region OTHER FUNCS
         public void ShutdownElectricalPannel()
         {
-            foreach(ElectricZoneData zoneDatas in _electricZonesData.Values)
+            foreach (ElectricZoneData zoneDatas in _electricZonesData.Values)
             {
                 zoneDatas.ElectricityOn = false;
-                foreach(var item in zoneDatas.Items)
+                foreach (var item in zoneDatas.Items)
                 {
                     item.HasElectricity = false;
                     item.OnElectricityZoneDisabled();
                 }
-                if(zoneDatas.CurrentPowerUsed < 0f) zoneDatas.CurrentPowerUsed = 0f;
+                if (zoneDatas.CurrentPowerUsed < 0f) zoneDatas.CurrentPowerUsed = 0f;
             }
-            _electricalPannel.DownAllSwitches();
+            _electricalTab.DownAllSwitches();
         }
         #endregion
     }
