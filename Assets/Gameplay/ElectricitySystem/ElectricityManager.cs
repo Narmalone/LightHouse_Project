@@ -10,11 +10,9 @@ namespace LightHouse.Features.Electricity
     public enum ElectricityZones
     {
         None,
-        Maintenance,
-        Kitchen,
-        BedroomAndBathroom,
-        Office,
-        Lens,
+        GuardianHouse,
+        OutsideLights,
+        LightHouse,
         Shed,
     }
 
