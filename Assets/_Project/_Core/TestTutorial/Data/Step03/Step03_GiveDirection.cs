@@ -11,593 +11,375 @@ namespace LightHouse.Core.Tutorial
     )]
     public class Step03_GiveDirection : TutorialStep
     {
-        #region ENUM
-
         private enum StepState
         {
-            WaitingForBoat,
+            WaitingForFirstChoice,
             FirstChoice,
-            RepairAfterFirstChoice,
+            FirstRepair,
+            WaitingForSecondChoice,
             SecondChoice,
-            RepairAfterSecondChoice,
-            GoodEnding,
-            BadEnding,
+            SecondRepair,
+            FinalDialogue,
             Completed
         }
 
-        #endregion
-
-
-        #region REFERENCES
-
         private TutorialContext _context;
 
-        #endregion
-
-
-        #region CONFIGURATION
-
         [Header("Choice Settings")]
-        [SerializeField] private float _timerChoiceDuration = 10f;
-
+        [SerializeField, Min(0.1f)] private float _timerChoiceDuration = 10f;
 
         [Header("First Choice")]
-
-        [Tooltip("Premier choix. La bonne réponse est DROITE.")]
-        [SerializeField]
-        private LocalizedDialogueAudio _choiceIntroduction;
-
+        [Tooltip("Gauche / Milieu / Droite. Bonne réponse : Droite.")]
+        [SerializeField] private LocalizedDialogueAudio _choiceIntroduction;
 
         [Header("Second Choice")]
+        [Tooltip("Deuxième choix si le premier était correct.")]
+        [SerializeField] private LocalizedDialogueAudio _captainGoodWayGuide;
 
-        [Tooltip("Deuxième choix si aucune erreur n'a été faite.")]
-        [SerializeField]
-        private LocalizedDialogueAudio _captainGoodWayGuide;
-
-        [Tooltip("Deuxième choix si le joueur a déjà fait une erreur.")]
-        [SerializeField]
-        private LocalizedDialogueAudio _captainBadWayGuide;
-
+        [Tooltip("Deuxième choix si le premier était incorrect.")]
+        [SerializeField] private LocalizedDialogueAudio _captainBadWayGuide;
 
         [Header("Repair")]
+        [SerializeField] private LocalizedDialogueAudio _captainBadWayRepairEngine;
+        [SerializeField] private LocalizedDialogueAudio _captainBadWayEndSubTutorial;
 
-        [Tooltip("Dialogue indiquant qu'il faut réparer le bateau.")]
-        [SerializeField]
-        private LocalizedDialogueAudio _captainBadWayRepairEngine;
+        [Header("Final Results")]
+        [Tooltip("0 erreur.")]
+        [SerializeField] private LocalizedDialogueAudio _captainGoodWay;
 
-        [Tooltip("Dialogue joué lorsque la séquence de réparation est terminée.")]
-        [SerializeField]
-        private LocalizedDialogueAudio _captainBadWayEndSubTutorial;
+        [Tooltip("1 erreur.")]
+        [SerializeField] private LocalizedDialogueAudio _captainBadWayHalfFalse;
 
-
-        [Header("Ending")]
-
-        [Tooltip("Fin si les deux choix ont été corrects.")]
-        [SerializeField]
-        private LocalizedDialogueAudio _captainGoodWay;
-
-        [Tooltip("Fin si au moins une erreur a été faite.")]
-        [SerializeField]
-        private LocalizedDialogueAudio _captainBadWay;
-
-        #endregion
-
-
-        #region RUNTIME
+        [Tooltip("2 erreurs.")]
+        [SerializeField] private LocalizedDialogueAudio _captainBadWay;
 
         private Timer _choiceTimer;
-
         private StepState _state;
 
-        /// <summary>
-        /// Devient true dès qu'au moins une erreur est faite.
-        /// Ne repasse jamais à false pendant cette Step.
-        /// </summary>
-        private bool _hasMadeMistake;
+        private LocalizedDialogueAudio _currentChoiceDialogue;
+        private LocalizedDialogueAudio _expectedFinalDialogue;
 
-        /// <summary>
-        /// Permet de considérer un timeout comme une erreur,
-        /// même si ForceChoice sélectionne accidentellement
-        /// la bonne direction.
-        /// </summary>
+        private int _mistakeCount;
         private bool _choiceForcedByTimer;
-
         private bool _timerActive;
 
-        #endregion
-
-
-        #region LIFECYCLE
+        #region Lifecycle
 
         public override void Enter(TutorialContext context)
         {
             base.Enter(context);
 
             _context = context;
+            _state = StepState.WaitingForFirstChoice;
 
-            _state = StepState.WaitingForBoat;
-
-            _hasMadeMistake = false;
+            _mistakeCount = 0;
             _choiceForcedByTimer = false;
             _timerActive = false;
 
+            _currentChoiceDialogue = null;
+            _expectedFinalDialogue = null;
+
             _choiceTimer = new Timer(_timerChoiceDuration);
 
-            ObjectiveManager.Current.SetObjective(
-                "Give the captain directions"
-            );
-
             SubscribeEvents();
-        }
 
+            ObjectiveManager.Current.SetObjective("Give the captain directions");
+        }
 
         public override void Tick(TutorialContext context, float dt)
         {
             if (_timerActive)
-            {
                 _choiceTimer.Tick(dt);
-            }
         }
-
 
         public override void Exit(TutorialContext context)
         {
             StopChoiceTimer();
             UnsubscribeEvents();
+
+            _context = null;
+            _currentChoiceDialogue = null;
+            _expectedFinalDialogue = null;
         }
 
         #endregion
 
-
-        #region EVENTS
+        #region Events
 
         private void SubscribeEvents()
         {
-            // Boat
-            _context.TutoBoat.OnChoiceRequired += OnBoatChoiceRequired;
+            if (_context.TutoBoat != null)
+                _context.TutoBoat.OnChoiceRequired += OnBoatChoiceRequired;
 
-            // Choices
-            _choiceIntroduction.OnChoiceSelected += OnFirstChoiceSelected;
+            if (_choiceIntroduction != null)
+                _choiceIntroduction.OnChoiceSelected += OnFirstChoiceSelected;
 
-            _captainGoodWayGuide.OnChoiceSelected += OnSecondChoiceSelected;
-            _captainBadWayGuide.OnChoiceSelected += OnSecondChoiceSelected;
+            if (_captainGoodWayGuide != null)
+                _captainGoodWayGuide.OnChoiceSelected += OnSecondChoiceSelected;
 
-            // Dialogues
-            _context.TalkieManager.OnDialogueFinished += OnDialogueFinished;
+            if (_captainBadWayGuide != null)
+                _captainBadWayGuide.OnChoiceSelected += OnSecondChoiceSelected;
 
-            // Timer
-            _choiceTimer.OnTimerComplete += OnChoiceTimerFinished;
+            if (_context.TalkieManager != null)
+                _context.TalkieManager.OnDialogueFinished += OnDialogueFinished;
+
+            if (_choiceTimer != null)
+                _choiceTimer.OnTimerComplete += OnChoiceTimerFinished;
         }
-
 
         private void UnsubscribeEvents()
         {
             if (_context == null)
                 return;
 
-            // Boat
-            _context.TutoBoat.OnChoiceRequired -= OnBoatChoiceRequired;
+            if (_context.TutoBoat != null)
+                _context.TutoBoat.OnChoiceRequired -= OnBoatChoiceRequired;
 
-            // Choices
-            _choiceIntroduction.OnChoiceSelected -= OnFirstChoiceSelected;
+            if (_choiceIntroduction != null)
+                _choiceIntroduction.OnChoiceSelected -= OnFirstChoiceSelected;
 
-            _captainGoodWayGuide.OnChoiceSelected -= OnSecondChoiceSelected;
-            _captainBadWayGuide.OnChoiceSelected -= OnSecondChoiceSelected;
+            if (_captainGoodWayGuide != null)
+                _captainGoodWayGuide.OnChoiceSelected -= OnSecondChoiceSelected;
 
-            // Dialogues
-            _context.TalkieManager.OnDialogueFinished -= OnDialogueFinished;
+            if (_captainBadWayGuide != null)
+                _captainBadWayGuide.OnChoiceSelected -= OnSecondChoiceSelected;
 
-            // Timer
+            if (_context.TalkieManager != null)
+                _context.TalkieManager.OnDialogueFinished -= OnDialogueFinished;
+
             if (_choiceTimer != null)
-            {
                 _choiceTimer.OnTimerComplete -= OnChoiceTimerFinished;
+        }
+
+        #endregion
+
+        #region Boat
+
+        private void OnBoatChoiceRequired()
+        {
+            if (_context.TutoBoat == null)
+                return;
+
+            switch (_context.TutoBoat.CurrentChoiceStepIndex)
+            {
+                case 0:
+                    if (_state == StepState.WaitingForFirstChoice)
+                        StartFirstChoice();
+                    break;
+
+                case 1:
+                    if (_state == StepState.WaitingForSecondChoice)
+                        StartSecondChoice();
+                    break;
+            }
+        }
+
+        private void SelectBoatDirection(TalkieChoice choice)
+        {
+            if (_context.TutoBoat == null || choice == null)
+                return;
+
+            switch (choice.Index)
+            {
+                case 0:
+                    _context.TutoBoat.ChooseDirection(BoatDirection.Left);
+                    break;
+
+                case 1:
+                    _context.TutoBoat.ChooseDirection(BoatDirection.Midle);
+                    break;
+
+                case 2:
+                    _context.TutoBoat.ChooseDirection(BoatDirection.Right);
+                    break;
+
+                default:
+                    Debug.LogWarning($"[{name}] Invalid choice index: {choice.Index}", this);
+                    break;
             }
         }
 
         #endregion
 
-
-        #region BOAT FLOW
-
-        private void OnBoatChoiceRequired()
-        {
-            // Le bateau reste arrêté pendant tout le choix.
-            _context.TutoBoat.Pause();
-
-            switch (_context.TutoBoat.CurrentChoiceStepIndex)
-            {
-                // -------------------------------------------------
-                // CHOIX 1
-                // Bonne réponse = DROITE
-                // -------------------------------------------------
-
-                case 0:
-                    StartFirstChoice();
-                    break;
-
-
-                // -------------------------------------------------
-                // CHOIX 2
-                // Bonne réponse = MILIEU
-                // -------------------------------------------------
-
-                case 1:
-                    StartSecondChoice();
-                    break;
-            }
-        }
-
+        #region First Choice
 
         private void StartFirstChoice()
         {
             _state = StepState.FirstChoice;
-
             _choiceForcedByTimer = false;
+            _currentChoiceDialogue = _choiceIntroduction;
 
-            StartChoiceTimer();
-
-            _context.TalkieManager.Enqueue(
-                _choiceIntroduction
-            );
+            _context.TalkieManager.Enqueue(_choiceIntroduction);
         }
 
+        private void OnFirstChoiceSelected(TalkieChoice choice)
+        {
+            if (_state != StepState.FirstChoice || choice == null)
+                return;
+
+            StopChoiceTimer();
+            SelectBoatDirection(choice);
+
+            // Droite = bon choix.
+            bool correct = choice.Index == 2 && !_choiceForcedByTimer;
+
+            if (correct)
+            {
+                _state = StepState.WaitingForSecondChoice;
+                return;
+            }
+
+            _mistakeCount++;
+            _state = StepState.FirstRepair;
+
+            _context.TutoBoat.Pause();
+            StartRepairSequence();
+        }
+
+        #endregion
+
+        #region Second Choice
 
         private void StartSecondChoice()
         {
             _state = StepState.SecondChoice;
-
             _choiceForcedByTimer = false;
 
-            StartChoiceTimer();
+            _currentChoiceDialogue = _mistakeCount == 0
+                ? _captainGoodWayGuide
+                : _captainBadWayGuide;
 
-            /*
-             * On peut utiliser deux dialogues différents :
-             *
-             * - aucun problème auparavant
-             * - le capitaine sait qu'on a déjà fait une erreur
-             *
-             * Les deux doivent contenir les mêmes 3 choix :
-             *
-             * 0 = Gauche
-             * 1 = Milieu
-             * 2 = Droite
-             */
-
-            if (_hasMadeMistake)
-            {
-                _context.TalkieManager.Enqueue(
-                    _captainBadWayGuide
-                );
-            }
-            else
-            {
-                _context.TalkieManager.Enqueue(
-                    _captainGoodWayGuide
-                );
-            }
+            _context.TalkieManager.Enqueue(_currentChoiceDialogue);
         }
-
-        #endregion
-
-
-        #region FIRST CHOICE
-
-        private void OnFirstChoiceSelected(TalkieChoice choice)
-        {
-            // Protection contre un event qui arriverait au mauvais moment.
-            if (_state != StepState.FirstChoice)
-                return;
-
-            StopChoiceTimer();
-
-            SelectBoatDirection(choice);
-
-
-            // CHOIX 1 :
-            // Droite = Index 2
-            bool correctChoice =
-                choice.Index == 2 &&
-                !_choiceForcedByTimer;
-
-
-            if (correctChoice)
-            {
-                OnFirstChoiceCorrect();
-            }
-            else
-            {
-                OnFirstChoiceWrong();
-            }
-        }
-
-
-        private void OnFirstChoiceCorrect()
-        {
-            _state = StepState.WaitingForBoat;
-
-            // Rien à réparer.
-            // Le bateau peut continuer vers le deuxième choix.
-            _context.TutoBoat.Resume();
-        }
-
-
-        private void OnFirstChoiceWrong()
-        {
-            _hasMadeMistake = true;
-
-            _state = StepState.RepairAfterFirstChoice;
-
-            StartRepairSequence();
-        }
-
-        #endregion
-
-
-        #region SECOND CHOICE
 
         private void OnSecondChoiceSelected(TalkieChoice choice)
         {
-            if (_state != StepState.SecondChoice)
+            if (_state != StepState.SecondChoice || choice == null)
                 return;
 
             StopChoiceTimer();
-
             SelectBoatDirection(choice);
 
+            // Milieu = bon choix.
+            bool correct = choice.Index == 1 && !_choiceForcedByTimer;
 
-            // CHOIX 2 :
-            // Milieu = Index 1
-            bool correctChoice =
-                choice.Index == 1 &&
-                !_choiceForcedByTimer;
-
-
-            if (correctChoice)
+            if (correct)
             {
-                OnSecondChoiceCorrect();
+                StartFinalDialogue(_mistakeCount == 0 ? _captainGoodWay : _captainBadWayHalfFalse);
+                return;
             }
-            else
+
+            _mistakeCount++;
+
+            // Première erreur au deuxième choix.
+            if (_mistakeCount == 1)
             {
-                OnSecondChoiceWrong();
+                _state = StepState.SecondRepair;
+                _context.TutoBoat.Pause();
+
+                StartRepairSequence();
+                return;
             }
-        }
 
-
-        private void OnSecondChoiceCorrect()
-        {
-            /*
-             * Le bateau peut repartir après le choix.
-             */
-            _context.TutoBoat.Resume();
-
-
-            /*
-             * Si on avait fait une erreur au premier choix,
-             * on doit quand même avoir la mauvaise fin.
-             */
-            if (_hasMadeMistake)
-            {
-                StartBadEnding();
-            }
-            else
-            {
-                StartGoodEnding();
-            }
-        }
-
-
-        private void OnSecondChoiceWrong()
-        {
-            _hasMadeMistake = true;
-
-            _state = StepState.RepairAfterSecondChoice;
-
-            StartRepairSequence();
+            // Deux erreurs.
+            StartFinalDialogue(_captainBadWay);
         }
 
         #endregion
 
-
-        #region REPAIR
+        #region Repair
 
         private void StartRepairSequence()
         {
-            /*
-             * Le bateau est déjà en Pause() depuis OnBoatChoiceRequired().
-             *
-             * IMPORTANT :
-             * On ne fait aucun Resume ici.
-             * Le bateau reste complètement immobilisé
-             * jusqu'à ce que la réparation soit terminée.
-             */
+            _context.Hammer?.SetPickable();
 
-            _context.Hammer.SetPickable();
-
-            /*
-             * On joue UNIQUEMENT le dialogue qui annonce
-             * que le bateau doit être réparé.
-             */
-            _context.TalkieManager.Enqueue(
-                _captainBadWayRepairEngine
-            );
+            _context.TalkieManager.Enqueue(_captainBadWayRepairEngine);
+            _context.TalkieManager.Enqueue(_captainBadWayEndSubTutorial);
         }
-
 
         private void OnRepairFinished()
         {
-            switch (_state)
+            if (_state == StepState.FirstRepair)
             {
-                // ---------------------------------------------
-                // Erreur au premier choix
-                // ---------------------------------------------
+                _state = StepState.WaitingForSecondChoice;
+                _context.TutoBoat.Resume();
+                return;
+            }
 
-                case StepState.RepairAfterFirstChoice:
-
-                    /*
-                     * La réparation est terminée.
-                     *
-                     * On repart vers le deuxième choix.
-                     */
-                    _state = StepState.WaitingForBoat;
-
-                    _context.TutoBoat.Resume();
-
-                    break;
-
-
-                // ---------------------------------------------
-                // Erreur au deuxième choix
-                // ---------------------------------------------
-
-                case StepState.RepairAfterSecondChoice:
-
-                    /*
-                     * C'était le dernier choix.
-                     *
-                     * Après la réparation, on lance directement
-                     * la mauvaise fin.
-                     */
-                    _context.TutoBoat.Resume();
-
-                    StartBadEnding();
-
-                    break;
+            if (_state == StepState.SecondRepair)
+            {
+                _context.TutoBoat.Resume();
+                StartFinalDialogue(_captainBadWayHalfFalse);
             }
         }
 
         #endregion
 
+        #region Dialogues
 
-        #region DIALOGUE FLOW
-
-        private void OnDialogueFinished(
-            LocalizedDialogueAudio dialogue
-        )
+        private void OnDialogueFinished(LocalizedDialogueAudio dialogue)
         {
-            /*
-             * FIN DE LA PARTIE RÉPARATION
-             */
-            if (dialogue == _captainBadWayEndSubTutorial)
+            if (dialogue == null)
+                return;
+
+            // Timer du premier choix.
+            if (_state == StepState.FirstChoice && dialogue == _choiceIntroduction)
+            {
+                StartChoiceTimer();
+                return;
+            }
+
+            // Timer du deuxième choix.
+            if (_state == StepState.SecondChoice && dialogue == _currentChoiceDialogue)
+            {
+                StartChoiceTimer();
+                return;
+            }
+
+            // Fin de réparation.
+            if ((_state == StepState.FirstRepair || _state == StepState.SecondRepair) && dialogue == _captainBadWayEndSubTutorial)
             {
                 OnRepairFinished();
                 return;
             }
 
-
-            /*
-             * BONNE FIN
-             */
-            if (dialogue == _captainGoodWay &&
-                _state == StepState.GoodEnding)
+            // Fin de la step.
+            if (_state == StepState.FinalDialogue && dialogue == _expectedFinalDialogue)
             {
-                CompleteTutorial();
+                CompleteStep();
+            }
+        }
+
+        private void StartFinalDialogue(LocalizedDialogueAudio dialogue)
+        {
+            if (dialogue == null)
+            {
+                Debug.LogWarning($"[{name}] Final dialogue is null.", this);
+                CompleteStep();
                 return;
             }
 
+            _state = StepState.FinalDialogue;
+            _expectedFinalDialogue = dialogue;
 
-            /*
-             * MAUVAISE FIN
-             */
-            if (dialogue == _captainBadWay &&
-                _state == StepState.BadEnding)
-            {
-                CompleteTutorial();
-            }
+            _context.TalkieManager.Enqueue(dialogue);
         }
 
         #endregion
 
-
-        #region ENDINGS
-
-        private void StartGoodEnding()
-        {
-            StopChoiceTimer();
-
-            _state = StepState.GoodEnding;
-
-            _context.TalkieManager.Enqueue(
-                _captainGoodWay
-            );
-        }
-
-
-        private void StartBadEnding()
-        {
-            StopChoiceTimer();
-
-            _state = StepState.BadEnding;
-
-            _context.TalkieManager.Enqueue(
-                _captainBadWay
-            );
-        }
-
-
-        private void CompleteTutorial()
-        {
-            if (_state == StepState.Completed)
-                return;
-
-            StopChoiceTimer();
-
-            _state = StepState.Completed;
-
-            ObjectiveManager.Current.CompleteObjective();
-
-            IsComplete = true;
-        }
-
-        #endregion
-
-
-        #region BOAT DIRECTION
-
-        private void SelectBoatDirection(TalkieChoice choice)
-        {
-            switch (choice.Index)
-            {
-                // GAUCHE
-                case 0:
-                    _context.TutoBoat.ChooseDirection(
-                        BoatDirection.Left
-                    );
-                    break;
-
-
-                // MILIEU
-                case 1:
-                    _context.TutoBoat.ChooseDirection(
-                        BoatDirection.Midle
-                    );
-                    break;
-
-
-                // DROITE
-                case 2:
-                    _context.TutoBoat.ChooseDirection(
-                        BoatDirection.Right
-                    );
-                    break;
-            }
-        }
-
-        #endregion
-
-
-        #region TIMER
+        #region Timer
 
         private void StartChoiceTimer()
         {
-            _choiceForcedByTimer = false;
+            if (_choiceTimer == null)
+                return;
 
+            _choiceForcedByTimer = false;
             _timerActive = true;
 
             _choiceTimer.ResetTimer(false);
-
             _choiceTimer.StartTimer();
         }
-
 
         private void StopChoiceTimer()
         {
@@ -607,29 +389,38 @@ namespace LightHouse.Core.Tutorial
             _timerActive = false;
 
             _choiceTimer.StopTimer();
-
             _choiceTimer.ResetTimer(false);
         }
 
-
         private void OnChoiceTimerFinished()
         {
-            if (_state != StepState.FirstChoice &&
-                _state != StepState.SecondChoice)
-            {
+            if (_state != StepState.FirstChoice && _state != StepState.SecondChoice)
                 return;
-            }
 
             _timerActive = false;
-
-            // Un timeout est considéré comme une erreur,
-            // même si le choix automatique est le bon chemin.
             _choiceForcedByTimer = true;
 
-            // 0 = Gauche
-            // 1 = Milieu
-            // 2 = Droite
-            _context.TalkieManager.ForceChoice(1);
+            // Timeout = Milieu.
+            if (!_context.TalkieManager.ForceChoice(1))
+                Debug.LogWarning($"[{name}] Could not force Middle choice.", this);
+        }
+
+        #endregion
+
+        #region Complete
+
+        private void CompleteStep()
+        {
+            if (_state == StepState.Completed)
+                return;
+
+            StopChoiceTimer();
+
+            _state = StepState.Completed;
+            _expectedFinalDialogue = null;
+
+            ObjectiveManager.Current.CompleteObjective();
+            IsComplete = true;
         }
 
         #endregion
