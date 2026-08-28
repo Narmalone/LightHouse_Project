@@ -16,7 +16,7 @@ public class CeilingLight : MonoBehaviour, IElectricItem
 
     [Header("Electricity")]
     [field: SerializeField] public float ElectricityCost { get; set; } = 20f;
-    [field: SerializeField] public ElectricityZones ItemZone { get; set; } = ElectricityZones.BedroomAndBathroom;
+    [field: SerializeField] public ElectricityZones ItemZone { get; set; } = ElectricityZones.GuardianHouse;
 
     [Header("Light")]
     [SerializeField] private Light _light;
